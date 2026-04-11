@@ -16,6 +16,8 @@ function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
+import logo from '../../assets/logo.svg'
+
 export function Header({ cartCount }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState(null)
@@ -53,8 +55,17 @@ export function Header({ cartCount }) {
             >
               <Menu className="h-6 w-6 text-brand-ink" />
             </button>
-            <a href="/" className="flex items-center gap-2">
-              <span className="text-brand-orange font-serif-display font-bold text-[24px] md:text-[28px] tracking-tight">
+            <a href="/" className="flex items-center">
+              <img 
+                src={logo} 
+                alt="Toyove Logo" 
+                className="h-8 md:h-10 w-auto object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'block';
+                }}
+              />
+              <span className="hidden text-brand-orange font-serif-display font-bold text-[24px] md:text-[28px] tracking-tight">
                 Toyove
               </span>
             </a>

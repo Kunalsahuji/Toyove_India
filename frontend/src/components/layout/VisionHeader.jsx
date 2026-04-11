@@ -47,6 +47,8 @@ const navLinks = [
 const C = '#E84040'  // coral red
 const P = '#6651A4'  // brand purple
 
+import logo from '../../assets/logo.svg'
+
 export function VisionHeader() {
   const [promoIndex, setPromoIndex] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -156,9 +158,18 @@ export function VisionHeader() {
           </div>
 
           {/* Center: logo — truly centered because it's "auto" column */}
-          <a href="#" style={{ textDecoration: 'none' }}>
+          <a href="#" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <img 
+              src={logo} 
+              alt="Toyove Logo" 
+              style={{ height: '28px', width: 'auto', objectContain: 'contain' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
+              }}
+            />
             <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
-                           fontWeight: 700, fontSize: '22px', color: P, lineHeight: 1 }}>
+                           fontWeight: 700, fontSize: '22px', color: P, lineHeight: 1, display: 'none' }}>
               Toyove
             </span>
           </a>
@@ -203,10 +214,18 @@ export function VisionHeader() {
         <div className="hdr-desk hdr-inner"
              style={{ alignItems: 'center', height: '68px' }}>
 
-          {/* Logo */}
-          <a href="#" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '36px' }}>
+          <a href="#" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '36px', display: 'flex', alignItems: 'center' }}>
+            <img 
+              src={logo} 
+              alt="Toyove Logo" 
+              style={{ height: '32px', width: 'auto', objectContain: 'contain' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
+              }}
+            />
             <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
-                           fontWeight: 700, fontSize: '24px', color: P, lineHeight: 1 }}>
+                           fontWeight: 700, fontSize: '24px', color: P, lineHeight: 1, display: 'none' }}>
               Toyove
             </span>
           </a>
@@ -264,8 +283,19 @@ export function VisionHeader() {
                          boxShadow: '4px 0 24px rgba(0,0,0,0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                               padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
-                  <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
-                                 fontWeight: 700, fontSize: '22px', color: P }}>Toyove</span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <img 
+                      src={logo} 
+                      alt="Toyove Logo" 
+                      style={{ height: '28px', width: 'auto', objectContain: 'contain' }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
+                      }}
+                    />
+                    <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
+                                   fontWeight: 700, fontSize: '22px', color: P, display: 'none' }}>Toyove</span>
+                  </div>
                   <button onClick={() => setMobileOpen(false)}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', lineHeight: 0 }}>
                     <X size={24} />
