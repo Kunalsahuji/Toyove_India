@@ -38,8 +38,8 @@ export function BrandLogos() {
   return (
     <section className="py-10 md:py-14 bg-brand-cream">
       <div className="shell">
-        <div className="dashed-card p-8 md:p-12">
-          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16">
+        <div className="dashed-card p-6 md:p-12 overflow-hidden">
+          <div className="flex items-center justify-start md:justify-center gap-10 md:gap-16 w-full overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {logos.map((Logo, i) => (
               <motion.div
                 key={i}
@@ -48,7 +48,7 @@ export function BrandLogos() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ scale: 1.15, color: '#6651A4' }}
-                className="text-brand-muted/50 hover:text-brand-purple transition-colors cursor-pointer"
+                className="text-brand-muted/50 hover:text-brand-purple transition-colors cursor-pointer shrink-0 snap-center"
               >
                 <Logo />
               </motion.div>

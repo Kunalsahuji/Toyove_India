@@ -26,7 +26,7 @@ const benefits = [
 
 export function BenefitsSection() {
   return (
-    <section className="pb-20 md:pb-28 bg-brand-cream">
+    <section className="pb-20 md:pb-28 bg-[#FDF3E7] md:pt-0 pt-0">
       <div className="shell">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((b, i) => (
@@ -37,7 +37,7 @@ export function BenefitsSection() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
               whileHover={{ y: -5 }}
-              className="dashed-card bg-white/40 p-6 md:p-8 flex flex-col gap-5 hover:shadow-xl transition-all duration-300 cursor-default"
+              className="dashed-card bg-[#FDF3E7]/40 p-6 md:p-8 flex flex-col gap-5 hover:shadow-xl transition-all duration-300 cursor-default"
             >
               <div className="h-10 w-10 flex items-center justify-start">
                 <b.icon className="h-9 w-9 text-brand-ink stroke-[1]" />

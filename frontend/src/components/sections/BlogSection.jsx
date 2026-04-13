@@ -26,7 +26,7 @@ const posts = [
 
 export function BlogSection() {
   return (
-    <section className="py-14 md:py-20 bg-brand-cream border-t border-brand-ink/5">
+    <section className="py-10 md:py-14 bg-brand-cream border-t border-brand-ink/5">
       <div className="shell">
         <div className="text-center mb-12">
           <p className="text-brand-purple font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Latest News</p>
@@ -43,9 +43,9 @@ export function BlogSection() {
               transition={{ delay: i * 0.12 }}
               className="group cursor-pointer flex flex-col"
             >
-              {/* Image wrapped in Dashed Box */}
-              <div className="dashed-card p-2 md:p-3 mb-6 transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg">
-                <div className="aspect-[4/2.5] md:aspect-[4/3] overflow-hidden rounded-xl bg-gray-100">
+              {/* Image wrapped in Dashed Box with NO padding */}
+              <div className="dashed-card overflow-hidden mb-6 transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg">
+                <div className="aspect-[4/2.5] md:aspect-[4/3] bg-gray-100 w-full h-full">
                   <motion.img
                     whileHover={{ scale: 1.06 }}
                     transition={{ duration: 0.5 }}

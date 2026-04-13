@@ -27,7 +27,7 @@ export function CategorySection() {
               where the first element is pushed off-screen to the left and became inaccessible.
               'justify-start' is the only safe alignment for overflowing rows.
           */}
-          <div className="flex items-start gap-5 md:gap-8 lg:gap-11 overflow-x-auto pt-16 pb-16 hide-scrollbar justify-start px-6 md:px-12 lg:px-16">
+          <div className="flex items-start gap-5 md:gap-8 lg:gap-11 overflow-x-auto pt-16 pb-16 justify-start px-6 md:px-12 lg:px-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {categories.map((cat, i) => {
               // Odd/Even Stagger Logic: Even indices (0, 2, 4) are high, Odd (1, 3) are shifted down.
               const isStaggered = i % 2 !== 0; 

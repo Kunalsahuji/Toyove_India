@@ -43,7 +43,10 @@ export function ExperienceSection() {
                className="font-playful text-[24px] sm:text-[28px] md:text-[34px] font-black text-brand-ink leading-[1.2] mb-8 lg:mb-10 tracking-tight"
                style={{ letterSpacing: '-0.02em' }}
              >
-               We Have Always Tried To Focus On The People Who <br className="hidden md:block" /> Were Going To Use The Products
+               We Have Always Tried To <br />
+               Focus On The People Who <br />
+               Were Going To Use The <br />
+               Products
              </h2>
 
              {/* Accordion Group */}

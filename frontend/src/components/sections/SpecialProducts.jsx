@@ -33,7 +33,8 @@ export function SpecialProducts() {
   const [activeTab, setActiveTab] = useState('Featured')
 
   return (
-    <section className="py-14 md:py-20 bg-brand-cream">
+    // reduce padding form top and bottom for desktop 
+    <section className="pt-14 pb-4 md:pt-20 md:pb-8 bg-brand-cream">
       <div className="shell">
         {/* Header */}
         <div className="text-center mb-8">
@@ -45,9 +46,9 @@ export function SpecialProducts() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`h-9 px-6 rounded-md text-[13px] font-bold transition-all duration-200 ${activeTab === tab
-                    ? 'bg-brand-orange text-white border-brand-orange shadow-md'
-                    : 'border border-brand-ink/20 text-brand-muted hover:border-brand-purple hover:text-brand-purple'
+                className={`h-9 px-6 rounded-md text-[13px] font-bold transition-all duration-200 shadow-md ${activeTab === tab
+                    ? 'bg-[#F1641E] text-white border border-[#F1641E]'
+                    : 'bg-[#1A1A1A] text-white border border-[#1A1A1A] hover:bg-brand-purple hover:border-brand-purple'
                   }`}
               >
                 {tab}
