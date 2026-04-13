@@ -1,6 +1,33 @@
 import { motion } from 'framer-motion'
 import heroImg from '../../assets/hero.png'
 
+const Star = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="#FFD700" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+)
+
+const Cloud = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="#a4e2f5" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.5 19C19.98 19 22 16.98 22 14.5C22 12.16 20.21 10.23 17.92 10.03C17.43 7.17 14.96 5 12 5C9.37 5 7.15 6.84 6.36 9.23C3.93 9.46 2 11.51 2 14C2 16.76 4.24 19 7 19H17.5Z"/>
+  </svg>
+)
+
+const Sun = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="#FFC107" className={className} xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="5" />
+    <path stroke="#FFC107" strokeWidth="2" strokeLinecap="round" d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </svg>
+)
+
+const Rocket = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="#FF5722" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M13.2 2.6c0 0-4.6 1.4-7 4.2C3.8 9.6 3 14 3 14l3.6-1.2L11 17.4 9.8 21s4.4-.8 7.2-3.2c2.8-2.4 4.2-7 4.2-7s-3-2.6-8-8.2z" fill="#FF5722"/>
+    <path d="M16 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" fill="#FFF"/>
+    <path d="M3 14l-1.8 5c-.3.8.5 1.5 1.3 1.2L7.3 18.5" fill="#FFC107"/>
+  </svg>
+)
+
 const Decorations = () => (
   <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
     <div className="absolute right-[-15%] top-[-10%] w-[70%] h-[120%] bg-[#5B4694] rounded-[40%_60%_70%_30%/40%_50%_60%_50%] opacity-90 hidden md:block" />
@@ -9,17 +36,20 @@ const Decorations = () => (
       <path d="M 0 120 Q 150 150 250 80 T 400 30" stroke="white" strokeWidth="1.5" strokeDasharray="6 6" fill="none" />
     </svg>
     
-    <span className="float-a absolute top-[10%] left-[4%] text-[16px] md:text-[20px]">⭐</span>
-    <span className="float-b absolute top-[14%] left-[8%] text-[18px] md:text-[24px]" style={{ filter: 'hue-rotate(300deg)' }}>⭐</span>
-    <span className="float-a absolute top-[8%] left-[28%] text-[24px] md:text-[34px] hidden sm:block">☁️</span>
+    <Star className="float-a absolute top-[10%] left-[8%] w-6 h-6 md:w-8 md:h-8" />
+    <Star className="float-b absolute top-[18%] left-[12%] w-4 h-4 md:w-6 md:h-6 opacity-70" />
+    <Cloud className="float-a absolute top-[12%] left-[30%] w-12 h-12 md:w-16 md:h-16 hidden sm:block opacity-80" />
     
-    {/* Sun perfectly centered above text block on Mobile */}
-    <span className="float-b absolute top-[8%] left-[20%] md:top-[12%] md:left-[48%] text-[36px] md:text-[46px]">☀️</span>
+    <Sun className="float-b absolute top-[6%] left-[25%] md:top-[10%] md:left-[55%] w-16 h-16 md:w-20 md:h-20 drop-shadow-[0_0_15px_rgba(255,200,0,0.6)]" />
     
-    <span className="float-a absolute top-[6%] right-[5%] md:right-[10%] text-[24px] md:text-[28px]">☁️</span>
+    <Cloud className="float-a absolute top-[8%] right-[8%] md:right-[15%] w-10 h-10 md:w-14 md:h-14 opacity-90" />
 
-    <span className="float-a absolute bottom-[22%] right-[5%] text-[32px] md:text-[40px] hidden md:block">🌈</span>
-    <span className="float-b absolute bottom-[10%] left-[10%] md:left-[40%] text-[26px] md:text-[32px] transform -rotate-12">🚀</span>
+    <svg className="float-a absolute bottom-[25%] right-[6%] w-16 h-16 hidden md:block opacity-90" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round">
+       <path d="M4 18v-2a8 8 0 0 1 16 0v2" stroke="#FF5722"/>
+       <path d="M7 18v-1a5 5 0 0 1 10 0v1" stroke="#FFC107"/>
+       <path d="M10 18v0a2 2 0 0 1 4 0v0" stroke="#4BBFB8"/>
+    </svg>
+    <Rocket className="float-b absolute bottom-[18%] left-[10%] md:left-[35%] w-12 h-12 md:w-16 md:h-16 transform -rotate-12" />
     
     <div className="absolute bottom-[5%] md:bottom-[8%] left-[50%] md:left-[46%] transform -translate-x-1/2 md:translate-x-0 flex gap-[6px] items-center">
       <div className="w-[16px] md:w-[20px] h-[3px] bg-[#E84040] rounded-sm"></div>
@@ -56,9 +86,9 @@ export function HeroSection() {
             style={{ 
               fontFamily: 'var(--font-playful)', 
               textShadow: '0 3px 6px rgba(0,0,0,0.15)',
-              lineHeight: 1.15,
-              fontSize: 'clamp(34px, 8vw, 64px)',
-              letterSpacing: '-0.02em'
+              lineHeight: 1.05,
+              fontSize: 'clamp(36px, 8vw, 76px)',
+              letterSpacing: '-0.04em'
             }}
           >
             Find The Best Toys<br />
@@ -71,21 +101,21 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.28 }}
             className="w-fit"
           >
-            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-[800] text-xs md:text-sm lg:text-base uppercase rounded-lg lg:rounded-md hover:bg-gray-50 transition-colors shadow-md cursor-pointer">
+            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-[800] text-[11px] md:text-sm lg:text-[15px] uppercase rounded-md hover:bg-gray-50 transition-colors shadow-md cursor-pointer tracking-wider">
               SHOP NOW
             </button>
           </motion.div>
         </div>
 
         {/* ABSOLUTE IMAGE OVERLAY LAYER */}
-        <div className="absolute bottom-[-1%] right-[-25%] sm:right-[-10%] md:right-[-5%] lg:right-[0%] w-[125%] sm:w-[95%] md:w-[70%] lg:w-[60%] z-10 pointer-events-none flex justify-end items-end">
+        <div className="absolute bottom-[0%] right-[-25%] sm:right-[-10%] md:right-[-5%] lg:right-[0%] w-[125%] sm:w-[95%] md:w-[70%] lg:w-[60%] z-10 pointer-events-none flex justify-end items-end h-[95%]">
           <motion.img 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15 }}
             src={heroImg} 
             alt="Hero Graphic" 
-            className="w-full h-auto max-w-none object-contain object-right-bottom drop-shadow-[0_25px_25px_rgba(0,0,0,0.4)]"
+            className="w-full h-full max-w-none object-contain object-right-bottom drop-shadow-[0_25px_25px_rgba(0,0,0,0.4)]"
             onError={(e) => {
               e.target.src = "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=800"
             }}

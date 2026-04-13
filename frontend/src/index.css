@@ -5,10 +5,10 @@
   --purple: #6651A4;
   --orange: #F1641E;
   --red: #E8312A;
-  --cream: #F5F0E8;
+  --cream: #FDF3E7;
   --ink: #222222;
   --muted: #777777;
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-serif: 'Fredoka', 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', sans-serif;
   --font-playful: 'Fredoka', sans-serif;
 }
@@ -17,7 +17,7 @@
   --color-brand-purple: #6651A4;
   --color-brand-orange: #F1641E;
   --color-brand-red: #E8312A;
-  --color-brand-cream: #F5F0E8;
+  --color-brand-cream: #FDF3E7;
   --color-brand-ink: #222222;
   --color-brand-muted: #777777;
 }
@@ -93,9 +93,8 @@
   .ann-desk { display: grid; }
 }
 .dashed-card {
-  border: 1.5px dashed #c8c0b0;
+  border: 2px dashed rgba(34, 34, 34, 0.35);
   border-radius: 12px;
-  background: white;
 }
 
 /* Scrollbar  */
