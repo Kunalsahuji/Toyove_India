@@ -3,7 +3,6 @@ import { Heart } from 'lucide-react'
 import first from '../../assets/first.png'
 import second from '../../assets/second.png'
 import third from '../../assets/third.png'
-
 import fourth from '../../assets/fourth.png'
 
 // Using exact products from the user's reference screenshot + 4 more to make 8

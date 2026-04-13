@@ -1,6 +1,6 @@
 import { HeroSection }        from '../components/sections/HeroSection'
 import { CategorySection }    from '../components/sections/CategorySection'
-import { AboutSection }       from '../components/sections/AboutSection'
+import { ExperienceSection }  from '../components/sections/ExperienceSection'
 import { BenefitsSection }    from '../components/sections/BenefitsSection'
 import { TrendingProducts }   from '../components/sections/TrendingProducts'
 import { TestimonialsSection }from '../components/sections/TestimonialsSection'
@@ -14,7 +14,7 @@ export function HomePage() {
     <div className="flex flex-col">
       <HeroSection />
       <CategorySection />
-      <AboutSection />
+      <ExperienceSection />
       <BenefitsSection />
       <TrendingProducts />
       <TestimonialsSection />
@@ -25,3 +25,4 @@ export function HomePage() {
     </div>
   )
 }
+

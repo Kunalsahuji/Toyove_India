@@ -1,52 +1,74 @@
 import { motion } from 'framer-motion'
-
+import dance from '../../assets/dance.png'
+import bigsale from '../../assets/big-sale.png'
+import educationtoys from '../../assets/educational-toy.png'
+import musicalbear from '../../assets/musical-bear.png'
 const banners = [
   {
     id: 1,
-    bg: '#4BBFB8',
+    bg: '#2A9AA6', // Teal
     label: 'MUSIC AND SOUNDS',
     title: 'Shop & Glow Toy Cart Orange Car',
-    img: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=400',
+    img: dance, // Reusing high-quality local transparent PNGs
     tall: true,
+    mixBlendMode: 'screen',
   },
   {
     id: 2,
-    bg: '#E84040', // Brighter red
+    bg: '#EA4C4E', // Brighter red
     label: 'BIG SEASON SALE',
     title: 'Playbox The Builder Wooden Toys',
-    img: 'https://images.unsplash.com/photo-1592017246891-f512c9bf8edd?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    img: bigsale,
+    tall: true,
   },
   {
     id: 3,
-    bg: '#6651A4',
+    bg: '#6E5BB9', // Purple
     label: 'SEASON SALE',
     title: 'Plan Toys Pull-Along Musical Bear',
-    img: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=400',
+    img: musicalbear,
+    tall: true,
   },
   {
     id: 4,
-    bg: '#F1641E',
+    bg: '#ED6D2A', // Vibrant Orange
     label: 'MUSIC AND SOUNDS',
     title: 'Fun And Educational Toy For Babies',
-    img: 'https://plus.unsplash.com/premium_photo-1702498664869-47f37ff07088?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    img: educationtoys,
     tall: true,
   },
 ]
 
 export function PromoBanners() {
   return (
-    <section className="py-14 md:py-20 bg-brand-cream">
+    <section className="py-8 md:py-16 bg-brand-cream overflow-hidden">
       <div className="shell">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr] gap-5">
-          <BannerCard banner={banners[0]} className="sm:row-span-2" />
-          
-          <div className="grid grid-rows-2 gap-5 flex-col">
-            <BannerCard banner={banners[1]} />
-            <BannerCard banner={banners[2]} />
+
+        {/* Responsive Grid with strict DOM ordering for mobile parity */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.1fr] gap-4 md:gap-5 auto-rows-fr">
+
+          {/* Teal Banner - Mobile Order 1 | Desktop Order 1 */}
+          <div className="order-1 lg:order-1 lg:h-full h-[380px] md:h-[450px]">
+            <BannerCard banner={banners[0]} className="h-full" />
           </div>
 
-          <BannerCard banner={banners[3]} className="sm:row-span-2" />
+          {/* Center Stack (Red/Purple) - Mobile Order 3 | Desktop Order 2 */}
+          <div className="order-3 lg:order-2 flex flex-col gap-4 md:gap-5 h-full">
+            <div className="flex-1 h-[240px] lg:h-auto">
+              <BannerCard banner={banners[1]} className="h-full" />
+            </div>
+            <div className="flex-1 h-[240px] lg:h-auto">
+              <BannerCard banner={banners[2]} className="h-full" />
+            </div>
+          </div>
+
+          {/* Orange Banner - Mobile Order 2 | Desktop Order 3 */}
+          <div className="order-2 lg:order-3 lg:h-full h-[380px] md:h-[450px]">
+            <BannerCard banner={banners[3]} className="h-full" />
+          </div>
+
         </div>
+
       </div>
     </section>
   )
@@ -60,36 +82,39 @@ function BannerCard({ banner, className = '' }) {
       viewport={{ once: true }}
       whileHover={{ y: -6 }}
       transition={{ duration: 0.4 }}
-      className={`relative overflow-hidden rounded-[20px] cursor-pointer group flex flex-col justify-between ${className}`}
-      style={{ backgroundColor: banner.bg, minHeight: banner.tall ? '360px' : '220px' }}
+      className={`relative overflow-hidden rounded-[20px] cursor-pointer group flex flex-col shadow-sm hover:shadow-lg ${className}`}
+      style={{ backgroundColor: banner.bg }}
     >
       <div className="relative z-20 p-6 md:p-8 flex flex-col justify-between h-full w-full pointer-events-none">
+
+        {/* Typographic Block */}
         <div>
-          <p className="text-white/80 font-bold text-[10px] md:text-[11px] tracking-widest uppercase mb-3">
+          <p className="text-white/90 font-bold text-[10px] md:text-[11px] tracking-widest uppercase mb-3">
             {banner.label}
           </p>
-          <h3 className="font-playful text-white font-bold text-[20px] md:text-[24px] leading-[1.05] max-w-[200px]" style={{ fontFamily: 'var(--font-playful)' }}>
+          <h3 className="font-playful text-white font-bold text-[22px] md:text-[25px] leading-[1.1] max-w-[180px] md:max-w-[210px] drop-shadow-sm" style={{ fontFamily: 'var(--font-playful)' }}>
             {banner.title}
           </h3>
         </div>
-        
-        <div className="mt-6">
-          <button className="h-10 px-6 bg-white text-brand-ink text-[12px] font-bold uppercase tracking-wider rounded border-2 border-transparent hover:border-brand-ink transition-all pointer-events-auto shadow-md">
+
+        {/* Action Button */}
+        <div className="mt-8 relative z-30">
+          <button className="h-10 px-6 bg-white text-[#1A1A1A] text-[12px] font-black uppercase tracking-wider rounded border-2 border-transparent group-hover:border-white transition-all pointer-events-auto shadow-md">
             SHOP NOW
           </button>
         </div>
       </div>
 
-      {/* Floating Image to the right/bottom */}
-      <div className="absolute right-0 bottom-[-10%] w-[65%] h-[80%] z-10 pointer-events-none flex justify-end items-end">
+      {/* Floating 3D Transparent Image */}
+      <div className={`absolute right-[-2%] bottom-[-5%] overflow-visible pointer-events-none flex justify-end items-end z-10 transition-transform duration-500 group-hover:scale-[1.08] origin-bottom-right
+                      ${banner.tall ? 'w-[85%] md:w-[85%] h-[85%]' : 'w-[55%] md:w-[50%] h-[90%]'}`}>
         <img
           src={banner.img}
           alt={banner.title}
-          className="w-full h-full object-contain object-right-bottom group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl"
-          style={{ mixBlendMode: 'luminosity', filter: 'contrast(1.2)' }}
+          className={`w-full h-full object-contain ${banner.tall ? 'object-right-bottom' : 'object-center md:object-right-bottom'} drop-shadow-2xl opacity-100`}
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[var(--bg)] opacity-30" style={{ '--bg': banner.bg }} />
       </div>
+
     </motion.div>
   )
 }

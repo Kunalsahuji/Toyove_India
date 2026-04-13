@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Minus } from 'lucide-react'
 
 const accordionData = [
   {
@@ -18,47 +17,60 @@ const accordionData = [
 ]
 
 export function ExperienceSection() {
-  const [openIndex, setOpenIndex] = useState(2); // The 3rd one is open by default to match reference
+  const [openIndex, setOpenIndex] = useState(2); // 3rd one open by default
 
   return (
-    <section className="py-16 md:py-24 bg-brand-cream">
+    <section className="py-16 md:py-24 bg-brand-cream overflow-hidden">
       <div className="shell">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
           
-          {/* Left Side: Child Portrait (Height parity with right side content) */}
-          <div className="w-full h-full">
-             <div className="h-full w-full rounded-2xl overflow-hidden bg-white shadow-sm">
+          {/* Left Column: Image (Natural Aspect Ratio) */}
+          <div className="w-full order-1 lg:order-1">
+             <div className="w-full aspect-[4/3] md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
                 <img 
-                  src="https://images.unsplash.com/photo-1544435253-f0ead4f638fa?auto=format&fit=crop&q=80&w=800" 
-                  alt="Child with wooden toy" 
+                  src="https://cdn.cdnparenting.com/articles/2022/04/07114528/227386435-768x525.webp" 
+                  alt="Child with educational toys" 
                   className="w-full h-full object-cover"
                 />
              </div>
           </div>
 
-          {/* Right Side: Accordion & Text */}
-          <div className="w-full flex flex-col justify-center">
+          {/* Right Column: Editorial Format */}
+          <div className="w-full flex flex-col justify-start order-2 lg:order-2 h-full">
+             
+             {/* Precisely Sized & Wrapped Title */}
              <h2 
-               className="font-playful text-[28px] md:text-[38px] lg:text-[44px] font-black text-brand-ink leading-[1.05] mb-10 tracking-tight"
-               style={{ letterSpacing: '-0.04em' }}
+               className="font-playful text-[24px] sm:text-[28px] md:text-[34px] font-black text-brand-ink leading-[1.2] mb-8 lg:mb-10 tracking-tight"
+               style={{ letterSpacing: '-0.02em' }}
              >
-               We Have Always Tried To Focus On The People Who Were Going To Use The Products
+               We Have Always Tried To Focus On The People Who <br className="hidden md:block" /> Were Going To Use The Products
              </h2>
 
-             <div className="space-y-6">
+             {/* Accordion Group */}
+             <div className="space-y-4 lg:space-y-6 mb-8 xl:mb-10">
                {accordionData.map((item, i) => {
                  const isOpen = openIndex === i;
                  return (
-                   <div key={i} className="border-b-2 border-dashed border-brand-ink/10 pb-5">
+                   <div key={i} className="border-b-[1.5px] border-dashed border-[#dcd2c6] pb-4">
                      <button
                        onClick={() => setOpenIndex(isOpen ? -1 : i)}
                        className="w-full flex items-center justify-between text-left group cursor-pointer"
                      >
-                       <span className={`font-bold text-[15px] md:text-[16px] transition-colors duration-300 ${isOpen ? 'text-brand-purple' : 'text-brand-ink hover:text-brand-purple'}`}>
+                       <span className={`font-bold text-[14px] md:text-[15px] transition-colors duration-300 ${isOpen ? 'text-brand-purple' : 'text-brand-ink group-hover:text-brand-purple'}`}>
                          {item.title}
                        </span>
-                       <div className={`h-[24px] w-[24px] rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${isOpen ? 'bg-brand-purple border-brand-purple' : 'border-brand-ink/20 group-hover:border-brand-purple'}`}>
-                         {isOpen ? <Minus className="h-[12px] w-[12px] text-white" /> : <Plus className="h-[12px] w-[12px] text-brand-muted" />}
+                       
+                       {/* Thin Minimalist Circle Icon (No Solid Background) */}
+                       <div className={`h-[24px] w-[24px] rounded-full border-[1.5px] transition-all duration-300 flex items-center justify-center shrink-0 
+                         ${isOpen ? 'border-brand-purple' : 'border-[#dcd2c6] group-hover:border-brand-purple'}`}>
+                         <div className="relative w-3 h-3 flex items-center justify-center">
+                           {/* Horizontal minus line */}
+                           <span className={`absolute w-full h-[1.5px] bg-current transition-colors ${isOpen ? 'text-brand-purple' : 'text-brand-ink'}`}></span>
+                           {/* Vertical plus line */}
+                           {!isOpen && (
+                             <span className="absolute h-full w-[1.5px] bg-brand-ink"></span>
+                           )}
+                         </div>
                        </div>
                      </button>
                      
@@ -68,22 +80,12 @@ export function ExperienceSection() {
                            initial={{ height: 0, opacity: 0 }}
                            animate={{ height: 'auto', opacity: 1 }}
                            exit={{ height: 0, opacity: 0 }}
-                           transition={{ duration: 0.35, ease: 'easeOut' }}
+                           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                            className="overflow-hidden"
                          >
-                           <p className="pt-4 text-[12px] md:text-[13px] text-brand-muted leading-[1.6] w-[95%]">
+                           <p className="pt-4 text-[13px] md:text-[13px] text-brand-muted leading-[1.8] lg:w-[95%]">
                              {item.content}
                            </p>
-
-                           {/* Inner gallery - only for the active item to match reference */}
-                           <div className="grid grid-cols-2 gap-4 mt-6">
-                             <div className="aspect-[4/3] rounded-xl overflow-hidden bg-white shadow-sm border border-brand-ink/5">
-                               <img src="https://images.unsplash.com/photo-1596461390812-706f9d45e43c?auto=format&fit=crop&q=80&w=400" alt="Detail view 1" className="w-full h-full object-cover" />
-                             </div>
-                             <div className="aspect-[4/3] rounded-xl overflow-hidden bg-white shadow-sm border border-brand-ink/5">
-                               <img src="https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=400" alt="Detail view 2" className="w-full h-full object-cover" />
-                             </div>
-                           </div>
                          </motion.div>
                        )}
                      </AnimatePresence>
@@ -91,6 +93,17 @@ export function ExperienceSection() {
                  )
                })}
              </div>
+
+             {/* Static Bottom Gallery (Moved outside accordion) */}
+             <div className="grid grid-cols-2 gap-4 lg:gap-5 mt-auto pb-4">
+               <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
+                 <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=400" alt="Detail product view" className="w-full h-full object-cover" />
+               </div>
+               <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
+                 <img src="https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=400" alt="Child using product" className="w-full h-full object-cover" />
+               </div>
+             </div>
+
           </div>
           
         </div>
@@ -98,4 +111,6 @@ export function ExperienceSection() {
     </section>
   )
 }
+
+
 
