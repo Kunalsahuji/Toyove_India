@@ -27,7 +27,7 @@ export function CategorySection() {
               where the first element is pushed off-screen to the left and became inaccessible.
               'justify-start' is the only safe alignment for overflowing rows.
           */}
-          <div className="flex items-start gap-5 md:gap-8 lg:gap-11 overflow-x-auto pt-16 pb-16 justify-start px-6 md:px-12 lg:px-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex items-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto lg:overflow-x-visible pt-16 pb-16 justify-start lg:justify-center px-6 md:px-12 lg:px-4 xl:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {categories.map((cat, i) => {
               // Odd/Even Stagger Logic: Even indices (0, 2, 4) are high, Odd (1, 3) are shifted down.
               const isStaggered = i % 2 !== 0; 
@@ -45,12 +45,12 @@ export function CategorySection() {
                     scale: 1.02,
                     transition: { type: 'spring', stiffness: 400, damping: 15 }
                   }}
-                  className={`dashed-card bg-[#F7EBD5] p-3 md:p-4 cursor-pointer group shrink-0 w-[160px] sm:w-[180px] md:w-[220px] flex flex-col items-center shadow-sm hover:shadow-2xl ${
-                    isStaggered ? 'mt-10 md:mt-14' : 'mt-0'
+                  className={`dashed-card bg-[#F7EBD5] p-3 cursor-pointer group shrink-0 w-[140px] sm:w-[160px] md:w-[180px] lg:w-[165px] xl:w-[190px] flex flex-col items-center shadow-sm hover:shadow-2xl ${
+                    isStaggered ? 'mt-8 md:mt-12' : 'mt-0'
                   }`}
                 >
                   {/* Image Container (Polaroid Style) */}
-                  <div className="w-full aspect-[4/3.8] overflow-hidden rounded-xl bg-white mb-5 shadow-inner border border-brand-ink/5">
+                  <div className="w-full aspect-[4/3.8] overflow-hidden rounded-xl bg-white mb-4 lg:mb-5 shadow-inner border border-brand-ink/5">
                     <img
                       src={cat.img}
                       alt={cat.label}
@@ -59,7 +59,7 @@ export function CategorySection() {
                   </div>
                   
                   {/* Label (Enclosed inside dashed boundary) */}
-                  <span className="text-[14px] md:text-[16px] font-bold text-brand-ink text-center mb-1 font-playful tracking-tight pb-1">
+                  <span className="text-[13px] md:text-[15px] font-bold text-brand-ink text-center mb-1 font-playful tracking-tight pb-1">
                     {cat.label}
                   </span>
                 </motion.div>
