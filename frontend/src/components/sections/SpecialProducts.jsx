@@ -5,6 +5,10 @@ import first from '../../assets/first.png'
 import second from '../../assets/second.png'
 import third from '../../assets/third.png'
 import fourth from '../../assets/fourth.png'
+import car from '../../assets/car.png'
+import doremon from '../../assets/doremon.png'
+import fish from '../../assets/fish.png'
+import fog from '../../assets/fog.png'
 const tabs = ['Featured', 'Arrival', 'Trending']
 
 // Using safe Unsplash IDs from parity checks
@@ -16,10 +20,10 @@ const products = {
     { id: 4, name: 'WildHarvests Maker Toy', price: 100, oldPrice: 145, badge: -30, img: fourth },
   ],
   Arrival: [
-    { id: 5, name: 'Rainbow Stacker Set', price: 55, oldPrice: 80, badge: -31, img: fourth },
-    { id: 6, name: 'Wooden Car Fleet', price: 74, oldPrice: 110, badge: -33, img: third },
-    { id: 7, name: 'Soft Bear Companion', price: 38, oldPrice: 52, badge: -27, img: second },
-    { id: 8, name: 'Musical Drum Kit Jr.', price: 95, oldPrice: 130, badge: -27, img: first },
+    { id: 5, name: 'Rainbow Stacker Set', price: 55, oldPrice: 80, badge: -31, img: car },
+    { id: 6, name: 'Wooden Car Fleet', price: 74, oldPrice: 110, badge: -33, img: fog },
+    { id: 7, name: 'Soft Bear Companion', price: 38, oldPrice: 52, badge: -27, img: fish },
+    { id: 8, name: 'Musical Drum Kit Jr.', price: 95, oldPrice: 130, badge: -27, img: doremon },
   ],
   Trending: [
     { id: 9, name: 'Dino Puzzle Master', price: 42, oldPrice: 68, badge: -38, img: second },

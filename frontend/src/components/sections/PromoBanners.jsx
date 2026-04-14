@@ -99,7 +99,7 @@ function BannerCard({ banner, className = '' }) {
 
         {/* Action Button */}
         <div className="mt-8 relative z-30">
-          <button className="h-10 px-6 bg-white text-[#1A1A1A] text-[12px] font-black uppercase tracking-wider rounded border-2 border-transparent group-hover:border-white transition-all pointer-events-auto shadow-md">
+          <button className="h-10 px-6 bg-white text-[#1A1A1A] text-[12px] font-black uppercase tracking-wider rounded border-2 border-transparent hover:border-white hover:scale-105 active:scale-95 transition-all duration-300 pointer-events-auto shadow-md cursor-pointer">
             SHOP NOW
           </button>
         </div>

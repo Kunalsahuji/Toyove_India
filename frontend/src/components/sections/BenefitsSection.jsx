@@ -26,28 +26,38 @@ const benefits = [
 
 export function BenefitsSection() {
   return (
-    <section className="pb-20 md:pb-28 bg-[#FDF3E7] md:pt-0 pt-0">
+    <section className="pb-12 md:pb-16 bg-[#FDF3E7] md:pt-0 pt-0">
       <div className="shell">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {benefits.map((b, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              whileHover={{ y: -5 }}
-              className="dashed-card bg-[#FDF3E7]/40 p-6 md:p-8 flex flex-col gap-5 hover:shadow-xl transition-all duration-300 cursor-default"
-            >
-              <div className="h-10 w-10 flex items-center justify-start">
-                <b.icon className="h-9 w-9 text-brand-ink stroke-[1]" />
-              </div>
-              <div className="space-y-3">
-                <h4 className="font-bold text-[15px] md:text-[16px] text-brand-ink tracking-tight">{b.title}</h4>
-                <p className="text-[12px] md:text-[13px] text-brand-muted leading-[1.6]">{b.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+        <div className="dashed-card overflow-hidden bg-[#FDF3E7]/20 border-brand-ink/40" style={{ borderWidth: '1.5px' }}>
+          <div className="flex lg:grid lg:grid-cols-4 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] w-full">
+            {benefits.map((b, i) => {
+              // Now that it's a single horizontal scrolling row (or 4-grid), we only need vertical dividers.
+              const borderClasses = `
+                border-brand-ink/55 border-dotted
+                border-2 rounded-lg 
+                ${i !== benefits.length - 1 ? 'border-r-[2px]' : 'border-r-2'}
+              `;
+
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className={`w-full sm:w-[50%] lg:w-auto shrink-0 snap-start p-6 md:p-8 flex flex-col gap-4 hover:bg-[#F7EBD5] transition-colors duration-300 cursor-default ${borderClasses}`}
+                >
+                  <div className="h-10 w-10 flex items-center justify-start mb-1">
+                    <b.icon className="h-9 w-9 text-brand-ink stroke-[1]" />
+                  </div>
+                  <div className="space-y-3">
+                    <h4 className="font-bold text-[15px] md:text-[16px] text-brand-ink tracking-tight">{b.title}</h4>
+                    <p className="text-[12px] md:text-[13px] text-brand-muted leading-[1.6]">{b.desc}</p>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>

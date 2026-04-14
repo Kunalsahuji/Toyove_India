@@ -4,17 +4,20 @@ import first from '../../assets/first.png'
 import second from '../../assets/second.png'
 import third from '../../assets/third.png'
 import fourth from '../../assets/fourth.png'
-
+import car from '../../assets/car.png'
+import doremon from '../../assets/doremon.png'
+import fish from '../../assets/fish.png'
+import fog from '../../assets/fog.png'
 // Using exact products from the user's reference screenshot + 4 more to make 8
 const products = [
   { id: 1, name: 'Shape Sorting Cube Classic Toy', price: 60, oldPrice: 100, badge: -40, img: first },
   { id: 2, name: 'Hammer Ball Knock Pounding Bench', price: 120, oldPrice: 180, badge: -33, img: second },
   { id: 3, name: 'Green Plush Stuffed Dinosaur Soft Toy', price: 59, oldPrice: 99, badge: -40, img: third },
   { id: 4, name: 'Fisher Price Chatter Telephone', price: 150, oldPrice: 200, badge: -25, img: fourth },
-  { id: 5, name: 'Classic Wooden Tool Box Set', price: 85, oldPrice: 110, badge: -22, img: fourth },
-  { id: 6, name: 'Creative Rainbow Stacker Toy', price: 45, oldPrice: 65, badge: -30, img: third },
-  { id: 7, name: 'Baby Activity Gym Play Mat', price: 130, oldPrice: 175, badge: -25, img: second },
-  { id: 8, name: 'Plush Rabbit Sleeping Soft Toy', price: 35, oldPrice: 50, badge: -30, img: first },
+  { id: 5, name: 'Classic Wooden Tool Box Set', price: 85, oldPrice: 110, badge: -22, img: car },
+  { id: 6, name: 'Creative Rainbow Stacker Toy', price: 45, oldPrice: 65, badge: -30, img: fog },
+  { id: 7, name: 'Baby Activity Gym Play Mat', price: 130, oldPrice: 175, badge: -25, img: fish },
+  { id: 8, name: 'Plush Rabbit Sleeping Soft Toy', price: 35, oldPrice: 50, badge: -30, img: doremon },
 ]
 
 export function TrendingProducts() {

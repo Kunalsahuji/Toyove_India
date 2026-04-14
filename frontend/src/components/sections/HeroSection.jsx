@@ -101,7 +101,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.28 }}
             className="w-fit"
           >
-            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-[800] text-[11px] md:text-sm lg:text-[15px] uppercase rounded-md hover:bg-gray-50 transition-colors shadow-md cursor-pointer tracking-wider">
+            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-[800] text-[11px] md:text-sm lg:text-[15px] uppercase rounded-md hover:bg-gray-50 hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-md cursor-pointer tracking-wider">
               SHOP NOW
             </button>
           </motion.div>
