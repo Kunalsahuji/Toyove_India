@@ -36,11 +36,13 @@ const promoMessages = [
 ]
 
 const navLinks = [
-  { name: 'Home',                 href: '#' },
-  { name: 'Product & Collection', href: '#' },
-  { name: 'Blog',                 href: '#' },
-  { name: 'Pages',                href: '#' },
-  { name: 'Contact Us',           href: '#' },
+  { name: 'HOME',                 href: '#' },
+  { name: 'ABOUT',                href: '#' },
+  { name: 'DOLLS',                href: '#' },
+  { name: 'EDUCATIONAL TOY',      href: '#' },
+  { name: 'GAMES AND PUZZLE',     href: '#' },
+  { name: 'VEHICLES TOYS',        href: '#' },
+  { name: 'CONTACT',              href: '#' },
 ]
 
 // ─── Shared style constants ────────────────────────────────────────────────────
@@ -162,7 +164,7 @@ export function VisionHeader() {
             <img 
               src={logo} 
               alt="Toyove Logo" 
-              style={{ height: '28px', width: 'auto', objectContain: 'contain' }}
+              style={{ height: '36px', width: 'auto', objectContain: 'contain' }}
               onError={(e) => {
                 e.target.style.display = 'none';
                 if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
@@ -214,11 +216,11 @@ export function VisionHeader() {
         <div className="hdr-desk hdr-inner"
              style={{ alignItems: 'center', height: '68px' }}>
 
-          <a href="#" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '36px', display: 'flex', alignItems: 'center' }}>
+          <a href="#" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '40px', display: 'flex', alignItems: 'center' }}>
             <img 
               src={logo} 
               alt="Toyove Logo" 
-              style={{ height: '32px', width: 'auto', objectContain: 'contain' }}
+              style={{ height: '44px', width: 'auto', objectContain: 'contain' }}
               onError={(e) => {
                 e.target.style.display = 'none';
                 if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
@@ -230,8 +232,8 @@ export function VisionHeader() {
             </span>
           </a>
 
-          {/* Nav links — immediately to the right of logo */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '26px', flex: 1 }}>
+          {/* Nav links — covering all central space cleanly spaced */}
+          <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flex: 1, paddingRight: '30px' }}>
             {navLinks.map(link => (
               <a key={link.name} href={link.href} className="group"
                 style={{ fontSize: '13px', fontWeight: 600, color: '#222',
