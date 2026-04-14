@@ -19,7 +19,7 @@ export function CategorySection() {
   return (
     <div className="bg-brand-cream overflow-hidden ">
       {/* ── Category Cards Row (Dynamic Staggered Layout) ── */}
-      <section className="pt-8 pb-14 md:pt-10 md:pb-20">
+      <section className="pt-4 pb-8 md:pt-6 md:pb-12">
         <div className="shell">
           {/* 
               FIX: Removed justify-center entirely. 
@@ -27,7 +27,7 @@ export function CategorySection() {
               where the first element is pushed off-screen to the left and became inaccessible.
               'justify-start' is the only safe alignment for overflowing rows.
           */}
-          <div className="flex items-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto lg:overflow-x-visible pt-16 pb-16 justify-start lg:justify-center px-6 md:px-12 lg:px-4 xl:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex items-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto lg:overflow-x-visible pt-4 pb-6 md:pt-6 md:pb-10 justify-start lg:justify-center px-6 md:px-12 lg:px-4 xl:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {categories.map((cat, i) => {
               // Odd/Even Stagger Logic: Even indices (0, 2, 4) are high, Odd (1, 3) are shifted down.
               const isStaggered = i % 2 !== 0; 

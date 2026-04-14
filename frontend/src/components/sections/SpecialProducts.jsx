@@ -38,7 +38,7 @@ export function SpecialProducts() {
 
   return (
     // reduce padding form top and bottom for desktop 
-    <section className="pt-14 pb-4 md:pt-20 md:pb-8 bg-brand-cream">
+    <section className="pt-4 pb-4 md:pt-6 md:pb-8 bg-brand-cream">
       <div className="shell">
         {/* Header */}
         <div className="text-center mb-8">
@@ -62,7 +62,7 @@ export function SpecialProducts() {
         </div>
 
         {/* Product Grid */}
-        <div className="min-h-[400px]">
+        <div className="min-h-[250px]">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 16 }}

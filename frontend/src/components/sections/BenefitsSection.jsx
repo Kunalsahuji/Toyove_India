@@ -26,7 +26,7 @@ const benefits = [
 
 export function BenefitsSection() {
   return (
-    <section className="pb-12 md:pb-16 bg-[#FDF3E7] md:pt-0 pt-0">
+    <section className="pb-10 md:pb-12 bg-[#FDF3E7] pt-0 md:pt-0">
       <div className="shell">
         <div className="dashed-card overflow-hidden bg-[#FDF3E7]/20 border-brand-ink/40" style={{ borderWidth: '1.5px' }}>
           <div className="flex lg:grid lg:grid-cols-4 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] w-full">

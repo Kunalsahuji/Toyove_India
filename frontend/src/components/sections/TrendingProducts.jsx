@@ -22,7 +22,7 @@ const products = [
 
 export function TrendingProducts() {
   return (
-    <section className="py-14 md:py-20 bg-brand-cream">
+    <section className="py-10 md:py-14 bg-brand-cream">
       <div className="shell">
         {/* Section Label */}
         <div className="text-center mb-10">

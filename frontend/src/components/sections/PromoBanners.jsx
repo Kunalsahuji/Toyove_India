@@ -41,7 +41,7 @@ const banners = [
 
 export function PromoBanners() {
   return (
-    <section className="py-8 md:py-16 bg-brand-cream overflow-hidden">
+    <section className="py-4 md:py-6 bg-brand-cream overflow-hidden">
       <div className="shell">
 
         {/* Responsive Grid with strict DOM ordering for mobile parity */}

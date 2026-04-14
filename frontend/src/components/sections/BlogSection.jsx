@@ -26,7 +26,7 @@ const posts = [
 
 export function BlogSection() {
   return (
-    <section className="py-10 md:py-14 bg-brand-cream border-t border-brand-ink/5">
+    <section className="py-10 md:py-12 bg-brand-cream border-t border-brand-ink/5">
       <div className="shell">
         <div className="text-center mb-12">
           <p className="text-brand-purple font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Latest News</p>

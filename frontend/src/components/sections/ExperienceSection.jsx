@@ -20,7 +20,7 @@ export function ExperienceSection() {
   const [openIndex, setOpenIndex] = useState(2); // 3rd one open by default
 
   return (
-    <section className="py-16 md:py-24 bg-brand-cream overflow-hidden">
+    <section className="py-10 md:py-14 bg-brand-cream overflow-hidden">
       <div className="shell">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
