@@ -68,7 +68,7 @@ export function HeroSection() {
 
         {/* TEXT CONTENT LAYER */}
         {/* shift this section little into right side */}
-        <div className="w-[100%] sm:w-[80%] md:w-[60%] lg:w-[50%] relative z-20 flex flex-col items-start text-left pointer-events-auto mt-[-15%] md:mt-0 ml-[5%]">
+        <div className="w-[100%] sm:w-[80%] md:w-[60%] lg:w-[50%] relative z-20 flex flex-col items-start text-left pointer-events-auto mt-[-15%] md:mt-0">
 
           <motion.p
             initial={{ opacity: 0, y: 14 }}

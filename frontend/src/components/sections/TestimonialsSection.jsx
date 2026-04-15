@@ -27,7 +27,7 @@ export function TestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.15 }}
-              className="px-6 md:px-12 py-8 md:py-4 flex flex-col gap-6"
+              className={`py-8 md:py-4 flex flex-col gap-6 ${i === 0 ? 'md:pr-16 lg:pr-24' : 'md:pl-16 lg:pl-24'}`}
             >
               <span className="font-serif text-[60px] text-white/30 leading-none select-none">"</span>
               <p className="text-white/80 text-[13px] md:text-[14px] leading-relaxed -mt-8">{t.quote}</p>

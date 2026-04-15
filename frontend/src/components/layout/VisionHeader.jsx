@@ -67,8 +67,7 @@ export function VisionHeader() {
       <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }}>
 
         {/* ── MOBILE: promo only, centered, no icons, tiny padding ── */}
-        <div className="ann-mob items-center justify-center"
-             style={{ padding: '0 12px' }}>
+        <div className="ann-mob hdr-inner items-center justify-center">
           <p style={{ color: '#FDF3E7', fontSize: '10.5px', fontWeight: 500,
                       letterSpacing: '0.02em', whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis', overflow: 'hidden',
@@ -78,8 +77,7 @@ export function VisionHeader() {
         </div>
 
         {/* ── TABLET (768–1023px): promo centered with visible side space ── */}
-        <div className="ann-tab items-center justify-center"
-             style={{ padding: '0 32px' }}>
+        <div className="ann-tab hdr-inner items-center justify-center">
           <p style={{ color: '#FDF3E7', fontSize: '11.5px', fontWeight: 500,
                       letterSpacing: '0.04em', whiteSpace: 'nowrap',
                       textAlign: 'center' }}>
@@ -146,9 +144,9 @@ export function VisionHeader() {
                        position: 'sticky', top: 0, zIndex: 50 }}>
 
         {/* ── MOBILE + TABLET (<1024px): [burger][Toyove][search][cart] ── */}
-        <div className="hdr-mob"
+        <div className="hdr-mob hdr-inner"
              style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr',
-                      alignItems: 'center', height: '56px', padding: '0 12px' }}>
+                      alignItems: 'center', height: '56px' }}>
 
           {/* Left: hamburger */}
           <div style={{ display: 'flex', alignItems: 'center' }}>

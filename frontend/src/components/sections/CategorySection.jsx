@@ -27,7 +27,7 @@ export function CategorySection() {
               where the first element is pushed off-screen to the left and became inaccessible.
               'justify-start' is the only safe alignment for overflowing rows.
           */}
-          <div className="flex items-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto lg:overflow-x-visible pt-4 pb-6 md:pt-6 md:pb-10 justify-start lg:justify-center px-6 md:px-12 lg:px-4 xl:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex items-start gap-5 md:gap-8 lg:gap-10 overflow-x-auto lg:overflow-x-visible pt-4 pb-8 md:pt-6 md:pb-12 justify-start lg:justify-between xl:justify-center xl:gap-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {categories.map((cat, i) => {
               // Odd/Even Stagger Logic: Even indices (0, 2, 4) are high, Odd (1, 3) are shifted down.
               const isStaggered = i % 2 !== 0; 
@@ -40,17 +40,17 @@ export function CategorySection() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1, duration: 0.6 }}
                   whileHover={{ 
-                    y: -15, 
+                    y: isStaggered ? 12 : -15, 
                     rotate: i % 2 === 0 ? 2 : -2,
-                    scale: 1.02,
+                    scale: 1.05,
                     transition: { type: 'spring', stiffness: 400, damping: 15 }
                   }}
-                  className={`dashed-card bg-[#F7EBD5] p-3 cursor-pointer group shrink-0 w-[140px] sm:w-[160px] md:w-[180px] lg:w-[165px] xl:w-[190px] flex flex-col items-center shadow-sm hover:shadow-2xl ${
-                    isStaggered ? 'mt-8 md:mt-12' : 'mt-0'
+                  className={`dashed-card bg-[#F7EBD5] p-3.5 md:p-4 cursor-pointer group shrink-0 w-[160px] sm:w-[180px] md:w-[200px] lg:w-[210px] xl:w-[235px] flex flex-col items-center shadow-sm hover:shadow-2xl transition-all duration-300 ${
+                    isStaggered ? 'mt-10 md:mt-16 lg:mt-20' : 'mt-0'
                   }`}
                 >
                   {/* Image Container (Polaroid Style) */}
-                  <div className="w-full aspect-[4/3.8] overflow-hidden rounded-xl bg-white mb-4 lg:mb-5 shadow-inner border border-brand-ink/5">
+                  <div className="w-full aspect-square overflow-hidden rounded-xl bg-white mb-5 md:mb-6 shadow-inner border border-brand-ink/5">
                     <img
                       src={cat.img}
                       alt={cat.label}
@@ -58,8 +58,8 @@ export function CategorySection() {
                     />
                   </div>
                   
-                  {/* Label (Enclosed inside dashed boundary) */}
-                  <span className="text-[13px] md:text-[15px] font-bold text-brand-ink text-center mb-1 font-playful tracking-tight pb-1">
+                  {/* Label */}
+                  <span className="text-[14px] md:text-[17px] font-bold text-brand-ink text-center mb-1.5 font-playful tracking-tight pb-1">
                     {cat.label}
                   </span>
                 </motion.div>

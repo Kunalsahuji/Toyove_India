@@ -40,32 +40,32 @@
 
 .shell {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 @media (min-width: 768px) {
-  .shell { padding-left: 32px; padding-right: 32px; }
+  .shell { padding-left: 30px; padding-right: 30px; }
 }
 
 @media (min-width: 1024px) {
-  .shell { padding-left: 48px; padding-right: 48px; }
+  .shell { padding-left: 40px; padding-right: 40px; }
 }
 
-/* Single shared container — used in header bars AND hero section.
-   No max-width: header goes full viewport width with consistent padding.
-   This guarantees: social icons left-edge = logo left-edge = hero text left-edge = 40px always */
+/* hdr-inner now matches shell but without margin auto for header specific usage if needed, 
+   though shell is generally preferred for centering. */
 .hdr-inner {
   width: 100%;
-  box-sizing: border-box;
-  padding-left: 40px;
-  padding-right: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
-@media (max-width: 640px) {
-  .hdr-inner { padding-left: 16px; padding-right: 16px; }
+@media (min-width: 1024px) {
+  .hdr-inner { padding-left: 40px; padding-right: 40px; }
 }
 
 /* Header responsive show/hide — replaces Tailwind lg:hidden/hidden lg:flex
