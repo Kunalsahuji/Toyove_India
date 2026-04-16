@@ -66,8 +66,6 @@ export function HeroSection() {
 
       <div className="hdr-inner relative z-10 w-full h-full flex items-center">
 
-        {/* TEXT CONTENT LAYER */}
-        {/* shift this section little into right side */}
         <div className="w-[100%] sm:w-[80%] md:w-[60%] lg:w-[50%] relative z-20 flex flex-col items-start text-left pointer-events-auto mt-[-15%] md:mt-0">
 
           <motion.p
@@ -108,7 +106,6 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* ABSOLUTE IMAGE OVERLAY LAYER */}
         <div className="absolute bottom-[0%] right-[-25%] sm:right-[-10%] md:right-[-5%] lg:right-[0%] w-[125%] sm:w-[95%] md:w-[70%] lg:w-[60%] z-10 pointer-events-none flex justify-end items-end h-[95%]">
           <motion.img
             initial={{ opacity: 0, y: 40 }}

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User } from 'lucide-react'
 
-// ─── Social Icons ─────────────────────────────────────────────────────────────
 const FbIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
@@ -26,7 +25,6 @@ const PtIcon = () => (
   </svg>
 )
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 const PROMO = '10% off your next order, use code : TOYOVE001'
 
 const promoMessages = [
@@ -45,7 +43,6 @@ const navLinks = [
   { name: 'CONTACT',              href: '#' },
 ]
 
-// ─── Shared style constants ────────────────────────────────────────────────────
 const C = '#E84040'  // coral red
 const P = '#6651A4'  // brand purple
 
@@ -61,12 +58,8 @@ export function VisionHeader() {
 
   return (
     <>
-      {/* ═══════════════════════════════════════════════════════════════════
-          ANNOUNCEMENT BAR  —  3 responsive variants
-          ═══════════════════════════════════════════════════════════════════ */}
       <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }}>
 
-        {/* ── MOBILE: promo only, centered, no icons, tiny padding ── */}
         <div className="ann-mob hdr-inner items-center justify-center">
           <p style={{ color: '#FDF3E7', fontSize: '10.5px', fontWeight: 500,
                       letterSpacing: '0.02em', whiteSpace: 'nowrap',
@@ -76,7 +69,6 @@ export function VisionHeader() {
           </p>
         </div>
 
-        {/* ── TABLET (768–1023px): promo centered with visible side space ── */}
         <div className="ann-tab hdr-inner items-center justify-center">
           <p style={{ color: '#FDF3E7', fontSize: '11.5px', fontWeight: 500,
                       letterSpacing: '0.04em', whiteSpace: 'nowrap',
@@ -85,7 +77,6 @@ export function VisionHeader() {
           </p>
         </div>
 
-        {/* ── DESKTOP (≥1024px): 3-col grid — social|promo|country ── */}
         <div className="ann-desk hdr-inner"
              style={{ gridTemplateColumns: '1fr 1fr 1fr', alignItems: 'center' }}>
 
@@ -136,14 +127,10 @@ export function VisionHeader() {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          MAIN NAVBAR
-          ═══════════════════════════════════════════════════════════════════ */}
       <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb',
                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                        position: 'sticky', top: 0, zIndex: 50 }}>
 
-        {/* ── MOBILE + TABLET (<1024px): [burger][Toyove][search][cart] ── */}
         <div className="hdr-mob hdr-inner"
              style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr',
                       alignItems: 'center', height: '56px' }}>
@@ -210,7 +197,6 @@ export function VisionHeader() {
           )}
         </AnimatePresence>
 
-        {/* ── DESKTOP (≥1024px): [Toyove + NavLinks ............ icons] ── */}
         <div className="hdr-desk hdr-inner"
              style={{ alignItems: 'center', height: '68px' }}>
 
@@ -268,7 +254,6 @@ export function VisionHeader() {
           </div>
         </div>
 
-        {/* ── Mobile Drawer ── */}
         <AnimatePresence>
           {mobileOpen && (
             <>
