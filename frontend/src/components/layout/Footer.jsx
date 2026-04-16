@@ -20,7 +20,6 @@ export function Footer() {
       <div className="shell">
         <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-10 py-14 md:py-16">
 
-          {/* Newsletter Column */}
           <div className="flex flex-col gap-6">
             <h3 className="font-serif text-[20px] md:text-[22px] font-bold leading-snug">
               Sign Up For News, Updates & 10% Off Your First Order.
@@ -37,7 +36,6 @@ export function Footer() {
                 Subscribe
               </button>
             </div>
-            {/* Social Icons */}
             <div className="flex gap-3">
               {socialIcons.map(({ Icon, bg }, i) => (
                 <a
@@ -52,7 +50,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* My Account */}
           <div>
             <h4 className="font-bold text-[13px] tracking-wider uppercase mb-5">My Account</h4>
             <ul className="flex flex-col gap-3">
@@ -62,7 +59,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
           <div>
             <h4 className="font-bold text-[13px] tracking-wider uppercase mb-5">Customer Service</h4>
             <ul className="flex flex-col gap-3">
@@ -72,7 +68,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div>
             <h4 className="font-bold text-[13px] tracking-wider uppercase mb-5">Contact Info</h4>
             <ul className="flex flex-col gap-4 text-[13px] text-white/60">
@@ -92,7 +87,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="border-t border-white/10 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-white/40">
           <p>© 2024, Toyove India | <a href="#" className="hover:text-white">Privacy</a></p>
           <p>Powered By Toyove India</p>

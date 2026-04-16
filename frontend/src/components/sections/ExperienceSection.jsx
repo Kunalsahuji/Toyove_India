@@ -17,14 +17,13 @@ const accordionData = [
 ]
 
 export function ExperienceSection() {
-  const [openIndex, setOpenIndex] = useState(2); // 3rd one open by default
+  const [openIndex, setOpenIndex] = useState(2);
 
   return (
     <section className="py-10 md:py-14 bg-brand-cream overflow-hidden">
       <div className="shell">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
-          {/* Left Column: Image (Natural Aspect Ratio) */}
           <div className="w-full order-1 lg:order-1">
             <div className="w-full aspect-[4/3] md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
               <img
@@ -35,7 +34,6 @@ export function ExperienceSection() {
             </div>
           </div>
 
-          {/* Right Column: Editorial Format */}
           <div className="w-full flex flex-col justify-start order-2 lg:order-2 h-full">
 
             <p
@@ -54,7 +52,6 @@ export function ExperienceSection() {
               We Have Always Tried To Focus On The People Who Were Going Use The Products
             </p>
 
-            {/* Accordion Group */}
             <div className="space-y-4 lg:space-y-6 mb-8 xl:mb-10">
               {accordionData.map((item, i) => {
                 const isOpen = openIndex === i;
@@ -72,9 +69,7 @@ export function ExperienceSection() {
                       <div className={`h-[24px] w-[24px] rounded-full border-[1.5px] transition-all duration-300 flex items-center justify-center shrink-0 
                          ${isOpen ? 'border-brand-purple' : 'border-[#dcd2c6] group-hover:border-brand-purple'}`}>
                         <div className="relative w-3 h-3 flex items-center justify-center">
-                          {/* Horizontal minus line */}
                           <span className={`absolute w-full h-[1.5px] bg-current transition-colors ${isOpen ? 'text-brand-purple' : 'text-brand-ink'}`}></span>
-                          {/* Vertical plus line */}
                           {!isOpen && (
                             <span className="absolute h-full w-[1.5px] bg-brand-ink"></span>
                           )}
@@ -102,7 +97,6 @@ export function ExperienceSection() {
               })}
             </div>
 
-            {/* Static Bottom Gallery (Moved outside accordion) */}
             <div className="grid grid-cols-2 gap-4 lg:gap-5 mt-auto pb-4">
               <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
                 <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=400" alt="Detail product view" className="w-full h-full object-cover" />

@@ -11,7 +11,6 @@ import fish from '../../assets/fish.png'
 import fog from '../../assets/fog.png'
 const tabs = ['Featured', 'Arrival', 'Trending']
 
-// Using safe Unsplash IDs from parity checks
 const products = {
   Featured: [
     { id: 1, name: 'TotTrays Toys', price: 120, oldPrice: 286, badge: -35, img: first },
@@ -37,14 +36,11 @@ export function SpecialProducts() {
   const [activeTab, setActiveTab] = useState('Featured')
 
   return (
-    // reduce padding form top and bottom for desktop 
     <section className="pt-4 pb-4 md:pt-6 md:pb-8 bg-brand-cream">
       <div className="shell">
-        {/* Header */}
         <div className="text-center mb-8">
           <p className="text-brand-orange font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Shop Collection</p>
           <h2 className="font-serif text-[28px] md:text-[40px] font-bold text-brand-ink tracking-tight">Special Products</h2>
-          {/* Tabs */}
           <div className="flex items-center justify-center gap-2 mt-6">
             {tabs.map((tab) => (
               <button
@@ -61,7 +57,6 @@ export function SpecialProducts() {
           </div>
         </div>
 
-        {/* Product Grid */}
         <div className="min-h-[250px]">
           <motion.div
             key={activeTab}
@@ -79,13 +74,10 @@ export function SpecialProducts() {
                 whileHover={{ y: -6 }}
                 className="group relative cursor-pointer flex flex-col transition-all duration-300"
               >
-                {/* Image box with dashed border and requested background color */}
                 <div className="dashed-card bg-[#F7EBD5] p-4 relative overflow-hidden flex items-center justify-center aspect-[4/3.5] md:aspect-[4/3.2] mb-4 shadow-sm hover:shadow-md transition-shadow">
-                  {/* Badge */}
                   <span className="absolute top-4 left-4 z-10 bg-brand-red text-white text-[11px] font-bold px-2 py-0.5 rounded-sm shadow-sm">
                     {p.badge}%
                   </span>
-                  {/* Wishlist */}
                   <button className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 bg-white rounded-full flex items-center justify-center shadow-md">
                     <Heart className="h-4 w-4 text-brand-red" />
                   </button>
@@ -97,7 +89,6 @@ export function SpecialProducts() {
                   />
                 </div>
 
-                {/* Text Details (Outside the dashed box, centered) */}
                 <div className="text-center px-1">
                   <h3 className="font-playful text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] tracking-tight">
                     {p.name}

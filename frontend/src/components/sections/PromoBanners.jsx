@@ -87,7 +87,6 @@ function BannerCard({ banner }) {
                  ${isMobileCentered ? 'items-center md:items-start' : 'items-start'}`}
       style={{ backgroundColor: banner.bg }}
     >
-      {/* Content Block: Center for Mobile-Short cards, Top-Start for Tablet & Desktop & Tall cards */}
       <div className={`relative z-20 p-8 lg:p-10 flex flex-col pointer-events-none w-full
                       ${isMirrored ? 'items-end' : 'items-start'}
                       ${isMobileCentered ? 'justify-center md:justify-start' : 'justify-start'}`}>
@@ -100,13 +99,11 @@ function BannerCard({ banner }) {
           {banner.title}
         </p>
         
-        {/* SHOP NOW Button visible on all devices, tightly grouped with text */}
         <button className="h-9 px-7 bg-white text-black text-[12px] font-black uppercase tracking-wider rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 pointer-events-auto shadow-sm">
           SHOP NOW
         </button>
       </div>
 
-      {/* Hero Image: Massive scaling to fill the card background as per reference images */}
       <div className={`absolute bottom-0 overflow-visible pointer-events-none z-10 transition-transform duration-700 group-hover:scale-[1.04] flex items-end
                       ${isMirrored ? 'left-[-5%] right-auto justify-start' : 'right-[-5%] left-auto justify-end'} 
                       ${banner.tall ? 'w-[90%] md:w-[100%] h-[75%] md:h-[80%]' : 'w-[65%] md:w-[75%] lg:w-[60%] h-[85%] md:h-[90%] lg:h-[110%]'}`}>
@@ -117,7 +114,6 @@ function BannerCard({ banner }) {
         />
       </div>
       
-      {/* Subtle Interaction Highlight */}
       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
     </motion.div>
   )

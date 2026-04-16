@@ -8,7 +8,6 @@ import car from '../../assets/car.png'
 import doremon from '../../assets/doremon.png'
 import fish from '../../assets/fish.png'
 import fog from '../../assets/fog.png'
-// Using exact products from the user's reference screenshot + 4 more to make 8
 const products = [
   { id: 1, name: 'Shape Sorting Cube Classic Toy', price: 60, oldPrice: 100, badge: -40, img: first },
   { id: 2, name: 'Hammer Ball Knock Pounding Bench', price: 120, oldPrice: 180, badge: -33, img: second },
@@ -24,13 +23,11 @@ export function TrendingProducts() {
   return (
     <section className="py-10 md:py-14 bg-brand-cream">
       <div className="shell">
-        {/* Section Label */}
         <div className="text-center mb-10">
           <p className="text-brand-orange font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Shop Collection</p>
           <h2 className="font-serif text-[28px] md:text-[40px] font-bold text-brand-ink tracking-tight">Trending Products</h2>
         </div>
 
-        {/* Product Grid - 8 Items */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 gap-y-10 md:gap-y-12">
           {products.map((p, i) => (
             <motion.div
@@ -42,18 +39,14 @@ export function TrendingProducts() {
               whileHover={{ y: -6 }}
               className="group relative cursor-pointer flex flex-col transition-all duration-300"
             >
-              {/* Image box with dashed border and requested background color */}
               <div className="dashed-card bg-[#F7EBD5] p-4 relative overflow-hidden flex items-center justify-center aspect-[4/3.5] md:aspect-[4/3.2] mb-4 shadow-sm hover:shadow-md transition-shadow">
 
-                {/* Badge (Black background with white text per reference) */}
                 <span className="absolute top-4 left-4 z-10 bg-brand-red text-white text-[11px] font-bold px-2 py-0.5 rounded-sm shadow-sm">
                   {p.badge}%
                 </span>
-                {/* Wishlist */}
                 <button className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 bg-white rounded-full flex items-center justify-center shadow-md">
                   <Heart className="h-4 w-4 text-brand-red" />
                 </button>
-                {/* Product Image */}
                 <img
                   src={p.img}
                   alt={p.name}
@@ -61,7 +54,6 @@ export function TrendingProducts() {
                 />
               </div>
 
-              {/* Text Details (Outside the dashed box, centered) */}
               <div className="text-center px-1">
                 <h3 className="font-playful text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] tracking-tight">
                   {p.name}

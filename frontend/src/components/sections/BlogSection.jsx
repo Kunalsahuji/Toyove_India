@@ -43,7 +43,6 @@ export function BlogSection() {
               transition={{ delay: i * 0.12 }}
               className="group cursor-pointer flex flex-col"
             >
-              {/* Image wrapped in Dashed Box with NO padding */}
               <div className="dashed-card overflow-hidden mb-6 transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg">
                 <div className="aspect-[4/2.5] md:aspect-[4/3] bg-gray-100 w-full h-full">
                   <motion.img
@@ -56,7 +55,6 @@ export function BlogSection() {
                 </div>
               </div>
               
-              {/* Text content floating below */}
               <div className="px-2">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-brand-orange text-[10px] font-bold flex items-center gap-1">

@@ -18,18 +18,10 @@ const marqueeItems = [
 export function CategorySection() {
   return (
     <div className="bg-brand-cream overflow-hidden ">
-      {/* ── Category Cards Row (Dynamic Staggered Layout) ── */}
       <section className="pt-4 pb-8 md:pt-6 md:pb-12">
         <div className="shell">
-          {/* 
-              FIX: Removed justify-center entirely. 
-              In horizontal scroll containers, 'justify-center' causes "Negative Overflow" 
-              where the first element is pushed off-screen to the left and became inaccessible.
-              'justify-start' is the only safe alignment for overflowing rows.
-          */}
           <div className="flex items-start gap-5 md:gap-8 lg:gap-10 overflow-x-auto lg:overflow-x-visible pt-4 pb-8 md:pt-6 md:pb-12 justify-start lg:justify-between xl:justify-center xl:gap-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {categories.map((cat, i) => {
-              // Odd/Even Stagger Logic: Even indices (0, 2, 4) are high, Odd (1, 3) are shifted down.
               const isStaggered = i % 2 !== 0; 
               
               return (
@@ -49,7 +41,6 @@ export function CategorySection() {
                     isStaggered ? 'mt-10 md:mt-16 lg:mt-20' : 'mt-0'
                   }`}
                 >
-                  {/* Image Container (Polaroid Style) */}
                   <div className="w-full aspect-square overflow-hidden rounded-xl bg-white mb-5 md:mb-6 shadow-inner border border-brand-ink/5">
                     <img
                       src={cat.img}
@@ -58,7 +49,6 @@ export function CategorySection() {
                     />
                   </div>
                   
-                  {/* Label */}
                   <span className="text-[14px] md:text-[17px] font-bold text-brand-ink text-center mb-1.5 font-playful tracking-tight pb-1">
                     {cat.label}
                   </span>
@@ -69,7 +59,6 @@ export function CategorySection() {
         </div>
       </section>
 
-      {/* ── Orange Marquee Ticker ── */}
       <div className="bg-brand-orange py-3 md:py-4 overflow-hidden flex items-center border-y border-white/10 shadow-lg relative z-20">
         <div className="marquee-inner flex whitespace-nowrap gap-12 md:gap-16 items-center">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (

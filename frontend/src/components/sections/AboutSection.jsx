@@ -30,7 +30,6 @@ export function AboutSection() {
     <section className="bg-brand-cream py-16 md:py-24">
       <div className="shell">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          {/* Left — Large image */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -44,7 +43,6 @@ export function AboutSection() {
             />
           </motion.div>
 
-          {/* Right — Text + Accordion */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -55,7 +53,6 @@ export function AboutSection() {
               We Have Always Tried To Focus On The People Who Were Going To Use The Products
             </h2>
 
-            {/* Accordion */}
             <div className="flex flex-col divide-y divide-dashed divide-gray-300">
               {faqs.map((item, i) => (
                 <div key={i}>
@@ -89,7 +86,6 @@ export function AboutSection() {
               ))}
             </div>
 
-            {/* Bottom 3 small product images */}
             <div className="grid grid-cols-3 gap-3 mt-2">
               {bottomImages.map((src, i) => (
                 <div key={i} className="aspect-square rounded-xl overflow-hidden">

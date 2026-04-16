@@ -1,7 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
-// Floating 3D Toy SVG icons (matching the image's illustrated style)
 const RocketIcon = () => (
   <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
     <circle cx="40" cy="40" r="38" fill="#F1641E" fillOpacity="0.12" />
@@ -34,7 +33,6 @@ export function VisionHero() {
       <div className="container-shell w-full py-16 md:py-24">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
 
-          {/* ── LEFT: Text Block ── */}
           <div className="flex-1 z-10 text-center lg:text-left">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -71,10 +69,8 @@ export function VisionHero() {
             </motion.div>
           </div>
 
-          {/* ── RIGHT: 3D Layered Image + Floating Icons ── */}
           <div className="flex-1 relative flex items-center justify-center w-full min-h-[380px] md:min-h-[500px]">
 
-            {/* Main Product Image with parallax */}
             <motion.div
               style={{ y: yImg }}
               initial={{ opacity: 0, scale: 0.92 }}
@@ -94,7 +90,6 @@ export function VisionHero() {
                 />
               </motion.div>
 
-              {/* 3D Overlay Badge */}
               <motion.div
                 whileHover={{ scale: 1.08 }}
                 className="absolute -bottom-6 -right-6 bg-white px-5 py-3 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3"
@@ -107,7 +102,6 @@ export function VisionHero() {
               </motion.div>
             </motion.div>
 
-            {/* Floating Rocket (Top Right) */}
             <motion.div
               style={{ y: yRocket }}
               className="float-1 absolute top-0 right-0 md:-top-8 md:-right-8 w-20 h-20 md:w-28 md:h-28 z-20"
@@ -115,7 +109,6 @@ export function VisionHero() {
               <RocketIcon />
             </motion.div>
 
-            {/* Floating Rainbow (Bottom Left) */}
             <motion.div
               style={{ y: yRainbow }}
               className="float-2 absolute bottom-0 left-0 md:-bottom-4 md:-left-8 w-24 h-24 md:w-32 md:h-32 z-20"
@@ -123,7 +116,6 @@ export function VisionHero() {
               <RainbowIcon />
             </motion.div>
 
-            {/* Floating Star (Middle Left) */}
             <motion.div
               style={{ y: yStar }}
               className="float-1 absolute top-1/2 -left-4 md:-left-10 w-14 h-14 md:w-20 md:h-20 z-20"
@@ -131,7 +123,6 @@ export function VisionHero() {
               <StarIcon />
             </motion.div>
 
-            {/* Background Blob */}
             <div className="absolute inset-0 flex items-center justify-center -z-10">
               <div className="w-[90%] h-[90%] bg-brand-purple/6 rounded-full blur-3xl" />
             </div>

@@ -31,7 +31,6 @@ export function BenefitsSection() {
         <div className="dashed-card overflow-hidden bg-[#FDF3E7]/20 border-brand-ink/40" style={{ borderWidth: '1.5px' }}>
           <div className="flex lg:grid lg:grid-cols-4 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] w-full">
             {benefits.map((b, i) => {
-              // Now that it's a single horizontal scrolling row (or 4-grid), we only need vertical dividers.
               const borderClasses = `
                 border-brand-ink/55 border-dotted
                 border-2 rounded-lg 
