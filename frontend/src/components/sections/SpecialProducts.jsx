@@ -1,34 +1,32 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
-import first from '../../assets/first.png'
-import second from '../../assets/second.png'
-import third from '../../assets/third.png'
-import fourth from '../../assets/fourth.png'
-import car from '../../assets/car.png'
-import doremon from '../../assets/doremon.png'
-import fish from '../../assets/fish.png'
-import fog from '../../assets/fog.png'
+import { Heart, Search, ShoppingCart, Repeat } from 'lucide-react'
+
+const toy1 = 'https://toykio.myshopify.com/cdn/shop/files/product-08_bd7b541b-d749-4444-bdaa-d040b7d4ff0f.jpg?v=1716179376&width=533'
+const toy1_hover = 'https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=533'
+
+const toy2 = 'https://toykio.myshopify.com/cdn/shop/files/product-07.jpg?v=1710995380&width=533'
+const toy2_hover = 'https://toykio.myshopify.com/cdn/shop/files/product-07-02.jpg?v=1710995381&width=533'
 const tabs = ['Featured', 'Arrival', 'Trending']
 
 const products = {
   Featured: [
-    { id: 1, name: 'TotTrays Toys', price: 120, oldPrice: 286, badge: -35, img: first },
-    { id: 2, name: 'KidArena Creations', price: 89, oldPrice: 129, badge: -41, img: second},
-    { id: 3, name: 'Living Littles Lineup Doll', price: 126, oldPrice: 168, badge: -35, img: third},
-    { id: 4, name: 'WildHarvests Maker Toy', price: 100, oldPrice: 145, badge: -30, img: fourth },
+    { id: 1, name: 'TinyTinker Toys', price: 120, oldPrice: 286, badge: -52, img: toy1, hoverImg: toy1_hover },
+    { id: 2, name: 'JoyfulJamboree Juniors', price: 89, oldPrice: 129, badge: -41, img: toy2, hoverImg: toy2_hover },
+    { id: 3, name: 'Planet Toy Explorer', price: 126, oldPrice: 168, badge: -35, img: toy1, hoverImg: toy1_hover },
+    { id: 4, name: 'WildHarvests Maker Toy', price: 100, oldPrice: 145, badge: -30, img: toy2, hoverImg: toy2_hover },
   ],
   Arrival: [
-    { id: 5, name: 'Rainbow Stacker Set', price: 55, oldPrice: 80, badge: -31, img: car },
-    { id: 6, name: 'Wooden Car Fleet', price: 74, oldPrice: 110, badge: -33, img: fog },
-    { id: 7, name: 'Soft Bear Companion', price: 38, oldPrice: 52, badge: -27, img: fish },
-    { id: 8, name: 'Musical Drum Kit Jr.', price: 95, oldPrice: 130, badge: -27, img: doremon },
+    { id: 5, name: 'Rainbow Stacker Set', price: 55, oldPrice: 80, badge: -31, img: toy2, hoverImg: toy2_hover },
+    { id: 6, name: 'Wooden Car Fleet', price: 74, oldPrice: 110, badge: -33, img: toy1, hoverImg: toy1_hover },
+    { id: 7, name: 'Soft Bear Companion', price: 38, oldPrice: 52, badge: -27, img: toy2, hoverImg: toy2_hover },
+    { id: 8, name: 'Musical Drum Kit Jr.', price: 95, oldPrice: 130, badge: -27, img: toy1, hoverImg: toy1_hover },
   ],
   Trending: [
-    { id: 9, name: 'Dino Puzzle Master', price: 42, oldPrice: 68, badge: -38, img: second },
-    { id: 10, name: 'Baby Sensory Kit', price: 67, oldPrice: 95, badge: -29, img: first },
-    { id: 11, name: 'Color Mix Art Set', price: 30, oldPrice: 45, badge: -33, img: third },
-    { id: 12, name: 'Planet Explorer Toy', price: 110, oldPrice: 150, badge: -27, img: fourth },
+    { id: 9, name: 'Dino Puzzle Master', price: 42, oldPrice: 68, badge: -38, img: toy1, hoverImg: toy1_hover },
+    { id: 10, name: 'Baby Sensory Kit', price: 67, oldPrice: 95, badge: -29, img: toy2, hoverImg: toy2_hover },
+    { id: 11, name: 'Color Mix Art Set', price: 30, oldPrice: 45, badge: -33, img: toy1, hoverImg: toy1_hover },
+    { id: 12, name: 'Planet Explorer Toy', price: 110, oldPrice: 150, badge: -27, img: toy2, hoverImg: toy2_hover },
   ],
 }
 
@@ -74,31 +72,49 @@ export function SpecialProducts() {
                 whileHover={{ y: -6 }}
                 className="group relative cursor-pointer flex flex-col transition-all duration-300"
               >
-                <div className="dashed-card bg-[#F7EBD5] p-4 relative overflow-hidden flex items-center justify-center aspect-[4/3.5] md:aspect-[4/3.2] mb-4 shadow-sm hover:shadow-md transition-shadow">
-                  <span className="absolute top-4 left-4 z-10 bg-brand-red text-white text-[11px] font-bold px-2 py-0.5 rounded-sm shadow-sm">
+                <div className="dashed-card p-2 relative overflow-hidden flex items-center justify-center aspect-square mb-4 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+                  {/* Promo Badge */}
+                  <span className="absolute top-3 left-3 z-30 bg-[#FF4E50] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm">
                     {p.badge}%
                   </span>
-                  <button className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 bg-white rounded-full flex items-center justify-center shadow-md">
-                    <Heart className="h-4 w-4 text-brand-red" />
-                  </button>
+
+                  <div className="absolute top-3 -right-12 z-30 flex flex-col gap-2 group-hover:right-3 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] opacity-0 group-hover:opacity-100 delay-100">
+                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
+                      <ShoppingCart size={15} strokeWidth={2} />
+                    </button>
+                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
+                      <Search size={15} strokeWidth={2} />
+                    </button>
+                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
+                      <Heart size={15} strokeWidth={2} />
+                    </button>
+                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
+                      <Repeat size={15} strokeWidth={2} />
+                    </button>
+                  </div>
 
                   <img
                     src={p.img}
                     alt={p.name}
-                    className="w-[85%] h-[85%] object-contain group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0 absolute inset-0 z-20 rounded-[8px]"
+                  />
+                  <img
+                    src={p.hoverImg}
+                    alt={p.name}
+                    className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out z-10 rounded-[8px]"
                   />
                 </div>
 
                 <div className="text-center px-1">
-                  <h3 className="font-playful text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] tracking-tight">
+                  <h3 className="font-playful text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] group-hover:text-[#E32C2B] transition-colors duration-300">
                     {p.name}
                   </h3>
                   <div className="flex items-center justify-center gap-2">
-                    <span className="text-[11px] md:text-[12px] text-[#888888] line-through font-medium">
-                      ${p.oldPrice.toFixed(2)} USD
+                    <span className="text-[12px] md:text-[13px] text-[#888888] line-through font-medium">
+                      ${p.oldPrice.toFixed(2)}
                     </span>
-                    <span className="text-[12px] md:text-[13px] font-bold text-brand-purple">
-                      ${p.price.toFixed(2)} USD
+                    <span className="text-[13px] md:text-[14px] font-bold text-[#FF4E50]">
+                      ${p.price.toFixed(2)}
                     </span>
                   </div>
                 </div>

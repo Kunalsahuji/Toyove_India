@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User } from 'lucide-react'
+import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User, Heart, Home, Repeat } from 'lucide-react'
 
 const FbIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
@@ -36,15 +36,16 @@ const promoMessages = [
 const navLinks = [
   { name: 'HOME',                 href: '#' },
   { name: 'ABOUT',                href: '#' },
-  { name: 'DOLLS',                href: '#' },
-  { name: 'EDUCATIONAL TOY',      href: '#' },
-  { name: 'GAMES AND PUZZLE',     href: '#' },
-  { name: 'VEHICLES TOYS',        href: '#' },
+  { name: 'DOLLS',                href: '#', hasMegaMenu: true },
+  { name: 'EDUCATIONAL TOY',      href: '#', hasMegaMenu: true },
+  { name: 'GAMES AND PUZZLE',     href: '#', hasMegaMenu: true },
+  { name: 'VEHICLES TOYS',        href: '#', hasMegaMenu: true },
   { name: 'CONTACT',              href: '#' },
 ]
 
-const C = '#E84040'  // coral red
-const P = '#6651A4'  // brand purple
+const C = '#FF4E50'  
+const P = '#6651A4'  
+const T_RED = '#E32C2B' 
 
 import logo from '../../assets/logo.svg'
 
@@ -52,6 +53,15 @@ export function VisionHeader() {
   const [promoIndex, setPromoIndex] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [isPastHero, setIsPastHero] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsPastHero(window.scrollY > 150)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const prev = () => setPromoIndex(i => (i - 1 + promoMessages.length) % promoMessages.length)
   const next = () => setPromoIndex(i => (i + 1) % promoMessages.length)
@@ -136,12 +146,19 @@ export function VisionHeader() {
                       alignItems: 'center', height: '56px' }}>
 
           {/* Left: hamburger */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button onClick={() => setMobileOpen(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer',
-                       padding: '6px', lineHeight: 0, color: '#222' }}>
-              <Menu size={22} />
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', width: '34px', height: '34px' }}>
+            <AnimatePresence>
+              {!isPastHero && (
+                <motion.button 
+                  initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setMobileOpen(true)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer',
+                           padding: '6px', lineHeight: 0, color: '#222' }}>
+                  <Menu size={22} />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Center: logo — truly centered because it's "auto" column */}
@@ -216,34 +233,61 @@ export function VisionHeader() {
             </span>
           </a>
 
-          {/* Nav links — covering all central space cleanly spaced */}
-          <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flex: 1, paddingRight: '30px' }}>
+          <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flex: 1, paddingRight: '20px' }}>
             {navLinks.map(link => (
-              <a key={link.name} href={link.href} className="group"
-                style={{ fontSize: '13px', fontWeight: 600, color: '#222',
-                         textDecoration: 'none', whiteSpace: 'nowrap', position: 'relative' }}>
-                {link.name}
-                <span className="absolute -bottom-[2px] left-0 h-[2px] w-0 rounded-full bg-brand-purple group-hover:w-full transition-all duration-300" />
-              </a>
+              <div key={link.name} className="relative group flex items-center h-[68px]">
+                <a href={link.href} className="text-[#222] transition-colors duration-200 flex items-center gap-1"
+                  style={{ fontSize: '13px', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#FF4E50'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#222'}
+                >
+                  {link.name}
+                  {link.hasMegaMenu && (
+                    <span className="text-[10px] ml-0.5">
+                      <span className="block group-hover:hidden">▼</span>
+                      <span className="hidden group-hover:block">✕</span>
+                    </span>
+                  )}
+                </a>
+                
+                {/* Static Mega Menu Dropdown */}
+                {link.hasMegaMenu && (
+                  <div className="absolute top-full left-0 w-[500px] bg-[#FDF3E7] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-t-2 border-[#FF4E50] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 p-6 flex gap-8 rounded-b-md transform translate-y-2 group-hover:translate-y-0">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-[14px] text-[#222] mb-4 uppercase tracking-wider border-b border-gray-200 pb-2">Top Categories</h4>
+                      <ul className="flex flex-col gap-3">
+                        {['Action Figures', 'Building Blocks', 'Creative Playsets', 'Learning Kits'].map(item => (
+                          <li key={item}><a href="#" className="text-[13px] text-gray-500 hover:text-[#E32C2B] transition-colors">{item}</a></li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-[14px] text-[#222] mb-4 uppercase tracking-wider border-b border-gray-200 pb-2">Trending Now</h4>
+                      <div className="h-[120px] bg-gray-100 rounded-md flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=400&auto=format&fit=crop)' }}>
+                        <span className="bg-[#FDF3E7]/95 text-[11px] font-bold px-3 py-1 rounded text-[#222] border border-gray-200">Up to 40% Off</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
 
-          {/* Right icons — pushed to far right by nav's flex:1 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e5e5',
-                          borderRadius: '6px', height: '34px', padding: '0 12px', gap: '7px', background: '#F8EAD4' }}>
-              <input type="text" placeholder="Search products..."
-                style={{ background: 'transparent', outline: 'none', fontSize: '12px', color: '#222', width: '140px' }} />
-              <Search size={14} style={{ color: '#222', flexShrink: 0 }} />
+            <div className="group focus-within:ring-1 focus-within:border-[#FF4E50] transition-all" style={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e5e5',
+                          borderRadius: '4px', height: '36px', padding: '0 12px', gap: '7px', background: '#f5f5f5' }}>
+              <input type="text" placeholder="Search products..." className="placeholder-gray-500"
+                style={{ background: 'transparent', outline: 'none', fontSize: '13px', color: '#222', width: '160px' }} />
+              <Search size={15} className="text-gray-400 group-focus-within:text-[#FF4E50] transition-colors" style={{ flexShrink: 0 }} />
             </div>
             <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer',
                              lineHeight: 0, color: '#222' }}
-                    className="hover:text-brand-purple rounded-full hover:bg-gray-100 transition-colors">
+                    className="hover:text-[#FF4E50] rounded-full hover:bg-gray-100 transition-colors">
               <User size={20} />
             </button>
             <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer',
                              lineHeight: 0, color: '#222', position: 'relative' }}
-                    className="hover:text-brand-purple rounded-full hover:bg-gray-100 transition-colors">
+                    className="hover:text-[#FF4E50] rounded-full hover:bg-gray-100 transition-colors">
               <ShoppingCart size={20} />
               <span style={{ position: 'absolute', top: '2px', right: '2px', width: '15px', height: '15px',
                              background: C, color: '#FDF3E7', fontSize: '9px', fontWeight: 700,
@@ -305,6 +349,36 @@ export function VisionHeader() {
           )}
         </AnimatePresence>
       </header>
+
+      <AnimatePresence>
+        {isPastHero && (
+          <motion.div 
+            initial={{ y: 70 }} animate={{ y: 0 }} exit={{ y: 70 }}
+            transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+            className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[200] flex items-center justify-around h-[65px] shadow-[0_-5px_15px_rgba(0,0,0,0.03)] px-2"
+          >
+            <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
+              <Menu size={22} strokeWidth={1.5} />
+              <span className="text-[10px] font-semibold tracking-wide">Shop</span>
+            </button>
+            <button className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
+              <Heart size={22} strokeWidth={1.5} />
+              <span className="text-[10px] font-semibold tracking-wide">Wishlist</span>
+            </button>
+            <button className="flex flex-col items-center justify-center w-full h-full text-[#FF4E50] border-t-2 border-[#FF4E50] relative -top-[1px]">
+              <Home size={22} strokeWidth={2} />
+            </button>
+            <button className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
+              <User size={22} strokeWidth={1.5} />
+              <span className="text-[10px] font-semibold tracking-wide">Account</span>
+            </button>
+            <button className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
+              <Repeat size={22} strokeWidth={1.5} />
+              <span className="text-[10px] font-semibold tracking-wide">Compare</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

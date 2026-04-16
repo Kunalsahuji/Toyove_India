@@ -29,7 +29,7 @@ export function VisionHero() {
   const yImg     = useTransform(scrollYProgress, [0, 1], [0, 60])
 
   return (
-    <section ref={ref} className="relative bg-brand-cream overflow-hidden min-h-[580px] md:min-h-[700px] flex items-center">
+    <section ref={ref} className="relative bg-[#FDF3E7] overflow-hidden min-h-[580px] md:min-h-[700px] flex items-center">
       <div className="container-shell w-full py-16 md:py-24">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
 
@@ -47,7 +47,7 @@ export function VisionHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="font-serif text-[46px] sm:text-[60px] md:text-[76px] lg:text-[88px] leading-[1.0] font-black text-brand-purple mb-8"
+              className="font-serif text-[46px] sm:text-[60px] md:text-[76px] lg:text-[88px] leading-[1.0] font-black text-[#6651A4] mb-8"
             >
               Find The<br />
               Best Toys<br />
@@ -60,10 +60,10 @@ export function VisionHero() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap justify-center lg:justify-start gap-4"
             >
-              <button className="h-14 px-10 bg-brand-purple text-white font-bold text-[14px] uppercase tracking-widest rounded-full hover:bg-brand-orange transition-all duration-300 shadow-lg shadow-brand-purple/30 hover:shadow-brand-orange/30 hover:scale-105 active:scale-95">
+              <button className="h-14 px-10 bg-[#6651A4] text-white font-bold text-[14px] uppercase tracking-widest rounded-full hover:bg-[#FF4E50] transition-all duration-300 shadow-lg shadow-[#6651A4]/30 hover:shadow-[#FF4E50]/30 hover:scale-105 active:scale-95">
                 Shop Now
               </button>
-              <button className="h-14 px-10 border-2 border-brand-purple text-brand-purple font-bold text-[14px] uppercase tracking-widest rounded-full hover:bg-brand-purple hover:text-white transition-all duration-300">
+              <button className="h-14 px-10 border-2 border-[#6651A4] text-[#6651A4] font-bold text-[14px] uppercase tracking-widest rounded-full hover:bg-[#6651A4] hover:text-white transition-all duration-300">
                 View Collection
               </button>
             </motion.div>
@@ -96,7 +96,7 @@ export function VisionHero() {
               >
                 <span className="text-2xl">🎁</span>
                 <div>
-                  <p className="text-[11px] font-bold text-brand-purple uppercase tracking-wider">Best Seller</p>
+                  <p className="text-[11px] font-bold text-[#6651A4] uppercase tracking-wider">Best Seller</p>
                   <p className="text-[10px] text-brand-muted">Loved by 12k+ parents</p>
                 </div>
               </motion.div>

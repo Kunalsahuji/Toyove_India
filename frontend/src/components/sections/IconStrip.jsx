@@ -10,7 +10,7 @@ const icons = [
 
 export function IconStrip() {
   return (
-    <section className="py-16 bg-brand-cream border-t border-brand-purple/10">
+    <section className="py-16 bg-white border-t border-b border-dashed border-gray-300">
       <div className="container-shell">
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-16">
           {icons.map((icon, i) => (
@@ -23,10 +23,10 @@ export function IconStrip() {
               whileHover={{ scale: 1.1, y: -4 }}
               className="flex flex-col items-center gap-3 cursor-default group"
             >
-              <div className="h-16 w-16 md:h-20 md:w-20 rounded-full border-2 border-brand-purple/20 flex items-center justify-center bg-white shadow-md group-hover:border-brand-orange group-hover:shadow-lg transition-all duration-300">
-                <span className="text-3xl md:text-4xl">{icon.emoji}</span>
+              <div className="h-16 w-16 md:h-20 md:w-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center bg-white shadow-sm group-hover:border-[#FF4E50] group-hover:shadow-lg transition-all duration-300">
+                <span className="text-3xl md:text-4xl group-hover:scale-110 transition-transform">{icon.emoji}</span>
               </div>
-              <span className="text-[11px] md:text-[12px] font-bold text-brand-purple uppercase tracking-wider group-hover:text-brand-orange transition-colors">
+              <span className="text-[11px] md:text-[12px] font-bold text-[#222] uppercase tracking-wider group-hover:text-[#FF4E50] transition-colors">
                 {icon.label}
               </span>
             </motion.div>

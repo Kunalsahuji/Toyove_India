@@ -56,7 +56,7 @@ const banners = [
 
 export function PromoBanners() {
   return (
-    <section className="py-10 md:py-16 lg:py-20 bg-brand-cream overflow-hidden">
+    <section className="py-10 md:py-16 lg:py-20 bg-[#FDF3E7] overflow-hidden">
       <div className="shell">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 gap-4 lg:gap-5 lg:h-[500px]">
           {banners.map((banner) => (
