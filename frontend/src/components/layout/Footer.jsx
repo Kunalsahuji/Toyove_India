@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const FB = () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
@@ -105,8 +106,13 @@ export function Footer() {
           <div className="md:col-span-1">
             <FooterAccordion title="My Account">
               <ul className="flex flex-col gap-3.5">
-                {['Return & exchanges', 'Shipping policy', 'Terms & Conditions', 'Wishlist'].map((item) => (
-                  <li key={item}><a href="#" className="text-white/80 text-[14px] hover:text-white transition-colors">{item}</a></li>
+                {[
+                  { name: 'Return & exchanges', href: '#' },
+                  { name: 'Shipping policy', href: '#' },
+                  { name: 'Terms & Conditions', href: '#' },
+                  { name: 'Wishlist', href: '#' }
+                ].map((item) => (
+                  <li key={item.name}><Link to={item.href} className="text-white/80 text-[14px] hover:text-white transition-colors">{item.name}</Link></li>
                 ))}
               </ul>
             </FooterAccordion>
@@ -115,8 +121,13 @@ export function Footer() {
           <div className="md:col-span-1 border-t border-white/10 pt-3 md:pt-0 md:border-none">
             <FooterAccordion title="Customer Service">
               <ul className="flex flex-col gap-3.5">
-                {['About Us', 'Contact Us', 'FAQ', 'Privacy Policy'].map((item) => (
-                  <li key={item}><a href="#" className="text-white/80 text-[14px] hover:text-white transition-colors">{item}</a></li>
+                {[
+                  { name: 'About Us', href: '/about' },
+                  { name: 'Contact Us', href: '/contact' },
+                  { name: 'FAQ', href: '#' },
+                  { name: 'Privacy Policy', href: '#' }
+                ].map((item) => (
+                  <li key={item.name}><Link to={item.href} className="text-white/80 text-[14px] hover:text-white transition-colors">{item.name}</Link></li>
                 ))}
               </ul>
             </FooterAccordion>
@@ -149,9 +160,10 @@ export function Footer() {
         </div>
 
         {/* Global Footer Baseline */}
+        {/* add for Toyove India */}
         <div className="border-t border-dashed border-white/40 pt-6 pb-[90px] md:pb-8 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 overflow-hidden">
           <p className="text-[13px] md:text-[14px] text-[#D2C5EA] text-center sm:text-left tracking-wide">
-            © 2026, LogicGo Infotech Powered by Shopify
+            © 2026, Toyove-India Powered by Appzeto
           </p>
           <div className="mr-0 md:mr-[60px]">
              <PaymentBadges />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User, Heart, Home, Repeat } from 'lucide-react'
 
@@ -34,13 +35,13 @@ const promoMessages = [
 ]
 
 const navLinks = [
-  { name: 'HOME',                 href: '#' },
-  { name: 'ABOUT',                href: '#' },
-  { name: 'DOLLS',                href: '#', hasMegaMenu: true },
-  { name: 'EDUCATIONAL TOY',      href: '#', hasMegaMenu: true },
-  { name: 'GAMES AND PUZZLE',     href: '#', hasMegaMenu: true },
-  { name: 'VEHICLES TOYS',        href: '#', hasMegaMenu: true },
-  { name: 'CONTACT',              href: '#' },
+  { name: 'HOME',                 href: '/' },
+  { name: 'ABOUT',                href: '/about' },
+  { name: 'DOLLS',                href: '/product/dolls', hasMegaMenu: true },
+  { name: 'EDUCATIONAL TOY',      href: '/product/educational', hasMegaMenu: true },
+  { name: 'GAMES AND PUZZLE',     href: '/product/games', hasMegaMenu: true },
+  { name: 'VEHICLES TOYS',        href: '/product/vehicles', hasMegaMenu: true },
+  { name: 'CONTACT',              href: '/contact' },
 ]
 
 const C = '#FF4E50'  
@@ -162,7 +163,7 @@ export function VisionHeader() {
           </div>
 
           {/* Center: logo — truly centered because it's "auto" column */}
-          <a href="#" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <img 
               src={logo} 
               alt="Toyove Logo" 
@@ -176,7 +177,7 @@ export function VisionHeader() {
                            fontWeight: 700, fontSize: '22px', color: P, lineHeight: 1, display: 'none' }}>
               Toyove
             </span>
-          </a>
+          </Link>
 
           {/* Right: search + cart */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end' }}>
@@ -217,7 +218,7 @@ export function VisionHeader() {
         <div className="hdr-desk hdr-inner"
              style={{ alignItems: 'center', height: '68px' }}>
 
-          <a href="#" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '40px', display: 'flex', alignItems: 'center' }}>
+          <Link to="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '40px', display: 'flex', alignItems: 'center' }}>
             <img 
               src={logo} 
               alt="Toyove Logo" 
@@ -231,12 +232,12 @@ export function VisionHeader() {
                            fontWeight: 700, fontSize: '24px', color: P, lineHeight: 1, display: 'none' }}>
               Toyove
             </span>
-          </a>
+          </Link>
 
           <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flex: 1, paddingRight: '20px' }}>
             {navLinks.map(link => (
               <div key={link.name} className="relative group flex items-center h-[68px]">
-                <a href={link.href} className="text-[#222] transition-colors duration-200 flex items-center gap-1"
+                <Link to={link.href} className="text-[#222] transition-colors duration-200 flex items-center gap-1"
                   style={{ fontSize: '13px', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = '#FF4E50'}
                   onMouseLeave={(e) => e.currentTarget.style.color = '#222'}
@@ -248,7 +249,7 @@ export function VisionHeader() {
                       <span className="hidden group-hover:block">✕</span>
                     </span>
                   )}
-                </a>
+                </Link>
                 
                 {/* Static Mega Menu Dropdown */}
                 {link.hasMegaMenu && (
@@ -257,7 +258,7 @@ export function VisionHeader() {
                       <h4 className="font-bold text-[14px] text-[#222] mb-4 uppercase tracking-wider border-b border-gray-200 pb-2">Top Categories</h4>
                       <ul className="flex flex-col gap-3">
                         {['Action Figures', 'Building Blocks', 'Creative Playsets', 'Learning Kits'].map(item => (
-                          <li key={item}><a href="#" className="text-[13px] text-gray-500 hover:text-[#E32C2B] transition-colors">{item}</a></li>
+                          <li key={item}><Link to={`/product/${item.toLowerCase().replace(' ', '-')}`} className="text-[13px] text-gray-500 hover:text-[#E32C2B] transition-colors">{item}</Link></li>
                         ))}
                       </ul>
                     </div>
@@ -332,16 +333,21 @@ export function VisionHeader() {
                 </div>
                 <nav style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
                   {navLinks.map((link, i) => (
-                    <motion.a key={link.name} href={link.href}
+                    <motion.div key={link.name} 
                       initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.06 }}
-                      onClick={() => setMobileOpen(false)}
-                      style={{ padding: '15px 24px', fontSize: '15px', fontWeight: 600,
-                               color: '#222', textDecoration: 'none', borderBottom: '1px solid #f5f5f5',
-                               display: 'block' }}
-                      className="hover:text-brand-purple hover:bg-gray-50 transition-colors">
-                      {link.name}
-                    </motion.a>
+                    >
+                      <Link 
+                        to={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        style={{ padding: '15px 24px', fontSize: '15px', fontWeight: 600,
+                                 color: '#222', textDecoration: 'none', borderBottom: '1px solid #f5f5f5',
+                                 display: 'block' }}
+                        className="hover:text-brand-purple hover:bg-gray-50 transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </motion.div>
                   ))}
                 </nav>
               </motion.div>
