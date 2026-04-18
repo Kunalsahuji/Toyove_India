@@ -34,19 +34,61 @@ const promoMessages = [
   'New Arrivals Every Week — Shop Now',
 ]
 
-const navLinks = [
-  { name: 'Home',                 href: '/' },
-  { name: 'About',                href: '/about' },
-  { name: 'Dolls',                href: '/product/dolls', icon: true },
-  { name: 'Educational Toy',      href: '/product/educational', icon: true },
-  { name: 'Games And Puzzle',     href: '/product/games', icon: true },
-  { name: 'Vehicles Toys',        href: '/product/vehicles', icon: true },
-  { name: 'Contact',              href: '/contact' },
+const mainNavLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+  { 
+    name: 'Dolls', 
+    href: '/product/dolls', 
+    mega: [
+      { title: 'Type', items: ['Baby Dolls', 'Fashion Dolls', 'Doll Houses & Accessories', 'Plush / Soft Dolls', 'Interactive / Talking Dolls', 'Cultural / Traditional Dolls', 'Mini Dolls & Collectibles'] },
+      { title: 'Age Group', items: ['0-2 Years', '3-5 Years', '6-8 Years', '9-12 Years'] },
+      { title: 'Featured', banner: 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'Educational Toy', 
+    href: '/product/educational', 
+    mega: [
+      { title: 'Learning Outcomes', items: ['STEM Toys', 'Montessori Toys', 'Brain Development Toys', 'Learning Kits', 'Coding Toys', 'Memory & Skill Development', 'DIY Learning Kits'] },
+      { title: 'Interests', items: ['Creative Play', 'Outdoor Play', 'Pretend Play', 'Science & Explora'] },
+      { title: 'New Arrival', banner: 'https://images.unsplash.com/photo-1587654780291-39c940c174ad?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'Games And Puzzle', 
+    href: '/product/games', 
+    mega: [
+      { title: 'Format & Difficulty', items: ['Jigsaw Puzzles', 'Board Games', 'Card Games', 'Strategy Games', '3D Puzzles', 'Brain Teasers', 'Family Games', 'Solo Games'] },
+      { title: 'Budget', items: ['Under ₹499', '₹500-₹999', '₹1000-₹1999', '₹2000+'] },
+      { title: 'Best Seller', banner: 'https://images.unsplash.com/photo-1611996591259-77aed21af86a?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'Vehicles Toys', 
+    href: '/product/vehicles', 
+    mega: [
+      { title: 'Mechanism', items: ['Remote Control (RC) Vehicles', 'Die-Cast Models', 'Battery Operated Vehicles', 'Construction Vehicles', 'Racing Cars', 'Trucks & Utility Vehicles', 'Airplanes & Helicopters', 'Train Sets'] },
+      { title: 'Quick Links', items: ['New In Vehicles', 'Top Rated RC', 'Vehicles Deals'] },
+      { title: 'Speed', banner: 'https://images.unsplash.com/photo-1581235720704-06d3acfc1c6f?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'Pages', 
+    href: '#', 
+    dropdown: [
+      { name: 'FAQ', href: '/pages/faq' },
+      { name: 'Privacy Policy', href: '/pages/privacy-policy' },
+      { name: 'Shipping Policy', href: '/pages/shipping-policy' },
+      { name: 'Terms & Conditions', href: '/pages/terms-conditions' },
+      { name: 'Return & Exchange', href: '/pages/return-exchange' }
+    ]
+  },
+  { name: 'Contact', href: '/contact' },
 ]
 
 const C = '#FF4E50'  
 const P = '#6651A4'  
-const T_RED = '#E32C2B' 
 
 import logo from '../../assets/logo.svg'
 
@@ -55,6 +97,8 @@ export function VisionHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [isPastHero, setIsPastHero] = useState(false)
+  const [activeMobileSub, setActiveMobileSub] = useState(null)
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,327 +108,222 @@ export function VisionHeader() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [location])
+
   const prev = () => setPromoIndex(i => (i - 1 + promoMessages.length) % promoMessages.length)
   const next = () => setPromoIndex(i => (i + 1) % promoMessages.length)
 
   return (
     <>
       <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }}>
-
-        <div className="ann-mob hdr-inner items-center justify-center">
-          <p style={{ color: '#FDF3E7', fontSize: '10.5px', fontWeight: 500,
-                      letterSpacing: '0.02em', whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis', overflow: 'hidden',
-                      textAlign: 'center', maxWidth: '100%' }}>
-            ⭐ {PROMO}
-          </p>
-        </div>
-
-        <div className="ann-tab hdr-inner items-center justify-center">
-          <p style={{ color: '#FDF3E7', fontSize: '11.5px', fontWeight: 500,
-                      letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                      textAlign: 'center' }}>
-            ⭐ {PROMO}
-          </p>
-        </div>
-
-        <div className="ann-desk hdr-inner"
-             style={{ gridTemplateColumns: '1fr 1fr 1fr', alignItems: 'center' }}>
-
-          {/* Social icons — left */}
+        <div className="ann-desk hdr-inner" style={{ gridTemplateColumns: '1fr 1fr 1fr', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {[FbIcon, IgIcon, XIcon, PtIcon].map((Icon, i) => (
-              <a key={i} href="#" style={{ color: '#FDF3E7', lineHeight: 0, display: 'flex' }}
-                className="hover:opacity-70 transition-opacity"><Icon /></a>
+              <a key={i} href="#" style={{ color: '#FDF3E7', lineHeight: 0, display: 'flex' }} className="hover:opacity-70 transition-opacity"><Icon /></a>
             ))}
           </div>
-
-          {/* Rotating promo — center */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <button onClick={prev} style={{ background: 'none', border: 'none', cursor: 'pointer',
-                    color: '#FDF3E7', padding: 0, lineHeight: 0, display: 'flex' }}>
+            <button onClick={prev} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FDF3E7', padding: 0, lineHeight: 0, display: 'flex' }}>
               <ChevronLeft size={13} />
             </button>
             <div style={{ overflow: 'hidden', height: '16px', display: 'flex', alignItems: 'center' }}>
               <AnimatePresence mode="wait">
-                <motion.span key={promoIndex}
-                  initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -7 }} transition={{ duration: 0.22 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#FDF3E7',
-                           fontSize: '11.5px', fontWeight: 500, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-                  <span style={{ fontSize: '10px' }}>⭐</span>
-                  {promoMessages[promoIndex]}
+                <motion.span key={promoIndex} initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -7 }} transition={{ duration: 0.22 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#FDF3E7', fontSize: '11.5px', fontWeight: 500, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '10px' }}>⭐</span> {promoMessages[promoIndex]}
                 </motion.span>
               </AnimatePresence>
             </div>
-            <button onClick={next} style={{ background: 'none', border: 'none', cursor: 'pointer',
-                    color: '#FDF3E7', padding: 0, lineHeight: 0, display: 'flex' }}>
+            <button onClick={next} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FDF3E7', padding: 0, lineHeight: 0, display: 'flex' }}>
               <ChevronRight size={13} />
             </button>
           </div>
-
-          {/* Country / Language — right */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '18px', justifyContent: 'flex-end' }}>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex',
-                    alignItems: 'center', gap: '3px', color: '#FDF3E7', fontSize: '11px',
-                    fontWeight: 500, whiteSpace: 'nowrap' }}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px', color: '#FDF3E7', fontSize: '11px', fontWeight: 500, whiteSpace: 'nowrap' }}>
               United States <ChevronDown size={11} />
             </button>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex',
-                    alignItems: 'center', gap: '3px', color: '#FDF3E7', fontSize: '11px', fontWeight: 500 }}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px', color: '#FDF3E7', fontSize: '11px', fontWeight: 500 }}>
               English <ChevronDown size={11} />
             </button>
           </div>
         </div>
+        <div className="md:hidden flex justify-center py-0.5">
+           <p className="text-[#FDF3E7] text-[10px] font-medium tracking-wider uppercase">⭐ {PROMO} ⭐</p>
+        </div>
       </div>
 
-      <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb',
-                       boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                       position: 'sticky', top: 0, zIndex: 50 }}>
-
-        <div className="hdr-mob hdr-inner"
-             style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr',
-                      alignItems: 'center', height: '56px' }}>
-
-          {/* Left: hamburger */}
-          <div style={{ display: 'flex', alignItems: 'center', width: '34px', height: '34px' }}>
-            <AnimatePresence>
-              {!isPastHero && (
-                <motion.button 
-                  initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => setMobileOpen(true)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer',
-                           padding: '6px', lineHeight: 0, color: '#222' }}>
-                  <Menu size={22} />
-                </motion.button>
-              )}
-            </AnimatePresence>
+      <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div className="hdr-inner flex items-center justify-between h-[60px] md:h-[76px]">
+          {/* Mobile hamburger */}
+          <div className="lg:hidden w-[40px]">
+            <button onClick={() => setMobileOpen(true)} className="text-[#333] hover:text-[#E84949] transition-colors"><Menu size={24} /></button>
           </div>
 
-          {/* Center: logo — truly centered because it's "auto" column */}
-          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-            <img 
-              src={logo} 
-              alt="Toyove Logo" 
-              style={{ height: '36px', width: 'auto', objectContain: 'contain' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
-              }}
-            />
-            <span style={{ fontFamily: "var(--font-header)",
-                           fontWeight: 700, fontSize: '22px', color: P, lineHeight: 1, display: 'none' }}>
-              Toyove
-            </span>
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <img src={logo} alt="Toyove" className="h-8 md:h-11 w-auto transition-transform group-hover:scale-105" />
           </Link>
 
-          {/* Right: search + cart */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'flex-end' }}>
-            <button onClick={() => setSearchOpen(v => !v)}
-              style={{ padding: '6px', background: 'none', border: 'none',
-                       cursor: 'pointer', lineHeight: 0, color: '#222' }}>
-              <Search size={20} />
-            </button>
-            <button style={{ padding: '6px', background: 'none', border: 'none',
-                             cursor: 'pointer', lineHeight: 0, color: '#222', position: 'relative' }}>
-              <ShoppingCart size={20} />
-              <span style={{ position: 'absolute', top: '2px', right: '2px', width: '15px', height: '15px',
-                             background: C, color: '#FDF3E7', fontSize: '9px', fontWeight: 700,
-                             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                0
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile search expand */}
-        <AnimatePresence>
-          {searchOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }} className="overflow-hidden hdr-mob" style={{ display: 'block' }}>
-              <div style={{ padding: '8px 12px 10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e5e5',
-                              borderRadius: '6px', height: '36px', padding: '0 14px', gap: '8px', background: '#F8EAD4' }}>
-                  <Search size={14} style={{ color: '#222' }} />
-                  <input type="text" placeholder="Search products..." autoFocus
-                    style={{ flex: 1, background: 'transparent', outline: 'none', fontSize: '13px', color: '#222' }} />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="hdr-desk hdr-inner"
-             style={{ alignItems: 'center', height: '68px' }}>
-
-          <Link to="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: '40px', display: 'flex', alignItems: 'center' }}>
-            <img 
-              src={logo} 
-              alt="Toyove Logo" 
-              style={{ height: '44px', width: 'auto', objectContain: 'contain' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
-              }}
-            />
-            <span style={{ fontFamily: "var(--font-header)",
-                           fontWeight: 700, fontSize: '24px', color: P, lineHeight: 1, display: 'none' }}>
-              Toyove
-            </span>
-          </Link>
-
-          <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flex: 1, paddingRight: '20px' }}>
-            {navLinks.map(link => (
-              <div key={link.name} className="relative group flex items-center h-[68px]">
-                <Link to={link.href} className="text-[#222] transition-colors duration-200 flex items-center gap-1"
-                  style={{ fontSize: '13px', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = '#FF4E50'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = '#222'}
-                >
-                  {link.name}
-                  {(link.name === 'Dolls' || link.name === 'Educational Toy' || link.name === 'Games And Puzzle' || link.name === 'Vehicles Toys') && (
-                    <span className="text-[10px] ml-0.5">
-                      <span className="block group-hover:hidden">▼</span>
-                      <span className="hidden group-hover:block">✕</span>
-                    </span>
-                  )}
+          {/* Nav - Desktop */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {mainNavLinks.map(link => (
+              <div key={link.name} className="relative group/nav py-6">
+                <Link to={link.href} className={`flex items-center gap-1 px-3 text-[13px] font-bold tracking-widest transition-all uppercase ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
+                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={12} className="group-hover/nav:rotate-180 transition-transform" />}
                 </Link>
-                
-                {/* Static Mega Menu Dropdown */}
-                {(link.name === 'Dolls' || link.name === 'Educational Toy' || link.name === 'Games And Puzzle' || link.name === 'Vehicles Toys') && (
-                  <div className="absolute top-full left-0 w-[500px] bg-[#FDF3E7] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-t-2 border-[#FF4E50] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 p-6 flex gap-8 rounded-b-md transform translate-y-2 group-hover:translate-y-0">
-                    <div className="flex-1">
-                      <h4 className="font-bold text-[14px] text-[#222] mb-4 tracking-wider border-b border-gray-200 pb-2 font-grandstander">Top Categories</h4>
-                      <ul className="flex flex-col gap-3">
-                        {['Action Figures', 'Building Blocks', 'Creative Playsets', 'Learning Kits'].map(item => (
-                          <li key={item}><Link to={`/product/${item.toLowerCase().replace(' ', '-')}`} className="text-[13px] text-gray-500 hover:text-[#E32C2B] transition-colors">{item}</Link></li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-[14px] text-[#222] mb-4 tracking-wider border-b border-gray-200 pb-2 font-grandstander">Trending Now</h4>
-                      <div className="h-[120px] bg-gray-100 rounded-md flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=400&auto=format&fit=crop)' }}>
-                        <span className="bg-[#FDF3E7]/95 text-[11px] font-bold px-3 py-1 rounded text-[#222] border border-gray-200 font-grandstander">Up to 40% Off</span>
+
+                {/* Mega Menu */}
+                {link.mega && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-[800px] xl:w-[1000px] bg-white shadow-2xl rounded-b-[24px] border-t-[2px] border-[#E84949] opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all duration-300 p-8 grid grid-cols-4 gap-8 pointer-events-auto">
+                    {link.mega.map((col, idx) => (
+                      <div key={idx} className={col.banner ? "col-span-1" : "col-span-1"}>
+                        {col.title && <h4 className="font-grandstander font-bold text-[14px] text-[#333] mb-5 border-b border-gray-100 pb-2 uppercase tracking-widest">{col.title}</h4>}
+                        {col.items && (
+                          <ul className="space-y-3">
+                            {col.items.map(item => (
+                              <li key={item}>
+                                <Link to="/" className="text-[13px] text-[#666] hover:text-[#E84949] hover:translate-x-1 transition-all block font-medium">{item}</Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {col.banner && (
+                          <div className="rounded-2xl overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-md">
+                            <img src={col.banner} alt={col.title} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-700" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex flex-col justify-end">
+                              <span className="text-white text-[10px] uppercase font-bold tracking-widest">New Collection</span>
+                              <h5 className="text-white font-grandstander text-[14px] font-bold">Shop {link.name}</h5>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Simple Dropdown */}
+                {link.dropdown && (
+                  <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-xl border-t-2 border-[#E84949] opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all duration-300 py-2">
+                    {link.dropdown.map(sub => (
+                      <Link key={sub.name} to={sub.href} className="block px-5 py-2.5 text-[13px] text-[#666] hover:text-[#E84949] hover:bg-[#FDF4E6] transition-all font-medium">{sub.name}</Link>
+                    ))}
                   </div>
                 )}
               </div>
             ))}
           </nav>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-            <div className="group focus-within:ring-1 focus-within:border-[#FF4E50] transition-all" style={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e5e5',
-                          borderRadius: '4px', height: '36px', padding: '0 12px', gap: '7px', background: '#f5f5f5' }}>
-              <input type="text" placeholder="Search products..." className="placeholder-gray-500"
-                style={{ background: 'transparent', outline: 'none', fontSize: '13px', color: '#222', width: '160px' }} />
-              <Search size={15} className="text-gray-400 group-focus-within:text-[#FF4E50] transition-colors" style={{ flexShrink: 0 }} />
-            </div>
-            <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer',
-                             lineHeight: 0, color: '#222' }}
-                    className="hover:text-[#FF4E50] rounded-full hover:bg-gray-100 transition-colors">
-              <User size={20} />
+          {/* Action Icons */}
+          <div className="flex items-center gap-1 md:gap-3">
+            <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 text-[#333] hover:text-[#E84949] transition-colors"><Search size={22} /></button>
+            <Link to="/wishlist" className="p-2 text-[#333] hover:text-[#E84949] transition-colors relative">
+              <Heart size={22} />
+              <span className="absolute top-1 right-1 w-4 h-4 bg-[#E84949] text-white text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
+            </Link>
+            <button className="p-2 text-[#333] hover:text-[#E84949] transition-colors relative">
+              <ShoppingCart size={22} />
+              <span className="absolute top-1 right-1 w-4 h-4 bg-[#E84949] text-white text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
             </button>
-            <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer',
-                             lineHeight: 0, color: '#222', position: 'relative' }}
-                    className="hover:text-[#FF4E50] rounded-full hover:bg-gray-100 transition-colors">
-              <ShoppingCart size={20} />
-              <span style={{ position: 'absolute', top: '2px', right: '2px', width: '15px', height: '15px',
-                             background: C, color: '#FDF3E7', fontSize: '9px', fontWeight: 700,
-                             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                0
-              </span>
-            </button>
+            <Link to="/account" className="hidden md:block p-2 text-[#333] hover:text-[#E84949] transition-colors"><User size={22} /></Link>
           </div>
         </div>
 
+        {/* Desktop Search Overlay */}
         <AnimatePresence>
-          {mobileOpen && (
-            <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                onClick={() => setMobileOpen(false)}
-                style={{ position: 'fixed', inset: 0, zIndex: 199, background: 'rgba(0,0,0,0.4)' }} />
-              <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
-                transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-                style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 200,
-                         width: '75vw', maxWidth: '300px', background: '#FDF3E7',
-                         display: 'flex', flexDirection: 'column',
-                         boxShadow: '4px 0 24px rgba(0,0,0,0.15)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between',
-                              padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <img 
-                      src={logo} 
-                      alt="Toyove Logo" 
-                      style={{ height: '28px', width: 'auto', objectContain: 'contain' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
-                      }}
-                    />
-                    <span style={{ fontFamily: "var(--font-header)",
-                                    fontWeight: 700, fontSize: '22px', color: P, display: 'none' }}>Toyove</span>
+          {searchOpen && (
+            <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden bg-white border-t border-gray-100">
+               <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-6">
+                  <div className="relative">
+                    <input type="text" placeholder="Search for toys..." className="w-full h-14 bg-[#F9EAD3] border-none rounded-full px-8 text-[16px] outline-none" autoFocus />
+                    <button className="absolute right-2 top-2 bottom-2 w-12 bg-[#E84949] text-white rounded-full flex items-center justify-center hover:bg-[#333] transition-colors"><Search size={20} /></button>
                   </div>
-                  <button onClick={() => setMobileOpen(false)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', lineHeight: 0 }}>
-                    <X size={24} />
-                  </button>
-                </div>
-                <nav style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-                  {navLinks.map((link, i) => (
-                    <motion.div key={link.name} 
-                      initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.06 }}
-                    >
-                      <Link 
-                        to={link.href}
-                        onClick={() => setMobileOpen(false)}
-                        style={{ padding: '15px 24px', fontSize: '15px', fontWeight: 600,
-                                 color: '#222', textDecoration: 'none', borderBottom: '1px solid #f5f5f5',
-                                 display: 'block' }}
-                        className="hover:text-brand-purple hover:bg-gray-50 transition-colors"
-                      >
-                        {link.name}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </nav>
-              </motion.div>
-            </>
+               </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </header>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
-        {isPastHero && (
-          <motion.div 
-            initial={{ y: 70 }} animate={{ y: 0 }} exit={{ y: 70 }}
-            transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-            className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[200] flex items-center justify-around h-[65px] shadow-[0_-5px_15px_rgba(0,0,0,0.03)] px-2"
-          >
-            <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
-              <Menu size={22} strokeWidth={1.5} />
-              <span className="text-[10px] font-semibold tracking-wide">Shop</span>
-            </button>
-            <button className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
-              <Heart size={22} strokeWidth={1.5} />
-              <span className="text-[10px] font-semibold tracking-wide">Wishlist</span>
-            </button>
-            <button className="flex flex-col items-center justify-center w-full h-full text-[#FF4E50] border-t-2 border-[#FF4E50] relative -top-[1px]">
-              <Home size={22} strokeWidth={2} />
-            </button>
-            <button className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
-              <User size={22} strokeWidth={1.5} />
-              <span className="text-[10px] font-semibold tracking-wide">Account</span>
-            </button>
-            <button className="flex flex-col items-center justify-center w-full gap-1 text-[#222] hover:text-[#E32C2B] transition-colors pt-2">
-              <Repeat size={22} strokeWidth={1.5} />
-              <span className="text-[10px] font-semibold tracking-wide">Compare</span>
-            </button>
-          </motion.div>
+        {mobileOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} className="fixed inset-0 bg-black/40 z-[200]" />
+            <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed top-0 left-0 bottom-0 w-[80%] max-w-[320px] bg-[#FDF4E6] z-[210] flex flex-col shadow-2xl">
+              <div className="p-6 flex items-center justify-between border-b border-[#333]/10">
+                <img src={logo} alt="Toyove" className="h-8 w-auto" />
+                <button onClick={() => setMobileOpen(false)} className="w-8 h-8 rounded-full bg-[#E84949] text-white flex items-center justify-center"><X size={18} /></button>
+              </div>
+              <div className="overflow-y-auto flex-grow py-4">
+                {mainNavLinks.map(link => (
+                  <div key={link.name}>
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5 group">
+                      <Link to={link.href} className={`text-[14px] font-bold tracking-widest uppercase transition-colors ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333]'}`}>{link.name}</Link>
+                      {(link.mega || link.dropdown) && (
+                        <button onClick={() => setActiveMobileSub(activeMobileSub === link.name ? null : link.name)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeMobileSub === link.name ? 'bg-[#E84949] text-white rotate-180' : 'bg-[#F9EAD3] text-[#333]'}`}>
+                          <ChevronDown size={16} />
+                        </button>
+                      )}
+                    </div>
+                    {(link.mega || link.dropdown) && activeMobileSub === link.name && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-white/50 px-8 py-4 space-y-4">
+                        {link.mega ? link.mega.map((col, cidx) => (
+                           <div key={cidx}>
+                             {col.title && <h5 className="text-[11px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}
+                             {col.items && (
+                               <div className="flex flex-col gap-2">
+                                 {col.items.map(i => <Link key={i} to="/" className="text-[13px] text-[#333] font-medium">{i}</Link>)}
+                               </div>
+                             )}
+                           </div>
+                        )) : link.dropdown.map(sub => (
+                           <Link key={sub.name} to={sub.href} className="block text-[13px] text-[#333] font-medium">{sub.name}</Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="p-6 border-t border-[#333]/10 bg-white">
+                 <div className="flex gap-4">
+                   <a href="#" className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-[#333] hover:bg-[#E84949] hover:text-white transition-all"><FbIcon /></a>
+                   <a href="#" className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-[#333] hover:bg-[#E84949] hover:text-white transition-all"><IgIcon /></a>
+                   <a href="#" className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-[#333] hover:bg-[#E84949] hover:text-white transition-all"><XIcon /></a>
+                 </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
+
+      {/* Floating Mobile Dock */}
+      {isPastHero && (
+        <motion.div initial={{ y: 80 }} animate={{ y: 0 }} className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-[150] px-4 py-2 border-t border-gray-100 flex items-center justify-between">
+           <Link to="/" className="flex flex-col items-center gap-1 min-w-[64px]">
+             <Home size={20} className={location.pathname === '/' ? 'text-[#E84949]' : 'text-[#666]'} />
+             <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Home</span>
+           </Link>
+           <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-1 min-w-[64px]">
+             <Menu size={20} className="text-[#666]" />
+             <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Menu</span>
+           </button>
+           <div className="relative -top-6">
+              <Link to="/search" className="w-14 h-14 bg-[#E84949] text-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FDF4E6]">
+                 <Search size={22} />
+              </Link>
+           </div>
+           <Link to="/wishlist" className="flex flex-col items-center gap-1 min-w-[64px]">
+             <Heart size={20} className={location.pathname === '/wishlist' ? 'text-[#E84949]' : 'text-[#666]'} />
+             <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Wish</span>
+           </Link>
+           <button className="flex flex-col items-center gap-1 min-w-[64px]">
+             <ShoppingCart size={20} className="text-[#666]" />
+             <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Cart</span>
+           </button>
+        </motion.div>
+      )}
     </>
   )
 }

@@ -31,7 +31,7 @@ export function Header({ cartCount }) {
   ]
 
   return (
-    <header className="w-full z-50 bg-white border-b border-gray-100">
+    <header className="w-full z-50 bg-white border-b border-gray-100 ">
       {/* 1. Announcement Bar (Animated) */}
       <div className="bg-brand-purple text-white py-2 text-center text-[13px] font-medium tracking-wide">
         <motion.p
@@ -50,7 +50,7 @@ export function Header({ cartCount }) {
           {/* Logo & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
             <button 
-              className="md:hidden p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              className="md:hidden p-1 hover:bg-[#FDF4E6] rounded-lg transition-colors"
               onClick={() => setIsMobileMenuOpen(true)}
             >
               <Menu className="h-6 w-6 text-brand-ink" />
