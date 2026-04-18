@@ -9,10 +9,10 @@ const categories = [
 ]
 
 const marqueeItems = [
-  '🔥 UP TO 30% OFF', '⭐ GET A $50 GIFT CARD ON A PURCHASE OF $500+',
-  '✈️ LENNY TOY STORE DELIVERS FOR A TABLET $1 FREE ONLY',
-  '🎁 GET FREE DELIVERY ON ELIGIBLE ORDERS OVER $100',
-  '🚀 TRY A NEW TOY — YOUR KIDS WILL LOVE IT',
+  'Up to 30% Off Everything', '⭐ Get a $50 Gift Card on purchase of $500+',
+  '✈️ Lenny Toy Store Delivers For A Tablet $1 Free Only',
+  '🎁 Get Free Delivery On Eligible Orders Over $100',
+  '🚀 Try A New Toy — Your Kids Will Love It',
 ]
 
 export function CategorySection() {
@@ -49,7 +49,7 @@ export function CategorySection() {
                     />
                   </div>
                   
-                  <span className="text-[14px] md:text-[17px] font-bold text-brand-ink text-center mb-1.5 font-playful tracking-tight pb-1">
+                  <span className="text-[14px] md:text-[18px] font-bold text-brand-ink text-center mb-1.5 font-grandstander tracking-tight pb-1">
                     {cat.label}
                   </span>
                 </motion.div>
@@ -71,5 +71,3 @@ export function CategorySection() {
     </div>
   )
 }
-
-

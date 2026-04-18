@@ -29,7 +29,6 @@ const FooterAccordion = ({ title, children }) => {
   )
 }
 
-// Emulate Shopify Payment SVG badges perfectly matching the screenshot reference
 const PaymentBadges = () => (
   <div className="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end">
     {/* Visa */}

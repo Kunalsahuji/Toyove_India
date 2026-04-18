@@ -22,8 +22,8 @@ export function TrendingProducts() {
     <section className="py-10 md:py-14 bg-brand-cream">
       <div className="shell">
         <div className="text-center mb-10">
-          <p className="text-brand-orange font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Shop Collection</p>
-          <h2 className="font-serif text-[28px] md:text-[40px] font-bold text-brand-ink tracking-tight">Trending Products</h2>
+          <p className="text-brand-orange font-medium text-[11px] tracking-[0.25em] mb-2 font-roboto uppercase">Shop Collection</p>
+          <h2 className="font-grandstander text-[28px] md:text-[40px] font-bold text-brand-ink tracking-tight">Trending Products</h2>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 gap-y-10 md:gap-y-12">
@@ -71,7 +71,7 @@ export function TrendingProducts() {
               </div>
 
               <div className="text-center px-1">
-                <h3 className="font-playful text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] group-hover:text-[#E32C2B] transition-colors duration-300">
+                <h3 className="font-grandstander text-[14px] md:text-[16px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] group-hover:text-[#E32C2B] transition-colors duration-300">
                   {p.name}
                 </h3>
                 <div className="flex items-center justify-center gap-2">

@@ -35,13 +35,13 @@ const promoMessages = [
 ]
 
 const navLinks = [
-  { name: 'HOME',                 href: '/' },
-  { name: 'ABOUT',                href: '/about' },
-  { name: 'DOLLS',                href: '/product/dolls', hasMegaMenu: true },
-  { name: 'EDUCATIONAL TOY',      href: '/product/educational', hasMegaMenu: true },
-  { name: 'GAMES AND PUZZLE',     href: '/product/games', hasMegaMenu: true },
-  { name: 'VEHICLES TOYS',        href: '/product/vehicles', hasMegaMenu: true },
-  { name: 'CONTACT',              href: '/contact' },
+  { name: 'Home',                 href: '/' },
+  { name: 'About',                href: '/about' },
+  { name: 'Dolls',                href: '/product/dolls', icon: true },
+  { name: 'Educational Toy',      href: '/product/educational', icon: true },
+  { name: 'Games And Puzzle',     href: '/product/games', icon: true },
+  { name: 'Vehicles Toys',        href: '/product/vehicles', icon: true },
+  { name: 'Contact',              href: '/contact' },
 ]
 
 const C = '#FF4E50'  
@@ -173,7 +173,7 @@ export function VisionHeader() {
                 if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
               }}
             />
-            <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
+            <span style={{ fontFamily: "var(--font-header)",
                            fontWeight: 700, fontSize: '22px', color: P, lineHeight: 1, display: 'none' }}>
               Toyove
             </span>
@@ -228,7 +228,7 @@ export function VisionHeader() {
                 if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
               }}
             />
-            <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
+            <span style={{ fontFamily: "var(--font-header)",
                            fontWeight: 700, fontSize: '24px', color: P, lineHeight: 1, display: 'none' }}>
               Toyove
             </span>
@@ -243,7 +243,7 @@ export function VisionHeader() {
                   onMouseLeave={(e) => e.currentTarget.style.color = '#222'}
                 >
                   {link.name}
-                  {link.hasMegaMenu && (
+                  {(link.name === 'Dolls' || link.name === 'Educational Toy' || link.name === 'Games And Puzzle' || link.name === 'Vehicles Toys') && (
                     <span className="text-[10px] ml-0.5">
                       <span className="block group-hover:hidden">▼</span>
                       <span className="hidden group-hover:block">✕</span>
@@ -252,10 +252,10 @@ export function VisionHeader() {
                 </Link>
                 
                 {/* Static Mega Menu Dropdown */}
-                {link.hasMegaMenu && (
+                {(link.name === 'Dolls' || link.name === 'Educational Toy' || link.name === 'Games And Puzzle' || link.name === 'Vehicles Toys') && (
                   <div className="absolute top-full left-0 w-[500px] bg-[#FDF3E7] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-t-2 border-[#FF4E50] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 p-6 flex gap-8 rounded-b-md transform translate-y-2 group-hover:translate-y-0">
                     <div className="flex-1">
-                      <h4 className="font-bold text-[14px] text-[#222] mb-4 uppercase tracking-wider border-b border-gray-200 pb-2">Top Categories</h4>
+                      <h4 className="font-bold text-[14px] text-[#222] mb-4 tracking-wider border-b border-gray-200 pb-2 font-grandstander">Top Categories</h4>
                       <ul className="flex flex-col gap-3">
                         {['Action Figures', 'Building Blocks', 'Creative Playsets', 'Learning Kits'].map(item => (
                           <li key={item}><Link to={`/product/${item.toLowerCase().replace(' ', '-')}`} className="text-[13px] text-gray-500 hover:text-[#E32C2B] transition-colors">{item}</Link></li>
@@ -263,9 +263,9 @@ export function VisionHeader() {
                       </ul>
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-bold text-[14px] text-[#222] mb-4 uppercase tracking-wider border-b border-gray-200 pb-2">Trending Now</h4>
+                      <h4 className="font-bold text-[14px] text-[#222] mb-4 tracking-wider border-b border-gray-200 pb-2 font-grandstander">Trending Now</h4>
                       <div className="h-[120px] bg-gray-100 rounded-md flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=400&auto=format&fit=crop)' }}>
-                        <span className="bg-[#FDF3E7]/95 text-[11px] font-bold px-3 py-1 rounded text-[#222] border border-gray-200">Up to 40% Off</span>
+                        <span className="bg-[#FDF3E7]/95 text-[11px] font-bold px-3 py-1 rounded text-[#222] border border-gray-200 font-grandstander">Up to 40% Off</span>
                       </div>
                     </div>
                   </div>
@@ -311,7 +311,7 @@ export function VisionHeader() {
                          width: '75vw', maxWidth: '300px', background: '#FDF3E7',
                          display: 'flex', flexDirection: 'column',
                          boxShadow: '4px 0 24px rgba(0,0,0,0.15)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between',
                               padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img 
@@ -323,8 +323,8 @@ export function VisionHeader() {
                         if(e.target.nextSibling) e.target.nextSibling.style.display = 'block';
                       }}
                     />
-                    <span style={{ fontFamily: "'Playfair Display', Georgia, serif",
-                                   fontWeight: 700, fontSize: '22px', color: P, display: 'none' }}>Toyove</span>
+                    <span style={{ fontFamily: "var(--font-header)",
+                                    fontWeight: 700, fontSize: '22px', color: P, display: 'none' }}>Toyove</span>
                   </div>
                   <button onClick={() => setMobileOpen(false)}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', lineHeight: 0 }}>

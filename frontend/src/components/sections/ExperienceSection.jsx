@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, Minus } from 'lucide-react'
 
 const accordionData = [
   {
@@ -25,7 +26,7 @@ export function ExperienceSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
           <div className="w-full order-1 lg:order-1">
-            <div className="w-full aspect-[4/3] md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
+            <div className="w-full aspect-[4/3] md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-[#333]/5">
               <img
                 src="https://cdn.cdnparenting.com/articles/2022/04/07114528/227386435-768x525.webp"
                 alt="Child with educational toys"
@@ -36,23 +37,22 @@ export function ExperienceSection() {
 
           <div className="w-full flex flex-col justify-start order-2 lg:order-2 h-full">
 
-            <p
+            <h2
               className="
-    font-playful 
-    text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] xl:text-[20px]
-    font-extrabold 
-    text-brand-ink 
+    font-grandstander 
+    text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] xl:text-[28px]
+    font-bold 
+    text-[#333] 
     leading-tight 
     mb-6 sm:mb-8 md:mb-10 lg:mb-12
     tracking-tight
-    max-w-[100%] sm:max-w-[100%] md:max-w-[100%]
   "
               style={{ letterSpacing: '-0.02em' }}
             >
-              We Have Always Tried To Focus On The People Who Were Going Use The Products
-            </p>
+              We Have Always Tried To Focus On The People Who Were Going To Use The Products
+            </h2>
 
-            <div className="space-y-4 lg:space-y-6 mb-8 xl:mb-10">
+            <div className="space-y-4 lg:space-y-6 mb-8 xl:mb-10 font-roboto">
               {accordionData.map((item, i) => {
                 const isOpen = openIndex === i;
                 return (
@@ -61,19 +61,13 @@ export function ExperienceSection() {
                       onClick={() => setOpenIndex(isOpen ? -1 : i)}
                       className="w-full flex items-center justify-between text-left group cursor-pointer"
                     >
-                      <span className={`font-bold text-[14px] md:text-[15px] transition-colors duration-300 ${isOpen ? 'text-brand-purple' : 'text-brand-ink group-hover:text-brand-purple'}`}>
+                      <span className={`font-grandstander font-bold text-[14px] md:text-[17px] transition-colors duration-300 tracking-tight ${isOpen ? 'text-[#E84949]' : 'text-[#333] group-hover:text-[#E84949]'}`}>
                         {item.title}
                       </span>
 
-                      {/* Thin Minimalist Circle Icon (No Solid Background) */}
                       <div className={`h-[24px] w-[24px] rounded-full border-[1.5px] transition-all duration-300 flex items-center justify-center shrink-0 
-                         ${isOpen ? 'border-brand-purple' : 'border-[#dcd2c6] group-hover:border-brand-purple'}`}>
-                        <div className="relative w-3 h-3 flex items-center justify-center">
-                          <span className={`absolute w-full h-[1.5px] bg-current transition-colors ${isOpen ? 'text-brand-purple' : 'text-brand-ink'}`}></span>
-                          {!isOpen && (
-                            <span className="absolute h-full w-[1.5px] bg-brand-ink"></span>
-                          )}
-                        </div>
+                         ${isOpen ? 'border-[#E84949] bg-[#E84949] text-white' : 'border-[#dcd2c6] group-hover:border-[#E84949]'}`}>
+                         {isOpen ? <Minus size={12} /> : <Plus size={12} />}
                       </div>
                     </button>
 
@@ -86,7 +80,7 @@ export function ExperienceSection() {
                           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                           className="overflow-hidden"
                         >
-                          <p className="pt-4 text-[13px] md:text-[13px] text-brand-muted leading-[1.8] lg:w-[95%]">
+                          <p className="pt-4 text-[14px] text-brand-muted leading-relaxed lg:w-[95%] italic">
                             {item.content}
                           </p>
                         </motion.div>
@@ -98,10 +92,10 @@ export function ExperienceSection() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 lg:gap-5 mt-auto pb-4">
-              <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
+              <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-[#333]/5">
                 <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=400" alt="Detail product view" className="w-full h-full object-cover" />
               </div>
-              <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-brand-ink/5">
+              <div className="w-full aspect-[4/3.5] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-[#333]/5">
                 <img src="https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=400" alt="Child using product" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -113,6 +107,3 @@ export function ExperienceSection() {
     </section>
   )
 }
-
-
-

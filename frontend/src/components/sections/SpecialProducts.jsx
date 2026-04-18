@@ -37,14 +37,14 @@ export function SpecialProducts() {
     <section className="pt-4 pb-4 md:pt-6 md:pb-8 bg-brand-cream">
       <div className="shell">
         <div className="text-center mb-8">
-          <p className="text-brand-orange font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Shop Collection</p>
-          <h2 className="font-serif text-[28px] md:text-[40px] font-bold text-brand-ink tracking-tight">Special Products</h2>
+          <p className="text-brand-orange font-medium text-[11px] tracking-[0.25em] mb-2 font-roboto uppercase">Shop Collection</p>
+          <h2 className="font-grandstander text-[28px] md:text-[40px] font-bold text-brand-ink tracking-tight">Special Products</h2>
           <div className="flex items-center justify-center gap-2 mt-6">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`h-9 px-6 rounded-md text-[13px] font-bold transition-all duration-200 shadow-md ${activeTab === tab
+                className={`h-9 px-6 rounded-md text-[13px] font-bold transition-all duration-200 shadow-md font-grandstander ${activeTab === tab
                     ? 'bg-[#F1641E] text-white border border-[#F1641E]'
                     : 'bg-[#1A1A1A] text-white border border-[#1A1A1A] hover:bg-brand-purple hover:border-brand-purple'
                   }`}
@@ -106,7 +106,7 @@ export function SpecialProducts() {
                 </div>
 
                 <div className="text-center px-1">
-                  <h3 className="font-playful text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] group-hover:text-[#E32C2B] transition-colors duration-300">
+                  <h3 className="font-grandstander text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] group-hover:text-[#E32C2B] transition-colors duration-300">
                     {p.name}
                   </h3>
                   <div className="flex items-center justify-center gap-2">

@@ -3,22 +3,22 @@ import { motion } from 'framer-motion'
 
 const posts = [
   {
-    date: 'MARCH 28, 2024',
-    author: 'ICHHA RAVAL',
+    date: 'March 28, 2024',
+    author: 'Ichha Raval',
     title: 'The Perfect Toyove India Theme For Baby And Kids',
     excerpt: 'Discover Toyove India, the ultimate theme crafted specifically for baby shops and kids\' toy stores.',
     img: 'https://plus.unsplash.com/premium_photo-1701984401558-d314227bb38f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
-    date: 'MARCH 20, 2024',
-    author: 'ICHHA RAVAL',
+    date: 'March 20, 2024',
+    author: 'Ichha Raval',
     title: 'Transform Your Online Toy Store With Toyove India',
     excerpt: 'Discover Toyove India, the ultimate Shopify 2.0 theme crafted specifically for baby shops and kids\' toy.',
     img: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=500',
   },
   {
-    date: 'MARCH 18, 2024',
-    author: 'ICHHA RAVAL',
+    date: 'March 18, 2024',
+    author: 'Ichha Raval',
     title: 'Why Toyove India Is the Best Theme For Baby Stores',
     excerpt: 'Discover Toyove India, the ultimate theme crafted specifically for baby shops and kids\' toy stores.',
     img: 'https://images.unsplash.com/photo-1563396983906-b3795482a59a?auto=format&fit=crop&q=80&w=500',
@@ -90,8 +90,8 @@ export function BlogSection() {
     <section className="py-10 md:py-12 border-t border-gray-100 bg-[#FDF3E7]">
       <div className="shell overflow-hidden">
         <div className="text-center mb-12">
-          <p className="text-[#FF4E50] font-bold text-[11px] tracking-[0.25em] uppercase mb-2">Latest News</p>
-          <h2 className="font-serif text-[28px] md:text-[42px] font-bold text-[#222] tracking-tight">From The Blog</h2>
+          <p className="text-[#FF4E50] font-medium text-[11px] tracking-[0.25em] mb-2 font-roboto uppercase">Latest News</p>
+          <h2 className="font-grandstander text-[28px] md:text-[42px] font-bold text-[#222] tracking-tight">From The Blog</h2>
         </div>
 
         <div className="relative w-full">
@@ -122,16 +122,16 @@ export function BlogSection() {
 
                   <div className="px-1">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[#FF4E50] text-[10px] font-bold flex items-center gap-1">
+                      <span className="text-[#FF4E50] text-[10px] font-semibold flex items-center gap-1 font-roboto uppercase tracking-wider">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         {post.date}
                       </span>
                       <span className="text-gray-400 text-[10px] font-medium tracking-wide">• {post.author}</span>
                     </div>
-                    <h3 className="font-playful text-[17px] md:text-[19px] font-bold text-[#222] mb-3 group-hover:text-[#FF4E50] transition-colors leading-[1.2] tracking-tight">
+                    <h3 className="font-grandstander text-[17px] md:text-[19px] font-bold text-[#222] mb-3 group-hover:text-[#FF4E50] transition-colors leading-[1.2] tracking-tight">
                       {post.title}
                     </h3>
-                    <p className="text-[13px] text-gray-500 leading-[1.6] line-clamp-2 md:line-clamp-3">{post.excerpt}</p>
+                    <p className="font-roboto text-[13px] text-gray-500 leading-[1.6] line-clamp-2 md:line-clamp-3 italic opacity-90">{post.excerpt}</p>
                   </div>
                 </article>
               </div>

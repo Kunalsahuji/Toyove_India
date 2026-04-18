@@ -72,24 +72,24 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-white font-medium text-[10px] md:text-[11px] lg:text-[12px] uppercase tracking-[0.1em] mb-3 md:mb-4"
+            className="text-white font-medium text-[11px] md:text-[12px] lg:text-[13px] tracking-[0.2em] mb-3 md:mb-4 font-roboto uppercase"
           >
-            SELECTED ITEMS ONLINE ONLY.
+            Selected Items Online Only.
           </motion.p>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.1 }}
-            className="text-white font-bold mb-5 sm:mb-6 lg:mb-8 whitespace-nowrap"
-            style={{
-              fontFamily: 'var(--font-playful)',
-              textShadow: '0 3px 6px rgba(0,0,0,0.15)',
-              lineHeight: 1.05,
-              fontSize: 'clamp(36px, 8vw, 76px)',
-              letterSpacing: '-0.04em'
-            }}
-          >
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.1 }}
+              className="text-white font-bold mb-5 sm:mb-6 lg:mb-8 whitespace-nowrap"
+              style={{
+                fontFamily: 'var(--font-header)',
+                textShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                lineHeight: 1.05,
+                fontSize: 'clamp(32px, 7vw, 68px)',
+                letterSpacing: '-0.04em'
+              }}
+            >
             Find The Best Toys<br />
             For Your Kids
           </motion.h1>
@@ -100,7 +100,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.28 }}
             className="w-fit"
           >
-            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-[800] text-[11px] md:text-sm lg:text-[15px] uppercase rounded-md hover:bg-gray-50 hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-md cursor-pointer tracking-wider">
+            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-bold text-[11px] md:text-sm lg:text-[14px] uppercase rounded-md hover:bg-gray-50 hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-md cursor-pointer tracking-[0.15em]">
               SHOP NOW
             </button>
           </motion.div>

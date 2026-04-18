@@ -3,15 +3,6 @@ import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Heart, Share2, Eye, ShoppingCart, Search, Repeat, Plus, Minus, CheckCircle, X, ChevronRight, Share } from 'lucide-react'
 
-// Localized Font Import to avoid global CSS conflicts
-const FontLoader = () => (
-  <style dangerouslySetInnerHTML={{
-    __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Grandstander:wght@600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap');
-    .font-grandstander { font-family: 'Grandstander', sans-serif; }
-    .font-roboto { font-family: 'Roboto', sans-serif; }
-  `}} />
-)
 
 const productImages = [
   "https://toykio.myshopify.com/cdn/shop/files/product-08_bd7b541b-d749-4444-bdaa-d040b7d4ff0f.jpg?v=1716179376&width=533",
@@ -34,7 +25,7 @@ const ProductCard = ({ p, i }) => (
   >
     <div className="border-[1.6px] border-dashed border-[#333333] rounded-[16px] p-2 relative overflow-hidden aspect-square mb-4 bg-[#F9EAD3] transition-all duration-300 hover:shadow-lg">
       <span className="absolute top-3 left-3 z-30 bg-[#FF4E50] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
-        SALE
+        Sale
       </span>
       {/* Dynamic Action Stack from Trending Products */}
       <div className="absolute top-3 -right-12 z-40 flex flex-col gap-2 group-hover:right-3 transition-all duration-500 ease-out opacity-0 group-hover:opacity-100">
@@ -48,10 +39,10 @@ const ProductCard = ({ p, i }) => (
       <img src={p.hoverImg || p.img} alt={p.name} className="w-full h-full object-cover rounded-[10px] absolute inset-0 p-2 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out group-hover:scale-110" />
     </div>
     <div className="text-center px-1">
-      <h3 className="text-[14px] md:text-[15px] font-grandstander font-bold text-[#333333] mb-1 group-hover:text-[#E84949] transition-colors line-clamp-2 uppercase leading-tight">{p.name}</h3>
+      <h3 className="text-[14px] md:text-[15px] font-grandstander font-bold text-[#333333] mb-1 group-hover:text-[#E84949] transition-colors line-clamp-2 leading-tight">{p.name}</h3>
       <div className="flex items-center justify-center gap-2">
         <span className="text-[12px] text-gray-400 line-through">${(p.price + 20).toFixed(2)}</span>
-        <span className="text-[14px] font-black text-[#FF4E50]">${p.price.toFixed(2)}</span>
+        <span className="text-[14px] font-bold text-[#FF4E50]">${p.price.toFixed(2)}</span>
       </div>
     </div>
   </motion.div>
@@ -60,7 +51,7 @@ const ProductCard = ({ p, i }) => (
 const FAQItem = ({ question, answer, isOpen, onToggle }) => (
   <div className="border-b-[1px] border-[#E5E5E5] py-6">
     <button onClick={onToggle} className="w-full flex justify-between items-center text-left group">
-      <span className="font-grandstander text-[16px] md:text-[19px] text-[#333333] group-hover:text-[#E84949] transition-colors uppercase leading-tight tracking-tight">{question}</span>
+      <span className="font-grandstander font-bold text-[16px] md:text-[18px] text-[#333333] group-hover:text-[#E84949] transition-colors leading-tight tracking-tight">{question}</span>
       <div className={`w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center transition-all flex-shrink-0 ${isOpen ? 'bg-[#E84949] border-[#E84949] text-white' : 'text-gray-400'}`}>
         {isOpen ? <Minus size={12} /> : <Plus size={12} />}
       </div>
@@ -68,7 +59,7 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => (
     <AnimatePresence>
       {isOpen && (
         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-          <p className="pt-5 text-[14px] leading-relaxed text-[#666666] font-roboto">{answer}</p>
+          <p className="pt-5 text-[14px] leading-relaxed text-[#666666] font-roboto italic">{answer}</p>
         </motion.div>
       )}
     </AnimatePresence>
@@ -122,8 +113,7 @@ export function ProductDetailPage() {
   ]
 
   return (
-    <div className="bg-[#FDF4E6] pb-20 overflow-x-hidden font-roboto">
-      <FontLoader />
+    <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden">
 
       {/* Sales Toast */}
       <AnimatePresence>
@@ -140,7 +130,7 @@ export function ProductDetailPage() {
             </div>
             <div>
               <p className="text-[11px] text-[#666666]">Jacklin Purchased ! - From USA</p>
-              <h4 className="text-[13px] font-black text-[#333333] my-0.5 font-grandstander uppercase tracking-tight">KidsKraze Creations</h4>
+              <h4 className="text-[13px] font-bold text-[#333333] my-0.5 font-grandstander tracking-tight">KidsKraze Creations</h4>
               <div className="flex items-center gap-1.5 text-[10px]">
                 <span className="text-gray-400">5 minute ago</span>
                 <span className="flex items-center gap-1 text-green-600 font-bold"><CheckCircle size={10} /> Verified</span>
@@ -165,9 +155,9 @@ export function ProductDetailPage() {
                   <img src={product.img} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h4 className="text-[14px] font-black text-[#333333] hidden lg:block uppercase font-grandstander tracking-tight">{product.title}</h4>
+                  <h4 className="text-[14px] font-bold text-[#333333] hidden lg:block font-grandstander tracking-tight">{product.title}</h4>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#E84949] font-black text-[18px]">${product.price.toFixed(2)}</span>
+                    <span className="text-[#E84949] font-bold text-[18px]">${product.price.toFixed(2)}</span>
                     <span className="text-[12px] text-gray-400 line-through font-bold">${product.oldPrice.toFixed(2)}</span>
                   </div>
                 </div>
@@ -178,7 +168,7 @@ export function ProductDetailPage() {
                   <span className="w-6 text-center font-bold text-[13px] text-[#333]">{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} className="w-8 text-[#666] hover:text-[#E84949]"><Plus size={14} /></button>
                 </div>
-                <button className="h-10 px-6 sm:px-10 bg-[#E84949] text-white text-[12px] font-black rounded-full hover:scale-105 transition-all uppercase tracking-widest">Add To Cart</button>
+                <button className="h-10 px-6 sm:px-10 bg-[#E84949] text-white text-[12px] font-bold rounded-full hover:scale-105 transition-all tracking-widest uppercase">ADD TO CART</button>
               </div>
             </div>
           </motion.div>
@@ -188,14 +178,14 @@ export function ProductDetailPage() {
       <div className="pt-6 sm:pt-10">
         <div className="max-w-[1400px] mx-auto px-4 md:px-10">
           {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-[11px] md:text-[12px] text-[#666] mb-8 uppercase tracking-widest font-black">
+          <nav className="flex items-center gap-2 text-[11px] md:text-[12px] text-[#666] mb-8 tracking-widest font-bold">
             <Link to="/" className="hover:text-[#E84949] transition-colors">Home</Link>
             <span className="text-gray-300">/</span>
             <span className="text-[#333] capitalize">{product.title}</span>
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
-            {/* Gallery - Grid Layout for Toykio Parity */}
+            {/* Gallery - Grid Layout for Toyove-India Parity */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-4 h-fit">
               {productImages.slice(0, 4).map((img, i) => (
                 <div key={i} className="aspect-square rounded-[24px] overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 group">
@@ -207,15 +197,21 @@ export function ProductDetailPage() {
             {/* Buy Box */}
             <div className="lg:col-span-5 flex flex-col gap-6">
               <div className="space-y-4">
-                <p className="text-[11px] font-black tracking-[0.2em] text-[#666] uppercase">Home Furniture</p>
-                <h1 className="text-4xl md:text-5xl font-grandstander font-black text-[#333] leading-[1.1] uppercase tracking-tighter">{product.title}</h1>
+                <p className="text-[11px] font-medium tracking-[0.25em] text-[#666] font-roboto uppercase">Home Furniture</p>
+                <h1 style={{
+              fontFamily: 'var(--font-header)',
+              textShadow: '0 2px 4px rgba(0,0,0,0.12)',
+              lineHeight: 1.05,
+              fontSize: 'clamp(32px, 7vw, 68px)',
+              letterSpacing: '-0.04em'
+            }} className="font-grandstander font-bold text-[#333] tracking-tighter">{product.title}</h1>
 
                 <div className="flex items-center gap-4">
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl text-gray-400 line-through font-bold tracking-tighter">${product.oldPrice.toFixed(2)}</span>
-                    <span className="text-3xl lg:text-4xl font-black text-[#E84949] tracking-tighter">${product.price.toFixed(2)} USD</span>
+                    <span className="text-3xl lg:text-4xl font-bold text-[#E84949] tracking-tighter">${product.price.toFixed(2)} USD</span>
                   </div>
-                  <span className="bg-[#333] text-white text-[10px] font-black px-2 py-0.5 rounded uppercase shadow-sm">Sale</span>
+                  <span className="bg-[#333] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">Sale</span>
                 </div>
 
                 <div className="space-y-4 py-5 border-y-[1px] border-dashed border-gray-300">
@@ -229,20 +225,20 @@ export function ProductDetailPage() {
                   </div>
                   <div className="flex gap-3 pt-1">
                     <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Heart size={16} /></button>
-                    <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
+        <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
                   </div>
-                  <p className="text-[13px] font-bold text-[#666]">SKU: {product.sku}</p>
+                  <p className="text-[13px] text-[#666] font-medium">Sku: {product.sku}</p>
                 </div>
 
-                {/* <div className="bg-[#F9EAD3] p-4 rounded-[20px] border-[1.2px] border-dashed border-[#333333]/30 space-y-4 shadow-sm">
+                <div className="bg-[#F9EAD3] p-4 rounded-[20px] border-[1.2px] border-[#333333]/15 space-y-4 shadow-sm">
                   <div className="space-y-2">
-                    <p className="text-[10px] font-black text-[#666] uppercase tracking-widest">Select Size</p>
+                    <p className="text-[11px] font-bold text-[#666] font-grandstander">Select Size</p>
                     <div className="flex flex-wrap gap-1.5">
                       {['Small', 'Medium', 'Large'].map(size => (
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all ${selectedSize === size ? 'bg-[#E84949] text-white border-[#E84949]' : 'bg-white text-[#333] border-[#E5E5E5] hover:border-[#E84949]'}`}
+                          className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all font-grandstander ${selectedSize === size ? 'bg-[#E84949] text-white border-[#E84949]' : 'bg-white text-[#333] border-[#E5E5E5] hover:border-[#E84949]'}`}
                         >
                           {size}
                         </button>
@@ -250,7 +246,7 @@ export function ProductDetailPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-[10px] font-black text-[#666] uppercase tracking-widest">Choose Color</p>
+                    <p className="text-[11px] font-bold text-[#666] font-grandstander">Choose Color</p>
                     <div className="flex gap-2">
                       {['Red', 'Yellow'].map(color => (
                         <button
@@ -262,7 +258,8 @@ export function ProductDetailPage() {
                       ))}
                     </div>
                   </div>
-                </div> */}
+                </div>
+
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-[12px] text-green-600 font-bold uppercase tracking-widest">
@@ -278,9 +275,9 @@ export function ProductDetailPage() {
                       <span className="font-grandstander text-[16px] text-[#333] font-bold">{quantity}</span>
                       <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={14} /></button>
                     </div>
-                    <button className="flex-1 h-12 bg-[#E84949] text-white rounded font-black text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all">Add To Cart</button>
+                    <button className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all">ADD TO CART</button>
                   </div>
-                  <button className="w-full h-12 bg-[#333] text-white rounded font-black text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all">Buy It Now</button>
+                  <button className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all">BUY IT NOW</button>
                 </div>
 
                 <div className="pt-4 space-y-3 font-roboto text-[14px] text-[#333]">
@@ -293,10 +290,10 @@ export function ProductDetailPage() {
                   <button className="ml-6 text-[12px] font-medium underline decoration-solid hover:text-[#E84949]">View store information</button>
 
                   <div className="pt-4 border-t border-dashed border-gray-300 space-y-2">
-                    <p><span className="font-black uppercase text-[11px] text-gray-400 mr-2">Categories:</span> <Link className="underline hover:text-[#E84949]">{product.category}</Link></p>
+                    <p><span className="font-medium text-[11px] text-gray-400 mr-2 font-grandstander">Categories:</span> <Link className="underline hover:text-[#E84949] font-medium">{product.category}</Link></p>
                   </div>
 
-                  <button className="w-full py-3 bg-[#E84949] text-white rounded font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm">
+                  <button className="w-full py-3 bg-[#E84949] text-white rounded font-bold text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm">
                     <Share size={14} /> SHARE
                   </button>
                 </div>
@@ -306,16 +303,16 @@ export function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Tabs Section - Refined for Toykio Parity */}
+      {/* Tabs Section - Refined for Toyove-India Parity */}
       <div className="py-20 max-w-[1400px] mx-auto px-4 md:px-10">
         <div className="flex flex-wrap gap-0">
-          {['description', 'additional', 'variant', 'custom'].map((t) => (
+          {['Description', 'Additional', 'Variant', 'Custom'].map((t) => (
             <button
               key={t}
-              onClick={() => setActiveTab(t)}
-              className={`px-8 md:px-10 py-4 text-[12px] font-black uppercase tracking-[0.2em] transition-all border-[#E5E5E5] border-[1px] -mr-[1px] -mb-[1px] relative ${activeTab === t ? 'text-[#333] bg-[#FDF4E6] z-10 border-b-[#FDF4E6]' : 'text-[#666] bg-[#FDF4E6]/50 hover:bg-[#FDF4E6]'}`}
+              onClick={() => setActiveTab(t.toLowerCase())}
+              className={`px-8 md:px-10 py-4 text-[12px] font-bold tracking-[0.2em] transition-all border-[#E5E5E5] border-[1px] -mr-[1px] -mb-[1px] relative font-grandstander ${activeTab === t.toLowerCase() ? 'text-[#333] bg-[#FDF4E6] z-10 border-b-[#FDF4E6]' : 'text-[#666] bg-[#FDF4E6]/50 hover:bg-[#FDF4E6]'}`}
             >
-              {t.replace('-', ' ')}
+              {t}
             </button>
           ))}
         </div>
@@ -340,26 +337,26 @@ export function ProductDetailPage() {
                 <div className="space-y-6 max-w-5xl">
                   <span className=" whitespace-pre-line">
                     {`1) This information tab works when you add some description in metafield.
-
-2) Settings > Custom Data > Product > Add definition > give name as needed > in key "custom.additional_information" add this code and save the page.
-
-3) Select type "multi-line text"
-
-4) Now go in product, scroll down, and you will see the metafield section. Add your custom information as needed.
-
-EXAMPLE:-
-
-E-Techno: Your Premier Destination for Cutting-Edge Electronics and Gadgets
-
-Welcome to E-Techno, the ultimate haven for tech enthusiasts and gadget aficionados alike. Step into a world where innovation meets convenience, and where the latest advancements in electronics are just a click away.
-
-At E-Techno, we pride ourselves on being more than just a store; we're a gateway to the future. Our vast selection encompasses everything from state-of-the-art smartphones and sleek laptops to immersive VR headsets and smart home devices that streamline your lifestyle. Whether you're a tech-savvy professional seeking productivity tools or a gaming enthusiast in pursuit of the ultimate gaming setup, we have you covered.
-
-With a user-friendly interface and seamless browsing experience, navigating through our extensive catalog is a breeze. Explore our curated collections, stay updated on the newest releases, and take advantage of exclusive deals and promotions. Our commitment to quality ensures that every product we offer is rigorously tested and vetted, guaranteeing satisfaction and reliability.
-
-But E-Techno is more than just a retailer; we're a community of tech enthusiasts united by our passion for innovation. Join us on social media platforms and forums to engage with like-minded individuals, share your insights, and stay informed about the latest trends and developments in the tech world.
-
-Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tech enthusiast, or simply looking to stay ahead of the curve, E-Techno is your one-stop destination for all things electronic. Experience the future today with E-Techno, where innovation knows no bounds.`}
+ 
+ 2) Settings > Custom Data > Product > Add definition > give name as needed > in key "custom.additional_information" add this code and save the page.
+ 
+ 3) Select type "multi-line text"
+ 
+ 4) Now go in product, scroll down, and you will see the metafield section. Add your custom information as needed.
+ 
+ EXAMPLE:-
+ 
+ E-Techno: Your Premier Destination for Cutting-Edge Electronics and Gadgets
+ 
+ Welcome to E-Techno, the ultimate haven for tech enthusiasts and gadget aficionados alike. Step into a world where innovation meets convenience, and where the latest advancements in electronics are just a click away.
+ 
+ At E-Techno, we pride ourselves on being more than just a store; we're a gateway to the future. Our vast selection encompasses everything from state-of-the-art smartphones and sleek laptops to immersive VR headsets and smart home devices that streamline your lifestyle. Whether you're a tech-savvy professional seeking productivity tools or a gaming enthusiast in pursuit of the ultimate gaming setup, we have you covered.
+ 
+ With a user-friendly interface and seamless browsing experience, navigating through our extensive catalog is a breeze. Explore our curated collections, stay updated on the newest releases, and take advantage of exclusive deals and promotions. Our commitment to quality ensures that every product we offer is rigorously tested and vetted, guaranteeing satisfaction and reliability.
+ 
+ But E-Techno is more than just a retailer; we're a community of tech enthusiasts united by our passion for innovation. Join us on social media platforms and forums to engage with like-minded individuals, share your insights, and stay informed about the latest trends and developments in the tech world.
+ 
+ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tech enthusiast, or simply looking to stay ahead of the curve, E-Techno is your one-stop destination for all things electronic. Experience the future today with E-Techno, where innovation knows no bounds.`}
                   </span>
                 </div>
               }
@@ -386,7 +383,7 @@ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tec
       {/* Suggested Products (YOU MAY ALSO LIKE) */}
       <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-16">
         <div className="mb-12 text-center">
-          <h2 className="text-4xl md:text-5xl font-grandstander font-black text-[#333] uppercase tracking-tight">You May Also Like</h2>
+          <h2 className="text-3xl md:text-4xl font-grandstander font-bold text-[#333] tracking-tight">You May Also Like</h2>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {related.map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
@@ -398,9 +395,9 @@ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tec
         <div className="flex flex-col items-center justify-between mb-12 gap-6">
           <div className="text-center w-full">
             {/* make responsive and text-align center for all devices. */}
-            <h2 className="text-4xl md:text-5xl font-grandstander font-black text-[#333] uppercase leading-none tracking-tight text-center lg:text-center ">Recently Viewed</h2>
+            <h2 className="text-3xl md:text-4xl font-grandstander font-bold text-[#333] leading-none tracking-tight text-center">Recently Viewed</h2>
           </div>
-          <Link className="flex items-center gap-2 font-black text-[12px] uppercase tracking-widest hover:text-[#E84949] transition-colors">
+          <Link className="flex items-center gap-2 font-bold text-[12px] tracking-widest hover:text-[#E84949] transition-colors font-grandstander uppercase">
             View All Products <ChevronRight size={16} />
           </Link>
         </div>
@@ -417,12 +414,12 @@ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tec
             <div className="absolute inset-0 bg-[#333]/3 group-hover:bg-transparent transition-colors" />
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-grandstander font-black text-[#333] mb-12 uppercase leading-none tracking-tighter">Frequently Ask Questions</h2>
+            <h2 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333] mb-12 leading-none tracking-tighter">Frequently Ask Questions</h2>
             <div className="space-y-0">
               {[
                 { q: "What Types Of Furniture Can I Showcase With This Theme?", a: "Toyove-India is perfect for all types of kids furniture - from cribs and beds to play tables and storage units." },
                 { q: "Is This Theme Mobile-Friendly?", a: "Yes, Toyove-India is engineered with a mobile-first philosophy, providing a lightning-fast and intuitive experience on all mobile devices." },
-                { q: "Can I Customize The Color Scheme And Fonts?", a: "Absolutely. With our advanced theme settings, you can customize every color, font, and button style in a few clicks." }
+                { q: "Can I Customize The Color Scheme And Fonts?", a: "Absolutly. With our advanced theme settings, you can customize every color, font, and button style in a few clicks." }
               ].map((faq, i) => (
                 <FAQItem
                   key={i}

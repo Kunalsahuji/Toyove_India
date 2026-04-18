@@ -7,7 +7,7 @@ const banners = [
   {
     id: 1,
     bg: '#2A9AA6',
-    label: 'MUSIC AND SOUNDS',
+    label: 'Music And Sounds',
     title: 'Shop & Glow Toy Cart Orange Car',
     img: shop,
     tall: true,
@@ -19,7 +19,7 @@ const banners = [
   {
     id: 2,
     bg: '#EA4C4E',
-    label: 'BIG SEASON SALE',
+    label: 'Big Season Sale',
     title: 'Playbox The Builder Wooden Toys',
     img: bigsale,
     tall: false,
@@ -31,7 +31,7 @@ const banners = [
   {
     id: 3,
     bg: '#6E5BB9',
-    label: 'SEASON SALE',
+    label: 'Season Sale',
     title: 'Plan Toys Pull-Along Musical Bear',
     img: musicalbear,
     tall: false,
@@ -43,7 +43,7 @@ const banners = [
   {
     id: 4,
     bg: '#ED6D2A',
-    label: 'MUSIC AND SOUNDS',
+    label: 'Music And Sounds',
     title: 'Fun And Educational Toy For Babies',
     img: educationtoys,
     tall: true,
@@ -90,16 +90,15 @@ function BannerCard({ banner }) {
       <div className={`relative z-20 p-8 lg:p-10 flex flex-col pointer-events-none w-full
                       ${isMirrored ? 'items-end' : 'items-start'}
                       ${isMobileCentered ? 'justify-center md:justify-start' : 'justify-start'}`}>
-        <p className="text-white/95 font-bold text-[10px] lg:text-[11px] tracking-[0.15em] uppercase mb-1 md:mb-2 lg:mt-2">
+        <p className="text-white font-medium text-[10px] lg:text-[11px] tracking-[0.25em] mb-1 md:mb-2 lg:mt-2 font-roboto uppercase">
           {banner.label}
         </p>
-        <p className={`font-playful text-white font-bold text-[18px] md:text-[20px] lg:text-[24px] leading-[1.05] mb-6 md:mb-7 drop-shadow-sm max-w-[220px] md:max-w-[240px]
-                       ${isMirrored ? 'text-right' : 'text-left'}`} 
-            style={{ fontFamily: 'var(--font-playful)' }}>
+        <p className={`font-grandstander text-white font-bold text-[18px] md:text-[20px] lg:text-[24px] leading-[1.08] mb-6 md:mb-7 drop-shadow-sm max-w-[220px] md:max-w-[240px]
+                       ${isMirrored ? 'text-right' : 'text-left'}`}>
           {banner.title}
         </p>
         
-        <button className="h-9 px-7 bg-white text-black text-[12px] font-black uppercase tracking-wider rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 pointer-events-auto shadow-sm">
+        <button className="h-9 px-7 bg-white text-black text-[12px] font-bold uppercase tracking-[0.16em] rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 pointer-events-auto shadow-sm">
           SHOP NOW
         </button>
       </div>

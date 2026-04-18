@@ -46,12 +46,12 @@ export function BenefitsSection() {
                   transition={{ delay: i * 0.1, duration: 0.5 }}
                   className={`w-full sm:w-[50%] lg:w-auto shrink-0 snap-start p-6 md:p-8 flex flex-col gap-4 hover:bg-[#F7EBD5] transition-colors duration-300 cursor-default ${borderClasses}`}
                 >
-                  <div className="h-10 w-10 flex items-center justify-start mb-1">
-                    <b.icon className="h-9 w-9 text-brand-ink stroke-[1]" />
+                  <div className="h-10 w-10 flex items-center justify-start mb-1 text-brand-ink">
+                    <b.icon className="h-9 w-9 stroke-[1.2]" />
                   </div>
                   <div className="space-y-3">
-                    <h4 className="font-bold text-[15px] md:text-[16px] text-brand-ink tracking-tight">{b.title}</h4>
-                    <p className="text-[12px] md:text-[13px] text-brand-muted leading-[1.6]">{b.desc}</p>
+                    <h4 className="font-grandstander font-bold text-[15px] md:text-[17px] text-brand-ink tracking-tight">{b.title}</h4>
+                    <p className="font-roboto text-[13px] md:text-[14px] text-brand-muted leading-relaxed">{b.desc}</p>
                   </div>
                 </motion.div>
               )
@@ -62,4 +62,3 @@ export function BenefitsSection() {
     </section>
   )
 }
-

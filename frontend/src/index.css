@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800&family=Fredoka:wght@600;700&display=swap');
-
 :root {
   --purple: #6651A4;
   --orange: #F1641E;
@@ -8,9 +6,8 @@
   --cream: #FDF3E7;
   --ink: #222222;
   --muted: #777777;
-  --font-serif: 'Fredoka', 'Playfair Display', Georgia, serif;
-  --font-sans: 'Inter', sans-serif;
-  --font-playful: 'Fredoka', sans-serif;
+  --font-header: "Grandstander", "Grandstander-Regular", sans-serif;
+  --font-body: "Roboto", sans-serif;
 }
 
 @theme {
@@ -31,12 +28,28 @@
     overflow-x: hidden;
     background-color: var(--cream);
     color: var(--ink);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+  }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-header);
+    font-weight: 700;
   }
 }
 
-.font-serif { font-family: var(--font-serif) !important; }
+.font-grandstander { font-family: var(--font-header) !important; }
+.font-roboto { font-family: var(--font-body) !important; }
+.font-serif { font-family: var(--font-header) !important; }
+
+.utility-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--color-brand-orange);
+}
 
 .shell {
   width: 100%;

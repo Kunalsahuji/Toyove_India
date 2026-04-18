@@ -2,25 +2,15 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Star, Users, Trophy, Phone, MapPin, Mail } from 'lucide-react'
 
-// Localized Font Import to avoid global CSS conflicts
-const FontLoader = () => (
-  <style dangerouslySetInnerHTML={{ __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Grandstander:wght@600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap');
-    .font-grandstander { font-family: 'Grandstander', sans-serif; }
-    .font-roboto { font-family: 'Roboto', sans-serif; }
-  `}} />
-)
-
 const TeamMemberCard = ({ name, role, img }) => (
   <div className="group relative cursor-pointer">
     <div className="aspect-[3/4] rounded-[8px] overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333333]/20 hover:border-[#333333]/40 transition-all duration-500">
       <img src={img} alt={name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
       <div className="absolute inset-0 bg-[#333]/0 group-hover:bg-[#333]/10 transition-colors duration-500" />
     </div>
-    {/* make the full width  as the image width have and rounded open for bottom-left and bottom-right */}
     <div className="mt-[-25px] relative z-10 mx-0 md:mx-0 bg-[#E84949] p-4 md:p-5 rounded-b-lg text-center shadow-2xl shadow-[#E84949]/30 group-hover:-translate-y-2 transition-all duration-500 font-roboto">
-      <h4 className="text-white font-black text-[14px] md:text-[16px] uppercase tracking-wider font-grandstander">{name}</h4>
-      <p className="text-white/80 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] mt-1">{role}</p>
+      <h4 className="text-white font-bold text-[14px] md:text-[16px] tracking-wider font-grandstander">{name}</h4>
+      <p className="text-white/80 text-[10px] md:text-[11px] font-medium uppercase tracking-[0.2em] mt-1">{role}</p>
     </div>
   </div>
 )
@@ -30,8 +20,8 @@ const MetricCard = ({ icon: Icon, value, label }) => (
     <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white border-[1.6px] border-dashed border-[#E84949] flex items-center justify-center text-[#E84949] mb-8 flex-shrink-0 transition-transform duration-500 group-hover:rotate-[360deg]">
       <Icon size={28} />
     </div>
-    <h3 className="text-4xl md:text-5xl font-grandstander font-black text-[#333333] mb-3 group-hover:scale-110 transition-transform duration-500">{value}</h3>
-    <p className="text-[12px] md:text-[14px] font-black text-[#666] uppercase tracking-[0.3em] font-roboto">{label}</p>
+    <h3 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333333] mb-3 group-hover:scale-110 transition-transform duration-500">{value}</h3>
+    <p className="text-[12px] md:text-[14px] font-bold text-[#666] uppercase tracking-[0.3em] font-roboto">{label}</p>
   </div>
 )
 
@@ -40,8 +30,7 @@ const InfoBox = ({ icon: Icon, title, content }) => (
     <div className="w-16 h-16 rounded-full border border-[#333333] flex items-center justify-center mb-6 group-hover:bg-[#E84949] group-hover:border-[#E84949] group-hover:text-white transition-all duration-500">
       <Icon size={24} />
     </div>
-    {/* reduce more font weight  */}
-    <h3 className="text-[18px] md:text-[18px] font-grandstander font-normal text-[#333333] mb-5 uppercase tracking-tight">
+    <h3 className="text-[18px] md:text-[18px] font-grandstander font-bold text-[#333333] mb-5 tracking-tight capitalize">
   {title}
 </h3>
     <p className="text-[14px] md:text-[15px] leading-relaxed text-[#666666] font-roboto">{content}</p>
@@ -54,8 +43,7 @@ export function AboutPage() {
   }, [])
 
   return (
-    <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden">
-      <FontLoader />
+    <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden font-roboto">
       
       {/* Hero Section */}
       <div className="relative h-[350px] md:h-[550px] overflow-hidden flex items-center justify-center text-center group">
@@ -65,7 +53,7 @@ export function AboutPage() {
             <motion.p 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
-              className="text-[#E84949] font-black text-[14px] md:text-[16px] tracking-[0.5em] uppercase mb-6 drop-shadow-lg font-roboto"
+              className="text-[#E84949] font-medium text-[14px] md:text-[16px] tracking-[0.3em] uppercase mb-6 drop-shadow-lg font-roboto"
             >
               Our Journey & Passion
             </motion.p>
@@ -73,9 +61,9 @@ export function AboutPage() {
               initial={{ opacity: 0, scale: 0.9 }} 
               animate={{ opacity: 1, scale: 1 }} 
               transition={{ delay: 0.2 }}
-              className="text-5xl md:text-8xl font-grandstander font-black text-white drop-shadow-2xl leading-none uppercase tracking-tighter"
+              className="text-5xl md:text-6xl font-grandstander font-bold text-white drop-shadow-2xl leading-none tracking-tighter"
             >
-              OUR STORY
+              Our Story
             </motion.h1>
          </div>
       </div>
@@ -84,20 +72,20 @@ export function AboutPage() {
         {/* Story Blocks */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32 items-center">
           <div className="text-center lg:text-left space-y-8">
-            <span className="text-[#E84949] font-black text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto">Toyove Vision</span>
-            <h2 className="text-4xl md:text-6xl font-grandstander font-black text-[#333333] leading-[1.1] uppercase tracking-tight">Every Toy Tells an Adventure Story</h2>
-            <div className="space-y-8 text-[16px] md:text-[18px] text-[#666] leading-relaxed font-roboto max-w-2xl mx-auto lg:mx-0">
+            <span className="text-[#E84949] font-medium text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto">Toyove Vision</span>
+            <h2 className="text-4xl md:text-6xl font-grandstander font-bold text-[#333333] leading-[1.1] tracking-tight">Every Toy Tells an Adventure Story</h2>
+            <div className="space-y-8 text-[16px] md:text-[18px] text-[#666] leading-relaxed max-w-2xl mx-auto lg:mx-0">
               <p>Welcome to Toyove, where innovation meets the timeless magic of play. Our journey began with a simple mission: to create toys that don't just entertain, but inspire children to explore the world around them with curiosity and joy.</p>
               <p>At Toyove, we believe that toys are the building blocks of childhood memories. That’s why we meticulously design each product to ensure the highest standards of safety, quality, and creative potential, using eco-friendly materials wherever possible.</p>
             </div>
-            <button className="h-14 px-12 bg-[#333] text-white rounded-full font-black text-[13px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all transform hover:scale-110 shadow-xl">Explore Our Values</button>
+            <button className="h-14 px-12 bg-[#333] text-white rounded-full font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all transform hover:scale-105 shadow-xl">EXPLORE OUR VALUES</button>
           </div>
           <div className="relative group p-6">
             <div className="aspect-[4/3] rounded-[48px] md:rounded-[64px] overflow-hidden shadow-2xl skew-x-[-1deg] group-hover:skew-x-0 transition-all duration-1000 border-[3px] border-dashed border-[#333333]/20 bg-[#F9EAD3]">
                <img src="https://toykio.myshopify.com/cdn/shop/files/about-us.webp?v=1711002747" alt="Story" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
             </div>
             <div className="absolute -bottom-8 -right-8 md:-bottom-12 md:-right-12 w-48 h-48 md:w-56 md:h-56 bg-[#E84949] rounded-[40px] flex items-center justify-center p-8 -rotate-6 shadow-2xl hidden sm:flex border-[4px] border-white group-hover:rotate-0 transition-all duration-700">
-               <p className="text-white font-grandstander font-black text-2xl md:text-3xl text-center leading-tight uppercase tracking-tighter">10+ Years of Crafting Joy</p>
+               <p className="text-white font-grandstander font-bold text-2xl md:text-3xl text-center leading-tight tracking-tighter">10+ Years of Crafting Joy</p>
             </div>
           </div>
         </div>
@@ -132,8 +120,8 @@ export function AboutPage() {
         {/* Meet Our Team Section */}
         <div className="mt-15 md:mt-20">
            <div className="text-center mb-10">
-              <p className="text-[#E84949] font-black tracking-[0.4em] uppercase text-[12px] md:text-[14px] font-roboto mb-4">The Minds Behind the Magic</p>
-              <h2 className="text-4xl md:text-7xl font-grandstander font-black text-[#333333] uppercase leading-none tracking-tight">Meet Our Team</h2>
+              <p className="text-[#E84949] font-medium tracking-[0.4em] uppercase text-[12px] md:text-[14px] mb-4 font-roboto">The Minds Behind the Magic</p>
+              <h2 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333333] leading-none tracking-tight">Meet Our Team</h2>
            </div>
            
            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
