@@ -110,21 +110,6 @@ export function AboutPage() {
            <MetricCard icon={Trophy} value="12" label="Global Awards" />
         </div>
 
-        {/* Meet Our Team Section */}
-        <div className="mt-10 md:mt-20">
-           <div className="text-center mb-10">
-              <p className="text-[#E84949] font-black tracking-[0.4em] uppercase text-[12px] md:text-[14px] font-roboto mb-4">The Minds Behind the Magic</p>
-              <h2 className="text-4xl md:text-7xl font-grandstander font-black text-[#333333] uppercase leading-none tracking-tight">Meet Our Team</h2>
-           </div>
-           
-           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-              <TeamMemberCard name="David K" role="Founder & CEO" img="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" />
-              <TeamMemberCard name="John Doe" role="Head of Design" img="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" />
-              <TeamMemberCard name="Jemis P" role="Product Expert" img="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop" />
-              <TeamMemberCard name="Michel R" role="Quality Assurance" img="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&auto=format&fit=crop" />
-           </div>
-        </div>
-
         {/* Info Box Section - Added for Parity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 md:mt-20 mt-12 gap-8">
            <InfoBox 
@@ -142,6 +127,21 @@ export function AboutPage() {
              title="admin@gmail.com" 
              content="Our dedicated team is at your service, ready to respond promptly and ensure your experience with 'Toyove' Toys and games Collection is nothing short of regal." 
            />
+        </div>
+
+        {/* Meet Our Team Section */}
+        <div className="mt-15 md:mt-20">
+           <div className="text-center mb-10">
+              <p className="text-[#E84949] font-black tracking-[0.4em] uppercase text-[12px] md:text-[14px] font-roboto mb-4">The Minds Behind the Magic</p>
+              <h2 className="text-4xl md:text-7xl font-grandstander font-black text-[#333333] uppercase leading-none tracking-tight">Meet Our Team</h2>
+           </div>
+           
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+              <TeamMemberCard name="David K" role="Founder & CEO" img="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" />
+              <TeamMemberCard name="John Doe" role="Head of Design" img="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" />
+              <TeamMemberCard name="Jemis P" role="Product Expert" img="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop" />
+              <TeamMemberCard name="Michel R" role="Quality Assurance" img="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&auto=format&fit=crop" />
+           </div>
         </div>
       </div>
     </div>

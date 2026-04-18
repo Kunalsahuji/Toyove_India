@@ -234,7 +234,7 @@ export function ProductDetailPage() {
                   <p className="text-[13px] font-bold text-[#666]">SKU: {product.sku}</p>
                 </div>
 
-                <div className="bg-[#F9EAD3] p-4 rounded-[20px] border-[1.2px] border-dashed border-[#333333]/30 space-y-4 shadow-sm">
+                {/* <div className="bg-[#F9EAD3] p-4 rounded-[20px] border-[1.2px] border-dashed border-[#333333]/30 space-y-4 shadow-sm">
                   <div className="space-y-2">
                     <p className="text-[10px] font-black text-[#666] uppercase tracking-widest">Select Size</p>
                     <div className="flex flex-wrap gap-1.5">
@@ -262,7 +262,7 @@ export function ProductDetailPage() {
                       ))}
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-[12px] text-green-600 font-bold uppercase tracking-widest">
@@ -385,7 +385,7 @@ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tec
 
       {/* Suggested Products (YOU MAY ALSO LIKE) */}
       <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-16">
-        <div className="mb-12">
+        <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl font-grandstander font-black text-[#333] uppercase tracking-tight">You May Also Like</h2>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -395,8 +395,8 @@ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tec
 
       {/* Recently Viewed Section */}
       <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
+        <div className="flex flex-col items-center justify-between mb-12 gap-6">
+          <div className="text-center w-full">
             {/* make responsive and text-align center for all devices. */}
             <h2 className="text-4xl md:text-5xl font-grandstander font-black text-[#333] uppercase leading-none tracking-tight text-center lg:text-center ">Recently Viewed</h2>
           </div>
@@ -413,7 +413,7 @@ Whether you're upgrading your gadgets, seeking the perfect gift for a fellow tec
       <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-24 mb-10 border-t border-[#E5E5E5]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden group border-[1.6px] border-[#E5E5E5]">
-            <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+            <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 p-2 rounded-[32px]" />
             <div className="absolute inset-0 bg-[#333]/3 group-hover:bg-transparent transition-colors" />
           </div>
           <div className="flex flex-col justify-center">
