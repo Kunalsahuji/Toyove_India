@@ -44,13 +44,6 @@ const PaymentBadges = () => (
 
 export function Footer() {
   const [email, setEmail] = useState('')
-  const [showTopBtn, setShowTopBtn] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setShowTopBtn(window.scrollY > 400)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   return (
     <footer className="bg-[#6449A4] text-white overflow-hidden relative border-t-[3px] border-dashed border-white/5">
@@ -150,14 +143,6 @@ export function Footer() {
         </div>
       </div>
 
-      <motion.button 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: showTopBtn ? 1 : 0, y: showTopBtn ? 0 : 20 }}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed right-6 bottom-24 md:bottom-10 bg-white text-[#333] w-12 h-12 flex items-center justify-center rounded-2xl shadow-2xl hover:bg-[#E84949] hover:text-white transition-all z-[200] group ${showTopBtn ? 'pointer-events-auto' : 'pointer-events-none'}`}
-      >
-        <ChevronDown size={24} className="rotate-180 group-hover:translate-y-[-2px] transition-transform" />
-      </motion.button>
     </footer>
   )
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, Heart, Home, User, Layers, ChevronUp } from 'lucide-react'
+import { ShoppingBag, Heart, Home, User, Layers, ArrowUp } from 'lucide-react'
 
 export function MobileBottomBar() {
   const [showNav, setShowNav] = useState(false)
@@ -43,7 +43,7 @@ export function MobileBottomBar() {
               onClick={scrollToTop}
               className="lg:hidden fixed bottom-20 right-5 z-[999] w-12 h-12 bg-white border-2 border-dashed border-[#333]/30 rounded-xl flex items-center justify-center text-[#333] shadow-lg hover:bg-[#E84949] hover:text-white transition-all cursor-pointer"
             >
-              <ChevronUp size={24} />
+              <ArrowUp size={24} />
             </motion.button>
 
             {/* Bottom Navigation Bar */}

@@ -1,152 +1,141 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useMotionValue, useSpring, useTransform, animate } from 'framer-motion'
 
-const testimonials = [
+const originalTestimonials = [
   {
     id: 1,
-    quote: "Toyove-India has been a game-changer for our nursery. The quality of the sustainable toys is unmatched, and the design aesthetic perfectly complements our modern home.",
-    name: "EMMA RICHARDSON",
-    role: "Happy parent",
+    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
+    name: "JEMIS P",
+    role: "MANAGER",
     stars: 5,
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop"
   },
   {
     id: 2,
-    quote: "The interactive learning kits we purchased have sparked so much curiosity in our toddlers. Fast shipping and excellent customer support every single time!",
-    name: "DAVID MILLER",
-    role: "Preschool Educator",
+    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
+    name: "SARAH L",
+    role: "MANAGER",
     stars: 5,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop"
   },
   {
     id: 3,
-    quote: "I was looking for unique baby shower gifts and found the most adorable plush collection here. The dashboard navigation made shopping so easy and delightful.",
-    name: "SOPHIA CHEN",
-    role: "Regular Customer",
-    stars: 4,
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop"
+    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
+    name: "MIKE R",
+    role: "DIRECTOR",
+    stars: 5,
   },
   {
     id: 4,
-    quote: "Enterprise-level quality for children's toys. The attention to detail in the wooden vehicle series is superior. Highly recommended for collectors too!",
-    name: "MARCUS THOMPSON",
-    role: "Toy Collector",
+    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
+    name: "ANNA K",
+    role: "DESIGNER",
     stars: 5,
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop"
   }
 ]
 
-export function TestimonialsSection() {
-  const [index, setIndex] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+// Extended list for smoother infinite looping
+const testimonials = [...originalTestimonials, ...originalTestimonials, ...originalTestimonials]
 
+export function TestimonialsSection() {
+  const [isMobile, setIsMobile] = useState(false)
+  const containerRef = useRef(null)
+  const x = useMotionValue(0)
+  
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024)
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  const nextSlide = () => {
-    if (isMobile) {
-      setIndex((prev) => (prev + 1) % testimonials.length)
-    } else {
-      setIndex((prev) => (prev + 2 < testimonials.length ? prev + 2 : 0))
+  // Initial Position Logic (Start in middle clone)
+  useEffect(() => {
+    if (containerRef.current) {
+        const itemWidth = containerRef.current.offsetWidth / (isMobile ? 1 : 2)
+        const initialX = -(itemWidth * originalTestimonials.length)
+        x.set(initialX)
     }
-  }
+  }, [isMobile])
 
-  const prevSlide = () => {
-    if (isMobile) {
-      setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-    } else {
-      setIndex((prev) => (prev - 2 >= 0 ? prev - 2 : testimonials.length - 2))
+  const handleDragEnd = (event, info) => {
+    const itemWidth = containerRef.current.offsetWidth / (isMobile ? 1 : 2)
+    const threshold = itemWidth / 4
+    const offset = info.offset.x
+    const velocity = info.velocity.x
+
+    let direction = 0
+    if (Math.abs(offset) > threshold || Math.abs(velocity) > 500) {
+      direction = offset > 0 ? -1 : 1
     }
-  }
 
-  const visibleTestimonials = isMobile 
-    ? [testimonials[index]] 
-    : [testimonials[index], testimonials[(index + 1) % testimonials.length]]
+    const currentX = x.get()
+    const targetX = Math.round(currentX / itemWidth - direction) * itemWidth
+
+    animate(x, targetX, {
+      type: "spring",
+      bounce: 0.15,
+      duration: 0.6,
+      onComplete: () => {
+        // Handle Infinite Wrap
+        const totalItems = originalTestimonials.length
+        const totalWidth = itemWidth * totalItems
+        if (targetX <= -(totalWidth * 2)) {
+            x.set(targetX + totalWidth)
+        } else if (targetX >= -totalWidth / 2) {
+            x.set(targetX - totalWidth)
+        }
+      }
+    })
+  }
 
   return (
-    <section className="bg-brand-cream py-20 relative overflow-hidden font-roboto border-t border-dashed border-[#333]/10">
-      {/* Background Decorative Element */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-purple/5 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none" />
-
-      <div className="shell relative z-10">
-        <div className="text-center mb-12">
-            <p className="text-brand-orange font-bold text-[11px] tracking-[0.25em] mb-3 uppercase">World Of Customers</p>
-            <h2 className="font-grandstander text-[32px] md:text-[45px] font-bold text-brand-ink leading-tight">What They're Saying</h2>
-        </div>
-
-        <div className="relative max-w-6xl mx-auto px-4 md:px-12">
-          {/* Controls */}
-          <button 
-            onClick={prevSlide}
-            className="absolute left-[-10px] md:left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF3E7] rounded-full flex items-center justify-center shadow-lg hover:bg-brand-orange hover:text-white transition-all z-20 border border-dashed border-[#333]/10"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button 
-            onClick={nextSlide}
-            className="absolute right-[-10px] md:right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF3E7] rounded-full flex items-center justify-center shadow-lg hover:bg-brand-orange hover:text-white transition-all z-20 border border-dashed border-[#333]/10"
-          >
-            <ChevronRight size={20} />
-          </button>
-
-          <div className="overflow-hidden">
-            <motion.div 
-              key={index}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+    <section className="bg-[#6449A4] relative overflow-hidden border-y border-dashed border-white/20 select-none">
+      <div 
+        ref={containerRef}
+        className="cursor-grab active:cursor-grabbing h-full"
+      >
+        <motion.div
+          style={{ x }}
+          drag="x"
+          dragConstraints={{ left: -10000, right: 10000 }} // Handled manually for infinite
+          onDragEnd={handleDragEnd}
+          className="flex h-full"
+        >
+          {testimonials.map((t, i) => (
+            <div 
+              key={`${t.id}-${i}`}
+              className="flex-shrink-0 w-full md:w-1/2 px-8 md:px-16 lg:px-24 py-14 md:py-20 flex flex-col gap-6 border-r border-dashed border-white/30 last:border-r-0 h-full"
             >
-              {visibleTestimonials.map((t, i) => (
-                <div 
-                  key={`${t.id}-${i}`}
-                  className="bg-[#FDF3E7] p-8 md:p-10 rounded-[32px] border-[1.5px] border-dashed border-[#333]/15 shadow-sm hover:shadow-xl transition-all duration-500 relative group"
-                >
-                  <div className="absolute top-6 right-8 text-brand-orange/10 group-hover:text-brand-orange/20 transition-colors">
-                    <Quote size={60} fill="currentColor" stroke="none" />
-                  </div>
+              {/* Quote Icon */}
+              <div className="text-white/40">
+                 <svg width="45" height="32" viewBox="0 0 45 35" fill="currentColor">
+                    <path d="M13.5 0C6 0 0 6 0 13.5C0 21 4.5 31.5 13.5 34.5V27C9 25.5 7.5 21 7.5 18H13.5V0H13.5ZM39 0C31.5 0 25.5 6 25.5 13.5C25.5 21 30 31.5 39 34.5V27C34.5 25.5 33 21 33 18H39V0H39Z" />
+                 </svg>
+              </div>
 
-                  <div className="flex gap-0.5 mb-6">
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <Star key={j} size={16} className={`${j < t.stars ? 'text-brand-orange fill-brand-orange' : 'text-gray-200'}`} />
-                    ))}
-                  </div>
+              <p className="text-white text-[16px] md:text-[18px] lg:text-[20px] leading-[1.6] font-medium tracking-tight">
+                {t.quote}
+              </p>
 
-                  <p className="text-[#555] text-[15px] md:text-[17px] leading-[1.7] font-medium mb-8 italic relative z-10">
-                    "{t.quote}"
-                  </p>
-
-                  <div className="flex items-center gap-4 border-t border-dashed border-gray-100 pt-6">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-brand-orange/20 p-1 bg-[#FDF3E7]">
-                        <img src={t.avatar} alt={t.name} className="w-full h-full object-cover rounded-xl" />
-                    </div>
-                    <div>
-                      <h4 className="font-grandstander font-bold text-[16px] text-brand-ink uppercase tracking-wider">{t.name}</h4>
-                      <p className="text-[12px] font-bold text-brand-orange/70 uppercase tracking-widest">{t.role}</p>
-                    </div>
-                  </div>
+              <div className="flex flex-col gap-4 mt-auto">
+                {/* Stars */}
+                <div className="flex gap-1.5">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <span key={j} className="text-white text-[16px]">
+                      {j < t.stars ? '★' : '☆'}
+                    </span>
+                  ))}
                 </div>
-              ))}
-            </motion.div>
-          </div>
 
-          <div className="flex justify-center gap-2 mt-12">
-            {Array.from({ length: isMobile ? testimonials.length : Math.ceil(testimonials.length / 2) }).map((_, i) => (
-               <button 
-                key={i} 
-                onClick={() => setIndex(isMobile ? i : i * 2)}
-                className={`h-2 transition-all duration-300 rounded-full ${index === (isMobile ? i : i * 2) ? 'w-8 bg-brand-orange' : 'w-2 bg-gray-200 hover:bg-gray-300'}`}
-               />
-            ))}
-          </div>
-        </div>
+                {/* Author Info */}
+                <div className="flex items-center gap-2 text-white font-bold text-[13px] tracking-[0.2em] uppercase">
+                  <span>{t.name}</span>
+                  <span className="opacity-40">-</span>
+                  <span>{t.role}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   )
