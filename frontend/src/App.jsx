@@ -21,6 +21,7 @@ import { CartPage } from './pages/CartPage'
 import { AuthProvider } from './context/AuthContext'
 import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
+import { PurchaseNotification } from './components/ui/PurchaseNotification'
 
 // Helper component to scroll to top on route change
 function ScrollToTop() {
@@ -72,6 +73,7 @@ export default function App() {
           <Footer />
           <MobileBottomBar />
           <AsideSidebar />
+          <PurchaseNotification />
         </div>
       </Router>
     </AuthProvider>
