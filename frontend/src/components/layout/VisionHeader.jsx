@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User, Home } from 'lucide-react'
+import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User, Home, LogOut } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
 
 const FbIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
@@ -99,6 +100,8 @@ export function VisionHeader() {
   const [isPastHero, setIsPastHero] = useState(false)
   const [activeMobileSub, setActiveMobileSub] = useState(null)
   const [activeMenu, setActiveMenu] = useState(null)
+  const [profileDropdown, setProfileDropdown] = useState(false)
+  const { user, logout } = useAuth()
   const location = useLocation()
 
   useEffect(() => {
@@ -114,6 +117,7 @@ export function VisionHeader() {
     setActiveMobileSub(null)
     setSearchOpen(false)
     setActiveMenu(null)
+    setProfileDropdown(false)
   }, [location])
 
   const prev = () => setPromoIndex(i => (i - 1 + promoMessages.length) % promoMessages.length)
@@ -266,7 +270,54 @@ export function VisionHeader() {
               <ShoppingCart size={22} />
               <span className="absolute top-1 right-1 w-4 h-4 bg-[#E84949] text-white text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
             </button>
-            <Link to="/account" className="hidden md:block p-2 text-[#333] hover:text-[#E84949] transition-colors"><User size={22} /></Link>
+            <div 
+                className="relative"
+                onMouseEnter={() => setProfileDropdown(true)}
+                onMouseLeave={() => setProfileDropdown(false)}
+            >
+                <Link 
+                    to={user ? "/account" : "/login"} 
+                    className="p-2 text-[#333] hover:text-[#E84949] transition-colors flex items-center gap-2 group/user"
+                >
+                    <User size={22} />
+                    {user && <span className="hidden xl:block text-[11px] font-bold uppercase tracking-widest text-[#333] group-hover/user:text-[#E84949]">{user.firstName}</span>}
+                </Link>
+
+                <AnimatePresence>
+                    {profileDropdown && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="absolute top-full right-0 w-56 bg-[#FDF4E6] shadow-2xl rounded-b-3xl border-t-2 border-[#E84949] py-4 z-50 overflow-hidden"
+                        >
+                            {!user ? (
+                                <div className="px-4 space-y-3">
+                                    <p className="text-[10px] font-bold text-[#666] tracking-widest uppercase mb-2">Welcome back!</p>
+                                    <Link to="/login" className="block w-full py-3 bg-[#E84949] text-white text-center text-[11px] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] transition-all shadow-sm">Sign In</Link>
+                                    <Link to="/register" className="block w-full py-3 border-2 border-[#333] text-[#333] text-center text-[11px] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] hover:text-white transition-all">Register</Link>
+                                </div>
+                            ) : (
+                                <div className="space-y-1">
+                                    <div className="px-5 pb-4 border-b border-[#333]/10 mb-2">
+                                        <p className="text-[13px] font-grandstander font-bold text-[#333] mb-0.5">{user.firstName} {user.lastName}</p>
+                                        <p className="text-[11px] text-[#666] truncate">{user.email}</p>
+                                    </div>
+                                    <Link to="/account" className="flex items-center gap-3 px-5 py-3 text-[12px] font-bold text-[#333] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all uppercase tracking-wider">
+                                        <User size={16}/> My Account
+                                    </Link>
+                                    <button 
+                                        onClick={() => logout()}
+                                        className="w-full flex items-center gap-3 px-5 py-3 text-[12px] font-bold text-[#E84949] hover:bg-[#E84949] hover:text-white transition-all uppercase tracking-wider"
+                                    >
+                                        <LogOut size={16}/> Log out
+                                    </button>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
           </div>
         </div>
 
@@ -294,6 +345,15 @@ export function VisionHeader() {
                 <button onClick={() => setMobileOpen(false)} className="w-8 h-8 rounded-full bg-[#E84949] text-white flex items-center justify-center"><X size={18} /></button>
               </div>
               <div className="overflow-y-auto grow py-4">
+                {user && (
+                    <div className="px-6 py-4 bg-[#F9EAD3]/50 mb-4 flex items-center gap-4">
+                        <div className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center font-grandstander font-bold text-xl uppercase">{user.firstName[0]}</div>
+                        <div>
+                            <p className="text-[14px] font-bold text-[#333] capitalize">{user.firstName} {user.lastName}</p>
+                            <Link to="/account" className="text-[11px] font-bold text-[#E84949] uppercase tracking-widest">My Account</Link>
+                        </div>
+                    </div>
+                )}
                 {mainNavLinks.map(link => (
                   <div key={link.name}>
                     <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5">
@@ -322,6 +382,19 @@ export function VisionHeader() {
                     )}
                   </div>
                 ))}
+                {!user && (
+                    <div className="px-6 py-8 space-y-3">
+                        <Link to="/login" className="block w-full py-4 bg-[#E84949] text-white text-center text-[13px] font-bold rounded-xl tracking-widest uppercase shadow-lg">Sign In</Link>
+                        <Link to="/register" className="block w-full py-4 border-2 border-[#333] text-[#333] text-center text-[13px] font-bold rounded-xl tracking-widest uppercase">Create Account</Link>
+                    </div>
+                )}
+                {user && (
+                    <div className="px-6 py-4">
+                        <button onClick={() => logout()} className="w-full flex items-center justify-center gap-3 py-4 text-[13px] font-bold text-[#E84949] uppercase tracking-widest border border-[#E84949]/20 rounded-xl">
+                            <LogOut size={18}/> Log out
+                        </button>
+                    </div>
+                )}
               </div>
             </motion.div>
           </>
@@ -344,7 +417,7 @@ export function VisionHeader() {
               </Link>
            </div>
            <Link to="/account" className="flex flex-col items-center gap-1 min-w-16">
-             <User size={18} className="text-[#666]" />
+             <User size={18} className={location.pathname === '/account' || location.pathname === '/login' ? 'text-[#E84949]' : 'text-[#666]'} />
              <span className="text-[9px] font-bold uppercase tracking-widest">User</span>
            </Link>
            <button className="flex flex-col items-center gap-1 min-w-16">
