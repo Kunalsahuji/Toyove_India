@@ -157,42 +157,46 @@ export function VisionHeader() {
     }
   }
 
+  const handleLinkClick = () => {
+    setActiveMenu(null)
+    setMobileOpen(false)
+  }
+
   return (
     <>
-      {/* Top Utility Bar */}
       <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }} className="relative z-200">
+        {/* Desktop Utility Bar (1024px+) */}
         <div className="ann-desk hdr-inner" style={{ gridTemplateColumns: '1fr 1.5fr 1fr', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="flex items-center gap-4">
             {[FbIcon, IgIcon, XIcon, PtIcon].map((Icon, i) => (
               <a key={i} href="#" style={{ color: '#FDF3E7', lineHeight: 0, display: 'flex' }} className="hover:opacity-70 transition-opacity"><Icon /></a>
             ))}
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <button onClick={prev} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FDF3E7', padding: 0, lineHeight: 0, display: 'flex' }}><ChevronLeft size={13} /></button>
-            <div style={{ overflow: 'hidden', height: '16px', display: 'flex', alignItems: 'center' }}>
+          <div className="flex items-center justify-center gap-3">
+            <button onClick={prev} className="text-white/60 hover:text-white transition-colors"><ChevronLeft size={14} /></button>
+            <div className="overflow-hidden h-4 flex items-center min-w-[300px] justify-center">
               <AnimatePresence mode="wait">
                 <motion.span key={promoIndex} initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -7 }} transition={{ duration: 0.22 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#FDF3E7', fontSize: '11.5px', fontWeight: 500, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-                  <span style={{ fontSize: '10px' }}>⭐</span> {promoMessages[promoIndex]}
+                  className="flex items-center gap-2 text-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+                  <span>⭐</span> {promoMessages[promoIndex]}
                 </motion.span>
               </AnimatePresence>
             </div>
-            <button onClick={next} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FDF3E7', padding: 0, lineHeight: 0, display: 'flex' }}><ChevronRight size={13} /></button>
+            <button onClick={next} className="text-white/60 hover:text-white transition-colors"><ChevronRight size={14} /></button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '18px', justifyContent: 'flex-end' }}>
-            {/* Country Dropdown */}
+          <div className="flex items-center gap-6 justify-end">
             <div className="relative" onMouseEnter={()=>setCountryDropdown(true)} onMouseLeave={()=>setCountryDropdown(false)}>
-                <button className="flex items-center gap-1.5 color-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20 transition-all cursor-pointer">
-                    <span className="flex items-center justify-center w-4 h-3 bg-white/20 rounded-sm overflow-hidden text-[8px] font-bold">{selectedCountry.code}</span>
-                    <span className="text-white">{selectedCountry.name}</span> <ChevronDown size={10} className="text-white" />
+                <button className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20 transition-all cursor-pointer">
+                    <span className="flex items-center justify-center w-4 h-3 bg-white/20 rounded-sm text-[8px] font-bold">{selectedCountry.code}</span>
+                    <span>{selectedCountry.name}</span> <ChevronDown size={10} />
                 </button>
                 <AnimatePresence>
                     {countryDropdown && (
-                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-48 bg-white shadow-2xl rounded-xl py-2 z-50 border border-gray-100 overflow-hidden">
+                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-48 bg-[#FDF3E7] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
                             {countries.map(c => (
-                                <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-[#FDF4E6] flex items-center justify-between ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-white flex items-center justify-between ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
                                     {c.name} <span className="text-[10px] opacity-40">{c.currency}</span>
                                 </button>
                             ))}
@@ -200,17 +204,15 @@ export function VisionHeader() {
                     )}
                 </AnimatePresence>
             </div>
-
-            {/* Language Dropdown */}
             <div className="relative" onMouseEnter={()=>setLangDropdown(true)} onMouseLeave={()=>setLangDropdown(false)}>
-                <button className="flex items-center gap-1 color-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider text-white hover:opacity-80 transition-all cursor-pointer">
-                    <Globe size={11} className="text-white"/> <span>{selectedLang}</span> <ChevronDown size={10} className="text-white" />
+                <button className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white hover:opacity-80 transition-all cursor-pointer">
+                    <Globe size={11}/> <span>{selectedLang}</span> <ChevronDown size={10} />
                 </button>
                 <AnimatePresence>
                     {langDropdown && (
-                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-32 bg-white shadow-2xl rounded-xl py-2 z-50 border border-gray-100 overflow-hidden">
+                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-32 bg-[#FDF3E7] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
                             {languages.map(l => (
-                                <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-[#FDF4E6] ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-white ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
                                     {l}
                                 </button>
                             ))}
@@ -219,6 +221,30 @@ export function VisionHeader() {
                 </AnimatePresence>
             </div>
           </div>
+        </div>
+
+        {/* Tablet Utility Bar (768px - 1023px) */}
+        <div className="ann-tab hdr-inner flex items-center justify-between">
+           <div className="flex items-center gap-2">
+                <button onClick={prev} className="text-white/60"><ChevronLeft size={14} /></button>
+                <button onClick={next} className="text-white/60"><ChevronRight size={14} /></button>
+           </div>
+           <motion.p key={promoIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider truncate px-4">
+                {promoMessages[promoIndex]}
+           </motion.p>
+           <div className="flex items-center gap-4 text-white">
+                <Globe size={14}/>
+                <span className="text-[11px] font-bold uppercase">{selectedCountry.code} | {selectedLang.substring(0,3)}</span>
+           </div>
+        </div>
+
+        {/* Mobile Utility Bar (0 - 767px) */}
+        <div className="ann-mob hdr-inner flex items-center justify-center">
+            <AnimatePresence mode="wait">
+                <motion.p key={promoIndex} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-[#FDF3E7] text-[10px] font-bold uppercase tracking-[0.15em] text-center">
+                    {promoMessages[promoIndex]}
+                </motion.p>
+            </AnimatePresence>
         </div>
       </div>
 
@@ -235,7 +261,7 @@ export function VisionHeader() {
           <nav className="hidden lg:flex items-center gap-0 xl:gap-1">
             {mainNavLinks.map(link => (
               <div key={link.name} className="relative group/nav py-6" onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
-                <Link to={link.href} className={`flex items-center gap-1 px-2.5 text-[12px] font-bold tracking-widest transition-all uppercase ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
+                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-1 px-2.5 text-[12px] font-bold tracking-widest transition-all uppercase ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
                   {link.name} {(link.mega || link.dropdown) && <ChevronDown size={11} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
                 </Link>
                 <AnimatePresence>
@@ -246,11 +272,11 @@ export function VisionHeader() {
                           {col.title && <h4 className="font-grandstander font-bold text-[13px] text-[#333] mb-5 border-b border-[#333]/10 pb-2 uppercase tracking-widest">{col.title}</h4>}
                           {col.items && (
                             <ul className="space-y-2">
-                              {col.items.map(item => <li key={item}><Link to={`/collections/${item.toLowerCase().replaceAll(' ', '-')}`} className="text-[12px] text-[#555] p-2 -mx-2 rounded-lg hover:text-[#E84949] hover:bg-[#F9EAD3] hover:translate-x-1 transition-all block font-bold capitalize">{item}</Link></li>)}
+                              {col.items.map(item => <li key={item}><Link to={`/collections/${item.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="text-[12px] text-[#555] p-2 -mx-2 rounded-lg hover:text-[#E84949] hover:bg-[#F9EAD3] hover:translate-x-1 transition-all block font-bold capitalize">{item}</Link></li>)}
                             </ul>
                           )}
                           {col.banner && (
-                            <Link to={link.href} className="rounded-2xl overflow-hidden aspect-4/5 relative group/banner cursor-pointer shadow-md block">
+                            <Link to={link.href} onClick={handleLinkClick} className="rounded-2xl overflow-hidden aspect-4/5 relative group/banner cursor-pointer shadow-md block">
                               <img src={col.banner} alt={col.title} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-700" />
                               <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent p-4 flex flex-col justify-end"><span className="text-white text-[9px] uppercase font-bold tracking-widest">New Collection</span><h5 className="text-white font-grandstander text-[13px] font-bold">Shop {link.name}</h5></div>
                             </Link>
@@ -261,7 +287,7 @@ export function VisionHeader() {
                   )}
                   {activeMenu === link.name && link.dropdown && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-2 border-[#E84949] py-2 z-50">
-                      {link.dropdown.map(sub => <Link key={sub.name} to={sub.href} className="block px-5 py-2.5 text-[12px] text-[#555] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all font-bold uppercase tracking-wider">{sub.name}</Link>)}
+                      {link.dropdown.map(sub => <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block px-5 py-2.5 text-[12px] text-[#555] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all font-bold uppercase tracking-wider">{sub.name}</Link>)}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -286,20 +312,20 @@ export function VisionHeader() {
                             {!user ? (
                                 <div className="px-4 space-y-3">
                                     <p className="text-[10px] font-bold text-[#666] tracking-widest uppercase mb-2">Welcome back!</p>
-                                    <Link to="/login" className="block w-full py-3 bg-[#E84949] text-white text-center text-[11px] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] transition-all shadow-sm">Sign In</Link>
-                                    <Link to="/register" className="block w-full py-3 border-2 border-[#333] text-[#333] text-center text-[11px] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] hover:text-white transition-all">Register</Link>
+                                    <Link to="/login" onClick={handleLinkClick} className="block w-full py-3 bg-[#E84949] text-white text-center text-[11px] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] transition-all shadow-sm">Sign In</Link>
+                                    <Link to="/register" onClick={handleLinkClick} className="block w-full py-3 border-2 border-[#333] text-[#333] text-center text-[11px] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] hover:text-white transition-all">Register</Link>
                                 </div>
                             ) : (
                                 <div className="space-y-1">
                                     <div className="px-5 pb-4 border-b border-[#333]/10 mb-2"><p className="text-[13px] font-grandstander font-bold text-[#333] mb-0.5">{user.firstName} {user.lastName}</p><p className="text-[11px] text-[#666] truncate">{user.email}</p></div>
-                                    <Link to="/account" className="flex items-center gap-3 px-5 py-3 text-[12px] font-bold text-[#333] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all uppercase tracking-wider"><User size={16}/> My Account</Link>
-                                    <button onClick={() => logout()} className="w-full flex items-center gap-3 px-5 py-3 text-[12px] font-bold text-[#E84949] hover:bg-[#E84949] hover:text-white transition-all uppercase tracking-wider"><LogOut size={16}/> Log out</button>
+                                    <Link to="/account" onClick={handleLinkClick} className="flex items-center gap-3 px-5 py-3 text-[12px] font-bold text-[#333] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all uppercase tracking-wider"><User size={16}/> My Account</Link>
+                                    <button onClick={() => { logout(); handleLinkClick(); }} className="w-full flex items-center gap-3 px-5 py-3 text-[12px] font-bold text-[#E84949] hover:bg-[#E84949] hover:text-white transition-all uppercase tracking-wider"><LogOut size={16}/> Log out</button>
                                 </div>
                             )}
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
+              </div>
           </div>
         </div>
 
@@ -309,50 +335,24 @@ export function VisionHeader() {
                <div className="max-w-350 mx-auto px-4 md:px-10 py-6">
                   <div className="relative" ref={searchRef}>
                     <form onSubmit={handleSearchSubmit}>
-                        <input 
-                            type="text" 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search for toys..." 
-                            className="w-full h-14 bg-[#F9EAD3] border-none rounded-full px-8 text-[16px] outline-none placeholder-[#666]" 
-                            autoFocus 
-                        />
+                        <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search for toys..." className="w-full h-14 bg-[#F9EAD3] border-none rounded-full px-8 text-[16px] outline-none placeholder-[#666]" autoFocus />
                         <button type="submit" className="absolute right-2 top-2 bottom-2 w-12 bg-[#E84949] text-white rounded-full flex items-center justify-center hover:bg-[#333] transition-colors"><Search size={20} /></button>
                     </form>
-
-                    {/* Live Search Suggestions (Google-style) */}
                     <AnimatePresence>
                         {suggestions.length > 0 && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
-                                className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden z-50 p-4"
-                            >
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden z-50 p-4">
                                 <p className="text-[10px] font-bold text-[#999] uppercase tracking-[0.2em] px-4 mb-3">Popular Suggestions</p>
                                 <div className="space-y-1">
                                     {suggestions.map(p => (
-                                        <Link 
-                                            key={p.id}
-                                            to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`}
-                                            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-[#FDF4E6] transition-all group"
-                                        >
-                                            <div className="w-12 h-12 bg-[#F9EAD3] rounded-xl overflow-hidden shrink-0 border border-gray-100 p-0.5">
-                                                <img src={p.img} alt={p.name} className="w-full h-full object-cover rounded-lg" />
-                                            </div>
-                                            <div className="grow">
-                                                <h5 className="text-[14px] font-bold text-[#333] group-hover:text-[#E84949] transition-colors leading-tight">{p.name}</h5>
-                                                <p className="text-[11px] text-[#999] font-medium capitalize mt-0.5">{p.category.replaceAll('-', ' ')}</p>
-                                            </div>
+                                        <Link key={p.id} to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-[#FDF4E6] transition-all group">
+                                            <div className="w-12 h-12 bg-[#F9EAD3] rounded-xl overflow-hidden shrink-0 border border-gray-100 p-0.5"><img src={p.img} alt={p.name} className="w-full h-full object-cover rounded-lg" /></div>
+                                            <div className="grow"><h5 className="text-[14px] font-bold text-[#333] group-hover:text-[#E84949] transition-colors leading-tight">{p.name}</h5><p className="text-[11px] text-[#999] font-medium capitalize mt-0.5">{p.category.replaceAll('-', ' ')}</p></div>
                                             <div className="text-[14px] font-bold text-[#E84949]">${p.price}</div>
                                             <Search size={14} className="text-gray-300 group-hover:text-[#E84949] transition-colors" />
                                         </Link>
                                     ))}
                                 </div>
-                                <div className="mt-4 pt-4 border-t border-gray-50 px-4 flex justify-between items-center text-[11px] font-bold text-[#666] tracking-widest uppercase">
-                                    <span>{suggestions.length} products found</span>
-                                    <button onClick={handleSearchSubmit} className="text-[#E84949] hover:underline">View all results</button>
-                                </div>
+                                <div className="mt-4 pt-4 border-t border-gray-50 px-4 flex justify-between items-center text-[11px] font-bold text-[#666] tracking-widest uppercase"><span>{suggestions.length} products found</span><button onClick={handleSearchSubmit} className="text-[#E84949] hover:underline">View all results</button></div>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -371,16 +371,16 @@ export function VisionHeader() {
               <div className="p-6 flex items-center justify-between border-b border-[#333]/10"><img src={logo} alt="Toyove" className="h-8 w-auto" /><button onClick={() => setMobileOpen(false)} className="w-8 h-8 rounded-full bg-[#E84949] text-white flex items-center justify-center"><X size={18} /></button></div>
               <div className="overflow-y-auto grow py-4">
                 {user && (
-                    <div className="px-6 py-4 bg-[#F9EAD3]/50 mb-4 flex items-center gap-4"><div className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center font-grandstander font-bold text-xl uppercase">{user.firstName[0]}</div><div><p className="text-[14px] font-bold text-[#333] capitalize">{user.firstName} {user.lastName}</p><Link to="/account" className="text-[11px] font-bold text-[#E84949] uppercase tracking-widest">My Account</Link></div></div>
+                    <div className="px-6 py-4 bg-[#F9EAD3]/50 mb-4 flex items-center gap-4"><div className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center font-grandstander font-bold text-xl uppercase">{user.firstName[0]}</div><div><p className="text-[14px] font-bold text-[#333] capitalize">{user.firstName} {user.lastName}</p><Link to="/account" onClick={handleLinkClick} className="text-[11px] font-bold text-[#E84949] uppercase tracking-widest">My Account</Link></div></div>
                 )}
                 {mainNavLinks.map(link => (
                   <div key={link.name}>
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5"><Link to={link.href} className={`text-[13px] font-bold tracking-widest uppercase transition-colors ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333]'}`}>{link.name}</Link>{(link.mega || link.dropdown) && (<button onClick={() => setActiveMobileSub(activeMobileSub === link.name ? null : link.name)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeMobileSub === link.name ? 'bg-[#E84949] text-white rotate-180' : 'bg-[#F9EAD3] text-[#333]'}`}><ChevronDown size={14} /></button>)}</div>
-                    {(link.mega || link.dropdown) && activeMobileSub === link.name && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-[#F9EAD3]/30 px-8 py-4 space-y-4">{link.mega ? link.mega.map((col, cidx) => (<div key={cidx}>{col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}{col.items && (<div className="flex flex-col gap-2">{col.items.map(i => <Link key={i} to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} className="text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{i}</Link>)}</div>)}</div>)) : link.dropdown.map(sub => (<Link key={sub.name} to={sub.href} className="block text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{sub.name}</Link>))}</motion.div>)}
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5"><Link to={link.href} onClick={handleLinkClick} className={`text-[13px] font-bold tracking-widest uppercase transition-colors ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333]'}`}>{link.name}</Link>{(link.mega || link.dropdown) && (<button onClick={() => setActiveMobileSub(activeMobileSub === link.name ? null : link.name)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeMobileSub === link.name ? 'bg-[#E84949] text-white rotate-180' : 'bg-[#F9EAD3] text-[#333]'}`}><ChevronDown size={14} /></button>)}</div>
+                    {(link.mega || link.dropdown) && activeMobileSub === link.name && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-[#F9EAD3]/30 px-8 py-4 space-y-4">{link.mega ? link.mega.map((col, cidx) => (<div key={cidx}>{col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}{col.items && (<div className="flex flex-col gap-2">{col.items.map(i => <Link key={i} to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{i}</Link>)}</div>)}</div>)) : link.dropdown.map(sub => (<Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{sub.name}</Link>))}</motion.div>)}
                   </div>
                 ))}
-                {!user && (<div className="px-6 py-8 space-y-3"><Link to="/login" className="block w-full py-4 bg-[#E84949] text-white text-center text-[13px] font-bold rounded-xl tracking-widest uppercase shadow-lg">Sign In</Link><Link to="/register" className="block w-full py-4 border-2 border-[#333] text-[#333] text-center text-[13px] font-bold rounded-xl tracking-widest uppercase">Create Account</Link></div>)}
-                {user && (<div className="px-6 py-4"><button onClick={() => logout()} className="w-full flex items-center justify-center gap-3 py-4 text-[13px] font-bold text-[#E84949] uppercase tracking-widest border border-[#E84949]/20 rounded-xl"><LogOut size={18}/> Log out</button></div>)}
+                {!user && (<div className="px-6 py-8 space-y-3"><Link to="/login" onClick={handleLinkClick} className="block w-full py-4 bg-[#E84949] text-white text-center text-[13px] font-bold rounded-xl tracking-widest uppercase shadow-lg">Sign In</Link><Link to="/register" onClick={handleLinkClick} className="block w-full py-4 border-2 border-[#333] text-[#333] text-center text-[13px] font-bold rounded-xl tracking-widest uppercase">Create Account</Link></div>)}
+                {user && (<div className="px-6 py-4"><button onClick={() => { logout(); handleLinkClick(); }} className="w-full flex items-center justify-center gap-3 py-4 text-[13px] font-bold text-[#E84949] uppercase tracking-widest border border-[#E84949]/20 rounded-xl"><LogOut size={18}/> Log out</button></div>)}
               </div>
             </motion.div>
           </>
@@ -388,7 +388,7 @@ export function VisionHeader() {
       </AnimatePresence>
 
       {isPastHero && (
-        <motion.div initial={{ y: 80 }} animate={{ y: 0 }} className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#FDF4E6] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-150 px-4 py-2 border-t border-[#333]/10 flex items-center justify-between"><Link to="/" className="flex flex-col items-center gap-1 min-w-16"><Home size={18} className={location.pathname === '/' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">Home</span></Link><button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-1 min-w-16"><Menu size={18} className="text-[#666]" /><span className="text-[9px] font-bold uppercase tracking-widest">Menu</span></button><div className="relative -top-6"><Link to="/search" className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FDF4E6]"><Search size={20} /></Link></div><Link to="/account" className="flex flex-col items-center gap-1 min-w-16"><User size={18} className={location.pathname === '/account' || location.pathname === '/login' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">User</span></Link><Link to="/cart" className="flex flex-col items-center gap-1 min-w-16"><ShoppingCart size={18} className={location.pathname === '/cart' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">Cart</span></Link></motion.div>
+        <motion.div initial={{ y: 80 }} animate={{ y: 0 }} className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#FDF4E6] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-150 px-4 py-2 border-t border-[#333]/10 flex items-center justify-between"><Link to="/" onClick={handleLinkClick} className="flex flex-col items-center gap-1 min-w-16"><Home size={18} className={location.pathname === '/' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">Home</span></Link><button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-1 min-w-16"><Menu size={18} className="text-[#666]" /><span className="text-[9px] font-bold uppercase tracking-widest">Menu</span></button><div className="relative -top-6"><button onClick={() => setSearchOpen(true)} className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FDF4E6]"><Search size={20} /></button></div><Link to="/account" onClick={handleLinkClick} className="flex flex-col items-center gap-1 min-w-16"><User size={18} className={location.pathname === '/account' || location.pathname === '/login' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">User</span></Link><Link to="/cart" onClick={handleLinkClick} className="flex flex-col items-center gap-1 min-w-16"><ShoppingCart size={18} className={location.pathname === '/cart' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">Cart</span></Link></motion.div>
       )}
     </>
   )
