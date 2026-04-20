@@ -28,7 +28,7 @@ export function ExperienceSection() {
           <div className="w-full order-1 lg:order-1">
             <div className="w-full aspect-4/3 md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-[#333]/5">
               <img
-                src="https://cdn.cdnparenting.com/articles/2022/04/07114528/227386435-768x525.webp"
+                src="https://toykio.myshopify.com/cdn/shop/files/cms-01.webp?v=1715860947&width=950"
                 alt="Child with educational toys"
                 className="w-full h-full object-cover"
               />
