@@ -13,6 +13,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy'
 import { FAQPage } from './pages/FAQPage'
 import { WishlistPage } from './pages/WishlistPage'
 import { SearchPage } from './pages/SearchPage'
+import { CollectionPage } from './pages/CollectionPage'
 
 // Helper component to scroll to top on route change
 function ScrollToTop() {
@@ -46,6 +47,9 @@ function App() {
             {/* Utility Pages */}
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/search" element={<SearchPage />} />
+            
+            {/* Collection / Category Pages */}
+            <Route path="/collections/:category" element={<CollectionPage />} />
 
             {/* Fallback to home */}
             <Route path="*" element={<HomePage />} />

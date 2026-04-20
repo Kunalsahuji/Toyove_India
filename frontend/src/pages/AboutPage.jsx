@@ -4,11 +4,11 @@ import { CheckCircle2, Star, Users, Trophy, Phone, MapPin, Mail } from 'lucide-r
 
 const TeamMemberCard = ({ name, role, img }) => (
   <div className="group relative cursor-pointer">
-    <div className="aspect-[3/4] rounded-[8px] overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333333]/20 hover:border-[#333333]/40 transition-all duration-500">
+    <div className="aspect-3/4 rounded-lg overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333333]/20 hover:border-[#333333]/40 transition-all duration-500">
       <img src={img} alt={name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
       <div className="absolute inset-0 bg-[#333]/0 group-hover:bg-[#333]/10 transition-colors duration-500" />
     </div>
-    <div className="mt-[-25px] relative z-10 mx-0 md:mx-0 bg-[#E84949] p-4 md:p-5 rounded-b-lg text-center shadow-2xl shadow-[#E84949]/30 group-hover:-translate-y-2 transition-all duration-500 font-roboto">
+    <div className="-mt-6.25 relative z-10 mx-0 md:mx-0 bg-[#E84949] p-4 md:p-5 rounded-b-lg text-center shadow-2xl shadow-[#E84949]/30 group-hover:-translate-y-2 transition-all duration-500 font-roboto">
       <h4 className="text-white font-bold text-[14px] md:text-[16px] tracking-wider font-grandstander">{name}</h4>
       <p className="text-white/80 text-[10px] md:text-[11px] font-medium uppercase tracking-[0.2em] mt-1">{role}</p>
     </div>
@@ -16,8 +16,8 @@ const TeamMemberCard = ({ name, role, img }) => (
 )
 
 const MetricCard = ({ icon: Icon, value, label }) => (
-  <div className="flex flex-col items-center text-center p-8 md:p-12 bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333333] rounded-[32px] shadow-sm hover:shadow-xl hover:translate-y-[-8px] transition-all duration-500 group group">
-    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white border-[1.6px] border-dashed border-[#E84949] flex items-center justify-center text-[#E84949] mb-8 flex-shrink-0 transition-transform duration-500 group-hover:rotate-[360deg]">
+  <div className="flex flex-col items-center text-center p-8 md:p-12 bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333333] rounded-4xl shadow-sm hover:shadow-xl hover:translate-y-[-8px] transition-all duration-500 group group">
+    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white border-[1.6px] border-dashed border-[#E84949] flex items-center justify-center text-[#E84949] mb-8 shrink-0 transition-transform duration-500 group-hover:rotate-[360deg]">
       <Icon size={28} />
     </div>
     <h3 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333333] mb-3 group-hover:scale-110 transition-transform duration-500">{value}</h3>
@@ -26,7 +26,7 @@ const MetricCard = ({ icon: Icon, value, label }) => (
 )
 
 const InfoBox = ({ icon: Icon, title, content }) => (
-  <div className="bg-[#FDF4E6] p-10 md:p-12 border-[1.2px] border-[#333333] rounded-[24px] flex flex-col items-center text-center group hover:shadow-lg transition-all duration-500">
+  <div className="bg-[#FDF4E6] p-10 md:p-12 border-[1.2px] border-[#333333] rounded-3xl flex flex-col items-center text-center group hover:shadow-lg transition-all duration-500">
     <div className="w-16 h-16 rounded-full border border-[#333333] flex items-center justify-center mb-6 group-hover:bg-[#E84949] group-hover:border-[#E84949] group-hover:text-white transition-all duration-500">
       <Icon size={24} />
     </div>
@@ -49,7 +49,7 @@ export function AboutPage() {
       <div className="relative h-[350px] md:h-[550px] overflow-hidden flex items-center justify-center text-center group">
          <div className="absolute inset-0 bg-[#333]/30 z-10 transition-opacity duration-700 group-hover:opacity-40" />
          <img src="https://toykio.myshopify.com/cdn/shop/files/about-us.webp?v=1711002747" alt="About Hero" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-         <div className="relative z-20 max-w-[1400px] mx-auto px-4 w-full">
+         <div className="relative z-20 max-w-350 mx-auto px-4 w-full">
             <motion.p 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
@@ -68,7 +68,7 @@ export function AboutPage() {
          </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 md:px-10 mt-10 md:mt-20">
+      <div className="max-w-350 mx-auto px-4 md:px-10 mt-10 md:mt-20">
         {/* Story Blocks */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32 items-center">
           <div className="text-center lg:text-left space-y-8">
@@ -81,10 +81,10 @@ export function AboutPage() {
             <button className="h-14 px-12 bg-[#333] text-white rounded-full font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all transform hover:scale-105 shadow-xl">EXPLORE OUR VALUES</button>
           </div>
           <div className="relative group p-6">
-            <div className="aspect-[4/3] rounded-[48px] md:rounded-[64px] overflow-hidden shadow-2xl skew-x-[-1deg] group-hover:skew-x-0 transition-all duration-1000 border-[3px] border-dashed border-[#333333]/20 bg-[#F9EAD3]">
+            <div className="aspect-4/3 rounded-[48px] md:rounded-[64px] overflow-hidden shadow-2xl skew-x-[-1deg] group-hover:skew-x-0 transition-all duration-1000 border-[3px] border-dashed border-[#333333]/20 bg-[#F9EAD3]">
                <img src="https://toykio.myshopify.com/cdn/shop/files/about-us.webp?v=1711002747" alt="Story" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
             </div>
-            <div className="absolute -bottom-8 -right-8 md:-bottom-12 md:-right-12 w-48 h-48 md:w-56 md:h-56 bg-[#E84949] rounded-[40px] flex items-center justify-center p-8 -rotate-6 shadow-2xl hidden sm:flex border-[4px] border-white group-hover:rotate-0 transition-all duration-700">
+            <div className="absolute -bottom-8 -right-8 md:-bottom-12 md:-right-12 w-48 h-48 md:w-56 md:h-56 bg-[#E84949] rounded-[40px] flex items-center justify-center p-8 -rotate-6 shadow-2xl hidden sm:flex border-4 border-white group-hover:rotate-0 transition-all duration-700">
                <p className="text-white font-grandstander font-bold text-2xl md:text-3xl text-center leading-tight tracking-tighter">10+ Years of Crafting Joy</p>
             </div>
           </div>

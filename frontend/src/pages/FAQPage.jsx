@@ -7,7 +7,7 @@ const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="border-b-[1px] border-[#E5E5E5] py-6 last:border-b-0">
+    <div className="border-b border-[#E5E5E5] py-6 last:border-b-0">
       <button 
         onClick={() => setIsOpen(!isOpen)} 
         className="w-full flex justify-between items-center text-left group"
@@ -15,7 +15,7 @@ const FAQItem = ({ question, answer }) => {
         <span className="font-grandstander font-bold text-[18px] text-[#333333] group-hover:text-[#E84949] transition-colors leading-tight">
           {question}
         </span>
-        <div className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center transition-all flex-shrink-0 ${isOpen ? 'bg-[#E84949] border-[#E84949] text-white' : 'text-gray-400 group-hover:border-[#E84949] group-hover:text-[#E84949]'}`}>
+        <div className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center transition-all shrink-0 ${isOpen ? 'bg-[#E84949] border-[#E84949] text-white' : 'text-gray-400 group-hover:border-[#E84949] group-hover:text-[#E84949]'}`}>
           {isOpen ? <Minus size={14} /> : <Plus size={14} />}
         </div>
       </button>

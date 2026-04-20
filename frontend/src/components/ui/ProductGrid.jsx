@@ -9,7 +9,7 @@ export function ProductCard({ product }) {
       className="group relative flex flex-col gap-3 cursor-pointer"
     >
       {/* 1. Portrait Image Container */}
-      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-[#f4f4f4] border border-black/5">
+      <div className="relative aspect-3/4 overflow-hidden rounded-2xl bg-[#f4f4f4] border border-black/5">
         <img 
           src={product.img} 
           alt={product.title} 

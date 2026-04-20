@@ -22,7 +22,7 @@ export function ContactPage() {
     <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden">
 
       {/* Map Header - Full Width */}
-      <div className="w-full h-[400px] md:h-[500px] bg-gray-200 overflow-hidden relative grayscale-[0.2] border-b-[1px] border-[#E5E5E5]">
+      <div className="w-full h-100 md:h-125 bg-gray-200 overflow-hidden relative grayscale-[0.2] border-b border-[#E5E5E5]">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235527.49482598295!2d75.69903743903554!3d22.723888289938085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3962fcad1b410ddb%3A0x96ec4da356240f4!2sIndore%2C%20Madhya%20Pradesh!5e0!3m2!1sen!2sin!4v1776510456462!5m2!1sen!2sin"
           width="100%"
           height="100%"
@@ -33,7 +33,7 @@ export function ContactPage() {
         ></iframe>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 md:px-10 mt-20 md:mt-28">
+      <div className="max-w-350 mx-auto px-4 md:px-10 mt-20 md:mt-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32">
 
           {/* Left Column: Our Information */}
@@ -76,18 +76,18 @@ export function ContactPage() {
                 <input
                   type="text"
                   placeholder="Name"
-                  className="w-full h-[54px] bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
+                  className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
                 />
                 <input
                   type="email"
                   placeholder="Email"
-                  className="w-full h-[54px] bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
+                  className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
                 />
               </div>
               <input
                 type="tel"
                 placeholder="Phone number"
-                className="w-full h-[54px] bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
+                className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
               />
               <textarea
                 rows="6"
@@ -96,7 +96,7 @@ export function ContactPage() {
               ></textarea>
 
               <div className="pt-4">
-                <button className="h-[54px] px-12 bg-[#E84949] text-white rounded-md font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#333333] transition-all shadow-md">
+                <button className="h-13.5 px-12 bg-[#E84949] text-white rounded-md font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#333333] transition-all shadow-md">
                   SEND MESSAGE
                 </button>
               </div>

@@ -108,8 +108,8 @@ export function BlogSection() {
             {allPosts.map((post, i) => (
               <div key={i} className="flex-none snap-start snap-always w-full md:w-1/2 lg:w-1/3 px-3 md:px-4 lg:px-5">
                 <article className="group flex flex-col h-full">
-                  <div className="dashed-card bg-white p-0 overflow-hidden mb-5 transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-lg shadow-sm border border-dashed border-gray-300 rounded-[8px] hover:p-0 hover:m-0 hover:border-0 hover:shadow-none hover:rounded-none hover:bg-white">
-                    <div className="aspect-[4/2.5] md:aspect-[4/3] bg-gray-100 w-full relative overflow-hidden rounded-[4px]">
+                  <div className="dashed-card bg-white p-0 overflow-hidden mb-5 transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-lg shadow-sm border border-dashed border-gray-300 rounded-lg hover:p-0 hover:m-0 hover:border-0 hover:shadow-none hover:rounded-none hover:bg-white">
+                    <div className="aspect-[4/2.5] md:aspect-4/3 bg-gray-100 w-full relative overflow-hidden rounded-[4px]">
                       <motion.img
                         whileHover={{ scale: 1.06 }}
                         transition={{ duration: 0.5 }}

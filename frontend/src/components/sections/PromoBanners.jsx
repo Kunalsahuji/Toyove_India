@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import shop from '../../assets/shop.png'
 import bigsale from '../../assets/wooden-toys.png'
 import educationtoys from '../../assets/educational -toys.png'
@@ -82,11 +83,12 @@ function BannerCard({ banner }) {
       viewport={{ once: true }}
       whileHover={{ y: -6 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`relative h-full overflow-hidden rounded-[24px] cursor-pointer group flex shadow-sm hover:shadow-lg transition-all duration-300
+      className={`relative h-full overflow-hidden rounded-3xl cursor-pointer group flex shadow-sm hover:shadow-lg transition-all duration-300
                  ${isMirrored ? 'justify-end' : 'justify-start'}
                  ${isMobileCentered ? 'items-center md:items-start' : 'items-start'}`}
       style={{ backgroundColor: banner.bg }}
     >
+      <Link to={`/product/${banner.title.toLowerCase().replaceAll(' ', '-')}`} className="absolute inset-0 z-30" />
       <div className={`relative z-20 p-8 lg:p-10 flex flex-col pointer-events-none w-full
                       ${isMirrored ? 'items-end' : 'items-start'}
                       ${isMobileCentered ? 'justify-center md:justify-start' : 'justify-start'}`}>
@@ -98,9 +100,16 @@ function BannerCard({ banner }) {
           {banner.title}
         </p>
         
-        <button className="h-9 px-7 bg-white text-black text-[12px] font-bold uppercase tracking-[0.16em] rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 pointer-events-auto shadow-sm">
-          SHOP NOW
-        </button>
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.28 }}
+          className="w-fit pointer-events-auto"
+        >
+          <Link to={`/product/${banner.title.toLowerCase().replaceAll(' ', '-')}`} className="h-9 px-7 bg-white text-black text-[12px] font-bold uppercase tracking-[0.16em] rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 shadow-sm flex items-center justify-center">
+            SHOP NOW
+          </Link>
+        </motion.div>
       </div>
 
       <div className={`absolute bottom-0 overflow-visible pointer-events-none z-10 transition-transform duration-700 group-hover:scale-[1.04] flex items-end

@@ -26,7 +26,7 @@ export function ExperienceSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
           <div className="w-full order-1 lg:order-1">
-            <div className="w-full aspect-[4/3] md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-[#333]/5">
+            <div className="w-full aspect-4/3 md:aspect-[4/4.2] rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-[#333]/5">
               <img
                 src="https://cdn.cdnparenting.com/articles/2022/04/07114528/227386435-768x525.webp"
                 alt="Child with educational toys"

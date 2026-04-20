@@ -19,7 +19,7 @@ const FooterAccordion = ({ title, children }) => {
         <h4 className="font-grandstander font-bold text-[16px] md:text-[14px] tracking-widest text-white uppercase">{title}</h4>
         <ChevronDown className={`w-4 h-4 md:hidden text-white transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      <div className={`overflow-hidden transition-all duration-300 md:!max-h-none md:!h-auto md:!opacity-100 ${isOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`overflow-hidden transition-all duration-300 md:max-h-none! md:h-auto! md:opacity-100! ${isOpen ? 'max-h-75 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="pb-3 md:pb-0">
           {children}
         </div>
@@ -30,15 +30,15 @@ const FooterAccordion = ({ title, children }) => {
 
 const PaymentBadges = () => (
   <div className="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end opacity-80 hover:opacity-100 transition-opacity">
-    <div className="bg-white rounded px-2 w-[40px] h-[26px] flex items-center justify-center font-bold italic text-[#1434CB] text-[15px] leading-none shrink-0" style={{ letterSpacing: '-0.5px' }}>VISA</div>
-    <div className="bg-white rounded px-2 w-[40px] h-[26px] flex items-center justify-center shrink-0">
+    <div className="bg-white rounded px-2 w-10 h-6.5 flex items-center justify-center font-bold italic text-[#1434CB] text-[15px] leading-none shrink-0" style={{ letterSpacing: '-0.5px' }}>VISA</div>
+    <div className="bg-white rounded px-2 w-10 h-6.5 flex items-center justify-center shrink-0">
       <div className="w-3.5 h-3.5 rounded-full bg-[#EB001B] relative z-10 opacity-90 -mr-1"></div>
       <div className="w-3.5 h-3.5 rounded-full bg-[#F79E1B] relative z-20 opacity-90 -ml-1"></div>
     </div>
-    <div className="bg-[#257CBB] rounded px-1 w-[40px] h-[26px] flex items-center justify-center text-white font-bold text-[9px] leading-[1] text-center font-sans shrink-0">AM<br/>EX</div>
-    <div className="bg-white rounded px-2 w-[40px] h-[26px] flex items-center justify-center text-[#003087] font-bold italic text-[12px] leading-none shrink-0" style={{ fontFamily: 'Arial, sans-serif' }}><span className="text-[#0079C1]">P</span>P</div>
-    <div className="bg-white rounded w-[42px] h-[26px] flex items-center justify-center text-[#005CA9] font-bold text-[14px] leading-none shrink-0 tracking-tighter">D</div>
-    <div className="bg-white rounded w-[42px] h-[26px] flex items-center justify-center shrink-0"><span className="font-bold text-black text-[8px] tracking-tight ml-0.5">DISC<span className="text-[#F68121]">O</span>VER</span></div>
+    <div className="bg-[#257CBB] rounded px-1 w-10 h-6.5 flex items-center justify-center text-white font-bold text-[9px] leading-none text-center font-sans shrink-0">AM<br/>EX</div>
+    <div className="bg-white rounded px-2 w-10 h-6.5 flex items-center justify-center text-[#003087] font-bold italic text-[12px] leading-none shrink-0" style={{ fontFamily: 'Arial, sans-serif' }}><span className="text-[#0079C1]">P</span>P</div>
+    <div className="bg-white rounded w-10.5 h-6.5 flex items-center justify-center text-[#005CA9] font-bold text-[14px] leading-none shrink-0 tracking-tighter">D</div>
+    <div className="bg-white rounded w-10.5 h-6.5 flex items-center justify-center shrink-0"><span className="font-bold text-black text-[8px] tracking-tight ml-0.5">DISC<span className="text-[#F68121]">O</span>VER</span></div>
   </div>
 )
 
@@ -54,20 +54,20 @@ export function Footer() {
 
   return (
     <footer className="bg-[#6449A4] text-white overflow-hidden relative border-t-[3px] border-dashed border-white/5">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-10 relative">
+      <div className="max-w-350 mx-auto px-4 md:px-10 relative">
         <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr] gap-6 md:gap-10 py-12 md:py-20">
 
           <div className="flex flex-col gap-6 lg:pr-10 md:col-span-1">
             <h3 className="font-grandstander font-bold text-[22px] md:text-[26px] leading-tight tracking-tight">
               Sign Up For News, Updates & 10% Off Your First Order.
             </h3>
-            <div className="relative flex items-center h-[54px] w-full max-w-[450px] bg-white rounded-full overflow-hidden shadow-lg border-[1.2px] border-transparent focus-within:border-[#E84949] transition-all">
+            <div className="relative flex items-center h-13.5 w-full max-w-112.5 bg-white rounded-full overflow-hidden shadow-lg border-[1.2px] border-transparent focus-within:border-[#E84949] transition-all">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter email address..."
-                className="w-full h-full pl-6 pr-[130px] text-[14px] text-[#333] outline-none bg-transparent"
+                className="w-full h-full pl-6 pr-32.5 text-[14px] text-[#333] outline-none bg-transparent"
               />
               <button className="absolute right-1.5 top-1.5 bottom-1.5 px-6 bg-[#333] text-white text-[11px] font-bold tracking-widest rounded-full hover:bg-[#E84949] transition-colors shrink-0 uppercase">
                 SUBSCRIBE

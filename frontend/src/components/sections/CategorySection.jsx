@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 const categories = [
   { label: 'Soft Toys', img: 'https://plus.unsplash.com/premium_vector-1732761041055-b5cd5b4a82b7?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
@@ -17,7 +18,7 @@ const marqueeItems = [
 
 export function CategorySection() {
   return (
-    <div className="bg-brand-cream overflow-hidden ">
+    <div className="bg-brand-cream overflow-hidden">
       <section className="pt-4 pb-8 md:pt-6 md:pb-12">
         <div className="shell">
           <div className="flex items-start gap-5 md:gap-8 lg:gap-10 overflow-x-auto lg:overflow-x-visible pt-4 pb-8 md:pt-6 md:pb-12 justify-start lg:justify-between xl:justify-center xl:gap-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -25,34 +26,39 @@ export function CategorySection() {
               const isStaggered = i % 2 !== 0; 
               
               return (
-                <motion.div
+                <Link 
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.6 }}
-                  whileHover={{ 
-                    y: isStaggered ? 12 : -15, 
-                    rotate: i % 2 === 0 ? 2 : -2,
-                    scale: 1.05,
-                    transition: { type: 'spring', stiffness: 400, damping: 15 }
-                  }}
-                  className={`dashed-card bg-[#F7EBD5] p-3.5 md:p-4 cursor-pointer group shrink-0 w-[160px] sm:w-[180px] md:w-[200px] lg:w-[210px] xl:w-[235px] flex flex-col items-center shadow-sm hover:shadow-2xl transition-all duration-300 ${
-                    isStaggered ? 'mt-10 md:mt-16 lg:mt-20' : 'mt-0'
-                  }`}
+                  to={`/collections/${cat.label.toLowerCase().replaceAll(' ', '-')}`}
+                  className="block group"
                 >
-                  <div className="w-full aspect-square overflow-hidden rounded-xl bg-white mb-5 md:mb-6 shadow-inner border border-brand-ink/5">
-                    <img
-                      src={cat.img}
-                      alt={cat.label}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
-                    />
-                  </div>
-                  
-                  <span className="text-[14px] md:text-[18px] font-bold text-brand-ink text-center mb-1.5 font-grandstander tracking-tight pb-1">
-                    {cat.label}
-                  </span>
-                </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1, duration: 0.6 }}
+                    whileHover={{ 
+                      y: isStaggered ? 12 : -15, 
+                      rotate: i % 2 === 0 ? 2 : -2,
+                      scale: 1.05,
+                      transition: { type: 'spring', stiffness: 400, damping: 15 }
+                    }}
+                    className={`dashed-card bg-[#F7EBD5] p-3.5 md:p-4 cursor-pointer shrink-0 w-[160px] sm:w-[180px] md:w-[200px] lg:w-[210px] xl:w-[235px] flex flex-col items-center shadow-sm group-hover:shadow-2xl transition-all duration-300 ${
+                      isStaggered ? 'mt-10 md:mt-16 lg:mt-20' : 'mt-0'
+                    }`}
+                  >
+                    <div className="w-full aspect-square overflow-hidden rounded-xl bg-white mb-5 md:mb-6 shadow-inner border border-brand-ink/5">
+                      <img
+                        src={cat.img}
+                        alt={cat.label}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                      />
+                    </div>
+                    
+                    <span className="text-[14px] md:text-[18px] font-bold text-brand-ink text-center mb-1.5 font-grandstander tracking-tight pb-1 group-hover:text-[#E84949] transition-colors">
+                      {cat.label}
+                    </span>
+                  </motion.div>
+                </Link>
               );
             })}
           </div>

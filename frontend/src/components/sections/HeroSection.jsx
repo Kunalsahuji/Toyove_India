@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import heroImg from '../../assets/hero-section.webp'
 
 const Star = ({ className }) => (
@@ -60,7 +61,7 @@ const Decorations = () => (
 
 export function HeroSection() {
   return (
-    <section className="relative bg-[#6651A4] overflow-hidden h-[calc(40vh-104px)] sm:h-[calc(45vh-104px)] md:h-[calc(55vh-104px)] lg:h-[calc(100vh-104px)] lg:min-h-[650px] min-h-[320px] w-full flex items-center">
+    <section className="relative bg-brand-purple overflow-hidden h-[calc(40vh-104px)] sm:h-[calc(45vh-104px)] md:h-[calc(55vh-104px)] lg:h-[calc(100vh-104px)] lg:min-h-[650px] min-h-[320px] w-full flex items-center">
 
       <Decorations />
 
@@ -100,9 +101,9 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.28 }}
             className="w-fit"
           >
-            <button className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-bold text-[11px] md:text-sm lg:text-[14px] uppercase rounded-md hover:bg-gray-50 hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-md cursor-pointer tracking-[0.15em]">
+            <Link to="/product/kidskraze-creations" className="py-3 px-8 md:py-4 md:px-12 lg:py-5 lg:px-16 bg-white text-[#222] font-bold text-[11px] md:text-sm lg:text-[14px] uppercase rounded-md hover:bg-gray-50 hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-md cursor-pointer tracking-[0.15em] inline-block">
               SHOP NOW
-            </button>
+            </Link>
           </motion.div>
         </div>
 

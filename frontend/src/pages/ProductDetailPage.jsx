@@ -21,9 +21,9 @@ const ProductCard = ({ p, i }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay: (i % 4) * 0.1 }}
-    className="group flex flex-col cursor-pointer"
+    className="group flex flex-col"
   >
-    <div className="border-[1.6px] border-dashed border-[#333333] rounded-[16px] p-2 relative overflow-hidden aspect-square mb-4 bg-[#F9EAD3] transition-all duration-300 hover:shadow-lg">
+    <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} className="border-[1.6px] border-dashed border-[#333333] rounded-2xl p-2 relative overflow-hidden aspect-square mb-4 bg-[#F9EAD3] transition-all duration-300 hover:shadow-lg">
       <span className="absolute top-3 left-3 z-30 bg-[#FF4E50] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
         Sale
       </span>
@@ -37,9 +37,11 @@ const ProductCard = ({ p, i }) => (
       {/* Hover Image Swap */}
       <img src={p.img} alt={p.name} className="w-full h-full object-cover rounded-[10px] transition-opacity duration-700 ease-in-out group-hover:opacity-0 absolute inset-0 p-2" />
       <img src={p.hoverImg || p.img} alt={p.name} className="w-full h-full object-cover rounded-[10px] absolute inset-0 p-2 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out group-hover:scale-110" />
-    </div>
+    </Link>
     <div className="text-center px-1">
-      <h3 className="text-[14px] md:text-[15px] font-grandstander font-bold text-[#333333] mb-1 group-hover:text-[#E84949] transition-colors line-clamp-2 leading-tight">{p.name}</h3>
+      <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`}>
+        <h3 className="text-[14px] md:text-[15px] font-grandstander font-bold text-[#333333] mb-1 hover:text-[#E84949] transition-colors line-clamp-2 leading-tight">{p.name}</h3>
+      </Link>
       <div className="flex items-center justify-center gap-2">
         <span className="text-[12px] text-gray-400 line-through">${(p.price + 20).toFixed(2)}</span>
         <span className="text-[14px] font-bold text-[#FF4E50]">${p.price.toFixed(2)}</span>
@@ -49,10 +51,10 @@ const ProductCard = ({ p, i }) => (
 )
 
 const FAQItem = ({ question, answer, isOpen, onToggle }) => (
-  <div className="border-b-[1px] border-[#E5E5E5] py-6">
+  <div className="border-b] border-[#E5E5E5] py-6">
     <button onClick={onToggle} className="w-full flex justify-between items-center text-left group">
       <span className="font-grandstander font-bold text-[16px] md:text-[18px] text-[#333333] group-hover:text-[#E84949] transition-colors leading-tight tracking-tight">{question}</span>
-      <div className={`w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center transition-all flex-shrink-0 ${isOpen ? 'bg-[#E84949] border-[#E84949] text-white' : 'text-gray-400'}`}>
+      <div className={`w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center transition-all shrink-0 ${isOpen ? 'bg-[#E84949] border-[#E84949] text-white' : 'text-gray-400'}`}>
         {isOpen ? <Minus size={12} /> : <Plus size={12} />}
       </div>
     </button>
@@ -122,10 +124,10 @@ export function ProductDetailPage() {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
-            className="fixed bottom-6 left-4 md:left-6 z-[100] bg-[#F9EAD3] rounded-2xl shadow-xl p-4 flex items-center gap-4 border border-dashed border-[#333]/20 min-w-[280px] sm:min-w-[320px]"
+            className="fixed bottom-6 left-4 md:left-6 z-100 bg-[#F9EAD3] rounded-2xl shadow-xl p-4 flex items-center gap-4 border border-dashed border-[#333]/20 min-w-70 sm:min-w-[320px]"
           >
             <button onClick={() => setShowToast(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"><X size={14} /></button>
-            <div className="w-14 h-14 rounded-xl overflow-hidden bg-white flex-shrink-0 border-[1.2px] border-dashed border-[#333]/30">
+            <div className="w-14 h-14 rounded-xl overflow-hidden bg-white shrink-0 border-[1.2px] border-dashed border-[#333]/30">
               <img src={productImages[1]} alt="" className="w-full h-full object-cover" />
             </div>
             <div>
@@ -147,9 +149,9 @@ export function ProductDetailPage() {
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
-            className="fixed bottom-0 left-0 w-full z-[90] bg-[#F9EAD3] border-t-[1.6px] border-dashed border-[#333333] py-3 shadow-lg"
+            className="fixed bottom-0 left-0 w-full z-90 bg-[#F9EAD3] border-t-[1.6px] border-dashed border-[#333333] py-3 shadow-lg"
           >
-            <div className="max-w-[1400px] mx-auto px-4 md:px-10 flex items-center justify-between gap-4">
+            <div className="max-w-350 mx-auto px-4 md:px-10 flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="hidden sm:block w-12 h-12 rounded-lg border-[1.2px] border-dashed border-[#333]/30 overflow-hidden bg-white">
                   <img src={product.img} alt="" className="w-full h-full object-cover" />
@@ -176,7 +178,7 @@ export function ProductDetailPage() {
       </AnimatePresence>
 
       <div className="pt-6 sm:pt-10">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-10">
+        <div className="max-w-350 mx-auto px-4 md:px-10">
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-[11px] md:text-[12px] text-[#666] mb-8 tracking-widest font-bold">
             <Link to="/" className="hover:text-[#E84949] transition-colors">Home</Link>
@@ -188,7 +190,7 @@ export function ProductDetailPage() {
             {/* Gallery - Grid Layout for Toyove-India Parity */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-4 h-fit">
               {productImages.slice(0, 4).map((img, i) => (
-                <div key={i} className="aspect-square rounded-[24px] overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 group">
+                <div key={i} className="aspect-square rounded-3xl overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 group">
                   <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                 </div>
               ))}
@@ -214,13 +216,13 @@ export function ProductDetailPage() {
                   <span className="bg-[#333] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">Sale</span>
                 </div>
 
-                <div className="space-y-4 py-5 border-y-[1px] border-dashed border-gray-300">
+                <div className="space-y-4 py-5 border-y border-dashed border-gray-300">
                   <div className="flex items-center gap-3 text-[14px] text-[#333]">
                     <Eye size={18} className="text-[#666]" />
                     <span><strong>21 people</strong> are viewing this right now</span>
                   </div>
                   <div className="flex items-center gap-3 text-[14px] text-[#333]">
-                    <div className="w-[18px] h-[18px] rounded-full border border-[#333] flex items-center justify-center text-[10px]"><X size={10} /></div>
+                    <div className="w-4.5 h-4.5 rounded-full border border-[#333] flex items-center justify-center text-[10px]"><X size={10} /></div>
                     <span>Sold <strong>25 Product</strong> In last 13 Hours</span>
                   </div>
                   <div className="flex gap-3 pt-1">
@@ -304,19 +306,19 @@ export function ProductDetailPage() {
       </div>
 
       {/* Tabs Section - Refined for Toyove-India Parity */}
-      <div className="py-20 max-w-[1400px] mx-auto px-4 md:px-10">
+      <div className="py-20 max-w-350 mx-auto px-4 md:px-10">
         <div className="flex flex-wrap gap-0">
           {['Description', 'Additional', 'Variant', 'Custom'].map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t.toLowerCase())}
-              className={`px-8 md:px-10 py-4 text-[12px] font-bold tracking-[0.2em] transition-all border-[#E5E5E5] border-[1px] -mr-[1px] -mb-[1px] relative font-grandstander ${activeTab === t.toLowerCase() ? 'text-[#333] bg-[#FDF4E6] z-10 border-b-[#FDF4E6]' : 'text-[#666] bg-[#FDF4E6]/50 hover:bg-[#FDF4E6]'}`}
+              className={`px-8 md:px-10 py-4 text-[12px] font-bold tracking-[0.2em] transition-all border-[#E5E5E5] border  -mr-px -mb-1px relative font-grandstander ${activeTab === t.toLowerCase() ? 'text-[#333] bg-[#FDF4E6] z-10 border-b-[#FDF4E6]' : 'text-[#666] bg-[#FDF4E6]/50 hover:bg-[#FDF4E6]'}`}
             >
               {t}
             </button>
           ))}
         </div>
-        <div className="bg-[#FDF4E6] p-10 border-[1px] border-[#E5E5E5] text-[#666] leading-relaxed font-roboto text-[16px] relative shadow-sm h-full min-h-[300px]">
+        <div className="bg-[#FDF4E6] p-10 border  border-[#E5E5E5] text-[#666] leading-relaxed font-roboto text-[16px] relative shadow-sm h-full min-h-75">
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}>
               {activeTab === 'description' && (
@@ -381,7 +383,7 @@ export function ProductDetailPage() {
       </div>
 
       {/* Suggested Products (YOU MAY ALSO LIKE) */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-16">
+      <div className="max-w-350 mx-auto px-4 md:px-10 py-16">
         <div className="mb-12 text-center">
           <h2 className="text-3xl md:text-4xl font-grandstander font-bold text-[#333] tracking-tight">You May Also Like</h2>
         </div>
@@ -391,7 +393,7 @@ export function ProductDetailPage() {
       </div>
 
       {/* Recently Viewed Section */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-16">
+      <div className="max-w-350 mx-auto px-4 md:px-10 py-16">
         <div className="flex flex-col items-center justify-between mb-12 gap-6">
           <div className="text-center w-full">
             {/* make responsive and text-align center for all devices. */}
@@ -407,10 +409,10 @@ export function ProductDetailPage() {
       </div>
 
       {/* FAQ Section */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-10 py-24 mb-10 border-t border-[#E5E5E5]">
+      <div className="max-w-350 mx-auto px-4 md:px-10 py-24 mb-10 border-t border-[#E5E5E5]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden group border-[1.6px] border-[#E5E5E5]">
-            <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 p-2 rounded-[32px]" />
+          <div className="relative aspect-4/3 rounded-4xl overflow-hidden group border-[1.6px] border-[#E5E5E5]">
+            <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 p-2 rounded-4xl " />
             <div className="absolute inset-0 bg-[#333]/3 group-hover:bg-transparent transition-colors" />
           </div>
           <div className="flex flex-col justify-center">

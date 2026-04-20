@@ -48,7 +48,7 @@ export function FeatureGrid() {
   return (
     <section className="py-24 md:py-32 bg-brand-purple relative overflow-hidden">
       <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-[400px] h-100 bg-white/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-shell relative z-10">
         <div className="text-center mb-16 md:mb-20">
