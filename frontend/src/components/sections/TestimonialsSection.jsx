@@ -84,13 +84,13 @@ export function TestimonialsSection() {
           {/* Controls */}
           <button 
             onClick={prevSlide}
-            className="absolute left-[-10px] md:left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-orange hover:text-white transition-all z-20 border border-dashed border-[#333]/10"
+            className="absolute left-[-10px] md:left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF3E7] rounded-full flex items-center justify-center shadow-lg hover:bg-brand-orange hover:text-white transition-all z-20 border border-dashed border-[#333]/10"
           >
             <ChevronLeft size={20} />
           </button>
           <button 
             onClick={nextSlide}
-            className="absolute right-[-10px] md:right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-orange hover:text-white transition-all z-20 border border-dashed border-[#333]/10"
+            className="absolute right-[-10px] md:right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF3E7] rounded-full flex items-center justify-center shadow-lg hover:bg-brand-orange hover:text-white transition-all z-20 border border-dashed border-[#333]/10"
           >
             <ChevronRight size={20} />
           </button>
@@ -107,7 +107,7 @@ export function TestimonialsSection() {
               {visibleTestimonials.map((t, i) => (
                 <div 
                   key={`${t.id}-${i}`}
-                  className="bg-white p-8 md:p-10 rounded-[32px] border-[1.5px] border-dashed border-[#333]/15 shadow-sm hover:shadow-xl transition-all duration-500 relative group"
+                  className="bg-[#FDF3E7] p-8 md:p-10 rounded-[32px] border-[1.5px] border-dashed border-[#333]/15 shadow-sm hover:shadow-xl transition-all duration-500 relative group"
                 >
                   <div className="absolute top-6 right-8 text-brand-orange/10 group-hover:text-brand-orange/20 transition-colors">
                     <Quote size={60} fill="currentColor" stroke="none" />
@@ -124,7 +124,7 @@ export function TestimonialsSection() {
                   </p>
 
                   <div className="flex items-center gap-4 border-t border-dashed border-gray-100 pt-6">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-brand-orange/20 p-1 bg-white">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-brand-orange/20 p-1 bg-[#FDF3E7]">
                         <img src={t.avatar} alt={t.name} className="w-full h-full object-cover rounded-xl" />
                     </div>
                     <div>
