@@ -163,7 +163,7 @@ export function VisionHeader() {
   }
 
   return (
-    <>
+    <div id="vision-header-root">
       <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }} className="relative z-200">
         {/* Desktop Utility Bar (1024px+) */}
         <div className="ann-desk hdr-inner" style={{ gridTemplateColumns: '1fr 1.5fr 1fr', alignItems: 'center' }}>
@@ -386,10 +386,6 @@ export function VisionHeader() {
           </>
         )}
       </AnimatePresence>
-
-      {isPastHero && (
-        <motion.div initial={{ y: 80 }} animate={{ y: 0 }} className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#FDF4E6] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-150 px-4 py-2 border-t border-[#333]/10 flex items-center justify-between"><Link to="/" onClick={handleLinkClick} className="flex flex-col items-center gap-1 min-w-16"><Home size={18} className={location.pathname === '/' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">Home</span></Link><button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-1 min-w-16"><Menu size={18} className="text-[#666]" /><span className="text-[9px] font-bold uppercase tracking-widest">Menu</span></button><div className="relative -top-6"><button onClick={() => setSearchOpen(true)} className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FDF4E6]"><Search size={20} /></button></div><Link to="/account" onClick={handleLinkClick} className="flex flex-col items-center gap-1 min-w-16"><User size={18} className={location.pathname === '/account' || location.pathname === '/login' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">User</span></Link><Link to="/cart" onClick={handleLinkClick} className="flex flex-col items-center gap-1 min-w-16"><ShoppingCart size={18} className={location.pathname === '/cart' ? 'text-[#E84949]' : 'text-[#666]'} /><span className="text-[9px] font-bold uppercase tracking-widest">Cart</span></Link></motion.div>
-      )}
-    </>
+    </div>
   )
 }

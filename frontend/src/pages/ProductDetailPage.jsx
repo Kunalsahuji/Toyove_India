@@ -15,40 +15,7 @@ const productImages = [
   "https://toykio.myshopify.com/cdn/shop/files/product-05-02.jpg?v=1710995381&width=533"
 ]
 
-const ProductCard = ({ p, i }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 15 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: (i % 4) * 0.1 }}
-    className="group flex flex-col"
-  >
-    <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} className="border-[1.6px] border-dashed border-[#333333] rounded-2xl p-2 relative overflow-hidden aspect-square mb-4 bg-[#F9EAD3] transition-all duration-300 hover:shadow-lg">
-      <span className="absolute top-3 left-3 z-30 bg-[#FF4E50] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
-        Sale
-      </span>
-      {/* Dynamic Action Stack from Trending Products */}
-      <div className="absolute top-3 -right-12 z-40 flex flex-col gap-2 group-hover:right-3 transition-all duration-500 ease-out opacity-0 group-hover:opacity-100">
-        <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><ShoppingCart size={15} /></button>
-        <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><Search size={15} /></button>
-        <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><Heart size={15} /></button>
-        <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><Repeat size={15} /></button>
-      </div>
-      {/* Hover Image Swap */}
-      <img src={p.img} alt={p.name} className="w-full h-full object-cover rounded-[10px] transition-opacity duration-700 ease-in-out group-hover:opacity-0 absolute inset-0 p-2" />
-      <img src={p.hoverImg || p.img} alt={p.name} className="w-full h-full object-cover rounded-[10px] absolute inset-0 p-2 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out group-hover:scale-110" />
-    </Link>
-    <div className="text-center px-1">
-      <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`}>
-        <h3 className="text-[14px] md:text-[15px] font-grandstander font-bold text-[#333333] mb-1 hover:text-[#E84949] transition-colors line-clamp-2 leading-tight">{p.name}</h3>
-      </Link>
-      <div className="flex items-center justify-center gap-2">
-        <span className="text-[12px] text-gray-400 line-through">${(p.price + 20).toFixed(2)}</span>
-        <span className="text-[14px] font-bold text-[#FF4E50]">${p.price.toFixed(2)}</span>
-      </div>
-    </div>
-  </motion.div>
-)
+import { ProductCard } from '../components/ui/ProductCard'
 
 const FAQItem = ({ question, answer, isOpen, onToggle }) => (
   <div className="border-b] border-[#E5E5E5] py-6">

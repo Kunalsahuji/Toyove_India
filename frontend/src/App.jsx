@@ -19,6 +19,8 @@ import { RegisterPage } from './pages/RegisterPage'
 import { AccountPage } from './pages/AccountPage'
 import { CartPage } from './pages/CartPage'
 import { AuthProvider } from './context/AuthContext'
+import { MobileBottomBar } from './components/layout/MobileBottomBar'
+import { AsideSidebar } from './components/layout/AsideSidebar'
 
 // Helper component to scroll to top on route change
 function ScrollToTop() {
@@ -34,7 +36,7 @@ export default function App() {
     <AuthProvider>
       <Router>
         <ScrollToTop />
-        <div className="min-h-screen flex flex-col bg-[#FDF4E6] overflow-x-hidden">
+        <div className="min-h-screen flex flex-col bg-[#FDF4E6] overflow-x-hidden relative">
           <VisionHeader />
           <main className="flex-grow">
             <Routes>
@@ -68,6 +70,8 @@ export default function App() {
             </Routes>
           </main>
           <Footer />
+          <MobileBottomBar />
+          <AsideSidebar />
         </div>
       </Router>
     </AuthProvider>

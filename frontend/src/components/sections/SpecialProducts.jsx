@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { Heart, Search, ShoppingCart, Repeat } from 'lucide-react'
+import { ProductCard } from '../ui/ProductCard'
 
 const toy1 = 'https://toykio.myshopify.com/cdn/shop/files/product-08_bd7b541b-d749-4444-bdaa-d040b7d4ff0f.jpg?v=1716179376&width=533'
 const toy1_hover = 'https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=533'
@@ -65,63 +64,7 @@ export function SpecialProducts() {
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
           >
             {products[activeTab].map((p, i) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-                whileHover={{ y: -6 }}
-                className="group relative flex flex-col transition-all duration-300"
-              >
-                <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} className="dashed-card p-2 relative overflow-hidden flex items-center justify-center aspect-square mb-4 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
-                  {/* Promo Badge */}
-                  <span className="absolute top-3 left-3 z-30 bg-[#FF4E50] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm">
-                    {p.badge}%
-                  </span>
-
-                  <div className="absolute top-3 -right-12 z-40 flex flex-col gap-2 group-hover:right-3 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] opacity-0 group-hover:opacity-100 delay-100">
-                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
-                      <ShoppingCart size={15} strokeWidth={2} />
-                    </button>
-                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
-                      <Search size={15} strokeWidth={2} />
-                    </button>
-                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
-                      <Heart size={15} strokeWidth={2} />
-                    </button>
-                    <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-[#FF4E50] hover:text-white text-[#222] transition-colors border border-transparent hover:border-[#FF4E50]">
-                      <Repeat size={15} strokeWidth={2} />
-                    </button>
-                  </div>
-
-                  <img
-                    src={p.img}
-                    alt={p.name}
-                    className="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0 absolute inset-0 z-20 rounded-lg"
-                  />
-                  <img
-                    src={p.hoverImg}
-                    alt={p.name}
-                    className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out z-10 rounded-lg"
-                  />
-                </Link>
-
-                <div className="text-center px-1">
-                  <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`}>
-                    <h3 className="font-grandstander text-[13px] md:text-[15px] font-bold text-[#2A2A2A] mb-1.5 line-clamp-2 leading-[1.3] hover:text-[#FF4E50] transition-colors duration-300">
-                      {p.name}
-                    </h3>
-                  </Link>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-[12px] md:text-[13px] text-[#888888] line-through font-medium">
-                      ${p.oldPrice.toFixed(2)}
-                    </span>
-                    <span className="text-[13px] md:text-[14px] font-bold text-[#FF4E50]">
-                      ${p.price.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
+              <ProductCard key={p.id} p={p} i={i} />
             ))}
           </motion.div>
         </div>
