@@ -77,13 +77,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
             className="fixed inset-0 bg-black/60 z-[99998] backdrop-blur-[8px]"
           />
 
-          {/* Drawer Sidebar: Full width on mobile, max-width on desktop */}
+          {/* Drawer Sidebar: Custom 92% width on mobile as requested, max-width on desktop */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.35, ease: 'easeOut' }}
-            className="fixed top-0 right-0 h-screen w-full md:max-w-[450px] bg-[#FDF4E6] shadow-[-10px_0_40px_rgba(0,0,0,0.15)] z-[99999] flex flex-col overflow-hidden"
+            className="fixed top-0 right-0 h-screen w-[92%] md:max-w-[450px] bg-[#FDF4E6] shadow-[-10px_0_40px_rgba(0,0,0,0.15)] z-[99999] flex flex-col overflow-hidden"
           >
             {/* Header: Fixed top part of the sidebar */}
             <div className="px-6 py-5 border-b border-black/5 flex items-center justify-between bg-[#FDF4E6]">
@@ -150,11 +150,11 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             <p className="text-[11px] text-[#333]/50 italic mb-3">{item.variation}</p>
 
                             <div className="flex items-center gap-3">
-                              {/* Quantity Box: White BG, Black Border, Internal Dividers */}
-                              <div className="flex items-center h-10 w-28 border border-black rounded-[7px] bg-white overflow-hidden shadow-sm">
-                                <button onClick={() => updateQty(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-r border-black/10"><Minus size={14} /></button>
-                                <span className="flex-1 flex items-center justify-center text-[14px] font-bold">{item.quantity}</span>
-                                <button onClick={() => updateQty(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-l border-black/10"><Plus size={14} /></button>
+                              {/* High-Fidelity Quantity Box with Interior Dividers - Matching Cart BG Color */}
+                              <div className="flex items-center h-10 w-28 border border-black rounded-[7px] bg-[#FDF4E6] overflow-hidden">
+                                <button onClick={() => updateQty(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-r border-black text-[#333]"><Minus size={14} /></button>
+                                <span className="flex-1 h-full flex items-center justify-center text-[14px] font-bold text-[#333]">{item.quantity}</span>
+                                <button onClick={() => updateQty(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-l border-black text-[#333]"><Plus size={14} /></button>
                               </div>
                               <button onClick={() => removeItem(item.id)} className="p-2 text-[#333]/40 hover:text-[#E84949] transition-all">
                                 <Trash2 size={18} />
@@ -188,14 +188,14 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   </div>
 
                   {/* Currency Marquee - PURE text, no box, between lines */}
-                  <div className="py-5 border-b border-black/10 overflow-hidden relative">
+                  <div className="py-4 border-b border-black/10 overflow-hidden relative">
                     <motion.div 
                       initial={{ x: '100%' }}
                       animate={{ x: '-100%' }}
-                      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                      className="whitespace-nowrap inline-block text-[12px] font-bold text-[#333]/40 uppercase tracking-[1px]"
+                      transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+                      className="whitespace-nowrap inline-block text-[11px] font-bold text-[#333]/40 uppercase tracking-[1.5px] py-1"
                     >
-                      All charges are applied in current currency India (INR ₹) &nbsp; &bull; &nbsp; Global Express Delivery &nbsp; &bull; &nbsp; All charges are applied in current currency India (INR ₹)
+                      All charges are applied in current currency United States (USD $) &nbsp; &bull; &nbsp; Global Express Delivery &nbsp; &bull; &nbsp; All charges are applied in current currency United States (USD $) &nbsp; &bull; &nbsp; Fast Worldwide Shipping
                     </motion.div>
                   </div>
 
@@ -223,8 +223,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
                   <h3 className="text-[20px] font-bold text-[#333] mb-8">Your cart is empty</h3>
                   <button 
-                    onClick={() => handleLinkClick('/products')}
-                    className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest mb-8"
+                    onClick={() => handleLinkClick('/collections/all')}
+                    className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest mb-6"
                   >
                     Continue Shopping
                   </button>

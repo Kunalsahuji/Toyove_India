@@ -15,7 +15,7 @@ export function AsideSidebar() {
 
   return (
     /* Persistent visibility for Tablet (md) and Desktop large devices. No scroll threshold. */
-    <div className="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 z-[1000] flex-col bg-white shadow-[-8px_0_24px_rgba(0,0,0,0.06)] border-l border-y border-dashed border-[#333]/20 rounded-l-[18px] overflow-hidden">
+    <div className="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 z-[50] flex-col bg-white shadow-[-8px_0_24px_rgba(0,0,0,0.06)] border-l border-y border-dashed border-[#333]/20 rounded-l-[18px] overflow-hidden">
       {items.map((item, idx) => (
         <div key={item.id} className="relative group">
           {item.isScroll ? (
