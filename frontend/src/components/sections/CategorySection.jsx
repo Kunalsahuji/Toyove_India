@@ -21,7 +21,7 @@ export function CategorySection() {
     <div className="bg-brand-cream overflow-hidden">
       <section className="pt-4 pb-8 md:pt-6 md:pb-12">
         <div className="shell">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 gap-y-10 pt-4 pb-8 md:pt-6 md:pb-12">
+          <div className="flex overflow-x-auto lg:grid lg:grid-cols-5 gap-5 md:gap-7 lg:gap-8 pt-4 pb-12 md:pt-6 md:pb-16 lg:pb-12 lg:overflow-visible snap-x snap-mandatory scrollbar-hide">
             {categories.map((cat, i) => {
               const isStaggered = i % 2 !== 0; 
               
@@ -29,7 +29,7 @@ export function CategorySection() {
                 <Link 
                   key={i}
                   to={`/collections/${cat.label.toLowerCase().replaceAll(' ', '-')}`}
-                  className="block group"
+                  className="block group shrink-0 w-[calc(50%-10px)] md:w-[calc(50%-14px)] lg:w-auto snap-start"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -43,7 +43,7 @@ export function CategorySection() {
                       transition: { type: 'spring', stiffness: 400, damping: 15 }
                     }}
                     className={`dashed-card bg-[#F7EBD5] p-3.5 md:p-5 cursor-pointer w-full flex flex-col items-center shadow-sm group-hover:shadow-2xl transition-all duration-300 ${
-                      isStaggered ? 'md:mt-10 lg:mt-16' : 'mt-0'
+                      isStaggered ? 'mt-10 md:mt-14 lg:mt-16' : 'mt-0'
                     }`}
                   >
                     <div className="w-full aspect-square overflow-hidden rounded-xl bg-white mb-5 md:mb-6 shadow-inner border border-brand-ink/5">
