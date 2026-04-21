@@ -41,7 +41,7 @@ export function MobileBottomBar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.8 }}
               onClick={scrollToTop}
-              className="lg:hidden fixed bottom-20 right-5 z-[999] w-12 h-12 bg-white border-2 border-dashed border-[#333]/30 rounded-xl flex items-center justify-center text-[#333] shadow-lg hover:bg-[#E84949] hover:text-white transition-all cursor-pointer"
+              className="md:hidden fixed bottom-20 right-5 z-[999] w-12 h-12 bg-white border-2 border-dashed border-[#333]/30 rounded-xl flex items-center justify-center text-[#333] shadow-lg hover:bg-[#E84949] hover:text-white transition-all cursor-pointer"
             >
               <ArrowUp size={24} />
             </motion.button>
@@ -52,7 +52,7 @@ export function MobileBottomBar() {
               animate={{ y: 0 }}
               exit={{ y: 80 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="lg:hidden fixed bottom-0 left-0 right-0 z-[1000] bg-[#FDF4E6] border-t border-gray-200 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] h-16"
+              className="md:hidden fixed bottom-0 left-0 right-0 z-[1000] bg-[#FDF4E6] border-t border-gray-200 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] h-16"
             >
               <div className="flex items-center justify-around h-full">
                 {menuItems.map((item, index) => {

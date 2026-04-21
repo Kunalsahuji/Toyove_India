@@ -1,0 +1,247 @@
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Trash2, Plus, Minus, Truck } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+
+const CartDrawer = ({ isOpen, onClose }) => {
+  const [orderMessageOpen, setOrderMessageOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // STARTING WITH EMPTY CART AS REQUESTED
+  const [cartItems, setCartItems] = useState([]);
+
+  // Mock function to add a product (for demo purposes)
+  const addDemoProduct = () => {
+    setCartItems([
+      {
+        id: 1,
+        name: "TinyTinker Toys - Interactive Shape Sorter",
+        price: 120.00,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?q=80&w=1287&auto=format&fit=crop",
+        variation: "Size: Small, Color: Red",
+      }
+    ]);
+  };
+
+  const updateQty = (id, delta) => {
+    setCartItems(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+    ));
+  };
+
+  const removeItem = (id) => {
+    setCartItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const freeShippingThreshold = 1780.00;
+  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+  const progressPercent = Math.min((subtotal / freeShippingThreshold) * 100, 100);
+
+  // Hard-lock body scroll
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.pageYOffset;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflowY = 'hidden';
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflowY = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+  }, [isOpen]);
+
+  const handleLinkClick = (path) => {
+    onClose();
+    navigate(path);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop - Supreme Z-Index to completely isolate and obscure the entire page including VisionHeader */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/60 z-[99998] backdrop-blur-[8px]"
+          />
+
+          {/* Drawer Sidebar: Full width on mobile, max-width on desktop */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.35, ease: 'easeOut' }}
+            className="fixed top-0 right-0 h-screen w-full md:max-w-[450px] bg-[#FDF4E6] shadow-[-10px_0_40px_rgba(0,0,0,0.15)] z-[99999] flex flex-col overflow-hidden"
+          >
+            {/* Header: Fixed top part of the sidebar */}
+            <div className="px-6 py-5 border-b border-black/5 flex items-center justify-between bg-[#FDF4E6]">
+              <h2 className="text-[20px] font-bold text-[#333] font-grandstander">Main Cart</h2>
+              <button 
+                onClick={onClose}
+                className="w-10 h-10 bg-[#E84949] text-white rounded-[7px] flex items-center justify-center hover:scale-105 transition-all shadow-md"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable Container (Fixed height, internal scroll) */}
+            <div className="flex-grow overflow-y-auto custom-scrollbar px-6 py-6 pb-20">
+              
+              {cartItems.length > 0 ? (
+                <div className="flex flex-col">
+                  {/* Shipping Bar Section */}
+                  <div className="space-y-4 mb-8">
+                    <p className="text-[14px] text-[#333]">
+                      {remainingForFreeShipping > 0 
+                        ? `Buy ₹${remainingForFreeShipping.toLocaleString()} enjoy free shipping within India.`
+                        : "Congratulations! You've unlocked FREE shipping!"}
+                    </p>
+                    <div className="relative h-[3px] bg-black/5 rounded-full overflow-visible">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progressPercent}%` }}
+                        className="absolute h-full bg-[#E84949] rounded-full"
+                      />
+                      {/* Driving Truck - Exact Toykio White Circle Style */}
+                      <motion.div 
+                        initial={{ left: 0 }}
+                        animate={{ left: `${progressPercent}%` }}
+                        transition={{ type: 'spring', damping: 15, stiffness: 40 }}
+                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white border border-black/10 rounded-full flex items-center justify-center shadow-lg z-10"
+                      >
+                        <Truck size={16} className="text-[#E84949]" />
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Product Table Header with dividers */}
+                  <div className="border-t border-black/10 mt-2 py-3 flex justify-between text-[11px] font-bold uppercase tracking-[1.5px] text-[#333]">
+                    <span>Product</span>
+                    <span>Total</span>
+                  </div>
+
+                  {/* Product List */}
+                  <div className="space-y-6">
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="pt-4 pb-6 border-t border-black/5 last:border-b last:border-black/10">
+                        <div className="flex gap-4">
+                          <div className="w-20 h-20 bg-white border border-black/5 rounded-lg overflow-hidden shrink-0">
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          </div>
+
+                          <div className="grow flex flex-col justify-between">
+                            <div className="flex justify-between items-start mb-0.5">
+                              <h3 className="text-[14px] font-bold text-[#333] hover:text-[#E84949] leading-tight grow pr-4">{item.name}</h3>
+                              <span className="text-[14px] font-bold text-[#333]">₹{(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                            <p className="text-[14px] text-[#333] mb-0.5">₹{item.price.toFixed(2)}</p>
+                            <p className="text-[11px] text-[#333]/50 italic mb-3">{item.variation}</p>
+
+                            <div className="flex items-center gap-3">
+                              {/* Quantity Box: White BG, Black Border, Internal Dividers */}
+                              <div className="flex items-center h-10 w-28 border border-black rounded-[7px] bg-white overflow-hidden shadow-sm">
+                                <button onClick={() => updateQty(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-r border-black/10"><Minus size={14} /></button>
+                                <span className="flex-1 flex items-center justify-center text-[14px] font-bold">{item.quantity}</span>
+                                <button onClick={() => updateQty(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-l border-black/10"><Plus size={14} /></button>
+                              </div>
+                              <button onClick={() => removeItem(item.id)} className="p-2 text-[#333]/40 hover:text-[#E84949] transition-all">
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Order Message Collapsible */}
+                  <div className="border-b border-black/10">
+                    <button 
+                      onClick={() => setOrderMessageOpen(!orderMessageOpen)}
+                      className={`w-full py-5 flex items-center justify-between transition-all ${orderMessageOpen ? 'text-[#E84949]' : 'text-[#333]'}`}
+                    >
+                      <span className="text-[14px] font-bold uppercase tracking-wider">Order message</span>
+                      <Plus size={16} className={`transition-transform duration-300 ${orderMessageOpen ? 'rotate-45' : ''}`} />
+                    </button>
+                    <AnimatePresence>
+                      {orderMessageOpen && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                          <textarea 
+                            className="w-full h-28 p-4 mb-5 bg-[#F9EAD3] border border-black/10 rounded-[7px] text-[13px] outline-none"
+                            placeholder="Add a message for your order..."
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Currency Marquee - PURE text, no box, between lines */}
+                  <div className="py-5 border-b border-black/10 overflow-hidden relative">
+                    <motion.div 
+                      initial={{ x: '100%' }}
+                      animate={{ x: '-100%' }}
+                      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                      className="whitespace-nowrap inline-block text-[12px] font-bold text-[#333]/40 uppercase tracking-[1px]"
+                    >
+                      All charges are applied in current currency India (INR ₹) &nbsp; &bull; &nbsp; Global Express Delivery &nbsp; &bull; &nbsp; All charges are applied in current currency India (INR ₹)
+                    </motion.div>
+                  </div>
+
+                  {/* Footer Section (NOT sticky, part of the flow) */}
+                  <div className="pt-8 space-y-6">
+                    <div className="flex justify-between items-center text-[15px] font-bold text-[#333]">
+                      <span>Estimated total</span>
+                      <span className="text-[18px]">₹{subtotal.toFixed(2)} INR</span>
+                    </div>
+                    <p className="text-[12px] text-[#333]/60 italic font-medium leading-relaxed">
+                      Taxes, discounts and shipping calculated at checkout
+                    </p>
+
+                    <div className="space-y-3">
+                      <button onClick={() => navigate('/checkout')} className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest hover:bg-[#333] transition-all text-[13px]">
+                        Check Out
+                      </button>
+                      <button onClick={() => navigate('/cart')} className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest hover:bg-[#333] transition-all text-[13px]">
+                        View My Cart
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
+                  <h3 className="text-[20px] font-bold text-[#333] mb-8">Your cart is empty</h3>
+                  <button 
+                    onClick={() => handleLinkClick('/products')}
+                    className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest mb-8"
+                  >
+                    Continue Shopping
+                  </button>
+                  {/* FOR DEMO: Let users add a product to see the full UI */}
+                  <button onClick={addDemoProduct} className="text-[11px] text-[#666] mb-4 opacity-50 hover:opacity-100 transition-opacity underline italic">Debug: Click to add demo product</button>
+                  
+                  <p className="text-[13px] text-[#333]">
+                    <span className="font-bold">Have an account?</span> / <Link to="/login" onClick={onClose} className="text-[#3a6ea5] underline underline-offset-4 font-normal">Log in to check out faster.</Link>
+                  </p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default CartDrawer;

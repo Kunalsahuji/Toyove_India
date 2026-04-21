@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User, Home, LogOut, Globe } from 'lucide-react'
+import CartDrawer from '../cart/CartDrawer'
 import { useAuth } from '../../context/AuthContext'
 import { products } from '../../utils/ProductData'
 
@@ -63,7 +64,7 @@ const mainNavLinks = [
     ]
   },
   { 
-    name: 'Games And Puzzle', 
+    name: 'Games & Puzzle', 
     href: '/collections/games-and-puzzle', 
     mega: [
       { title: 'Format & Difficulty', items: ['Jigsaw Puzzles', 'Board Games', 'Card Games', 'Strategy Games', '3D Puzzles', 'Brain Teasers', 'Family Games', 'Solo Games'] },
@@ -80,17 +81,6 @@ const mainNavLinks = [
       { title: 'Speed', banner: 'https://images.unsplash.com/photo-1632435188816-1277a374e696?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
     ]
   },
-  { 
-    name: 'Pages', 
-    href: '#', 
-    dropdown: [
-      { name: 'FAQ', href: '/pages/faq' },
-      { name: 'Privacy Policy', href: '/pages/privacy-policy' },
-      { name: 'Shipping Policy', href: '/pages/shipping-policy' },
-      { name: 'Terms & Conditions', href: '/pages/terms-conditions' },
-      { name: 'Return & Exchange', href: '/pages/return-exchange' }
-    ]
-  },
   { name: 'Contact', href: '/contact' },
 ]
 
@@ -99,12 +89,15 @@ import logo from '../../assets/logo.svg'
 
 export function VisionHeader() {
   const [promoIndex, setPromoIndex] = useState(0)
+  const [direction, setDirection] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [isPastHero, setIsPastHero] = useState(false)
   const [activeMobileSub, setActiveMobileSub] = useState(null)
+  
   const [activeMenu, setActiveMenu] = useState(null)
   const [profileDropdown, setProfileDropdown] = useState(false)
+  const [cartOpen, setCartOpen] = useState(false)
   const [countryDropdown, setCountryDropdown] = useState(false)
   const [langDropdown, setLangDropdown] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState(countries[0])
@@ -117,8 +110,8 @@ export function VisionHeader() {
   const searchRef = useRef(null)
 
   useEffect(() => {
-    const handleScroll = () => setIsPastHero(window.scrollY > 150)
-    window.addEventListener('scroll', handleScroll)
+    const handleScroll = () => setIsPastHero(window.scrollY > 100)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -146,8 +139,20 @@ export function VisionHeader() {
     }
   }, [searchTerm])
 
-  const prev = () => setPromoIndex(i => (i - 1 + promoMessages.length) % promoMessages.length)
-  const next = () => setPromoIndex(i => (i + 1) % promoMessages.length)
+  const prev = () => {
+    setDirection(-1)
+    setPromoIndex(i => (i - 1 + promoMessages.length) % promoMessages.length)
+  }
+  const next = () => {
+    setDirection(1)
+    setPromoIndex(i => (i + 1) % promoMessages.length)
+  }
+
+  // Auto-cycle promo messages
+  useEffect(() => {
+    const timer = setInterval(next, 5000)
+    return () => clearInterval(timer)
+  }, [])
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
@@ -163,7 +168,10 @@ export function VisionHeader() {
   }
 
   return (
-    <div id="vision-header-root">
+    <div 
+      id="vision-header-root"
+      className="relative z-[1000]"
+    >
       <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }} className="relative z-200">
         {/* Desktop Utility Bar (1024px+) */}
         <div className="ann-desk hdr-inner" style={{ gridTemplateColumns: '1fr 1.5fr 1fr', alignItems: 'center' }}>
@@ -174,16 +182,28 @@ export function VisionHeader() {
           </div>
           
           <div className="flex items-center justify-center gap-3">
-            <button onClick={prev} className="text-white/60 hover:text-white transition-colors"><ChevronLeft size={14} /></button>
-            <div className="overflow-hidden h-4 flex items-center min-w-[300px] justify-center">
-              <AnimatePresence mode="wait">
-                <motion.span key={promoIndex} initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -7 }} transition={{ duration: 0.22 }}
-                  className="flex items-center gap-2 text-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+            <button onClick={prev} className="text-white/60 hover:text-white transition-colors z-10"><ChevronLeft size={14} /></button>
+            <div className="overflow-hidden h-4 flex items-center min-w-[350px] justify-center relative">
+              <AnimatePresence initial={false} custom={direction}>
+                <motion.div 
+                  key={promoIndex} 
+                  custom={direction}
+                  variants={{
+                    enter: (direction) => ({ x: direction > 0 ? 100 : -100, opacity: 0 }),
+                    center: { x: 0, opacity: 1 },
+                    exit: (direction) => ({ x: direction < 0 ? 100 : -100, opacity: 0 })
+                  }}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
+                  className="flex items-center gap-2 text-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider whitespace-nowrap absolute"
+                >
                   <span>⭐</span> {promoMessages[promoIndex]}
-                </motion.span>
+                </motion.div>
               </AnimatePresence>
             </div>
-            <button onClick={next} className="text-white/60 hover:text-white transition-colors"><ChevronRight size={14} /></button>
+            <button onClick={next} className="text-white/60 hover:text-white transition-colors z-10"><ChevronRight size={14} /></button>
           </div>
 
           <div className="flex items-center gap-6 justify-end">
@@ -210,7 +230,7 @@ export function VisionHeader() {
                 </button>
                 <AnimatePresence>
                     {langDropdown && (
-                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-32 bg-[#FDF3E7] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
+                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-32 bg-[#FDF4E6] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
                             {languages.map(l => (
                                 <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-white ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
                                     {l}
@@ -225,48 +245,92 @@ export function VisionHeader() {
 
         {/* Tablet Utility Bar (768px - 1023px) */}
         <div className="ann-tab hdr-inner flex items-center justify-between">
-           <div className="flex items-center gap-2">
-                <button onClick={prev} className="text-white/60"><ChevronLeft size={14} /></button>
-                <button onClick={next} className="text-white/60"><ChevronRight size={14} /></button>
+           <div className="flex-1"></div>
+           <div className="flex items-center gap-4">
+              <button onClick={prev} className="text-[#FDF3E7]/60 hover:text-white transition-colors"><ChevronLeft size={14} /></button>
+              <div className="overflow-hidden h-4 flex items-center min-w-[280px] justify-center relative">
+                <AnimatePresence initial={false} custom={direction}>
+                  <motion.div 
+                    key={promoIndex} 
+                    custom={direction}
+                    variants={{
+                      enter: (direction) => ({ x: direction > 0 ? 100 : -100, opacity: 0 }),
+                      center: { x: 0, opacity: 1 },
+                      exit: (direction) => ({ x: direction < 0 ? 100 : -100, opacity: 0 })
+                    }}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
+                    className="flex items-center gap-2 text-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider whitespace-nowrap absolute"
+                  >
+                    {promoMessages[promoIndex]}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <button onClick={next} className="text-[#FDF3E7]/60 hover:text-white transition-colors"><ChevronRight size={14} /></button>
            </div>
-           <motion.p key={promoIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[#FDF3E7] text-[11px] font-bold uppercase tracking-wider truncate px-4">
-                {promoMessages[promoIndex]}
-           </motion.p>
-           <div className="flex items-center gap-4 text-white">
+           <div className="flex-1 flex items-center gap-4 text-white justify-end">
                 <Globe size={14}/>
                 <span className="text-[11px] font-bold uppercase">{selectedCountry.code} | {selectedLang.substring(0,3)}</span>
            </div>
         </div>
 
         {/* Mobile Utility Bar (0 - 767px) */}
-        <div className="ann-mob hdr-inner flex items-center justify-center">
-            <AnimatePresence mode="wait">
-                <motion.p key={promoIndex} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-[#FDF3E7] text-[10px] font-bold uppercase tracking-[0.15em] text-center">
-                    {promoMessages[promoIndex]}
-                </motion.p>
-            </AnimatePresence>
+        <div className="ann-mob hdr-inner flex items-center justify-center h-[25px]">
+            <button onClick={prev} className="w-10 h-full flex items-center justify-start text-[#FDF3E7]/70 hover:text-white transition-colors shrink-0">
+              <ChevronLeft size={14} />
+            </button>
+            <div className="grow overflow-hidden h-full flex items-center justify-center relative">
+              <AnimatePresence initial={false} custom={direction}>
+                <motion.div 
+                  key={promoIndex} 
+                  custom={direction}
+                  variants={{
+                    enter: (direction) => ({ x: direction > 0 ? 30 : -30, opacity: 0 }),
+                    center: { x: 0, opacity: 1 },
+                    exit: (direction) => ({ x: direction < 0 ? 30 : -30, opacity: 0 })
+                  }}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
+                  className="flex items-center justify-center text-[#FDF3E7] text-[10px] font-bold uppercase tracking-wide text-center absolute w-full px-2"
+                >
+                  {promoMessages[promoIndex]}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <button onClick={next} className="w-10 h-full flex items-center justify-end text-[#FDF3E7]/70 hover:text-white transition-colors shrink-0">
+              <ChevronRight size={14} />
+            </button>
         </div>
       </div>
 
       <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div className="hdr-inner flex items-center justify-between h-15 md:h-17.5">
-          <div className="lg:hidden w-10">
-            <button onClick={() => setMobileOpen(true)} className="text-[#333] hover:text-[#E84949] transition-colors"><Menu size={24} /></button>
+        <div className="hdr-inner flex items-center h-15 md:h-17.5 relative">
+          {/* Mobile Burger: Left-aligned, hidden on 1024px+ */}
+          <div className="lg:hidden flex-1 flex items-center">
+            <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 text-[#333] hover:text-[#E84949] transition-colors"><Menu size={24} /></button>
           </div>
 
-          <Link to="/" className="flex items-center gap-2 group">
-            <img src={logo} alt="Toyove" className="h-8 md:h-10 w-auto transition-transform group-hover:scale-105" />
-          </Link>
+          {/* Logo Section: Centered on Mobile/Tab (Absolute), Left-aligned on Desktop */}
+          <div className="lg:static absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 flex items-center shrink-0 lg:mr-4 xl:mr-10 z-10">
+            <Link to="/" onClick={handleLinkClick} className="flex items-center gap-2">
+              <img src={logo} alt="Toyove" className="h-8 md:h-10 lg:h-11 w-auto" />
+            </Link>
+          </div>
 
-          <nav className="hidden lg:flex items-center gap-0 xl:gap-1">
+          {/* Desktop Navigation: Only visible on 1024px+, strictly follows Logo */}
+          <nav className="hidden lg:flex items-center gap-0 flex-none h-full">
             {mainNavLinks.map(link => (
               <div key={link.name} className="relative group/nav py-6" onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
-                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-1 px-2.5 text-[12px] font-bold tracking-widest transition-all uppercase ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
-                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={11} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
+                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-1 xl:px-3 text-[10px] xl:text-[12px] font-bold tracking-widest transition-all uppercase whitespace-nowrap ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
+                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={10} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
                 </Link>
                 <AnimatePresence>
                   {activeMenu === link.name && link.mega && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-1/2 -translate-x-1/2 w-200 xl:w-250 bg-[#FDF4E6] shadow-2xl rounded-b-3xl border-t-2 border-[#E84949] p-8 grid grid-cols-4 gap-8 z-50 overflow-hidden">
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-200 xl:w-250 bg-[#FDF4E6] shadow-2xl rounded-b-3xl border-t-2 border-[#E84949] p-8 grid grid-cols-4 gap-8 z-[1000] overflow-hidden">
                       {link.mega.map((col, idx) => (
                         <div key={idx} className="col-span-1">
                           {col.title && <h4 className="font-grandstander font-bold text-[13px] text-[#333] mb-5 border-b border-[#333]/10 pb-2 uppercase tracking-widest">{col.title}</h4>}
@@ -286,7 +350,7 @@ export function VisionHeader() {
                     </motion.div>
                   )}
                   {activeMenu === link.name && link.dropdown && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-2 border-[#E84949] py-2 z-50">
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-2 border-[#E84949] py-2 z-[1000]">
                       {link.dropdown.map(sub => <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block px-5 py-2.5 text-[12px] text-[#555] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all font-bold uppercase tracking-wider">{sub.name}</Link>)}
                     </motion.div>
                   )}
@@ -295,16 +359,44 @@ export function VisionHeader() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1 md:gap-2">
-            <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 text-[#333] hover:text-[#E84949] transition-colors"><Search size={22} /></button>
-            <Link to="/cart" className="p-2 text-[#333] hover:text-[#E84949] transition-colors relative">
+          {/* Icons Section: Floated right, maintains spacing on all devices */}
+          <div className="flex-1 lg:flex-none flex items-center justify-end gap-1 md:gap-2 shrink-0 ml-auto">
+            {/* Desktop Search Bar (Static only on LG+) */}
+            <div className="hidden lg:block mr-2">
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <input 
+                  type="text" 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search"
+                  className="w-28 xl:w-40 h-8 bg-[#F9EAD3] border border-dashed border-[#333]/25 rounded-xl px-4 py-1.5 text-[11px] xl:text-[13px] font-medium outline-none focus:border-[#E84949] transition-all placeholder:text-[#333]/40"
+                />
+                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#333]/40"><Search size={15} /></button>
+              </form>
+            </div>
+
+            <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 lg:hidden text-[#333] hover:text-[#E84949] transition-colors"><Search size={22} /></button>
+            
+            <button 
+              onClick={() => setCartOpen(true)} 
+              className="p-2 text-[#333] hover:text-[#E84949] transition-colors relative"
+            >
               <ShoppingCart size={22} />
-              <span className="absolute top-1 right-1 w-4 h-4 bg-[#E84949] text-white text-[9px] font-bold rounded-full flex items-center justify-center">2</span>
-            </Link>
-            <div className="relative" onMouseEnter={() => setProfileDropdown(true)} onMouseLeave={() => setProfileDropdown(false)}>
+              {/* Dynamic Badge Synchronized with Cart Logic */}
+              <span className="absolute top-1 right-1 w-4 h-4 bg-[#E84949] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {/* 
+                  Using a consistent mock value for now that matches the drawer logic. 
+                  In a production build, this would use a global cart context.
+                */}
+                0
+              </span>
+            </button>
+
+            {/* Account Icon: Shown only on desktops LG+ */}
+            <div className="relative hidden lg:block" onMouseEnter={() => setProfileDropdown(true)} onMouseLeave={() => setProfileDropdown(false)}>
                 <Link to={user ? "/account" : "/login"} className="p-2 text-[#333] hover:text-[#E84949] transition-colors flex items-center gap-2 group/user">
                     <User size={22} />
-                    {user && <span className="hidden xl:block text-[11px] font-bold uppercase tracking-widest text-[#333] group-hover/user:text-[#E84949]">{user.firstName}</span>}
+                    {user && <span className="hidden xxl:block text-[11px] font-bold uppercase tracking-widest text-[#333] group-hover/user:text-[#E84949]">{user.firstName}</span>}
                 </Link>
                 <AnimatePresence>
                     {profileDropdown && (
@@ -325,34 +417,69 @@ export function VisionHeader() {
                         </motion.div>
                     )}
                 </AnimatePresence>
-              </div>
+            </div>
           </div>
         </div>
 
+        {/* Mobile/Tablet Search Overlay (Limited Height) */}
         <AnimatePresence>
           {searchOpen && (
-            <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden bg-[#FDF4E6] border-t border-[#333]/10 relative z-200">
-               <div className="max-w-350 mx-auto px-4 md:px-10 py-6">
-                  <div className="relative" ref={searchRef}>
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }} 
+              animate={{ height: 'auto', opacity: 1 }} 
+              exit={{ height: 0, opacity: 0 }} 
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="absolute top-full left-0 right-0 bg-[#FDF4E6] z-[900] shadow-2xl border-t border-black/5 overflow-hidden"
+            >
+               <div className="p-4 md:p-6 lg:hidden">
+                  <div className="flex justify-end mb-2">
+                    <button onClick={() => setSearchOpen(false)} className="p-2"><X size={24} className="text-brand-ink/40" /></button>
+                  </div>
+                  
+                  <div className="relative">
                     <form onSubmit={handleSearchSubmit}>
-                        <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search for toys..." className="w-full h-14 bg-[#F9EAD3] border-none rounded-full px-8 text-[16px] outline-none placeholder-[#666]" autoFocus />
-                        <button type="submit" className="absolute right-2 top-2 bottom-2 w-12 bg-[#E84949] text-white rounded-full flex items-center justify-center hover:bg-[#333] transition-colors"><Search size={20} /></button>
+                        <div className="relative">
+                          <input 
+                            type="text" 
+                            value={searchTerm} 
+                            onChange={(e) => setSearchTerm(e.target.value)} 
+                            placeholder="Search" 
+                            className="w-full h-11 bg-[#F9EAD3] border-2 border-dashed border-[#333]/15 rounded-xl px-4 pr-12 text-[15px] font-medium outline-none focus:border-[#E84949] transition-all" 
+                            autoFocus 
+                          />
+                          <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-ink/40 shadow-none"><Search size={19} /></button>
+                        </div>
                     </form>
+
+                    <div className="mt-4 flex flex-wrap items-baseline gap-2">
+                       <p className="text-[14px] font-bold text-brand-ink border-b-2 border-brand-ink leading-tight">Popular Search:</p>
+                       <div className="flex flex-wrap gap-x-4 gap-y-2">
+                          {['Toys', 'Games'].map(tag => (
+                            <button 
+                              key={tag}
+                              onClick={() => { setSearchTerm(tag); navigate(`/search?q=${tag}`); setSearchOpen(false); }}
+                              className="text-[14px] font-medium text-brand-ink/60 hover:text-[#E84949] transition-colors"
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                       </div>
+                    </div>
+
                     <AnimatePresence>
                         {suggestions.length > 0 && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden z-50 p-4">
-                                <p className="text-[10px] font-bold text-[#999] uppercase tracking-[0.2em] px-4 mb-3">Popular Suggestions</p>
-                                <div className="space-y-1">
-                                    {suggestions.map(p => (
-                                        <Link key={p.id} to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-[#FDF4E6] transition-all group">
-                                            <div className="w-12 h-12 bg-[#F9EAD3] rounded-xl overflow-hidden shrink-0 border border-gray-100 p-0.5"><img src={p.img} alt={p.name} className="w-full h-full object-cover rounded-lg" /></div>
-                                            <div className="grow"><h5 className="text-[14px] font-bold text-[#333] group-hover:text-[#E84949] transition-colors leading-tight">{p.name}</h5><p className="text-[11px] text-[#999] font-medium capitalize mt-0.5">{p.category.replaceAll('-', ' ')}</p></div>
-                                            <div className="text-[14px] font-bold text-[#E84949]">${p.price}</div>
-                                            <Search size={14} className="text-gray-300 group-hover:text-[#E84949] transition-colors" />
-                                        </Link>
-                                    ))}
-                                </div>
-                                <div className="mt-4 pt-4 border-t border-gray-50 px-4 flex justify-between items-center text-[11px] font-bold text-[#666] tracking-widest uppercase"><span>{suggestions.length} products found</span><button onClick={handleSearchSubmit} className="text-[#E84949] hover:underline">View all results</button></div>
+                            <motion.div 
+                              initial={{ opacity: 0, y: 5 }} 
+                              animate={{ opacity: 1, y: 0 }} 
+                              className="mt-6 space-y-3 pb-4"
+                            >
+                                {suggestions.map(p => (
+                                    <Link key={p.id} to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="flex items-center gap-3 p-2 rounded-xl bg-white/30 hover:bg-white transition-all shadow-xs">
+                                        <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-black/5"><img src={p.img} alt={p.name} className="w-full h-full object-cover" /></div>
+                                        <div className="grow"><h5 className="text-[14px] font-bold text-[#333] tracking-tight">{p.name}</h5><p className="text-[11px] text-[#999] mt-0.5 font-bold">${p.price}</p></div>
+                                        <Search size={14} className="text-gray-300 mr-2" />
+                                    </Link>
+                                ))}
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -362,6 +489,8 @@ export function VisionHeader() {
           )}
         </AnimatePresence>
       </header>
+      {/* Cart Drawer - Moved outside header stacking context to prevent header poke-through */}
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
       <AnimatePresence>
         {mobileOpen && (
