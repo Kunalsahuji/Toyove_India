@@ -1,15 +1,32 @@
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, ShoppingBag, Heart, Layers } from 'lucide-react'
+import { useCart } from '../../context/CartContext'
 
 export function ProductCard({ p, i = 0 }) {
-  const navigate = useNavigate()
+  const { addToCart, toggleWishlist, wishlist } = useCart()
+  const isWishlisted = wishlist.some(item => item.id === p.id)
 
   const handleAction = (e, action, product) => {
     e.preventDefault()
     e.stopPropagation()
-    if (action === 'cart') navigate('/cart')
-    if (action === 'wishlist') navigate('/wishlist')
+    
+    // Normalize product data for cart
+    const normalizedProduct = {
+      id: product.id,
+      title: product.name,
+      price: product.price,
+      img: product.img,
+      sku: product.sku || `TOY-${product.id}`
+    }
+
+    if (action === 'cart') {
+      addToCart(normalizedProduct, 1)
+      alert('Added to cart!')
+    }
+    if (action === 'wishlist') {
+      toggleWishlist(normalizedProduct)
+    }
     if (action === 'quickview') navigate(`/product/${product.name.toLowerCase().replaceAll(' ', '-')}`)
     if (action === 'compare') alert('Added to comparison!')
   }
@@ -38,7 +55,7 @@ export function ProductCard({ p, i = 0 }) {
             {[
               { icon: <Eye size={15} />, label: 'Quick View', act: 'quickview' },
               { icon: <ShoppingBag size={15} />, label: 'Add to Cart', act: 'cart' },
-              { icon: <Heart size={15} />, label: 'Wishlist', act: 'wishlist' },
+              { icon: <Heart size={15} fill={isWishlisted ? 'white' : 'none'} />, label: 'Wishlist', act: 'wishlist' },
               { icon: <Layers size={15} />, label: 'Compare', act: 'compare' }
             ].map((btn, idx) => (
               <button 
@@ -57,7 +74,7 @@ export function ProductCard({ p, i = 0 }) {
             {[
               { icon: <Eye size={13} />, act: 'quickview' },
               { icon: <ShoppingBag size={13} />, act: 'cart' },
-              { icon: <Heart size={13} />, act: 'wishlist' },
+              { icon: <Heart size={13} fill={isWishlisted ? 'white' : 'none'} />, act: 'wishlist' },
               { icon: <Layers size={13} />, act: 'compare' }
             ].map((btn, idx) => (
               <button 

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { Star, Heart, Share2, Eye, ShoppingCart, Search, Repeat, Plus, Minus, CheckCircle, X, ChevronRight, Share } from 'lucide-react'
 
 
@@ -17,7 +18,7 @@ const productImages = [
 import { ProductCard } from '../components/ui/ProductCard'
 
 const FAQItem = ({ question, answer, isOpen, onToggle }) => (
-  <div className="border-b] border-[#E5E5E5] py-6">
+  <div className="border-b border-[#E5E5E5] py-6">
     <button onClick={onToggle} className="w-full flex justify-between items-center text-left group">
       <span className="font-grandstander font-bold text-[16px] md:text-[18px] text-[#333333] group-hover:text-[#E84949] transition-colors leading-tight tracking-tight">{question}</span>
       <div className={`w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center transition-all shrink-0 ${isOpen ? 'bg-[#E84949] border-[#E84949] text-white' : 'text-gray-400'}`}>
@@ -36,6 +37,8 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => (
 
 export function ProductDetailPage() {
   const { title } = useParams()
+  const { addToCart, toggleWishlist, wishlist } = useCart()
+  const navigate = useNavigate()
   const [selectedImg, setSelectedImg] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
@@ -57,12 +60,42 @@ export function ProductDetailPage() {
   }, [title])
 
   const product = {
+    id: title?.toLowerCase() || 'product-08',
     title: title?.replaceAll('-', ' ') || "KidsKraze Creations",
     price: 89.00,
     oldPrice: 129.00,
     img: productImages[0],
     sku: "Product-08",
     category: "Toys"
+  }
+
+  const isWishlisted = wishlist.some(item => item.id === product.id)
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity)
+    // You could trigger a sidebar or toast here
+  }
+
+  const handleBuyNow = () => {
+    addToCart(product, quantity)
+    navigate('/checkout')
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.title,
+          text: 'Check out this amazing toy!',
+          url: window.location.href,
+        })
+      } catch (err) {
+        console.log('Error sharing:', err)
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+      alert('Link copied to clipboard!')
+    }
   }
 
   const related = [
@@ -73,8 +106,7 @@ export function ProductDetailPage() {
     { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[1] },
     { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[4], hoverImg: productImages[3] },
     { id: 7, name: 'WildHarvests Maker', price: 110, img: productImages[5], hoverImg: productImages[6] },
-    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[7], hoverImg: productImages[0] },
-   ,
+    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[7], hoverImg: productImages[0] }
   ]
 
   const recentlyViewed = [
@@ -141,7 +173,7 @@ export function ProductDetailPage() {
                   <span className="w-6 text-center font-bold text-[13px] text-[#333]">{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} className="w-8 text-[#666] hover:text-[#E84949]"><Plus size={14} /></button>
                 </div>
-                <button className="h-10 px-6 sm:px-10 bg-[#E84949] text-white text-[12px] font-bold rounded-full hover:scale-105 transition-all tracking-widest uppercase">ADD TO CART</button>
+                <button onClick={handleAddToCart} className="h-10 px-6 sm:px-10 bg-[#E84949] text-white text-[12px] font-bold rounded-full hover:scale-105 transition-all tracking-widest uppercase">ADD TO CART</button>
               </div>
             </div>
           </motion.div>
@@ -197,8 +229,13 @@ export function ProductDetailPage() {
                     <span>Sold <strong>25 Product</strong> In last 13 Hours</span>
                   </div>
                   <div className="flex gap-3 pt-1">
-                    <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Heart size={16} /></button>
-        <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
+                    <button 
+                      onClick={() => toggleWishlist(product)}
+                      className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform ${isWishlisted ? 'bg-[#333] text-white' : 'bg-[#E84949] text-white'}`}
+                    >
+                      <Heart size={16} fill={isWishlisted ? 'white' : 'none'} />
+                    </button>
+                    <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
                   </div>
                   <p className="text-[13px] text-[#666] font-medium">Sku: {product.sku}</p>
                 </div>
@@ -248,9 +285,19 @@ export function ProductDetailPage() {
                       <span className="font-grandstander text-[16px] text-[#333] font-bold">{quantity}</span>
                       <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={14} /></button>
                     </div>
-                    <button className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all py-3">ADD TO CART</button>
+                    <button 
+                      onClick={handleAddToCart}
+                      className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all py-3"
+                    >
+                      ADD TO CART
+                    </button>
                   </div>
-                  <button className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all">BUY IT NOW</button>
+                  <button 
+                    onClick={handleBuyNow}
+                    className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all"
+                  >
+                    BUY IT NOW
+                  </button>
                 </div>
 
                 <div className="pt-4 space-y-3 font-roboto text-[14px] text-[#333]">
@@ -263,10 +310,13 @@ export function ProductDetailPage() {
                   <button className="ml-6 text-[12px] font-medium underline decoration-solid hover:text-[#E84949]">View store information</button>
 
                   <div className="pt-4 border-t border-dashed border-gray-300 space-y-2">
-                    <p><span className="font-medium text-[11px] text-gray-400 mr-2 font-grandstander">Categories:</span> <Link className="underline hover:text-[#E84949] font-medium">{product.category}</Link></p>
+                    <p><span className="font-medium text-[11px] text-gray-400 mr-2 font-grandstander">Categories:</span> <Link to="/collections/toys" className="underline hover:text-[#E84949] font-medium">{product.category}</Link></p>
                   </div>
 
-                  <button className="w-full py-3 bg-[#E84949] text-white rounded font-bold text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm">
+                  <button 
+                    onClick={handleShare}
+                    className="w-full py-3 bg-[#E84949] text-white rounded font-bold text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm"
+                  >
                     <Share size={14} /> SHARE
                   </button>
                 </div>
@@ -370,7 +420,7 @@ export function ProductDetailPage() {
             {/* make responsive and text-align center for all devices. */}
             <h2 className="text-3xl md:text-4xl font-grandstander font-bold text-[#333] leading-none tracking-tight text-center">Recently Viewed</h2>
           </div>
-          <Link className="flex items-center gap-2 font-bold text-[12px] tracking-widest hover:text-[#E84949] transition-colors font-grandstander uppercase">
+          <Link to="/collections/all" className="flex items-center gap-2 font-bold text-[12px] tracking-widest hover:text-[#E84949] transition-colors font-grandstander uppercase">
             View All Products <ChevronRight size={16} />
           </Link>
         </div>

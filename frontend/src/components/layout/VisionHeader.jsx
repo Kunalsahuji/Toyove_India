@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, User, Home, LogOut, Globe } from 'lucide-react'
 import CartDrawer from '../cart/CartDrawer'
 import { useAuth } from '../../context/AuthContext'
+import { useCart } from '../../context/CartContext'
 import { products } from '../../utils/ProductData'
 
 const FbIcon = () => (
@@ -105,6 +106,7 @@ export function VisionHeader() {
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const { user, logout } = useAuth()
+  const { cartCount } = useCart()
   const location = useLocation()
   const navigate = useNavigate()
   const searchRef = useRef(null)
@@ -405,11 +407,7 @@ export function VisionHeader() {
               <ShoppingCart size={22} />
               {/* Dynamic Badge Synchronized with Cart Logic */}
               <span className="absolute top-1 right-1 w-4 h-4 bg-[#E84949] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                {/* 
-                  Using a consistent mock value for now that matches the drawer logic. 
-                  In a production build, this would use a global cart context.
-                */}
-                0
+                {cartCount}
               </span>
             </button>
 

@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck, ShoppingCart } from 'lucide-react'
-
-const initialCart = [
-  { id: 1, name: 'Premium Wood Toy', price: 120, img: 'https://toykio.myshopify.com/cdn/shop/files/product-08.jpg?v=1716179376&width=533', qty: 1 },
-  { id: 2, name: 'Eco Soft Doll', price: 45, img: 'https://toykio.myshopify.com/cdn/shop/files/product-07.jpg?v=1710995380&width=533', qty: 2 },
-]
+import { useCart } from '../context/CartContext'
 
 export function CheckoutPage() {
-  const [step, setStep] = useState(1) // 1: Info, 2: Shipping, 3: Payment
+  const { cartItems, subtotal } = useCart()
+  const [step, setStep] = useState(1) 
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -20,7 +17,6 @@ export function CheckoutPage() {
     phone: ''
   })
   const navigate = useNavigate()
-  const subtotal = initialCart.reduce((acc, item) => acc + (item.price * item.qty), 0)
   const shipping = 15.00
   const total = subtotal + shipping
 
@@ -31,6 +27,19 @@ export function CheckoutPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#FDF4E6] flex flex-col items-center justify-center p-4">
+        <ShoppingCart size={64} className="text-[#E84949] mb-6 opacity-20" />
+        <h2 className="text-2xl font-bold text-[#333] font-grandstander mb-4">Your cart is empty</h2>
+        <p className="text-[#666] mb-8 text-center max-w-md">Looks like you haven't added anything to your cart yet. Head back to the shop to find something amazing!</p>
+        <Link to="/" className="px-10 py-4 bg-[#E84949] text-white font-bold rounded-full tracking-widest uppercase hover:bg-[#333] transition-all shadow-lg">
+          Start Shopping
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -194,16 +203,16 @@ export function CheckoutPage() {
             <div className="bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] p-8 md:p-10 sticky top-28 space-y-8">
               <h2 className="text-xl font-bold text-[#333] font-grandstander border-b border-black/5 pb-4">Order Summary</h2>
               
-              <div className="space-y-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                {initialCart.map(item => (
+              <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                {cartItems.map(item => (
                   <div key={item.id} className="flex items-center gap-4 relative">
-                    <div className="w-16 h-16 bg-white rounded-xl overflow-hidden shrink-0 border border-black/5 relative">
-                      <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#333]/80 text-white text-[10px] rounded-full flex items-center justify-center font-bold">{item.qty}</span>
+                    <div className="w-16 h-16 bg-white rounded-2xl overflow-hidden shrink-0 border border-black/5 relative shadow-sm">
+                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold">{item.qty}</span>
                     </div>
                     <div className="grow">
-                      <h4 className="text-[14px] font-bold text-[#333] line-clamp-1">{item.name}</h4>
-                      <p className="text-[11px] text-[#666] uppercase">Toy-{item.id}001</p>
+                      <h4 className="text-[13px] font-bold text-[#333] line-clamp-1 font-grandstander">{item.title}</h4>
+                      <p className="text-[10px] text-[#666] uppercase tracking-widest font-bold">SKU: {item.sku || 'TOY-001'}</p>
                     </div>
                     <span className="font-bold text-[#333] text-[14px]">${(item.price * item.qty).toFixed(2)}</span>
                   </div>

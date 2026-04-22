@@ -33,12 +33,16 @@ function ScrollToTop() {
   return null
 }
 
+import { CartProvider } from './context/CartContext'
+
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <CartProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </CartProvider>
     </AuthProvider>
   )
 }
