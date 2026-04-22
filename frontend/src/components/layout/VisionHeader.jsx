@@ -116,6 +116,22 @@ export function VisionHeader() {
   }, [])
 
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    if (mobileOpen) {
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+    } else {
+      html.style.overflow = '';
+      body.style.overflow = '';
+    }
+    return () => {
+      html.style.overflow = '';
+      body.style.overflow = '';
+    }
+  }, [mobileOpen])
+
+  useEffect(() => {
     setMobileOpen(false)
     setActiveMobileSub(null)
     setSearchOpen(false)
@@ -170,9 +186,9 @@ export function VisionHeader() {
   return (
     <div 
       id="vision-header-root"
-      className="relative z-[1000]"
+      className="relative z-[1100]"
     >
-      <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }} className="relative z-200">
+      <div style={{ backgroundColor: C, width: '100%', padding: '7px 0' }} className="relative z-[1300]">
         {/* Desktop Utility Bar (1024px+) */}
         <div className="ann-desk hdr-inner" style={{ gridTemplateColumns: '1fr 1.5fr 1fr', alignItems: 'center' }}>
           <div className="flex items-center gap-4">
@@ -307,11 +323,16 @@ export function VisionHeader() {
         </div>
       </div>
 
-      <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 100 }}>
+      <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 1200 }}>
         <div className="hdr-inner flex items-center h-15 md:h-17.5 relative">
           {/* Mobile Burger: Left-aligned, hidden on 1024px+ */}
           <div className="lg:hidden flex-1 flex items-center">
-            <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 text-[#333] hover:text-[#E84949] transition-colors"><Menu size={24} /></button>
+            <button 
+              onClick={() => setMobileOpen(!mobileOpen)} 
+              className="p-2 -ml-2 text-[#333] hover:text-[#E84949] transition-colors relative z-[1200]"
+            >
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
 
           {/* Logo Section: Centered on Mobile/Tab (Absolute), Left-aligned on Desktop */}
@@ -495,21 +516,113 @@ export function VisionHeader() {
       <AnimatePresence>
         {mobileOpen && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} className="fixed inset-0 bg-black/40 z-200" />
-            <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed top-0 left-0 bottom-0 w-[80%] max-w-[320px] bg-[#FDF4E6] z-210 flex flex-col shadow-2xl">
-              <div className="p-6 flex items-center justify-between border-b border-[#333]/10"><img src={logo} alt="Toyove" className="h-8 w-auto" /><button onClick={() => setMobileOpen(false)} className="w-8 h-8 rounded-full bg-[#E84949] text-white flex items-center justify-center"><X size={18} /></button></div>
-              <div className="overflow-y-auto grow py-4">
-                {user && (
-                    <div className="px-6 py-4 bg-[#F9EAD3]/50 mb-4 flex items-center gap-4"><div className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center font-grandstander font-bold text-xl uppercase">{user.firstName[0]}</div><div><p className="text-[14px] font-bold text-[#333] capitalize">{user.firstName} {user.lastName}</p><Link to="/account" onClick={handleLinkClick} className="text-[11px] font-bold text-[#E84949] uppercase tracking-widest">My Account</Link></div></div>
-                )}
-                {mainNavLinks.map(link => (
-                  <div key={link.name}>
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5"><Link to={link.href} onClick={handleLinkClick} className={`text-[13px] font-bold tracking-widest uppercase transition-colors ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333]'}`}>{link.name}</Link>{(link.mega || link.dropdown) && (<button onClick={() => setActiveMobileSub(activeMobileSub === link.name ? null : link.name)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeMobileSub === link.name ? 'bg-[#E84949] text-white rotate-180' : 'bg-[#F9EAD3] text-[#333]'}`}><ChevronDown size={14} /></button>)}</div>
-                    {(link.mega || link.dropdown) && activeMobileSub === link.name && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-[#F9EAD3]/30 px-8 py-4 space-y-4">{link.mega ? link.mega.map((col, cidx) => (<div key={cidx}>{col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}{col.items && (<div className="flex flex-col gap-2">{col.items.map(i => <Link key={i} to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{i}</Link>)}</div>)}</div>)) : link.dropdown.map(sub => (<Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{sub.name}</Link>))}</motion.div>)}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} className="fixed inset-0 bg-black/40 z-[1000]" />
+            <motion.div 
+              initial={{ x: '-100%' }} 
+              animate={{ x: 0 }} 
+              exit={{ x: '-100%' }} 
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }} 
+              className="fixed top-[calc(25px+60px)] md:top-[calc(25px+70px)] left-0 bottom-0 w-[85%] max-w-[320px] bg-[#FDF4E6] z-[1050] flex flex-col shadow-2xl border-t border-black/5"
+            >
+              <div className="overflow-y-auto grow">
+                <div className="py-4">
+                  {user && (
+                      <div className="px-6 py-4 bg-[#F9EAD3]/50 mb-4 flex items-center gap-4">
+                        <div className="w-12 h-12 bg-[#E84949] text-white rounded-full flex items-center justify-center font-grandstander font-bold text-xl uppercase">{user.firstName[0]}</div>
+                        <div>
+                          <p className="text-[14px] font-bold text-[#333] capitalize">{user.firstName} {user.lastName}</p>
+                          <Link to="/account" onClick={handleLinkClick} className="text-[11px] font-bold text-[#E84949] uppercase tracking-widest">My Account</Link>
+                        </div>
+                      </div>
+                  )}
+                  
+                  {mainNavLinks.map(link => (
+                    <div key={link.name}>
+                      <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5">
+                        <Link to={link.href} onClick={handleLinkClick} className={`text-[13px] font-bold tracking-widest uppercase transition-colors ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333]'}`}>{link.name}</Link>
+                        {(link.name === 'Contact' ? false : (link.mega || link.dropdown)) && (
+                          <button onClick={() => setActiveMobileSub(activeMobileSub === link.name ? null : link.name)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeMobileSub === link.name ? 'bg-[#E84949] text-white rotate-180' : 'bg-[#F9EAD3] text-[#333]'}`}>
+                            <ChevronRight size={14} />
+                          </button>
+                        )}
+                      </div>
+                      {(link.mega || link.dropdown) && activeMobileSub === link.name && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-[#F9EAD3]/30 px-8 py-4 space-y-4">
+                          {link.mega ? link.mega.map((col, cidx) => (
+                            <div key={cidx}>
+                              {col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}
+                              {col.items && (
+                                <div className="flex flex-col gap-2">
+                                  {col.items.map(i => <Link key={i} to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{i}</Link>)}
+                                </div>
+                              )}
+                            </div>
+                          )) : link.dropdown.map(sub => (
+                            <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{sub.name}</Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Menu Footer Content Integrated into Single Scroll */}
+                <div className="border-t border-[#333]/10 bg-[#FDF3E7]">
+                  <div className="px-6 py-5 border-b border-[#333]/5">
+                    <Link to={user ? "/account" : "/login"} onClick={handleLinkClick} className="flex items-center gap-3 text-[13px] font-bold text-[#333] uppercase tracking-widest">
+                      <User size={18} className="text-[#333]" />
+                      <span>{user ? 'My Account' : 'Log in'}</span>
+                    </Link>
                   </div>
-                ))}
-                {!user && (<div className="px-6 py-8 space-y-3"><Link to="/login" onClick={handleLinkClick} className="block w-full py-4 bg-[#E84949] text-white text-center text-[13px] font-bold rounded-xl tracking-widest uppercase shadow-lg">Sign In</Link><Link to="/register" onClick={handleLinkClick} className="block w-full py-4 border-2 border-[#333] text-[#333] text-center text-[13px] font-bold rounded-xl tracking-widest uppercase">Create Account</Link></div>)}
-                {user && (<div className="px-6 py-4"><button onClick={() => { logout(); handleLinkClick(); }} className="w-full flex items-center justify-center gap-3 py-4 text-[13px] font-bold text-[#E84949] uppercase tracking-widest border border-[#E84949]/20 rounded-xl"><LogOut size={18}/> Log out</button></div>)}
+
+                  <div className="px-6 py-5 border-b border-[#333]/5 flex items-center gap-6">
+                    <div className="relative">
+                      <button onClick={() => setCountryDropdown(!countryDropdown)} className="flex items-center gap-3 text-[11px] font-bold text-[#333] uppercase tracking-wider">
+                        <span className="flex items-center justify-center w-5 h-4 bg-[#333]/10 rounded-sm text-[9px]">{selectedCountry.code}</span>
+                        <span>{selectedCountry.name}</span>
+                        <ChevronDown size={14} className="opacity-40" />
+                      </button>
+                      <AnimatePresence>
+                          {countryDropdown && (
+                              <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute bottom-full left-0 mb-2 w-48 bg-white shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
+                                  {countries.map(c => (
+                                      <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-[#FDF4E6] flex items-center justify-between ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                          {c.name}
+                                      </button>
+                                  ))}
+                              </motion.div>
+                          )}
+                      </AnimatePresence>
+                    </div>
+                    
+                    <div className="relative">
+                      <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-3 text-[11px] font-bold text-[#333] uppercase tracking-wider">
+                        <Globe size={14} className="opacity-40" />
+                        <span>{selectedLang}</span>
+                        <ChevronDown size={14} className="opacity-40" />
+                      </button>
+                      <AnimatePresence>
+                          {langDropdown && (
+                              <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute bottom-full left-0 mb-2 w-32 bg-white shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
+                                  {languages.map(l => (
+                                      <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-[#FDF4E6] ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                          {l}
+                                      </button>
+                                  ))}
+                              </motion.div>
+                          )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-8 flex items-center gap-6">
+                    {[FbIcon, IgIcon, XIcon, PtIcon].map((Icon, i) => (
+                      <a key={i} href="#" className="text-[#333] hover:text-[#E84949] transition-colors">
+                        <Icon />
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           </>

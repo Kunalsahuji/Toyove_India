@@ -11,10 +11,10 @@ const categories = [
 ];
 
 const marqueeItems = [
-  'FREE, DISCREET SHIPPING ON ORDERS $60+ IN THE U.S',
-  'GET A $50 GIFT CARD ON PURCHASE OF $500+',
-  'NEW ARRIVALS: CHECK OUT OUR LATEST COLLECTIONS',
-  'JOIN THE TOYOVE FAMILY FOR EXCLUSIVE DEALS',
+  'GET FREE, DISCREET SHIPPING ON ORDERS $60+ IN THE U.S',
+  'GET A $50 GIFT CARD ON PURCHASE OF $1000',
+  'HURRY UP OFFER RUNNING FOR A LIMITED TIME ONLY',
+  'GET 20% OFF ON YOUR FIRST ORDER',
 ];
 
 export function CategorySection() {
@@ -126,15 +126,14 @@ export function CategorySection() {
 
       <div className="mt-12 bg-[#F47522] py-4 md:py-5 overflow-hidden flex items-center border-y border-white/5 shadow-inner">
         <motion.div 
-          animate={{ x: [0, -1000] }}
-          transition={{ repeat: Infinity, duration: 25, ease: 'linear' }}
+          animate={{ x: [-1200, 0] }}
+          transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
           className="flex whitespace-nowrap gap-12 md:gap-20 items-center"
         >
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <div key={i} className="flex items-center gap-6 text-white font-bold text-[12px] md:text-[14px] lg:text-[16px] tracking-[0.2em] uppercase">
-              <span className="opacity-40 text-[20px]">✦</span>
+          {[...marqueeItems, ...marqueeItems, ...marqueeItems].map((item, i) => (
+            <div key={i} className="flex items-center gap-6 text-white font-bold text-[12px] md:text-[14px] lg:text-[16px] tracking-[0.1em] uppercase">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
               <span>{item}</span>
-              <span className="opacity-40 text-[20px]">✦</span>
             </div>
           ))}
         </motion.div>
