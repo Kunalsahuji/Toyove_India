@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { motion, useMotionValue, useSpring, animate } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const categories = [
   { label: 'Soft Toys', img: 'https://plus.unsplash.com/premium_vector-1732761041055-b5cd5b4a82b7?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
@@ -7,73 +8,137 @@ const categories = [
   { label: 'Outdoor Toys', img: 'https://images.unsplash.com/vector-1774596267025-f6aecd37a689?q=80&w=1077&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
   { label: 'Medical Toys', img: 'https://plus.unsplash.com/premium_vector-1770403124887-26326dc77452?q=80&w=1151&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
   { label: 'Kids Fashion', img: 'https://plus.unsplash.com/premium_vector-1728402578566-5532c28d45a1?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-]
+];
 
 const marqueeItems = [
-  'Up to 30% Off Everything', '⭐ Get a $50 Gift Card on purchase of $500+',
-  '✈️ Lenny Toy Store Delivers For A Tablet $1 Free Only',
-  '🎁 Get Free Delivery On Eligible Orders Over $100',
-  '🚀 Try A New Toy — Your Kids Will Love It',
-]
+  'FREE, DISCREET SHIPPING ON ORDERS $60+ IN THE U.S',
+  'GET A $50 GIFT CARD ON PURCHASE OF $500+',
+  'NEW ARRIVALS: CHECK OUT OUR LATEST COLLECTIONS',
+  'JOIN THE TOYOVE FAMILY FOR EXCLUSIVE DEALS',
+];
 
 export function CategorySection() {
+  const containerRef = useRef(null);
+  const trackRef = useRef(null);
+  
+  // 3 sets for infinite bidirectional wrapping
+  const items = [...categories, ...categories, ...categories];
+  
+  const x = useMotionValue(0);
+  const [cardsPerView, setCardsPerView] = useState(5);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const updateCardsView = () => {
+      const perView = window.innerWidth < 1024 ? 2 : 5;
+      setCardsPerView(perView);
+      
+      // Center the slider at the start of the middle set (index 5)
+      const cardWidth = window.innerWidth / perView;
+      x.set(-(cardWidth * 5));
+    };
+
+    updateCardsView();
+    window.addEventListener('resize', updateCardsView);
+    return () => window.removeEventListener('resize', updateCardsView);
+  }, []);
+
+  // Seamless Looping Listener: Teleports between sets invisibly
+  useEffect(() => {
+    return x.onChange((latest) => {
+      const cardWidth = window.innerWidth / cardsPerView;
+      const setWidth = cardWidth * 5;
+      
+      // Reset if we move past the boundaries of the middle set
+      if (latest > -setWidth) {
+        x.set(latest - setWidth);
+      } else if (latest < -(setWidth * 2)) {
+        x.set(latest + setWidth);
+      }
+    });
+  }, [cardsPerView]);
+
+  const handleDragEnd = (event, info) => {
+    setIsDragging(false);
+    
+    const cardWidth = window.innerWidth / cardsPerView;
+    const currentX = x.get();
+    
+    // Snap to the closest card slot with professional easing
+    const targetX = Math.round(currentX / cardWidth) * cardWidth;
+    
+    animate(x, targetX, {
+      type: 'spring',
+      stiffness: 300,
+      damping: 30
+    });
+  };
+
   return (
-    <div className="bg-brand-cream overflow-hidden">
-      <section className="pt-4 pb-8 md:pt-6 md:pb-12">
-        <div className="shell">
-          <div className="flex overflow-x-auto lg:grid lg:grid-cols-5 gap-5 md:gap-7 lg:gap-8 pt-4 pb-12 md:pt-6 md:pb-16 lg:pb-12 lg:overflow-visible snap-x snap-mandatory scrollbar-hide">
-            {categories.map((cat, i) => {
-              const isStaggered = i % 2 !== 0; 
-              
-              return (
+    <section className="bg-[#FDF4E6] py-4 md:py-8 lg:py-10 overflow-hidden select-none">
+      <div className="relative w-full" ref={containerRef}>
+        <motion.div 
+          ref={trackRef}
+          className="flex cursor-grab active:cursor-grabbing"
+          drag="x"
+          style={{ x }}
+          dragConstraints={{ left: -10000, right: 10000 }}
+          dragElastic={0.05}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={handleDragEnd}
+        >
+          {items.map((cat, i) => {
+            const isHigh = i % 2 !== 0;
+            
+            return (
+              <div 
+                key={i}
+                // STRICT PERCENTAGE WIDTHS: No fractional cards (2 on mobile, 5 on desktop)
+                style={{ flex: `0 0 ${100 / cardsPerView}%` }}
+                className={`px-2 md:px-3 lg:px-4 transition-all duration-700 ${isHigh ? 'mt-10 md:mt-14 lg:mt-20' : 'mt-0'}`}
+              >
                 <Link 
-                  key={i}
                   to={`/collections/${cat.label.toLowerCase().replaceAll(' ', '-')}`}
-                  className="block group shrink-0 w-[calc(50%-10px)] md:w-[calc(50%-14px)] lg:w-auto snap-start"
+                  className="block group"
+                  draggable={false}
+                  onClick={(e) => {
+                    if (isDragging) e.preventDefault();
+                  }}
                 >
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.6 }}
-                    whileHover={{ 
-                      y: isStaggered ? 12 : -15, 
-                      rotate: i % 2 === 0 ? 2 : -2,
-                      scale: 1.05,
-                      transition: { type: 'spring', stiffness: 400, damping: 15 }
-                    }}
-                    className={`dashed-card bg-[#F7EBD5] p-3.5 md:p-5 cursor-pointer w-full flex flex-col items-center shadow-sm group-hover:shadow-2xl transition-all duration-300 ${
-                      isStaggered ? 'mt-10 md:mt-14 lg:mt-16' : 'mt-0'
-                    }`}
-                  >
-                    <div className="w-full aspect-square overflow-hidden rounded-xl bg-white mb-5 md:mb-6 shadow-inner border border-brand-ink/5">
+                  <div className="relative bg-[#F9EAD3] p-4 md:p-6 lg:p-8 rounded-[24px] border-[2px] border-dashed border-[#333]/15 group-hover:border-[#E84949] transition-all duration-300">
+                    <div className="aspect-square overflow-hidden rounded-[20px] bg-white mb-5 shadow-inner border border-black/5 pointer-events-none">
                       <img
                         src={cat.img}
                         alt={cat.label}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none"
                       />
                     </div>
-                    
-                    <span className="text-[14px] md:text-[18px] font-bold text-brand-ink text-center mb-1.5 font-grandstander tracking-tight pb-1 group-hover:text-[#E84949] transition-colors">
+                    <h3 className="text-[14px] md:text-[16px] lg:text-[19px] font-bold text-[#333] text-center font-grandstander group-hover:text-[#E84949] transition-colors duration-300 pointer-events-none">
                       {cat.label}
-                    </span>
-                  </motion.div>
+                    </h3>
+                  </div>
                 </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <div className="bg-brand-orange py-3 md:py-4 overflow-hidden flex items-center border-y border-white/10 shadow-lg relative z-20">
-        <div className="marquee-inner flex whitespace-nowrap gap-12 md:gap-16 items-center">
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} className="text-white font-bold text-[11px] md:text-[13px] tracking-wide flex items-center gap-3 shrink-0 uppercase">
-              <span className="text-[14px]">✦</span> {item}
-            </span>
-          ))}
-        </div>
+              </div>
+            );
+          })}
+        </motion.div>
       </div>
-    </div>
-  )
+
+      <div className="mt-12 bg-[#F47522] py-4 md:py-5 overflow-hidden flex items-center border-y border-white/5 shadow-inner">
+        <motion.div 
+          animate={{ x: [0, -1000] }}
+          transition={{ repeat: Infinity, duration: 25, ease: 'linear' }}
+          className="flex whitespace-nowrap gap-12 md:gap-20 items-center"
+        >
+          {[...marqueeItems, ...marqueeItems].map((item, i) => (
+            <div key={i} className="flex items-center gap-6 text-white font-bold text-[12px] md:text-[14px] lg:text-[16px] tracking-[0.2em] uppercase">
+              <span className="opacity-40 text-[20px]">✦</span>
+              <span>{item}</span>
+              <span className="opacity-40 text-[20px]">✦</span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
 }
