@@ -162,9 +162,12 @@ export function CartPage() {
 
                 <p className="text-[13px] text-[#666] text-center italic">Tax included and shipping calculated at checkout</p>
 
-                <button className="w-full h-16 bg-[#E84949] text-white font-bold text-[14px] tracking-[0.2em] uppercase rounded-xl hover:bg-[#333] transition-all shadow-xl active:scale-95">
+                <Link 
+                    to="/checkout"
+                    className="w-full h-16 bg-[#E84949] text-white font-bold text-[14px] tracking-[0.2em] uppercase rounded-xl hover:bg-[#333] transition-all shadow-xl active:scale-95 flex items-center justify-center"
+                >
                     Proceed to Checkout
-                </button>
+                </Link>
 
                 <div className="grid grid-cols-4 gap-2 pt-2">
                     {['visa', 'mastercard', 'paypal', 'applepay'].map(p => (

@@ -11,8 +11,7 @@ const productImages = [
   "https://toykio.myshopify.com/cdn/shop/files/product-07-02.jpg?v=1710995381&width=533",
   "https://toykio.myshopify.com/cdn/shop/files/product-06.jpg?v=1710995380&width=533",
   "https://toykio.myshopify.com/cdn/shop/files/product-06-02.jpg?v=1710995381&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-05.jpg?v=1710995380&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-05-02.jpg?v=1710995381&width=533"
+  "https://toykio.myshopify.com/cdn/shop/files/preview_images/85175d99987d4adb9478a6e7912fd6db.thumbnail.0000000000.jpg?v=1711011026&width=533"
 ]
 
 import { ProductCard } from '../components/ui/ProductCard'
@@ -70,7 +69,12 @@ export function ProductDetailPage() {
     { id: 1, name: 'Planet Toy Explorer', price: 126, img: productImages[2], hoverImg: productImages[3] },
     { id: 2, name: 'WildHarvests Maker Toy', price: 150, img: productImages[4], hoverImg: productImages[5] },
     { id: 3, name: 'Rainbow Stacker Set', price: 85, img: productImages[6], hoverImg: productImages[7] },
-    { id: 4, name: 'JoyfulJamboree Juniors', price: 89, img: productImages[1], hoverImg: productImages[0] }
+    { id: 4, name: 'JoyfulJamboree Juniors', price: 89, img: productImages[1], hoverImg: productImages[0] },
+    { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[1] },
+    { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[4], hoverImg: productImages[3] },
+    { id: 7, name: 'WildHarvests Maker', price: 110, img: productImages[5], hoverImg: productImages[6] },
+    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[7], hoverImg: productImages[0] },
+   ,
   ]
 
   const recentlyViewed = [
@@ -156,7 +160,7 @@ export function ProductDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
             {/* Gallery - Grid Layout for Toyove-India Parity */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-4 h-fit">
-              {productImages.slice(0, 4).map((img, i) => (
+              {productImages.slice(0, 6).map((img, i) => (
                 <div key={i} className="aspect-square rounded-3xl overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 group">
                   <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                 </div>
@@ -244,7 +248,7 @@ export function ProductDetailPage() {
                       <span className="font-grandstander text-[16px] text-[#333] font-bold">{quantity}</span>
                       <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={14} /></button>
                     </div>
-                    <button className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all">ADD TO CART</button>
+                    <button className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all py-3">ADD TO CART</button>
                   </div>
                   <button className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all">BUY IT NOW</button>
                 </div>

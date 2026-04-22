@@ -18,6 +18,7 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { AccountPage } from './pages/AccountPage'
 import { CartPage } from './pages/CartPage'
+import { CheckoutPage } from './pages/CheckoutPage'
 import { AuthProvider } from './context/AuthContext'
 import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
@@ -36,46 +37,58 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <ScrollToTop />
-        <div className="min-h-screen flex flex-col bg-[#FDF4E6] overflow-x-hidden relative">
-          <VisionHeader />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/product/:title" element={<ProductDetailPage />} />
-              
-              {/* Legal & Informational Pages */}
-              <Route path="/pages/return-exchange" element={<ReturnPolicy />} />
-              <Route path="/pages/shipping-policy" element={<ShippingPolicy />} />
-              <Route path="/pages/terms-conditions" element={<TermsConditions />} />
-              <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/pages/faq" element={<FAQPage />} />
-              
-              {/* Utility Pages */}
-              <Route path="/wishlist" element={<WishlistPage />} />
-              <Route path="/search" element={<SearchPage />} />
-              
-              {/* Collection / Category Pages */}
-              <Route path="/collections/:category" element={<CollectionPage />} />
-
-              {/* Auth Pages */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/account" element={<AccountPage />} />
-              <Route path="/cart" element={<CartPage />} />
-
-              {/* Fallback to home */}
-              <Route path="*" element={<HomePage />} />
-            </Routes>
-          </main>
-          <Footer />
-          <MobileBottomBar />
-          <AsideSidebar />
-          <PurchaseNotification />
-        </div>
+        <AppContent />
       </Router>
     </AuthProvider>
+  )
+}
+
+function AppContent() {
+  const location = useLocation()
+  const isCheckout = location.pathname === '/checkout'
+
+  return (
+    <>
+      <ScrollToTop />
+      <div className="min-h-screen flex flex-col bg-[#FDF4E6] overflow-x-hidden relative">
+        {!isCheckout && <VisionHeader />}
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/product/:title" element={<ProductDetailPage />} />
+            
+            {/* Legal & Informational Pages */}
+            <Route path="/pages/return-exchange" element={<ReturnPolicy />} />
+            <Route path="/pages/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/pages/terms-conditions" element={<TermsConditions />} />
+            <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/pages/faq" element={<FAQPage />} />
+            
+            {/* Utility Pages */}
+            <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            
+            {/* Collection / Category Pages */}
+            <Route path="/collections/:category" element={<CollectionPage />} />
+
+            {/* Auth Pages */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+
+            {/* Fallback to home */}
+            <Route path="*" element={<HomePage />} />
+          </Routes>
+        </main>
+        {!isCheckout && <Footer />}
+        {!isCheckout && <MobileBottomBar />}
+        {!isCheckout && <AsideSidebar />}
+        {!isCheckout && <PurchaseNotification />}
+      </div>
+    </>
   )
 }
