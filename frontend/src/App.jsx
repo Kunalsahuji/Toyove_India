@@ -20,6 +20,7 @@ import { AccountPage } from './pages/AccountPage'
 import { CartPage } from './pages/CartPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
+import { ComparePage } from './pages/ComparePage'
 import { AuthProvider } from './context/AuthContext'
 import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
@@ -87,7 +88,8 @@ function AppContent() {
             <Route path="/account" element={<AccountPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
-<Route path="/order-success" element={<OrderSuccessPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+            <Route path="/compare" element={<ComparePage />} />
 
             {/* Fallback to home */}
             <Route path="*" element={<HomePage />} />

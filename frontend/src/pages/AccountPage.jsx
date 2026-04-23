@@ -8,7 +8,7 @@ import {
   User, Package, MapPin, LogOut, ChevronRight, Wallet, History, CreditCard, 
   Plus, ArrowUpRight, ArrowDownLeft, Check, Smartphone, Landmark, Truck, 
   AlertCircle, X, Search, Lock, Loader2, ShieldCheck, Home, Edit2, Save, 
-  Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink
+  Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink, Building
 } from 'lucide-react'
 
 // Enhanced Gateway with Simulation Step
@@ -125,6 +125,16 @@ export function AccountPage() {
   const [topUpMethod, setTopUpMethod] = useState('upi')
   const [showTopUpGateway, setShowTopUpGateway] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+
+  // Corporate Info based on Image
+  const corporateInfo = {
+    name: "TOYOVO INDIA (OPC) PRIVATE LIMITED",
+    cin: "U47912PB2026OPC068091",
+    pan: "AANCT0674K",
+    tan: "PTLT16619B",
+    incDate: "22nd April 2026",
+    address: "UNIT 703, 7th FLOOR, BLOCK 1 MAYAGARDEN, Zirakpur, Rajpura, Mohali- 140603, Punjab"
+  }
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -289,6 +299,49 @@ export function AccountPage() {
                  </motion.div>
                )}
 
+               {/* Legal/Support Content Mapping with Image Details */}
+               {['help', 'returns', 'shipping', 'privacy', 'terms'].includes(activeTab) && (
+                  <motion.div key={activeTab} initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="space-y-12">
+                     <div className="space-y-4">
+                        <h3 className="text-4xl font-grandstander font-bold text-gray-700 uppercase tracking-tight">{activeTab}</h3>
+                        <p className="text-gray-400 font-medium italic">Official Statement of {corporateInfo.name}</p>
+                     </div>
+
+                     <div className="space-y-8 text-gray-600 leading-relaxed">
+                        <div className="p-10 bg-[#FAEAD3] rounded-[40px] border border-black/[0.03] space-y-6">
+                           <div className="flex items-center gap-4 text-[#6651A4] font-bold text-sm uppercase tracking-[0.2em] mb-4">
+                              <Building size={20}/> Corporate Identity
+                           </div>
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[13px] font-medium">
+                              <div className="space-y-1">
+                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Entity Name</p>
+                                 <p>{corporateInfo.name}</p>
+                              </div>
+                              <div className="space-y-1">
+                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">CIN Number</p>
+                                 <p>{corporateInfo.cin}</p>
+                              </div>
+                              <div className="space-y-1">
+                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Registered Office</p>
+                                 <p className="leading-relaxed">{corporateInfo.address}</p>
+                              </div>
+                              <div className="space-y-1">
+                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tax Identifiers</p>
+                                 <p>PAN: {corporateInfo.pan} · TAN: {corporateInfo.tan}</p>
+                              </div>
+                           </div>
+                        </div>
+
+                        <div className="space-y-6 px-4">
+                           <h4 className="text-xl font-grandstander font-bold text-gray-700">Detailed Policies</h4>
+                           <p className="text-[15px]">At Toyove-India, our operations are governed by the Companies Act, 2013. Incorporated on {corporateInfo.incDate}, we strive to maintain the highest standards of transparency for our explorers.</p>
+                           <p className="text-[15px]">Your engagement with our platform, including orders, returns, and wallet usage, is protected under the laws of the Ministry of Corporate Affairs, Government of India.</p>
+                        </div>
+                     </div>
+                  </motion.div>
+               )}
+
+               {/* Other Tabs (Wallet, Orders, Profile, etc.) continue below */}
                {activeTab === 'orders' && (
                  <motion.div key="orders" initial={{opacity:0}} animate={{opacity:1}} className="space-y-0.5">
                     {orders.length === 0 ? (
@@ -296,7 +349,7 @@ export function AccountPage() {
                     ) : orders.map(order => (
                        <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-5 hover:bg-[#FAEAD3]/40 border-b border-black/[0.02] flex items-center justify-between cursor-pointer group transition-all">
                           <div className="flex items-center gap-5">
-                             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gray-200 group-hover:text-[#6651A4] transition-all"><Package size={20}/></div>
+                             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gray-200 group-hover:text-[#6651A4] transition-all"><Box size={20}/></div>
                              <div><p className="text-[13px] font-bold text-gray-700">Order #{order.id}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items</p></div>
                           </div>
                           <div className="text-right flex items-center gap-6">
@@ -355,7 +408,7 @@ export function AccountPage() {
                             <input required placeholder="Street Address" value={addressForm.address} onChange={e=>setAddressForm({...addressForm, address: e.target.value})} className="w-full h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
                             <div className="grid grid-cols-2 gap-4">
                                <input placeholder="Apartment, Suite (Optional)" value={addressForm.apartment} onChange={e=>setAddressForm({...addressForm, apartment: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
-                               <input required placeholder="City" value={addressForm.city} onChange={e=>setAddressForm({...addressForm, city: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
+                               <input required placeholder="City" value={addressForm.city} onChange={e=>setAddressTab({...addressForm, city: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                <input required placeholder="State" value={addressForm.state} onChange={e=>setAddressForm({...addressForm, state: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
@@ -430,19 +483,6 @@ export function AccountPage() {
                         </div>
                         <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-[25px] font-grandstander font-bold uppercase tracking-widest text-[13px] hover:bg-[#6651A4] transition-all shadow-xl">Update Explorer ID</button>
                      </form>
-                  </motion.div>
-               )}
-
-               {['help', 'returns', 'shipping', 'privacy', 'terms'].includes(activeTab) && (
-                  <motion.div key={activeTab} initial={{opacity:0}} animate={{opacity:1}} className="space-y-8">
-                     <h3 className="text-4xl font-grandstander font-bold text-gray-700 uppercase tracking-tight">{activeTab}</h3>
-                     <div className="space-y-6 text-gray-500 leading-relaxed text-[15px]">
-                        <p>At Toyove-India, our {activeTab} policy is built on the foundation of trust and transparency. We ensure every explorer feels secure.</p>
-                        <div className="p-10 bg-[#FAEAD3]/50 rounded-[40px] border border-black/[0.02] italic font-medium text-center">
-                           "Your adventure is our priority. We are here to support every step of your toy journey."
-                        </div>
-                        <p>For detailed queries, our 24/7 support is always available at support@toyove.com.</p>
-                     </div>
                   </motion.div>
                )}
             </AnimatePresence>

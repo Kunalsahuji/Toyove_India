@@ -12,24 +12,25 @@ export function ProductCard({ p, i = 0 }) {
     e.preventDefault()
     e.stopPropagation()
     
-    // Normalize product data for cart
+    // Normalize product data for cart/wishlist consistency
     const normalizedProduct = {
-      id: product.id,
-      title: product.name,
+      id: product.id || product.sku || product.name?.toLowerCase().replaceAll(' ', '-'),
+      title: product.name || product.title,
       price: product.price,
       img: product.img,
-      sku: product.sku || `TOY-${product.id}`
+      sku: product.sku || `TOY-${product.id || '001'}`
     }
 
     if (action === 'cart') {
       addToCart(normalizedProduct, 1)
-      alert('Added to cart!')
+      navigate('/cart')
     }
     if (action === 'wishlist') {
       toggleWishlist(normalizedProduct)
+      navigate('/wishlist')
     }
     if (action === 'quickview') navigate(`/product/${product.name.toLowerCase().replaceAll(' ', '-')}`)
-    if (action === 'compare') alert('Added to comparison!')
+    if (action === 'compare') navigate('/compare')
   }
 
   return (

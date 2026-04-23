@@ -73,7 +73,7 @@ export function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity)
-    // You could trigger a sidebar or toast here
+    navigate('/cart')
   }
 
   const handleBuyNow = () => {
@@ -230,12 +230,12 @@ export function ProductDetailPage() {
                   </div>
                   <div className="flex gap-3 pt-1">
                     <button 
-                      onClick={() => toggleWishlist(product)}
+                      onClick={() => { toggleWishlist(product); navigate('/wishlist'); }}
                       className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform ${isWishlisted ? 'bg-[#333] text-white' : 'bg-[#E84949] text-white'}`}
                     >
                       <Heart size={16} fill={isWishlisted ? 'white' : 'none'} />
                     </button>
-                    <button className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
+                    <button onClick={() => navigate('/compare')} className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
                   </div>
                   <p className="text-[13px] text-[#666] font-medium">Sku: {product.sku}</p>
                 </div>

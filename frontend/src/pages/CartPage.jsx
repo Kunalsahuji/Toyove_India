@@ -6,7 +6,7 @@ import { Minus, Plus, X, ShoppingBag, ArrowRight, Trash2 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 
 export function CartPage() {
-  const { cartItems, updateQty, removeFromCart, clearCart, subtotal } = useCart()
+  const { cartItems, updateQuantity, removeFromCart, clearCart, subtotal } = useCart()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -16,13 +16,13 @@ export function CartPage() {
   if (cartItems.length === 0) {
     return (
       <div className="bg-[#FDF4E6] min-h-screen py-24 flex flex-col items-center justify-center font-roboto">
-        <div className="p-12 bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] text-center max-w-lg mx-4">
+        <div className="p-12 bg-[#FAEAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] text-center max-w-lg mx-4">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <ShoppingBag size={32} className="text-[#333]/20" />
             </div>
             <h1 className="text-3xl font-grandstander font-bold text-[#333] mb-4">Your cart is empty</h1>
             <p className="text-[#666] mb-8">Before proceed to checkout you must add some products to your shopping cart. You will find a lot of interesting products on our "Shop" page.</p>
-            <Link to="/collections/dolls" className="inline-flex items-center gap-2 px-10 py-4 bg-[#E84949] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] transition-all shadow-lg active:scale-95">
+            <Link to="/" className="inline-flex items-center gap-2 px-10 py-4 bg-[#E84949] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] transition-all shadow-lg active:scale-95">
                 Start Shopping <ArrowRight size={18}/>
             </Link>
         </div>
@@ -33,7 +33,7 @@ export function CartPage() {
   return (
     <div className="bg-[#FDF4E6] min-h-screen pb-24 font-roboto">
       {/* Hero */}
-      <div className="bg-[#FF4E50] py-16 text-center text-white">
+      <div className="bg-[#E84949] py-16 text-center text-white">
           <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}}>
               <h1 className="text-4xl md:text-5xl font-grandstander font-bold mb-2">Shopping Cart</h1>
               <div className="flex items-center justify-center gap-2 text-[12px] font-bold tracking-widest uppercase opacity-80">
@@ -44,7 +44,7 @@ export function CartPage() {
           </motion.div>
       </div>
 
-      <div className="shell mt-12 md:mt-16">
+      <div className="max-w-7xl mx-auto px-4 mt-12 md:mt-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-6">
@@ -63,7 +63,7 @@ export function CartPage() {
                 className="grid grid-cols-1 md:grid-cols-6 gap-6 items-center bg-white p-4 md:p-6 rounded-[32px] shadow-sm border border-[#333]/5 relative group"
               >
                 <div className="col-span-1 md:col-span-3 flex items-center gap-6">
-                    <div className="w-20 h-20 md:w-28 md:h-28 bg-[#F9EAD3] rounded-2xl overflow-hidden p-1 shrink-0 border border-[#333]/5">
+                    <div className="w-20 h-20 md:w-28 md:h-28 bg-[#FAEAD3] rounded-2xl overflow-hidden p-1 shrink-0 border border-[#333]/5">
                         <img src={item.img} alt={item.title} className="w-full h-full object-cover rounded-xl" />
                     </div>
                     <div>
@@ -82,14 +82,14 @@ export function CartPage() {
                 <div className="flex justify-center">
                     <div className="flex items-center bg-[#FDF4E6] rounded-xl border border-[#333]/10 p-1">
                         <button 
-                            onClick={() => updateQty(item.id, item.qty - 1)}
+                            onClick={() => updateQuantity(item.id, -1)}
                             className="w-10 h-10 flex items-center justify-center hover:text-[#E84949] transition-colors"
                         >
                             <Minus size={16}/>
                         </button>
                         <span className="w-10 text-center font-bold text-[15px]">{item.qty}</span>
                         <button 
-                            onClick={() => updateQty(item.id, item.qty + 1)}
+                            onClick={() => updateQuantity(item.id, 1)}
                             className="w-10 h-10 flex items-center justify-center hover:text-[#E84949] transition-colors"
                         >
                             <Plus size={16}/>
@@ -112,7 +112,7 @@ export function CartPage() {
             ))}
 
             <div className="pt-4 flex flex-col md:flex-row justify-between gap-4">
-                <Link to="/collections/dolls" className="px-8 py-4 bg-[#F9EAD3] text-[#333] font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] hover:text-white transition-all text-center">
+                <Link to="/" className="px-8 py-4 bg-[#FAEAD3] text-[#333] font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] hover:text-white transition-all text-center">
                     Continue Shopping
                 </Link>
                 <button 
@@ -126,7 +126,7 @@ export function CartPage() {
 
           {/* Cart Totals */}
           <div className="lg:col-span-1">
-            <div className="bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] p-8 space-y-8 sticky top-32">
+            <div className="bg-[#FAEAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] p-8 space-y-8 sticky top-32">
                 <h3 className="text-2xl font-grandstander font-bold text-[#333] border-b border-[#333]/10 pb-4">Cart Totals</h3>
                 
                 <div className="space-y-4">
