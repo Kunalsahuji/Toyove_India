@@ -1,56 +1,71 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('toyove_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [addresses, setAddresses] = useState(() => {
+    const saved = localStorage.getItem('toyove_addresses');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, type: 'Home', firstName: 'John', lastName: 'Doe', address: '123 Toy Street', city: 'Mumbai', state: 'Maharashtra', postalCode: '400001', phone: '9876543210', isDefault: true }
+    ];
+  });
 
   useEffect(() => {
-    // Check localStorage on mount
-    const savedUser = localStorage.getItem('toyove_user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
+    if (user) {
+      localStorage.setItem('toyove_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('toyove_user');
     }
-    setLoading(false)
-  }, [])
+  }, [user]);
 
-  const login = (email, password) => {
-    // Check in registered users
-    const allUsers = JSON.parse(localStorage.getItem('toyove_registered_users') || '[]')
-    const foundUser = allUsers.find(u => u.email === email && u.password === password)
-    
-    if (foundUser) {
-      setUser(foundUser)
-      localStorage.setItem('toyove_user', JSON.stringify(foundUser))
-      return { success: true }
-    }
-    return { success: false, message: 'Invalid email or password' }
-  }
+  useEffect(() => {
+    localStorage.setItem('toyove_addresses', JSON.stringify(addresses));
+  }, [addresses]);
+
+  const login = (userData) => {
+    setUser({ ...userData, firstName: userData.firstName || 'User', lastName: userData.lastName || '' });
+  };
 
   const logout = () => {
-    setUser(null)
-    localStorage.removeItem('toyove_user')
-  }
+    setUser(null);
+  };
 
-  const register = (userData) => {
-    const allUsers = JSON.parse(localStorage.getItem('toyove_registered_users') || '[]')
-    
-    // Check if user exists
-    if (allUsers.find(u => u.email === userData.email)) {
-      return { success: false, message: 'User already exists' }
-    }
+  const updateUser = (newData) => {
+    setUser(prev => ({ ...prev, ...newData }));
+  };
 
-    allUsers.push(userData)
-    localStorage.setItem('toyove_registered_users', JSON.stringify(allUsers))
-    return { success: true }
-  }
+  const addAddress = (address) => {
+    const newAddress = { ...address, id: Date.now(), isDefault: addresses.length === 0 };
+    setAddresses(prev => [...prev, newAddress]);
+  };
+
+  const deleteAddress = (id) => {
+    setAddresses(prev => prev.filter(a => a.id !== id));
+  };
+
+  const setAsDefaultAddress = (id) => {
+    setAddresses(prev => prev.map(a => ({ ...a, isDefault: a.id === id })));
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      updateUser, 
+      addresses, 
+      addAddress, 
+      deleteAddress, 
+      setAsDefaultAddress 
+    }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
-export const useAuth = () => useContext(AuthContext)
+export const useAuth = () => useContext(AuthContext);

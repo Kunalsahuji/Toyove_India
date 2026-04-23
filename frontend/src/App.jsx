@@ -19,6 +19,7 @@ import { RegisterPage } from './pages/RegisterPage'
 import { AccountPage } from './pages/AccountPage'
 import { CartPage } from './pages/CartPage'
 import { CheckoutPage } from './pages/CheckoutPage'
+import { OrderSuccessPage } from './pages/OrderSuccessPage'
 import { AuthProvider } from './context/AuthContext'
 import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
@@ -34,14 +35,17 @@ function ScrollToTop() {
 }
 
 import { CartProvider } from './context/CartContext'
+import { PaymentProvider } from './context/PaymentContext'
 
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <PaymentProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </PaymentProvider>
       </CartProvider>
     </AuthProvider>
   )
@@ -83,6 +87,7 @@ function AppContent() {
             <Route path="/account" element={<AccountPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+<Route path="/order-success" element={<OrderSuccessPage />} />
 
             {/* Fallback to home */}
             <Route path="*" element={<HomePage />} />

@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext'
 export function ProductCard({ p, i = 0 }) {
   const { addToCart, toggleWishlist, wishlist } = useCart()
   const isWishlisted = wishlist.some(item => item.id === p.id)
+  const navigate = useNavigate()
 
   const handleAction = (e, action, product) => {
     e.preventDefault()

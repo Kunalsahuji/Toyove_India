@@ -3,32 +3,17 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Minus, Plus, X, ShoppingBag, ArrowRight, Trash2 } from 'lucide-react'
 
-// Mock cart data
-const initialCart = [
-  { id: 1, name: 'Premium Wood Toy', price: 120, img: 'https://toykio.myshopify.com/cdn/shop/files/product-08.jpg?v=1716179376&width=533', qty: 1 },
-  { id: 2, name: 'Eco Soft Doll', price: 45, img: 'https://toykio.myshopify.com/cdn/shop/files/product-07.jpg?v=1710995380&width=533', qty: 2 },
-]
+import { useCart } from '../context/CartContext'
 
 export function CartPage() {
-  const [cart, setCart] = useState(initialCart)
+  const { cartItems, updateQty, removeFromCart, clearCart, subtotal } = useCart()
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  const updateQty = (id, delta) => {
-    setCart(prev => prev.map(item => 
-      item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
-    ))
-  }
 
-  const removeItem = (id) => {
-    setCart(prev => prev.filter(item => item.id !== id))
-  }
-
-  const subtotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0)
-
-  if (cart.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <div className="bg-[#FDF4E6] min-h-screen py-24 flex flex-col items-center justify-center font-roboto">
         <div className="p-12 bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] text-center max-w-lg mx-4">
@@ -70,7 +55,7 @@ export function CartPage() {
                 <div className="text-right">Total</div>
             </div>
 
-            {cart.map((item) => (
+            {cartItems.map((item) => (
               <motion.div 
                 key={item.id} 
                 layout
@@ -79,14 +64,14 @@ export function CartPage() {
               >
                 <div className="col-span-1 md:col-span-3 flex items-center gap-6">
                     <div className="w-20 h-20 md:w-28 md:h-28 bg-[#F9EAD3] rounded-2xl overflow-hidden p-1 shrink-0 border border-[#333]/5">
-                        <img src={item.img} alt={item.name} className="w-full h-full object-cover rounded-xl" />
+                        <img src={item.img} alt={item.title} className="w-full h-full object-cover rounded-xl" />
                     </div>
                     <div>
-                        <Link to={`/product/${item.name.toLowerCase().replaceAll(' ', '-')}`} className="text-[16px] md:text-[18px] font-grandstander font-bold text-[#333] hover:text-[#E84949] transition-colors leading-tight block mb-1">
-                            {item.name}
+                        <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="text-[16px] md:text-[18px] font-grandstander font-bold text-[#333] hover:text-[#E84949] transition-colors leading-tight block mb-1">
+                            {item.title}
                         </Link>
-                        <p className="text-[12px] text-[#999] font-medium lowercase">SKU: TOY-{item.id}001</p>
-                        <button onClick={() => removeItem(item.id)} className="md:hidden mt-2 text-[#E84949] flex items-center gap-1 text-[12px] font-bold uppercase tracking-widest">
+                        <p className="text-[12px] text-[#999] font-medium lowercase">SKU: {item.sku || 'TOY-001'}</p>
+                        <button onClick={() => removeFromCart(item.id)} className="md:hidden mt-2 text-[#E84949] flex items-center gap-1 text-[12px] font-bold uppercase tracking-widest">
                             <Trash2 size={14}/> Remove
                         </button>
                     </div>
@@ -97,14 +82,14 @@ export function CartPage() {
                 <div className="flex justify-center">
                     <div className="flex items-center bg-[#FDF4E6] rounded-xl border border-[#333]/10 p-1">
                         <button 
-                            onClick={() => updateQty(item.id, -1)}
+                            onClick={() => updateQty(item.id, item.qty - 1)}
                             className="w-10 h-10 flex items-center justify-center hover:text-[#E84949] transition-colors"
                         >
                             <Minus size={16}/>
                         </button>
                         <span className="w-10 text-center font-bold text-[15px]">{item.qty}</span>
                         <button 
-                            onClick={() => updateQty(item.id, 1)}
+                            onClick={() => updateQty(item.id, item.qty + 1)}
                             className="w-10 h-10 flex items-center justify-center hover:text-[#E84949] transition-colors"
                         >
                             <Plus size={16}/>
@@ -118,7 +103,7 @@ export function CartPage() {
                 </div>
 
                 <button 
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeFromCart(item.id)}
                     className="absolute -top-2 -right-2 w-8 h-8 bg-white text-[#333] rounded-full shadow-lg items-center justify-center hidden group-hover:flex hover:bg-[#E84949] hover:text-white transition-all border border-[#333]/10"
                 >
                     <X size={16}/>
@@ -131,7 +116,7 @@ export function CartPage() {
                     Continue Shopping
                 </Link>
                 <button 
-                    onClick={() => setCart([])}
+                    onClick={clearCart}
                     className="px-8 py-4 bg-white border-2 border-[#333] text-[#333] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] hover:text-white transition-all text-center"
                 >
                     Clear Cart
