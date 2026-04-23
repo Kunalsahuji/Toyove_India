@@ -11,7 +11,14 @@ export function AuthProvider({ children }) {
   const [addresses, setAddresses] = useState(() => {
     const saved = localStorage.getItem('toyove_addresses');
     return saved ? JSON.parse(saved) : [
-      { id: 1, type: 'Home', firstName: 'John', lastName: 'Doe', address: '123 Toy Street', city: 'Mumbai', state: 'Maharashtra', postalCode: '400001', phone: '9876543210', isDefault: true }
+      { id: 1, type: 'Home', firstName: 'John', lastName: 'Doe', address: '123 Toy Street', apartment: 'Apt 4B', city: 'Mumbai', state: 'Maharashtra', postalCode: '400001', phone: '9876543210', isDefault: true }
+    ];
+  });
+
+  const [savedMethods, setSavedMethods] = useState(() => {
+    const saved = localStorage.getItem('toyove_payment_methods');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, type: 'card', label: 'Toyove Virtual Card', last4: '4242', expiry: '12/28', brand: 'Visa' }
     ];
   });
 
@@ -26,6 +33,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('toyove_addresses', JSON.stringify(addresses));
   }, [addresses]);
+
+  useEffect(() => {
+    localStorage.setItem('toyove_payment_methods', JSON.stringify(savedMethods));
+  }, [savedMethods]);
 
   const login = (userData) => {
     setUser({ ...userData, firstName: userData.firstName || 'User', lastName: userData.lastName || '' });
@@ -52,6 +63,14 @@ export function AuthProvider({ children }) {
     setAddresses(prev => prev.map(a => ({ ...a, isDefault: a.id === id })));
   };
 
+  const addPaymentMethod = (method) => {
+    setSavedMethods(prev => [...prev, { ...method, id: Date.now() }]);
+  };
+
+  const removePaymentMethod = (id) => {
+    setSavedMethods(prev => prev.filter(m => m.id !== id));
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -61,7 +80,10 @@ export function AuthProvider({ children }) {
       addresses, 
       addAddress, 
       deleteAddress, 
-      setAsDefaultAddress 
+      setAsDefaultAddress,
+      savedMethods,
+      addPaymentMethod,
+      removePaymentMethod
     }}>
       {children}
     </AuthContext.Provider>
