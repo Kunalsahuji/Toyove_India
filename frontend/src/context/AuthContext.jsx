@@ -59,6 +59,10 @@ export function AuthProvider({ children }) {
     setAddresses(prev => prev.filter(a => a.id !== id));
   };
 
+  const updateAddress = (id, updatedAddress) => {
+    setAddresses(prev => prev.map(a => a.id === id ? { ...updatedAddress, id } : a));
+  };
+
   const setAsDefaultAddress = (id) => {
     setAddresses(prev => prev.map(a => ({ ...a, isDefault: a.id === id })));
   };
@@ -80,6 +84,7 @@ export function AuthProvider({ children }) {
       addresses, 
       addAddress, 
       deleteAddress, 
+      updateAddress,
       setAsDefaultAddress,
       savedMethods,
       addPaymentMethod,

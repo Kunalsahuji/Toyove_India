@@ -13,6 +13,11 @@ export function CartProvider({ children }) {
     return savedWishlist ? JSON.parse(savedWishlist) : [];
   });
 
+  const [compare, setCompare] = useState(() => {
+    const savedCompare = localStorage.getItem('toyove_compare');
+    return savedCompare ? JSON.parse(savedCompare) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('toyove_cart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -20,6 +25,10 @@ export function CartProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('toyove_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
+
+  useEffect(() => {
+    localStorage.setItem('toyove_compare', JSON.stringify(compare));
+  }, [compare]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
@@ -59,13 +68,29 @@ export function CartProvider({ children }) {
     });
   };
 
+  const toggleCompare = (product) => {
+    setCompare(prev => {
+      const exists = prev.find(item => item.id === product.id);
+      if (exists) {
+        return prev.filter(item => item.id !== product.id);
+      }
+      if (prev.length >= 4) {
+        alert("Comparison list is full (max 4 products)");
+        return prev;
+      }
+      return [...prev, product];
+    });
+  };
+
+  const clearCompare = () => setCompare([]);
+
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
   return (
     <CartContext.Provider value={{ 
-      cartItems, wishlist, addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist,
-      subtotal, cartCount
+      cartItems, wishlist, compare, addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist,
+      toggleCompare, clearCompare, subtotal, cartCount
     }}>
       {children}
     </CartContext.Provider>

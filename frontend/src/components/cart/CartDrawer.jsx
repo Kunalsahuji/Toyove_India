@@ -2,39 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Plus, Minus, Truck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { useCart } from '../../context/CartContext';
 const CartDrawer = ({ isOpen, onClose }) => {
+  const { cartItems, updateQuantity, removeFromCart, subtotal } = useCart();
   const [orderMessageOpen, setOrderMessageOpen] = useState(false);
   const navigate = useNavigate();
 
-  // STARTING WITH EMPTY CART AS REQUESTED
-  const [cartItems, setCartItems] = useState([]);
-
-  // Mock function to add a product (for demo purposes)
-  const addDemoProduct = () => {
-    setCartItems([
-      {
-        id: 1,
-        name: "TinyTinker Toys - Interactive Shape Sorter",
-        price: 120.00,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?q=80&w=1287&auto=format&fit=crop",
-        variation: "Size: Small, Color: Red",
-      }
-    ]);
-  };
-
-  const updateQty = (id, delta) => {
-    setCartItems(prev => prev.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-    ));
-  };
-
-  const removeItem = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const freeShippingThreshold = 1780.00;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const progressPercent = Math.min((subtotal / freeShippingThreshold) * 100, 100);
@@ -138,25 +111,25 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       <div key={item.id} className="pt-4 pb-6 border-t border-black/5 last:border-b last:border-black/10">
                         <div className="flex gap-4">
                           <div className="w-20 h-20 bg-white border border-black/5 rounded-lg overflow-hidden shrink-0">
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
                           </div>
 
                           <div className="grow flex flex-col justify-between">
                             <div className="flex justify-between items-start mb-0.5">
-                              <h3 className="text-[14px] font-bold text-[#333] hover:text-[#E84949] leading-tight grow pr-4">{item.name}</h3>
-                              <span className="text-[14px] font-bold text-[#333]">₹{(item.price * item.quantity).toFixed(2)}</span>
+                              <h3 className="text-[14px] font-bold text-[#333] hover:text-[#E84949] leading-tight grow pr-4">{item.title}</h3>
+                              <span className="text-[14px] font-bold text-[#333]">₹{(item.price * item.qty).toFixed(2)}</span>
                             </div>
                             <p className="text-[14px] text-[#333] mb-0.5">₹{item.price.toFixed(2)}</p>
-                            <p className="text-[11px] text-[#333]/50 italic mb-3">{item.variation}</p>
+                            <p className="text-[11px] text-[#333]/50 italic mb-3">SKU: {item.sku}</p>
 
                             <div className="flex items-center gap-3">
                               {/* High-Fidelity Quantity Box with Interior Dividers - Matching Cart BG Color */}
                               <div className="flex items-center h-10 w-28 border border-black rounded-[7px] bg-[#FDF4E6] overflow-hidden">
-                                <button onClick={() => updateQty(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-r border-black text-[#333]"><Minus size={14} /></button>
-                                <span className="flex-1 h-full flex items-center justify-center text-[14px] font-bold text-[#333]">{item.quantity}</span>
-                                <button onClick={() => updateQty(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-l border-black text-[#333]"><Plus size={14} /></button>
+                                <button onClick={() => updateQuantity(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-r border-black text-[#333]"><Minus size={14} /></button>
+                                <span className="flex-1 h-full flex items-center justify-center text-[14px] font-bold text-[#333]">{item.qty}</span>
+                                <button onClick={() => updateQuantity(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:bg-black/5 border-l border-black text-[#333]"><Plus size={14} /></button>
                               </div>
-                              <button onClick={() => removeItem(item.id)} className="p-2 text-[#333]/40 hover:text-[#E84949] transition-all">
+                              <button onClick={() => removeFromCart(item.id)} className="p-2 text-[#333]/40 hover:text-[#E84949] transition-all">
                                 <Trash2 size={18} />
                               </button>
                             </div>
@@ -210,10 +183,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     </p>
 
                     <div className="space-y-3">
-                      <button onClick={() => navigate('/checkout')} className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest hover:bg-[#333] transition-all text-[13px]">
+                      <button onClick={() => handleLinkClick('/checkout')} className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest hover:bg-[#333] transition-all text-[13px]">
                         Check Out
                       </button>
-                      <button onClick={() => navigate('/cart')} className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest hover:bg-[#333] transition-all text-[13px]">
+                      <button onClick={() => handleLinkClick('/cart')} className="w-full py-4 bg-[#E84949] text-white font-bold rounded-[7px] uppercase tracking-widest hover:bg-[#333] transition-all text-[13px]">
                         View My Cart
                       </button>
                     </div>
@@ -228,8 +201,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   >
                     Continue Shopping
                   </button>
-                  {/* FOR DEMO: Let users add a product to see the full UI */}
-                  <button onClick={addDemoProduct} className="text-[11px] text-[#666] mb-4 opacity-50 hover:opacity-100 transition-opacity underline italic">Debug: Click to add demo product</button>
                   
                   <p className="text-[13px] text-[#333]">
                     <span className="font-bold">Have an account?</span> / <Link to="/login" onClick={onClose} className="text-[#3a6ea5] underline underline-offset-4 font-normal">Log in to check out faster.</Link>

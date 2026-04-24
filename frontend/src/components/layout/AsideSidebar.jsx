@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion'
 import { Heart, Layers, ArrowUp } from 'lucide-react'
-import { Link } from 'react-router-dom'
-
+import { Link, useNavigate } from 'react-router-dom'
+import { useCart } from '../../context/CartContext'
 export function AsideSidebar() {
+  const { wishlist, compare } = useCart()
+  const navigate = useNavigate()
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const items = [
-    { id: 'heart', icon: <Heart size={19} />, label: 'Wishlist', path: '/wishlist', badge: 1 },
-    { id: 'layers', icon: <Layers size={19} />, label: 'Compare', badge: 1, isAction: true },
+    { id: 'heart', icon: <Heart size={19} />, label: 'Wishlist', path: '/wishlist', badge: wishlist.length },
+    { id: 'layers', icon: <Layers size={19} />, label: 'Compare', path: '/compare', badge: compare.length },
     { id: 'up', icon: <ArrowUp size={22} />, label: 'Scroll To Top', isScroll: true }
   ]
 
@@ -25,34 +27,20 @@ export function AsideSidebar() {
             >
               {item.icon}
             </button>
-          ) : item.isAction ? (
+          ) : (
             <button 
-              onClick={() => alert('Added to comparison')}
+              onClick={() => navigate(item.path)}
               className={`w-13 h-13 flex items-center justify-center transition-all duration-300 hover:bg-[#E84949] text-[#333] hover:text-white ${idx < items.length - 1 ? 'border-b border-dashed border-[#333]/15' : ''}`}
             >
               <div className="relative">
                 {item.icon}
-                {item.badge && (
+                {item.badge > 0 && (
                   <span className="absolute -top-2 -right-2 h-4.5 w-4.5 bg-[#222] text-[9px] font-bold text-white flex items-center justify-center rounded-full border border-white">
                     {item.badge}
                   </span>
                 )}
               </div>
             </button>
-          ) : (
-            <Link 
-              to={item.path}
-              className={`w-13 h-13 flex items-center justify-center transition-all duration-300 hover:bg-[#E84949] text-[#333] hover:text-white ${idx < items.length - 1 ? 'border-b border-dashed border-[#333]/15' : ''}`}
-            >
-              <div className="relative">
-                {item.icon}
-                {item.badge && (
-                  <span className="absolute -top-2 -right-2 h-4.5 w-4.5 bg-[#222] text-[9px] font-bold text-white flex items-center justify-center rounded-full border border-white">
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-            </Link>
           )}
 
           {/* High-Fidelity Slide-out Tooltip */}

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Minus, Plus, X, ShoppingBag, ArrowRight, Trash2 } from 'lucide-react'
+import { Minus, Plus, X, ShoppingBag, ArrowRight, Trash2, Trash } from 'lucide-react'
 
 import { useCart } from '../context/CartContext'
 
 export function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart, subtotal } = useCart()
+  const navigate = useNavigate()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -16,14 +17,14 @@ export function CartPage() {
   if (cartItems.length === 0) {
     return (
       <div className="bg-[#FDF4E6] min-h-screen py-24 flex flex-col items-center justify-center font-roboto">
-        <div className="p-12 bg-[#FAEAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] text-center max-w-lg mx-4">
+        <div className="p-12 bg-[#FAEAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] text-center max-w-lg mx-4 shadow-xl">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <ShoppingBag size={32} className="text-[#333]/20" />
+                <ShoppingBag size={32} className="text-[#E84949]" />
             </div>
-            <h1 className="text-3xl font-grandstander font-bold text-[#333] mb-4">Your cart is empty</h1>
-            <p className="text-[#666] mb-8">Before proceed to checkout you must add some products to your shopping cart. You will find a lot of interesting products on our "Shop" page.</p>
-            <Link to="/" className="inline-flex items-center gap-2 px-10 py-4 bg-[#E84949] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] transition-all shadow-lg active:scale-95">
-                Start Shopping <ArrowRight size={18}/>
+            <h1 className="text-3xl font-grandstander font-bold text-[#333] mb-4 tracking-tight">Your Cart is Empty</h1>
+            <p className="text-[#666] mb-8 font-medium italic leading-relaxed">It looks like you haven't added any magic to your cart yet. Browse our collections to find the perfect joy for your child!</p>
+            <Link to="/" className="inline-flex items-center gap-3 px-12 py-4 bg-[#E84949] text-white font-bold rounded-full tracking-widest uppercase hover:bg-[#333] transition-all shadow-lg active:scale-95">
+                START SHOPPING <ArrowRight size={18}/>
             </Link>
         </div>
       </div>
@@ -31,138 +32,112 @@ export function CartPage() {
   }
 
   return (
-    <div className="bg-[#FDF4E6] min-h-screen pb-24 font-roboto">
-      {/* Hero */}
-      <div className="bg-[#E84949] py-16 text-center text-white">
-          <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}}>
-              <h1 className="text-4xl md:text-5xl font-grandstander font-bold mb-2">Shopping Cart</h1>
-              <div className="flex items-center justify-center gap-2 text-[12px] font-bold tracking-widest uppercase opacity-80">
-                  <Link to="/" className="hover:text-white underline">Home</Link>
-                  <span>/</span>
-                  <span>Your Shopping Cart</span>
+    <div className="bg-[#FDF4E6] min-h-screen py-16 font-roboto">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[#333]/40 mb-6">
+            <Link to="/" className="hover:text-[#E84949] transition-colors">Home</Link>
+            <span>/</span>
+            <span className="text-[#333]">Your Shopping Cart</span>
+        </nav>
+
+        <h1 className="text-5xl md:text-6xl font-grandstander font-bold text-[#333] text-center mb-16 tracking-tighter">Main Cart</h1>
+
+        {/* High-Fidelity Table Layout with Dashed Borders */}
+        <div className="bg-transparent border-[1.2px] border-dashed border-[#333]/20 rounded-lg overflow-x-auto custom-scrollbar mb-12 shadow-sm">
+           <table className="w-full min-w-[900px] border-collapse">
+              <thead>
+                 <tr className="border-b border-dashed border-[#333]/20 text-[11px] font-bold uppercase tracking-[0.2em] text-[#333]/60">
+                    <th className="p-6 text-center w-24 border-r border-dashed border-[#333]/20">Remove</th>
+                    <th className="p-6 text-center w-48 border-r border-dashed border-[#333]/20">Product Image</th>
+                    <th className="p-6 text-left border-r border-dashed border-[#333]/20">Product</th>
+                    <th className="p-6 text-center w-48 border-r border-dashed border-[#333]/20">Quantity</th>
+                    <th className="p-6 text-right w-48">Total</th>
+                 </tr>
+              </thead>
+              <tbody className="divide-y divide-dashed divide-[#333]/20">
+                 {cartItems.map((item) => (
+                    <tr key={item.id} className="group">
+                       <td className="p-6 text-center border-r border-dashed border-[#333]/20">
+                          <button onClick={() => removeFromCart(item.id)} className="w-10 h-10 rounded-full flex items-center justify-center mx-auto text-[#333]/40 hover:text-[#E84949] hover:bg-red-50 transition-all">
+                             <Trash size={18} />
+                          </button>
+                       </td>
+                       <td className="p-6 border-r border-dashed border-[#333]/20">
+                          <div className="w-32 h-32 bg-white rounded-2xl overflow-hidden mx-auto shadow-inner group-hover:scale-105 transition-transform">
+                             <img src={item.img} alt={item.title} className="w-full h-full object-contain mix-blend-multiply" />
+                          </div>
+                       </td>
+                       <td className="p-6 border-r border-dashed border-[#333]/20">
+                          <div className="space-y-1">
+                             <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[18px] tracking-tight">{item.title}</Link>
+                             <p className="text-[16px] font-bold text-[#E84949]">${item.price.toFixed(2)}</p>
+                             <p className="text-[12px] text-gray-400 font-bold uppercase tracking-widest">SKU: {item.sku || 'N/A'}</p>
+                          </div>
+                       </td>
+                       <td className="p-6 border-r border-dashed border-[#333]/20">
+                          <div className="flex items-center justify-center h-12 w-32 bg-white border border-[#333]/20 rounded-xl mx-auto">
+                             <button onClick={() => updateQuantity(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:text-[#E84949]"><Minus size={14} /></button>
+                             <span className="w-8 text-center font-bold text-[15px]">{item.qty}</span>
+                             <button onClick={() => updateQuantity(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:text-[#E84949]"><Plus size={14} /></button>
+                          </div>
+                       </td>
+                       <td className="p-6 text-right">
+                          <span className="font-grandstander font-bold text-[20px] text-[#333] tracking-tighter">${(item.price * item.qty).toFixed(2)}</span>
+                       </td>
+                    </tr>
+                 ))}
+              </tbody>
+           </table>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+           {/* Order Message Box */}
+           <div className="p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
+              <h3 className="font-grandstander font-bold text-xl text-[#333]">Order message</h3>
+              <textarea 
+                className="w-full h-32 bg-transparent border border-[#333]/10 rounded-xl p-4 text-[14px] outline-none focus:border-[#E84949] font-roboto italic text-[#666]" 
+                placeholder="Order message"
+              />
+           </div>
+
+           {/* Totals and Buttons */}
+           <div className="flex flex-col items-end space-y-6">
+              <div className="text-right space-y-2">
+                 <div className="flex items-center justify-end gap-6">
+                    <span className="text-[16px] font-bold text-[#333]/60 uppercase tracking-widest">Estimated total:</span>
+                    <span className="text-3xl font-grandstander font-bold text-[#333] tracking-tighter">${subtotal.toFixed(2)} USD</span>
+                 </div>
+                 <p className="text-[12px] text-gray-400 font-medium italic">Taxes, discounts and shipping calculated at checkout</p>
               </div>
-          </motion.div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 mt-12 md:mt-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="hidden md:grid grid-cols-6 gap-4 pb-4 border-b border-[#333]/10 text-[11px] font-bold text-[#999] uppercase tracking-widest px-4">
-                <div className="col-span-3">Product</div>
-                <div className="text-center">Price</div>
-                <div className="text-center">Quantity</div>
-                <div className="text-right">Total</div>
-            </div>
+              <div className="flex flex-col gap-3 w-full sm:w-[400px]">
+                 <Link to="/checkout" className="w-full h-14 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[12px] flex items-center justify-center hover:scale-[1.01] transition-all shadow-xl shadow-[#E84949]/20">Check Out</Link>
+                 <Link to="/" className="w-full h-14 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[12px] flex items-center justify-center hover:scale-[1.01] transition-all shadow-lg">Continue Shopping</Link>
+              </div>
+           </div>
+        </div>
 
-            {cartItems.map((item) => (
-              <motion.div 
-                key={item.id} 
-                layout
-                initial={{opacity:0}} animate={{opacity:1}}
-                className="grid grid-cols-1 md:grid-cols-6 gap-6 items-center bg-white p-4 md:p-6 rounded-[32px] shadow-sm border border-[#333]/5 relative group"
-              >
-                <div className="col-span-1 md:col-span-3 flex items-center gap-6">
-                    <div className="w-20 h-20 md:w-28 md:h-28 bg-[#FAEAD3] rounded-2xl overflow-hidden p-1 shrink-0 border border-[#333]/5">
-                        <img src={item.img} alt={item.title} className="w-full h-full object-cover rounded-xl" />
-                    </div>
-                    <div>
-                        <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="text-[16px] md:text-[18px] font-grandstander font-bold text-[#333] hover:text-[#E84949] transition-colors leading-tight block mb-1">
-                            {item.title}
-                        </Link>
-                        <p className="text-[12px] text-[#999] font-medium lowercase">SKU: {item.sku || 'TOY-001'}</p>
-                        <button onClick={() => removeFromCart(item.id)} className="md:hidden mt-2 text-[#E84949] flex items-center gap-1 text-[12px] font-bold uppercase tracking-widest">
-                            <Trash2 size={14}/> Remove
-                        </button>
-                    </div>
-                </div>
+        {/* Gift Wrap and Coupon Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+           <div className="p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl flex flex-col sm:flex-row gap-6 items-start">
+              <div className="grow space-y-4 w-full">
+                 <label className="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" className="w-5 h-5 accent-[#E84949]" />
+                    <span className="text-[14px] font-bold text-[#333]">Do you want a gift wrap?</span>
+                 </label>
+                 <textarea className="w-full h-24 bg-transparent border border-[#333]/10 rounded-xl p-4 text-[13px] outline-none italic" placeholder="Gift message" />
+              </div>
+              <button className="h-12 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shrink-0 mt-8">Submit</button>
+           </div>
 
-                <div className="hidden md:block text-center font-bold text-[#333]">${item.price.toFixed(2)}</div>
-
-                <div className="flex justify-center">
-                    <div className="flex items-center bg-[#FDF4E6] rounded-xl border border-[#333]/10 p-1">
-                        <button 
-                            onClick={() => updateQuantity(item.id, -1)}
-                            className="w-10 h-10 flex items-center justify-center hover:text-[#E84949] transition-colors"
-                        >
-                            <Minus size={16}/>
-                        </button>
-                        <span className="w-10 text-center font-bold text-[15px]">{item.qty}</span>
-                        <button 
-                            onClick={() => updateQuantity(item.id, 1)}
-                            className="w-10 h-10 flex items-center justify-center hover:text-[#E84949] transition-colors"
-                        >
-                            <Plus size={16}/>
-                        </button>
-                    </div>
-                </div>
-
-                <div className="flex justify-between items-center md:block text-right">
-                    <span className="md:hidden text-[13px] font-bold text-[#999] uppercase tracking-widest">Total:</span>
-                    <span className="font-grandstander font-bold text-[18px] text-[#E84949]">${(item.price * item.qty).toFixed(2)}</span>
-                </div>
-
-                <button 
-                    onClick={() => removeFromCart(item.id)}
-                    className="absolute -top-2 -right-2 w-8 h-8 bg-white text-[#333] rounded-full shadow-lg items-center justify-center hidden group-hover:flex hover:bg-[#E84949] hover:text-white transition-all border border-[#333]/10"
-                >
-                    <X size={16}/>
-                </button>
-              </motion.div>
-            ))}
-
-            <div className="pt-4 flex flex-col md:flex-row justify-between gap-4">
-                <Link to="/" className="px-8 py-4 bg-[#FAEAD3] text-[#333] font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] hover:text-white transition-all text-center">
-                    Continue Shopping
-                </Link>
-                <button 
-                    onClick={clearCart}
-                    className="px-8 py-4 bg-white border-2 border-[#333] text-[#333] font-bold rounded-xl tracking-widest uppercase hover:bg-[#333] hover:text-white transition-all text-center"
-                >
-                    Clear Cart
-                </button>
-            </div>
-          </div>
-
-          {/* Cart Totals */}
-          <div className="lg:col-span-1">
-            <div className="bg-[#FAEAD3] border-[1.6px] border-dashed border-[#333]/15 rounded-[40px] p-8 space-y-8 sticky top-32">
-                <h3 className="text-2xl font-grandstander font-bold text-[#333] border-b border-[#333]/10 pb-4">Cart Totals</h3>
-                
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center text-[15px]">
-                        <span className="text-[#666] font-medium uppercase tracking-widest text-[13px]">Subtotal</span>
-                        <span className="font-bold text-[#333]">${subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-[15px]">
-                        <span className="text-[#666] font-medium uppercase tracking-widest text-[13px]">Shipping</span>
-                        <span className="text-[#666] text-[13px]">Calculated at checkout</span>
-                    </div>
-                </div>
-
-                <div className="pt-6 border-t border-[#333]/10 flex justify-between items-center">
-                    <span className="text-[18px] font-grandstander font-bold text-[#333]">Order Total</span>
-                    <span className="text-2xl font-grandstander font-bold text-[#E84949]">${subtotal.toFixed(2)}</span>
-                </div>
-
-                <p className="text-[13px] text-[#666] text-center italic">Tax included and shipping calculated at checkout</p>
-
-                <Link 
-                    to="/checkout"
-                    className="w-full h-16 bg-[#E84949] text-white font-bold text-[14px] tracking-[0.2em] uppercase rounded-xl hover:bg-[#333] transition-all shadow-xl active:scale-95 flex items-center justify-center"
-                >
-                    Proceed to Checkout
-                </Link>
-
-                <div className="grid grid-cols-4 gap-2 pt-2">
-                    {['visa', 'mastercard', 'paypal', 'applepay'].map(p => (
-                        <div key={p} className="h-8 bg-white/50 rounded flex items-center justify-center opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
-                            <span className="text-[9px] font-bold uppercase">{p}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-          </div>
+           <div className="p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
+              <p className="text-[13px] font-bold text-[#333]/60 uppercase tracking-widest">Enter coupon or discount code:</p>
+              <div className="flex gap-4">
+                 <input type="text" placeholder="Coupon code" className="grow h-14 bg-transparent border border-[#333]/10 rounded-xl px-4 outline-none font-bold text-[14px]" />
+                 <button className="h-14 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px]">Submit</button>
+              </div>
+           </div>
         </div>
       </div>
     </div>

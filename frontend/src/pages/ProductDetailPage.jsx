@@ -37,7 +37,7 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => (
 
 export function ProductDetailPage() {
   const { title } = useParams()
-  const { addToCart, toggleWishlist, wishlist } = useCart()
+  const { addToCart, toggleWishlist, wishlist, toggleCompare } = useCart()
   const navigate = useNavigate()
   const [selectedImg, setSelectedImg] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -96,6 +96,11 @@ export function ProductDetailPage() {
       navigator.clipboard.writeText(window.location.href)
       alert('Link copied to clipboard!')
     }
+  }
+
+  const handleCompare = () => {
+    toggleCompare(product)
+    navigate('/compare')
   }
 
   const related = [
@@ -235,7 +240,7 @@ export function ProductDetailPage() {
                     >
                       <Heart size={16} fill={isWishlisted ? 'white' : 'none'} />
                     </button>
-                    <button onClick={() => navigate('/compare')} className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
+                    <button onClick={handleCompare} className="w-9 h-9 rounded bg-[#E84949] text-white flex items-center justify-center hover:scale-110 transition-transform"><Repeat size={16} /></button>
                   </div>
                   <p className="text-[13px] text-[#666] font-medium">Sku: {product.sku}</p>
                 </div>

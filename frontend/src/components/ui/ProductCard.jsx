@@ -4,7 +4,7 @@ import { Eye, ShoppingBag, Heart, Layers } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 
 export function ProductCard({ p, i = 0 }) {
-  const { addToCart, toggleWishlist, wishlist } = useCart()
+  const { addToCart, toggleWishlist, wishlist, toggleCompare } = useCart()
   const isWishlisted = wishlist.some(item => item.id === p.id)
   const navigate = useNavigate()
 
@@ -29,8 +29,11 @@ export function ProductCard({ p, i = 0 }) {
       toggleWishlist(normalizedProduct)
       navigate('/wishlist')
     }
-    if (action === 'quickview') navigate(`/product/${product.name.toLowerCase().replaceAll(' ', '-')}`)
-    if (action === 'compare') navigate('/compare')
+    if (action === 'quickview') navigate(`/product/${product.name?.toLowerCase().replaceAll(' ', '-')}`)
+    if (action === 'compare') {
+      toggleCompare(normalizedProduct)
+      navigate('/compare')
+    }
   }
 
   return (
@@ -44,7 +47,7 @@ export function ProductCard({ p, i = 0 }) {
       {/* Image Container - Full Bleed */}
       <div className="relative aspect-square mb-4 group/img overflow-hidden rounded-[24px] border-[1.5px] border-dashed border-[#333]/15 shadow-sm hover:shadow-xl transition-shadow duration-500">
         <Link 
-          to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} 
+          to={`/product/${p.name?.toLowerCase().replaceAll(' ', '-')}`} 
           className="relative block w-full h-full overflow-hidden bg-[#F9EAD3]"
         >
           {/* Promo Badge */}
@@ -104,9 +107,9 @@ export function ProductCard({ p, i = 0 }) {
       </div>
 
       <div className="text-center px-1">
-        <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`}>
+        <Link to={`/product/${(p.name || p.title || 'toy').toLowerCase().replaceAll(' ', '-')}`}>
           <h3 className="font-grandstander text-[14px] md:text-[16px] lg:text-[18px] font-bold text-[#222] mb-2 line-clamp-2 leading-[1.2] group-hover:text-[#E84949] transition-colors duration-300">
-            {p.name}
+            {p.name || p.title}
           </h3>
         </Link>
         <div className="flex items-center justify-center gap-3">
@@ -114,7 +117,7 @@ export function ProductCard({ p, i = 0 }) {
             ${(p.oldPrice || p.price + 30).toFixed(2)} USD
           </span>
           <span className="text-[14px] md:text-[16px] lg:text-[18px] font-bold text-[#E84949] tracking-tight">
-            ${p.price.toFixed(2)} USD
+            ${(p.price || 0).toFixed(2)} USD
           </span>
         </div>
       </div>

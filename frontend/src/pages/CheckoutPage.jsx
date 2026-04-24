@@ -6,8 +6,8 @@ import { useCart } from '../context/CartContext'
 import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
 
-const countries = ["India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France"]
-const states = ["Maharashtra", "Delhi", "Karnataka", "Tamil Nadu", "Gujarat", "Rajasthan", "Uttar Pradesh", "Punjab", "Kerala", "West Bengal"]
+const countries = ["India"]
+import { indianStates, commonCities } from '../utils/indiaData'
 
 const FloatingInput = ({ label, name, type = 'text', value, onChange, placeholder = ' ' }) => (
   <div className="relative group w-full mb-4">
@@ -169,7 +169,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
 export function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useCart()
   const { walletBalance, payWithWallet, simulatePayment, topUpWallet, addOrder } = usePayment()
-  const { user } = useAuth()
+  const { user, addresses } = useAuth()
   const navigate = useNavigate()
   
   const [step, setStep] = useState(1) 
@@ -182,18 +182,24 @@ export function CheckoutPage() {
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
   const [shippingMethod, setShippingMethod] = useState('standard')
   
+  // Address Management
+  const defaultAddress = addresses?.find(a => a.isDefault) || (addresses?.length > 0 ? addresses[0] : null);
+  const [useSavedAddress, setUseSavedAddress] = useState(addresses?.length > 0)
+  const [selectedAddressId, setSelectedAddressId] = useState(defaultAddress?.id || null)
+
   const [formData, setFormData] = useState({
     email: user?.email || '',
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    address: '',
-    apartment: '',
-    city: 'Mumbai',
+    firstName: defaultAddress?.firstName || user?.firstName || '',
+    lastName: defaultAddress?.lastName || user?.lastName || '',
+    address: defaultAddress?.address || '',
+    apartment: defaultAddress?.apartment || '',
+    city: defaultAddress?.city || '',
     country: 'India',
-    state: 'Maharashtra',
-    postalCode: '',
-    phone: '',
-    upiId: ''
+    state: defaultAddress?.state || '',
+    postalCode: defaultAddress?.postalCode || '',
+    phone: defaultAddress?.phone || '',
+    upiId: '',
+    district: defaultAddress?.district || ''
   })
 
   const shippingRates = { standard: 15.00, express: 45.00 }
@@ -304,10 +310,13 @@ export function CheckoutPage() {
         <AnimatePresence>
           {showSummary && (
             <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="px-4 pb-6 overflow-hidden border-t border-gray-200">
-               <div className="space-y-4 pt-4">
+               <div className="space-y-4 px-2 py-4">
                   {cartItems.map(item => (
                     <div key={item.id} className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl border border-gray-200 overflow-hidden relative bg-white"><img src={item.img} className="w-full h-full object-cover" /><span className="absolute -top-1 -right-1 w-5 h-5 bg-gray-500 text-white text-[10px] rounded-full flex items-center justify-center">{item.qty}</span></div>
+                      <div className="w-16 h-16 rounded-xl border border-gray-200 relative bg-white shadow-sm">
+                        <img src={item.img} className="w-full h-full object-cover rounded-xl" />
+                        <span className="absolute -top-2 -right-2 w-5.5 h-5.5 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">{item.qty}</span>
+                      </div>
                       <div className="grow"><h4 className="text-[13px] font-bold">{item.title}</h4></div>
                       <span className="text-[14px] font-bold">${(item.price * item.qty).toFixed(2)}</span>
                     </div>
@@ -352,19 +361,71 @@ export function CheckoutPage() {
             </section>
 
             <section className="space-y-6">
-               <h2 className="text-xl font-bold text-[#333] font-grandstander">Delivery</h2>
-               <FloatingSelect label="Country/Region" name="country" value={formData.country} onChange={handleInputChange} options={countries} />
-               <div className="grid grid-cols-2 gap-4">
-                 <FloatingInput label="First name (optional)" name="firstName" value={formData.firstName} onChange={handleInputChange} />
-                 <FloatingInput label="Last name" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+               <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-[#333] font-grandstander">Delivery</h2>
+                  {addresses?.length > 0 && (
+                     <button onClick={() => setUseSavedAddress(!useSavedAddress)} className="text-[11px] font-bold text-[#E84949] uppercase underline">
+                        {useSavedAddress ? 'Enter New Address' : 'Use Saved Address'}
+                     </button>
+                  )}
                </div>
-               <FloatingInput label="Address" name="address" value={formData.address} onChange={handleInputChange} />
-               <FloatingInput label="Apartment, suite, etc. (optional)" name="apartment" value={formData.apartment} onChange={handleInputChange} />
-               <div className="grid grid-cols-3 gap-4">
-                 <FloatingInput label="City" name="city" value={formData.city} onChange={handleInputChange} />
-                 <FloatingSelect label="State" name="state" value={formData.state} onChange={handleInputChange} options={states} />
-                 <FloatingInput label="ZIP code" name="postalCode" value={formData.postalCode} onChange={handleInputChange} />
-               </div>
+
+               {useSavedAddress && addresses?.length > 0 ? (
+                  <div className="space-y-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {addresses.map(addr => (
+                           <div 
+                              key={addr.id} 
+                              onClick={() => {
+                                 setSelectedAddressId(addr.id);
+                                 setFormData(prev => ({
+                                    ...prev,
+                                    firstName: addr.firstName,
+                                    lastName: addr.lastName,
+                                    address: addr.address,
+                                    apartment: addr.apartment,
+                                    city: addr.city,
+                                    state: addr.state,
+                                    postalCode: addr.postalCode,
+                                    phone: addr.phone,
+                                    district: addr.district
+                                 }));
+                              }}
+                              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer relative ${selectedAddressId === addr.id ? 'border-[#E84949] bg-[#FDF4E6]' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+                           >
+                              <div className="flex justify-between items-start mb-2">
+                                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#E84949] bg-red-50 px-2 py-0.5 rounded">{addr.type}</span>
+                                 {selectedAddressId === addr.id && <Check size={16} className="text-[#E84949]"/>}
+                              </div>
+                              <p className="text-[13px] font-bold text-[#333]">{addr.firstName} {addr.lastName}</p>
+                              <p className="text-[12px] text-gray-500 line-clamp-2">{addr.address}, {addr.city === 'Other' ? addr.district : addr.city}, {addr.state}</p>
+                              <p className="text-[11px] font-bold text-gray-400 mt-2">T: {addr.phone}</p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               ) : (
+                  <div className="space-y-4">
+                     <FloatingSelect label="Country/Region" name="country" value={formData.country} onChange={handleInputChange} options={countries} />
+                     <div className="grid grid-cols-2 gap-4">
+                        <FloatingInput label="First name" name="firstName" value={formData.firstName} onChange={handleInputChange} />
+                        <FloatingInput label="Last name" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+                     </div>
+                     <FloatingInput label="Address" name="address" value={formData.address} onChange={handleInputChange} />
+                     <FloatingInput label="Apartment, suite, etc. (optional)" name="apartment" value={formData.apartment} onChange={handleInputChange} />
+                     <div className="grid grid-cols-2 gap-4">
+                        <FloatingSelect label="State" name="state" value={formData.state} onChange={handleInputChange} options={["", ...indianStates]} />
+                        <FloatingSelect label="City" name="city" value={formData.city} onChange={handleInputChange} options={["", ...(commonCities[formData.state] || []), "Other"]} />
+                     </div>
+                     {formData.city === 'Other' && (
+                        <FloatingInput label="Enter City/District" name="district" value={formData.district} onChange={handleInputChange} />
+                     )}
+                     <div className="grid grid-cols-2 gap-4">
+                        <FloatingInput label="ZIP code" name="postalCode" value={formData.postalCode} onChange={handleInputChange} />
+                        <FloatingInput label="Phone number" name="phone" value={formData.phone} onChange={handleInputChange} />
+                     </div>
+                  </div>
+               )}
             </section>
 
             <section className="space-y-6">
@@ -475,10 +536,13 @@ export function CheckoutPage() {
       {/* Right Side: Order Summary */}
       <div className="hidden lg:block w-full lg:w-[40%] bg-[#F5F5F5] border-l border-gray-200 min-h-screen px-4 md:px-10 py-16 sticky top-0">
         <div className="max-w-[420px]">
-          <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-6 max-h-[50vh] overflow-y-auto px-2 py-4 custom-scrollbar">
             {cartItems.map(item => (
               <div key={item.id} className="flex items-center gap-4 group">
-                <div className="w-16 h-16 rounded-xl border border-gray-200 overflow-hidden relative bg-white shadow-sm group-hover:shadow-md transition-all"><img src={item.img} className="w-full h-full object-cover" /><span className="absolute -top-1 -right-1 w-5 h-5 bg-gray-500 text-white text-[11px] rounded-full flex items-center justify-center font-bold">{item.qty}</span></div>
+                <div className="w-16 h-16 rounded-xl border border-gray-200 relative bg-white shadow-sm group-hover:shadow-md transition-all">
+                  <img src={item.img} className="w-full h-full object-cover rounded-xl" />
+                  <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm z-10">{item.qty}</span>
+                </div>
                 <div className="grow"><h4 className="text-[13px] font-bold text-[#333] font-grandstander">{item.title}</h4><p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">SKU: {item.sku || 'TOY-001'}</p></div>
                 <span className="text-[15px] font-bold text-[#333] tracking-tighter">${(item.price * item.qty).toFixed(2)}</span>
               </div>
