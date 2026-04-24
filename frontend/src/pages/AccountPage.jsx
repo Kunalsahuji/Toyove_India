@@ -275,19 +275,29 @@ export function AccountPage() {
       {/* LEFT PANEL - Fixed Sidebar */}
       <div className={`w-full lg:w-[320px] bg-[#FAEAD3] h-screen lg:flex flex-col border-r border-black/[0.03] transition-transform duration-300 shrink-0 ${viewMode === 'content' ? 'hidden lg:flex' : 'flex'}`}>
          
-         <div className="p-8 bg-[#6651A4] text-white relative shrink-0">
-            <div className="relative z-10 flex flex-col gap-6">
-               <div className="flex justify-between items-start">
-                  <Link to="/" className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all border border-white/20"><Home size={18}/></Link>
-                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 text-xl font-bold font-grandstander">{user.firstName.charAt(0)}</div>
+         <div className="bg-[#6651A4] h-[200px] relative shrink-0 rounded-b-[60px] overflow-hidden flex flex-col items-center justify-center">
+            {/* Geometric Pattern */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#E84949]/10 rounded-full -ml-24 -mb-24 blur-2xl" />
+            
+            <Link to="/" className="absolute top-6 left-6 w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/20 transition-all border border-white/20 shadow-sm z-20">
+               <Home size={18} className="text-white" />
+            </Link>
+
+            <div className="relative z-10 flex flex-col items-center gap-3">
+               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-[4px] border-[#FAEAD3] shadow-xl text-3xl font-bold font-grandstander text-[#6651A4]">
+                  {user.firstName.charAt(0)}
                </div>
-               <div><h2 className="text-xl font-grandstander font-bold">{user.firstName} {user.lastName}</h2><p className="text-[9px] font-bold opacity-50 uppercase tracking-widest">{user.email}</p></div>
+               <div className="text-center">
+                  <h2 className="text-2xl font-grandstander font-bold tracking-tight text-white">{user.firstName} {user.lastName}</h2>
+                  <p className="text-[8px] font-bold text-white/40 uppercase tracking-[0.4em] mt-1">{user.email}</p>
+               </div>
             </div>
          </div>
 
-         <div className="grow overflow-y-auto custom-scrollbar p-5">
+         <div className="grow overflow-y-auto custom-scrollbar p-5 flex flex-col">
             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-3">Quick Navigation</p>
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 mb-10">
                {menuItems.map(item => (
                  <button key={item.id} onClick={() => item.isLink ? navigate(item.path) : handleTabChange(item.id)} className={`w-full p-3.5 rounded-xl flex items-center gap-4 transition-all border-b border-black/[0.03] last:border-b-0 ${activeTab === item.id ? 'bg-white shadow-sm' : 'hover:bg-white/40'}`}>
                     <span className={item.color}>{item.icon}</span>
@@ -297,7 +307,7 @@ export function AccountPage() {
                ))}
             </div>
 
-            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-10 mb-4 px-3">Help & Policy</p>
+            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-3">Help & Policy</p>
             <div className="space-y-0.5">
                {legalItems.map(item => (
                  <button key={item.id} onClick={() => {
@@ -314,9 +324,17 @@ export function AccountPage() {
                ))}
             </div>
 
-            <button onClick={() => { logout(); navigate('/login'); }} className="w-full h-11 mt-8 border border-gray-200 text-gray-400 rounded-xl font-bold uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 hover:bg-red-50 hover:text-red-500 transition-all">
-               <LogOut size={16}/> Terminate
-            </button>
+            <div className="mt-auto pt-10 pb-6">
+               <button 
+                 onClick={logout}
+                 className="w-full bg-white border border-[#E84949]/5 py-4 rounded-full flex items-center justify-center gap-3 group hover:shadow-xl hover:shadow-[#E84949]/5 transition-all active:scale-95 shadow-sm"
+               >
+                  <div className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center group-hover:bg-[#E84949] group-hover:text-white transition-all text-[#E84949]">
+                     <LogOut size={16} />
+                  </div>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#E84949]">Logout</span>
+               </button>
+            </div>
          </div>
       </div>
 
@@ -328,7 +346,7 @@ export function AccountPage() {
             <h3 className="font-grandstander font-bold text-[16px] text-gray-700 capitalize tracking-tight">{activeTab}</h3>
          </div>
 
-         <div className="p-6 md:p-12 lg:p-16 max-w-4xl mx-auto w-full space-y-12 pb-32">
+         <div className="p-4 md:p-8 lg:p-10 w-full space-y-12 pb-32">
             <AnimatePresence mode="wait">
                
                {activeTab === 'dashboard' && (
@@ -406,14 +424,20 @@ export function AccountPage() {
                     {orders.length === 0 ? (
                        <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">Empty Haul History</div>
                     ) : orders.map(order => (
-                       <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-5 hover:bg-[#FAEAD3]/40 border-b border-black/[0.02] flex items-center justify-between cursor-pointer group transition-all">
-                          <div className="flex items-center gap-5">
-                             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gray-200 group-hover:text-[#6651A4] transition-all"><Box size={20}/></div>
+                       <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-4 md:p-5 hover:bg-[#FAEAD3]/40 border-b border-black/[0.02] flex items-center justify-between cursor-pointer group transition-all">
+                          <div className="flex items-center gap-4 md:gap-5">
+                             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 border border-black/5 shadow-sm">
+                                {order.items?.[0]?.img ? (
+                                   <img src={order.items[0].img} className="w-full h-full object-cover" />
+                                ) : (
+                                   <Box size={20} className="text-[#6651A4] opacity-20"/>
+                                )}
+                             </div>
                              <div><p className="text-[13px] font-bold text-gray-700">Order #{order.id}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items</p></div>
                           </div>
-                          <div className="text-right flex items-center gap-6">
-                             <div><p className="text-xl font-bold font-grandstander text-gray-700">${order.total.toFixed(2)}</p><p className={`text-[9px] font-bold uppercase ${order.status==='Cancelled'?'text-red-400':'text-green-500'}`}>{order.status}</p></div>
-                             <ChevronRight size={16} className="text-gray-200 group-hover:text-[#333] translate-x-0 group-hover:translate-x-1 transition-all"/>
+                          <div className="text-right flex items-center gap-4 md:gap-6">
+                             <div><p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">${order.total.toFixed(2)}</p><p className={`text-[9px] font-bold uppercase ${order.status==='Cancelled'?'text-red-400':'text-green-500'}`}>{order.status}</p></div>
+                             <ChevronRight size={18} className="text-[#333]/40 group-hover:text-[#333] translate-x-0 group-hover:translate-x-1 transition-all"/>
                           </div>
                        </div>
                     ))}
