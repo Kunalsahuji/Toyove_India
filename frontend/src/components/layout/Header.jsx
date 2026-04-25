@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Search, 
-  User, 
-  Heart, 
-  ShoppingCart, 
-  Menu, 
-  X, 
-  ChevronDown 
+import {
+  Search,
+  User,
+  Heart,
+  ShoppingCart,
+  Menu,
+  X,
+  ChevronDown
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-
 function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
-import logo from '../../assets/logo.svg'
+import logo from '../../assets/toyovo.webp'
+import { Link } from 'react-router-dom'
 
 export function Header({ cartCount }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -46,19 +46,19 @@ export function Header({ cartCount }) {
       <div className="container-shell">
         {/* 2. Main Navbar Row */}
         <div className="flex items-center justify-between py-4 gap-4 md:gap-8">
-          
+
           {/* Logo & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
-            <button 
+            <button
               className="md:hidden p-1 hover:bg-[#FDF4E6] rounded-lg transition-colors"
               onClick={() => setIsMobileMenuOpen(true)}
             >
               <Menu className="h-6 w-6 text-brand-ink" />
             </button>
-            <a href="/" className="flex items-center">
-              <img 
-                src={logo} 
-                alt="Toyove Logo" 
+            <Link to="/" className="flex items-center">
+              <img
+                src={logo}
+                alt="TOYOVOINDIA Logo"
                 className="h-8 md:h-10 w-auto object-contain"
                 onError={(e) => {
                   e.target.style.display = 'none';
@@ -66,17 +66,17 @@ export function Header({ cartCount }) {
                 }}
               />
               <span className="hidden text-brand-orange font-serif-display font-bold text-[24px] md:text-[28px] tracking-tight">
-                Toyove
+                TOYOVOINDIA
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Search Pill (Centered) */}
           <div className="flex-grow max-w-[600px] hidden md:block">
             <div className="relative group">
-              <input 
-                type="text" 
-                placeholder="Search for anything" 
+              <input
+                type="text"
+                placeholder="Search for anything"
                 className="w-full h-11 bg-gray-100 border-2 border-transparent rounded-full px-12 text-[15px] outline-none transition-all focus:bg-white focus:border-brand-purple focus:shadow-lg focus:shadow-brand-purple/5"
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-muted group-focus-within:text-brand-purple transition-colors" />
@@ -109,8 +109,8 @@ export function Header({ cartCount }) {
         {/* 3. Desktop Navigation (MegaMenu Style) */}
         <nav className="hidden md:flex items-center justify-center gap-6 pb-2 relative">
           {navItems.map((item, index) => (
-            <div 
-              key={item.name} 
+            <div
+              key={item.name}
               className="group py-2"
               onMouseEnter={() => setActiveMenu(index)}
               onMouseLeave={() => setActiveMenu(null)}
@@ -118,9 +118,9 @@ export function Header({ cartCount }) {
               <button className="flex items-center gap-1.5 text-[14px] font-medium text-brand-ink hover:text-brand-purple transition-colors">
                 {item.name}
               </button>
-              
+
               {/* Simple Animated Underline */}
-              <motion.div 
+              <motion.div
                 className="h-0.5 bg-brand-purple rounded-full"
                 initial={{ width: 0 }}
                 whileHover={{ width: '100%' }}
@@ -134,7 +134,7 @@ export function Header({ cartCount }) {
       {/* 4. Mobile Overlay Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
@@ -143,12 +143,12 @@ export function Header({ cartCount }) {
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
-                <span className="text-brand-orange font-serif-display font-bold text-[24px]">Toyove</span>
+                <span className="text-brand-orange font-serif-display font-bold text-[24px]">TOYOVOINDIA</span>
                 <button onClick={() => setIsMobileMenuOpen(false)}>
                   <X className="h-7 w-7 text-brand-ink" />
                 </button>
               </div>
-              
+
               <div className="space-y-6">
                 {navItems.map((item) => (
                   <div key={item.name}>

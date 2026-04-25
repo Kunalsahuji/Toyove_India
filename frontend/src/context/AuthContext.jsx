@@ -4,38 +4,38 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('toyove_user');
+    const saved = localStorage.getItem('TOYOVOINDIA_user');
     return saved ? JSON.parse(saved) : null;
   });
 
   const [addresses, setAddresses] = useState(() => {
-    const saved = localStorage.getItem('toyove_addresses');
+    const saved = localStorage.getItem('TOYOVOINDIA_addresses');
     return saved ? JSON.parse(saved) : [
       { id: 1, type: 'Home', firstName: 'John', lastName: 'Doe', address: '123 Toy Street', apartment: 'Apt 4B', city: 'Mumbai', state: 'Maharashtra', postalCode: '400001', phone: '9876543210', isDefault: true }
     ];
   });
 
   const [savedMethods, setSavedMethods] = useState(() => {
-    const saved = localStorage.getItem('toyove_payment_methods');
+    const saved = localStorage.getItem('TOYOVOINDIA_payment_methods');
     return saved ? JSON.parse(saved) : [
-      { id: 1, type: 'card', label: 'Toyove Virtual Card', last4: '4242', expiry: '12/28', brand: 'Visa' }
+      { id: 1, type: 'card', label: 'TOYOVOINDIA Virtual Card', last4: '4242', expiry: '12/28', brand: 'Visa' }
     ];
   });
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem('toyove_user', JSON.stringify(user));
+      localStorage.setItem('TOYOVOINDIA_user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('toyove_user');
+      localStorage.removeItem('TOYOVOINDIA_user');
     }
   }, [user]);
 
   useEffect(() => {
-    localStorage.setItem('toyove_addresses', JSON.stringify(addresses));
+    localStorage.setItem('TOYOVOINDIA_addresses', JSON.stringify(addresses));
   }, [addresses]);
 
   useEffect(() => {
-    localStorage.setItem('toyove_payment_methods', JSON.stringify(savedMethods));
+    localStorage.setItem('TOYOVOINDIA_payment_methods', JSON.stringify(savedMethods));
   }, [savedMethods]);
 
   const login = (userData) => {

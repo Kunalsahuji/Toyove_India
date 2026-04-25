@@ -411,7 +411,7 @@ export function AccountPage() {
 
                         <div className="space-y-6 px-4">
                            <h4 className="text-xl font-grandstander font-bold text-gray-700">Detailed Policies</h4>
-                           <p className="text-[15px]">At Toyove-India, our operations are governed by the Companies Act, 2013. Incorporated on {corporateInfo.incDate}, we strive to maintain the highest standards of transparency for our explorers.</p>
+                           <p className="text-[15px]">At TOYOVOINDIA, our operations are governed by the Companies Act, 2013. Incorporated on {corporateInfo.incDate}, we strive to maintain the highest standards of transparency for our explorers.</p>
                            <p className="text-[15px]">Your engagement with our platform, including orders, returns, and wallet usage, is protected under the laws of the Ministry of Corporate Affairs, Government of India.</p>
                         </div>
                      </div>

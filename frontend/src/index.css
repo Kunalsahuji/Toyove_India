@@ -53,7 +53,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .shell {
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto;
   padding-left: 20px;
   padding-right: 20px;
@@ -70,14 +69,13 @@ h1, h2, h3, h4, h5, h6 {
 /* hdr-inner matches shell but for header specific usage */
 .hdr-inner {
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 @media (min-width: 1024px) {
-  .hdr-inner { padding-left: 40px; padding-right: 40px; }
+  .hdr-inner { padding-left: 24px; padding-right: 24px; }
 }
 
 .hdr-mob  { display: flex; }

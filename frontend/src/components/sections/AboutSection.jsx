@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     q: '100% Warranty Product',
-    a: 'Every single product sold on Toyove India comes with a 100% satisfaction guarantee. If you are not happy, we will make it right — no questions asked.'
+    a: 'Every single product sold on TOYOVOINDIA India comes with a 100% satisfaction guarantee. If you are not happy, we will make it right — no questions asked.'
   },
   {
     q: 'Premium Product',

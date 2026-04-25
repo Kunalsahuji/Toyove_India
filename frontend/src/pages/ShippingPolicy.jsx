@@ -41,7 +41,7 @@ export function ShippingPolicy() {
 
       <section className="space-y-4">
         <h3 className="text-xl font-grandstander font-bold text-[#333]">International Shipping</h3>
-        <p>Currently, Toyove-India primarily ships within India. For international inquiries, please contact our support team to discuss special arrangements and shipping quotes.</p>
+        <p>Currently, TOYOVOINDIA primarily ships within India. For international inquiries, please contact our support team to discuss special arrangements and shipping quotes.</p>
       </section>
 
       <section className="space-y-4">

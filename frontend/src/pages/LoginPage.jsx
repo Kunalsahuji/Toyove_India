@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
-import loginImage from '../assets/toyove_auth_banner.webp'
+import loginImage from '../assets/TOYOVOINIDIA_auth_banner.webp'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -36,7 +36,7 @@ export function LoginPage() {
         <div className="relative h-[250px] md:h-[400px] rounded-[40px] overflow-hidden shadow-lg mb-[-120px] z-0">
           <img 
             src={loginImage}
-            alt="Toyove India Login" 
+            alt="TOYOVOINDIA India Login" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-[#333]/10" />

@@ -8,7 +8,7 @@ export function PrivacyPolicy() {
     >
       <section className="space-y-4">
         <h2 className="text-2xl font-grandstander font-bold text-[#333]">Our Commitment to Privacy</h2>
-        <p>At Toyove-India, we respect your privacy and are committed to protecting the personal information you share with us. This policy explains how we collect, use, and safeguard your data.</p>
+        <p>At TOYOVOINDIA, we respect your privacy and are committed to protecting the personal information you share with us. This policy explains how we collect, use, and safeguard your data.</p>
       </section>
 
       <section className="space-y-4">

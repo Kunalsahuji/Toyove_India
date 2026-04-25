@@ -8,12 +8,12 @@ export function TermsConditions() {
     >
       <section className="space-y-4">
         <h2 className="text-2xl font-grandstander font-bold text-[#333]">Agreement to Terms</h2>
-        <p>By accessing or using the Toyove-India website, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our site.</p>
+        <p>By accessing or using the TOYOVOINDIA website, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our site.</p>
       </section>
 
       <section className="space-y-4">
         <h3 className="text-xl font-grandstander font-bold text-[#333]">Intellectual Property</h3>
-        <p>All content on this site, including text, graphics, logos, and images, is the property of Toyove-India and is protected by copyright and other intellectual property laws.</p>
+        <p>All content on this site, including text, graphics, logos, and images, is the property of TOYOVOINDIA and is protected by copyright and other intellectual property laws.</p>
       </section>
 
       <section className="space-y-4">
@@ -28,7 +28,7 @@ export function TermsConditions() {
 
       <section className="space-y-4">
         <h3 className="text-xl font-grandstander font-bold text-[#333]">Limitation of Liability</h3>
-        <p>Toyove-India shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our products or services.</p>
+        <p>TOYOVOINDIA shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our products or services.</p>
       </section>
     </PolicyPageLayout>
   )

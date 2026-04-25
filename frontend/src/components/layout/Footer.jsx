@@ -137,7 +137,7 @@ export function Footer() {
 
         <div className="border-t border-white/10 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <p className="text-[13px] md:text-[14px] text-white/60 text-center sm:text-left font-medium">
-            © 2026, <span className="text-white font-bold">Toyove-India</span> Powered by Appzeto
+            © 2026, <span className="text-white font-bold">TOYOVOINDIA</span> Powered by Appzeto
           </p>
           <PaymentBadges />
         </div>

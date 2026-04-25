@@ -1,4 +1,4 @@
-# 🧸 Toyove-India – High-Fidelity Children's Marketplace Ecosystem
+# 🧸 TOYOVOINDIA – High-Fidelity Children's Marketplace Ecosystem
 
 A premium, enterprise-grade e-commerce application serving as the definitive technical blueprint for Toyove-India's curated retail infrastructure. This project manages high-fidelity product interactions, transitioning hardware-inspired design tokens into a seamless consumer-facing subscription and shopping economy.
 
@@ -124,10 +124,10 @@ npm run dev
 ---
 
 ## 🙌 Acknowledgements
-This task was assigned by **Appzeto Pvt. Ltd., Indore** for the **Toyove-India** project.  
+This task was assigned by **Appzeto Pvt. Ltd., Indore** for the **TOYOVOINDIA** project.  
 Developed with ❤️ by [Kunal Sahu](https://github.com/Kunalsahuji).  
 
 ---
 
 ## 🛡️ License
-Copyright © 2026 Toyove-India Marketplace. Proprietary and Confidential.
+Copyright © 2026 TOYOVOINDIA Marketplace. Proprietary and Confidential.

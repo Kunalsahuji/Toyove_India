@@ -195,7 +195,7 @@ export function ProductDetailPage() {
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
-            {/* Gallery - Grid Layout for Toyove-India Parity */}
+            {/* Gallery - Grid Layout for TOYOVOINDIA Parity */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-4 h-fit">
               {productImages.slice(0, 6).map((img, i) => (
                 <div key={i} className="aspect-square rounded-3xl overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 group">
@@ -209,12 +209,12 @@ export function ProductDetailPage() {
               <div className="space-y-4">
                 <p className="text-[11px] font-medium tracking-[0.25em] text-[#666] font-roboto uppercase">Home Furniture</p>
                 <h1 style={{
-              fontFamily: 'var(--font-header)',
-              textShadow: '0 2px 4px rgba(0,0,0,0.12)',
-              lineHeight: 1.05,
-              fontSize: 'clamp(32px, 7vw, 68px)',
-              letterSpacing: '-0.04em'
-            }} className="font-grandstander font-bold text-[#333] tracking-tighter">{product.title}</h1>
+                  fontFamily: 'var(--font-header)',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                  lineHeight: 1.05,
+                  fontSize: 'clamp(32px, 7vw, 68px)',
+                  letterSpacing: '-0.04em'
+                }} className="font-grandstander font-bold text-[#333] tracking-tighter">{product.title}</h1>
 
                 <div className="flex items-center gap-4">
                   <div className="flex items-baseline gap-2">
@@ -234,7 +234,7 @@ export function ProductDetailPage() {
                     <span>Sold <strong>25 Product</strong> In last 13 Hours</span>
                   </div>
                   <div className="flex gap-3 pt-1">
-                    <button 
+                    <button
                       onClick={() => { toggleWishlist(product); navigate('/wishlist'); }}
                       className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform ${isWishlisted ? 'bg-[#333] text-white' : 'bg-[#E84949] text-white'}`}
                     >
@@ -290,14 +290,14 @@ export function ProductDetailPage() {
                       <span className="font-grandstander text-[16px] text-[#333] font-bold">{quantity}</span>
                       <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={14} /></button>
                     </div>
-                    <button 
+                    <button
                       onClick={handleAddToCart}
                       className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all py-3"
                     >
                       ADD TO CART
                     </button>
                   </div>
-                  <button 
+                  <button
                     onClick={handleBuyNow}
                     className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all"
                   >
@@ -318,7 +318,7 @@ export function ProductDetailPage() {
                     <p><span className="font-medium text-[11px] text-gray-400 mr-2 font-grandstander">Categories:</span> <Link to="/collections/toys" className="underline hover:text-[#E84949] font-medium">{product.category}</Link></p>
                   </div>
 
-                  <button 
+                  <button
                     onClick={handleShare}
                     className="w-full py-3 bg-[#E84949] text-white rounded font-bold text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm"
                   >
@@ -331,7 +331,7 @@ export function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Tabs Section - Refined for Toyove-India Parity */}
+      {/* Tabs Section - Refined for TOYOVOINDIA Parity */}
       <div className="py-20 max-w-350 mx-auto px-4 md:px-10">
         <div className="flex flex-wrap gap-0">
           {['Description', 'Additional', 'Variant', 'Custom'].map((t) => (
@@ -349,16 +349,16 @@ export function ProductDetailPage() {
             <motion.div key={activeTab} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}>
               {activeTab === 'description' && (
                 <div className="space-y-6 max-w-5xl">
-                  <p>Discover Toyove-India, the ultimate Shopify 2.0 theme meticulously crafted for baby shops and kids' toy stores. Elevate your online presence with Toyove-India’s seamless fusion of aesthetic charm and robust functionality, designed to make your products shine on every device.</p>
-                  <p>At the heart of Toyove-India lies its flawless integration with Shopify 2.0, offering advanced features that enhance user experience and propel your store to top search engine rankings. Whether your inventory focuses on educational toys, plush baby essentials, or trendy kids' gadgets, Toyove-India’s responsive design ensures impeccable presentation across desktops, tablets, and smartphones.</p>
-                  <p>Customization is effortless with Toyove-India’s intuitive tools. Tailor your store’s appearance effortlessly—adjust colors, fonts, and layouts without touching a single line of code. The drag-and-drop interface empowers you to establish a unique brand identity that resonates deeply with your discerning clientele.</p>
-                  <p>Toyove-India excels in showcasing your products attractively. From high-definition images to detailed descriptions and customer reviews, every detail is optimized to drive engagement and conversions. Whether highlighting interactive playsets, eco-friendly nursery items, or imaginative toys, Toyove-India captivates your audience effectively.</p>
-                  <p>SEO optimization forms the cornerstone of Toyove-India’s design philosophy. Optimized meta tags, clean code, and swift load times ensure prominent visibility in search results. This strategic approach not only attracts organic traffic but also converts visitors into loyal customers, fostering sustained growth for your baby and kids' toy store.</p>
-                  <p>Seamlessly integrate potent marketing tools with Toyove-India. From targeted email campaigns to impactful social media promotions, product badges, and eye-catching banners, amplify your brand’s reach and boost sales effectively. Toyove-India’s secure payment gateways and robust data encryption build trust and loyalty among your customers.</p>
-                  <p>Expand your global footprint with Toyove-India’s support for multilingual and multi-currency capabilities. Deliver a personalized shopping experience in customers’ preferred languages and currencies, enhancing accessibility and elevating conversion rates. Toyove-India’s modern design, built with HTML5, CSS3, and Bootstrap, guarantees flawless performance across diverse platforms, optimizing user satisfaction.</p>
+                  <p>Discover TOYOVOINDIA, the ultimate Shopify 2.0 theme meticulously crafted for baby shops and kids' toy stores. Elevate your online presence with TOYOVOINDIA’s seamless fusion of aesthetic charm and robust functionality, designed to make your products shine on every device.</p>
+                  <p>At the heart of TOYOVOINDIA its flawless integration with Shopify 2.0, offering advanced features that enhance user experience and propel your store to top search engine rankings. Whether your inventory focuses on educational toys, plush baby essentials, or trendy kids' gadgets, TOYOVOINDIA responsive design ensures impeccable presentation across desktops, tablets, and smartphones.</p>
+                  <p>Customization is effortless with TOYOVOINDIA or your store’s appearance effortlessly—adjust colors, fonts, and layouts without touching a single line of code. The drag-and-drop interface empowers you to establish a unique brand identity that resonates deeply with your discerning clientele.</p>
+                  <p>TOYOVOINDIA definition images to detailed descriptions and customer reviews, every detail is optimized to drive engagement and conversions. Whether highlighting interactive playsets, eco-friendly nursery items, or imaginative toys, TOYOVOINDIA captivates your au TOYOVOINDIA </p>
+                  <p>SEO optimization forms the cornerstone of TOYOVOINDIA’s design philosophy. Optimized meta tags, clean code, and swift load times ensure prominent visibility in search results. This strategic approach not only attracts organic traffic but also converts visitors into loyal customers, fostering sustained growth for your baby and kids' toy store.</p>
+                  <p>Seamlessly integrate potent marketing tools with TOYOVOINDIA. From targeted email campaigns to impactful social media promotions, product badges, and eye-catching banners, amplify your brand’s reach and boost sales effectively. TOYOVOINDIA’s secure payment gateways and robust data encryption build trust and loyalty among your customers.</p>
+                  <p>Expand your global footprint with TOYOVOINDIA’s support for multilingual and multi-currency capabilities. Deliver a personalized shopping experience in customers’ preferred languages and currencies, enhancing accessibility and elevating conversion rates. TOYOVOINDIAINDIA-India’s modern design, built with HTML5, CSS3, and Bootstrap, guarantees flawless performance across diverse platforms, optimizing user satisfaction.</p>
                   <p>Customer-centric features such as quick view options, wish lists, and streamlined checkout processes enhance usability and drive sales. Transparent shipping policies and comprehensive FAQs further enhance customer satisfaction, encouraging repeat business and fostering brand loyalty.</p>
-                  <p>Benefit from Toyove-India’s comprehensive support and regular updates. Access extensive documentation, tutorials, and responsive customer service to maximize your store’s performance and promptly address inquiries. With continuous improvements and feature updates, Toyove-India ensures your baby shop and kids' toy store remains competitive and innovative in the dynamic ecommerce landscape.</p>
-                  <p>Choose Toyove-India - Baby Shop & Kids Toys Store Multipurpose Shopify 2.0 Responsive Theme to transform your online store into a thriving ecommerce destination. Enhance your brand’s online presence, attract a global audience, and drive sustainable growth with Toyove-India’s tailored solutions for baby shops and kids' toy retailers.</p>
+                  <p>Benefit from TOYOVOINDIA’s comprehensive support and regular updates. Access extensive documentation, tutorials, and responsive customer service to maximize your store’s performance and promptly address inquiries. With continuous improvements and feature updates, TOYOVOINDIA ensures your baby shop and kids' toy store remains competitive and innovative in the dynamic ecommerce landscape.</p>
+                  <p>Choose TOYOVOINDIA - Baby Shop & Kids Toys Store Multipurpose Shopify 2.0 Responsive Theme to transform your online store into a thriving ecommerce destination. Enhance your brand’s online presence, attract a global audience, and drive sustainable growth with TOYOVOINDIA’s tailored solutions for baby shops and kids' toy retailers.</p>
                 </div>
               )}
               {activeTab === 'additional' &&
@@ -445,8 +445,8 @@ export function ProductDetailPage() {
             <h2 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333] mb-12 leading-none tracking-tighter">Frequently Ask Questions</h2>
             <div className="space-y-0">
               {[
-                { q: "What Types Of Furniture Can I Showcase With This Theme?", a: "Toyove-India is perfect for all types of kids furniture - from cribs and beds to play tables and storage units." },
-                { q: "Is This Theme Mobile-Friendly?", a: "Yes, Toyove-India is engineered with a mobile-first philosophy, providing a lightning-fast and intuitive experience on all mobile devices." },
+                { q: "What Types Of Furniture Can I Showcase With This Theme?", a: "TOYOVOINDIA is perfect for all types of kids furniture - from cribs and beds to play tables and storage units." },
+                { q: "Is This Theme Mobile-Friendly?", a: "Yes, TOYOVOINDIA is engineered with a mobile-first philosophy, providing a lightning-fast and intuitive experience on all mobile devices." },
                 { q: "Can I Customize The Color Scheme And Fonts?", a: "Absolutly. With our advanced theme settings, you can customize every color, font, and button style in a few clicks." }
               ].map((faq, i) => (
                 <FAQItem

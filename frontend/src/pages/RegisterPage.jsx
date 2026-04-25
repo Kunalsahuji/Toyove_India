@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
-import registerImage from '../assets/toyove_auth_banner.webp'
+import registerImage from '../assets/TOYOVOINIDIA_auth_banner.webp'
 
 export function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -44,7 +44,7 @@ export function RegisterPage() {
         <div className="relative h-[250px] md:h-[400px] rounded-[40px] overflow-hidden shadow-lg mb-[-120px] z-0">
           <img 
             src={registerImage}
-            alt="Toyove India Register" 
+            alt="TOYOVOINDIA India Register" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-[#333]/10" />

@@ -5,7 +5,7 @@ const features = [
   {
     icon: Box,
     title: '3D Model & Video',
-    desc: 'Include 3D model and video sections for all products on Toyove India to give buyers a full view before they purchase.'
+    desc: 'Include 3D model and video sections for all products on TOYOVOINDIA India to give buyers a full view before they purchase.'
   },
   {
     icon: AlignJustify,

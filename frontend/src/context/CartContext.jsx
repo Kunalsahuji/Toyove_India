@@ -4,30 +4,30 @@ const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem('toyove_cart');
+    const savedCart = localStorage.getItem('TOYOVOINDIA_cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
   const [wishlist, setWishlist] = useState(() => {
-    const savedWishlist = localStorage.getItem('toyove_wishlist');
+    const savedWishlist = localStorage.getItem('TOYOVOINDIA_wishlist');
     return savedWishlist ? JSON.parse(savedWishlist) : [];
   });
 
   const [compare, setCompare] = useState(() => {
-    const savedCompare = localStorage.getItem('toyove_compare');
+    const savedCompare = localStorage.getItem('TOYOVOINDIA_compare');
     return savedCompare ? JSON.parse(savedCompare) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('toyove_cart', JSON.stringify(cartItems));
+    localStorage.setItem('TOYOVOINDIA_cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
   useEffect(() => {
-    localStorage.setItem('toyove_wishlist', JSON.stringify(wishlist));
+    localStorage.setItem('TOYOVOINDIA_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
   useEffect(() => {
-    localStorage.setItem('toyove_compare', JSON.stringify(compare));
+    localStorage.setItem('TOYOVOINDIA_compare', JSON.stringify(compare));
   }, [compare]);
 
   const addToCart = (product, quantity = 1) => {

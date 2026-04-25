@@ -4,32 +4,32 @@ const PaymentContext = createContext();
 
 export function PaymentProvider({ children }) {
   const [walletBalance, setWalletBalance] = useState(() => {
-    const saved = localStorage.getItem('toyove_wallet_balance');
+    const saved = localStorage.getItem('TOYOVOINDIA_wallet_balance');
     return saved ? parseFloat(saved) : 500.00; 
   });
 
   const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem('toyove_transactions');
+    const saved = localStorage.getItem('TOYOVOINDIA_transactions');
     return saved ? JSON.parse(saved) : [
       { id: 'TXN-9901', type: 'Credit', amount: 500.00, method: 'Welcome Bonus', date: new Date().toLocaleDateString(), status: 'Completed' }
     ];
   });
 
   const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('toyove_orders');
+    const saved = localStorage.getItem('TOYOVOINDIA_orders');
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('toyove_wallet_balance', walletBalance.toString());
+    localStorage.setItem('TOYOVOINDIA_wallet_balance', walletBalance.toString());
   }, [walletBalance]);
 
   useEffect(() => {
-    localStorage.setItem('toyove_transactions', JSON.stringify(transactions));
+    localStorage.setItem('TOYOVOINDIA_transactions', JSON.stringify(transactions));
   }, [transactions]);
 
   useEffect(() => {
-    localStorage.setItem('toyove_orders', JSON.stringify(orders));
+    localStorage.setItem('TOYOVOINDIA_orders', JSON.stringify(orders));
   }, [orders]);
 
   const addTransaction = (txn) => {

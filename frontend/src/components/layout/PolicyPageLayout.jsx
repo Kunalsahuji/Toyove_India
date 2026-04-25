@@ -16,7 +16,7 @@ export function PolicyPageLayout({ title, subtitle, children }) {
           className="max-w-350 mx-auto"
         >
           <p className="text-[#FF4E50] font-bold text-[12px] md:text-[14px] uppercase tracking-[0.4em] mb-4 font-roboto">
-            {subtitle || "Toyove India Information"}
+            {subtitle || "TOYOVOINDIA India Information"}
           </p>
           <h1 className="text-4xl md:text-6xl font-grandstander font-bold text-white leading-none tracking-tighter">
             {title}

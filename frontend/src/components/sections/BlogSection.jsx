@@ -5,22 +5,22 @@ const posts = [
   {
     date: 'March 28, 2024',
     author: 'Ichha Raval',
-    title: 'The Perfect Toyove India Theme For Baby And Kids',
-    excerpt: 'Discover Toyove India, the ultimate theme crafted specifically for baby shops and kids\' toy stores.',
+    title: 'The Perfect TOYOVOINDIA India Theme For Baby And Kids',
+    excerpt: 'Discover TOYOVOINDIA India, the ultimate theme crafted specifically for baby shops and kids\' toy stores.',
     img: 'https://plus.unsplash.com/premium_photo-1701984401558-d314227bb38f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     date: 'March 20, 2024',
     author: 'Ichha Raval',
-    title: 'Transform Your Online Toy Store With Toyove India',
-    excerpt: 'Discover Toyove India, the ultimate Shopify 2.0 theme crafted specifically for baby shops and kids\' toy.',
+    title: 'Transform Your Online Toy Store With TOYOVOINDIA India',
+    excerpt: 'Discover TOYOVOINDIA India, the ultimate Shopify 2.0 theme crafted specifically for baby shops and kids\' toy.',
     img: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=500',
   },
   {
     date: 'March 18, 2024',
     author: 'Ichha Raval',
-    title: 'Why Toyove India Is the Best Theme For Baby Stores',
-    excerpt: 'Discover Toyove India, the ultimate theme crafted specifically for baby shops and kids\' toy stores.',
+    title: 'Why TOYOVOINDIA India Is the Best Theme For Baby Stores',
+    excerpt: 'Discover TOYOVOINDIA India, the ultimate theme crafted specifically for baby shops and kids\' toy stores.',
     img: 'https://images.unsplash.com/photo-1563396983906-b3795482a59a?auto=format&fit=crop&q=80&w=500',
   },
 ]

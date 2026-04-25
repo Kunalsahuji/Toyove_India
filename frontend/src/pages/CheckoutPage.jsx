@@ -94,7 +94,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
           <div className="bg-[#6651A4] p-8 text-white flex justify-between items-center">
              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Lock size={18}/></div>
-                <div><h3 className="font-bold text-lg leading-none">Toyove Secure Pay</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold mt-1">Order #TP-{Math.floor(Math.random()*9000)}</p></div>
+                <div><h3 className="font-bold text-lg leading-none">TOYOVOINDIA Secure Pay</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold mt-1">Order #TP-{Math.floor(Math.random()*9000)}</p></div>
              </div>
              <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20}/></button>
           </div>
@@ -146,7 +146,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
                   </div>
                   <div>
                      <h5 className="font-bold text-[#333] mb-1">Confirm Wallet Payment</h5>
-                     <p className="text-[13px] text-gray-500 leading-relaxed px-6">You are about to pay using your Toyove Wallet balance. This is instant and secure.</p>
+                     <p className="text-[13px] text-gray-500 leading-relaxed px-6">You are about to pay using your TOYOVOINDIA Wallet balance. This is instant and secure.</p>
                   </div>
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 divide-y divide-gray-200">
                      <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Order Amount</span><span className="font-bold text-[#333]">${amount.toFixed(2)}</span></div>
@@ -220,7 +220,7 @@ export function CheckoutPage() {
   }
 
   const applyDiscount = () => {
-    if (discountCode.toLowerCase() === 'toyove10') {
+    if (discountCode.toLowerCase() === 'TOYOVOINDIA10') {
       setIsDiscountApplied(true)
       alert('Discount applied successfully!')
     } else {
@@ -301,7 +301,7 @@ export function CheckoutPage() {
       {/* Mobile/Tablet Header & Summary Bar */}
       <div className="lg:hidden w-full bg-[#F5F5F5] border-b border-gray-200 sticky top-0 z-[100]">
         <div className="px-4 py-4 flex items-center justify-between">
-           <Link to="/" className="text-2xl font-grandstander font-bold text-[#333] tracking-tighter">Toyove</Link>
+           <Link to="/" className="text-2xl font-grandstander font-bold text-[#333] tracking-tighter">TOYOVOINDIA</Link>
            <button onClick={() => setShowSummary(!showSummary)} className="flex items-center gap-2 text-[13px] font-bold text-[#E84949] uppercase tracking-wider">
              {showSummary ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
              Summary <span className="ml-2 text-[#333]">${total.toFixed(2)}</span>
@@ -335,7 +335,7 @@ export function CheckoutPage() {
       {/* Left Side: Delivery/Payment Forms */}
       <div className="w-full lg:w-[60%] px-4 md:px-10 lg:px-20 py-10 lg:py-16">
         <header className="hidden lg:block mb-12">
-           <Link to="/" className="text-4xl font-grandstander font-bold text-[#333] tracking-tighter">Toyove</Link>
+           <Link to="/" className="text-4xl font-grandstander font-bold text-[#333] tracking-tighter">TOYOVOINDIA</Link>
         </header>
 
         <nav className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-10">
@@ -467,7 +467,7 @@ export function CheckoutPage() {
                       <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('wallet')}>
                          <div className="flex items-center gap-4">
                             <input type="radio" checked={paymentMethod === 'wallet'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
-                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Wallet size={16}/> Toyove Wallet</span>
+                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Wallet size={16}/> TOYOVOINDIA Wallet</span>
                          </div>
                          <span className="text-[12px] font-bold text-gray-500">BALANCE: ${walletBalance.toFixed(2)}</span>
                       </div>
@@ -560,7 +560,7 @@ export function CheckoutPage() {
           <div className="mt-10 pt-10 border-t border-gray-200 space-y-4 text-[14px]">
              <div className="flex justify-between"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold tracking-tighter text-[#333]">${subtotal.toFixed(2)}</span></div>
              <div className="flex justify-between"><span className="text-gray-500 font-medium">Shipping</span><span className="font-bold tracking-tighter text-[#333]">${shippingCharge.toFixed(2)}</span></div>
-             {isDiscountApplied && <div className="flex justify-between text-green-600 font-bold"><span>Discount (TOYOVE10)</span><span className="tracking-tighter">-${discountAmount.toFixed(2)}</span></div>}
+             {isDiscountApplied && <div className="flex justify-between text-green-600 font-bold"><span>Discount (TOYOVOINDIA10)</span><span className="tracking-tighter">-${discountAmount.toFixed(2)}</span></div>}
              <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
                <span className="text-[20px] font-bold font-grandstander text-[#333]">Total</span>
                <div className="flex items-baseline gap-2">

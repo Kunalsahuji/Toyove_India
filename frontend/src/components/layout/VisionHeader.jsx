@@ -30,7 +30,7 @@ const PtIcon = () => (
   </svg>
 )
 
-const PROMO = '10% off your next order, use code : TOYOVE001'
+const PROMO = '10% off your next order, use code : TOYOVOINDIA001'
 const promoMessages = [PROMO, 'Free Shipping On Orders Over ₹999!', 'New Arrivals Every Week — Shop Now']
 
 const countries = [
@@ -44,49 +44,314 @@ const countries = [
 const languages = ['English', 'Hindi', 'French', 'Spanish', 'German']
 
 const mainNavLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
+  { name: 'Home', href: '/', hideOnDesktop: true },
+  { name: 'About', href: '/about', hideOnDesktop: true },
   { 
-    name: 'Dolls', 
-    href: '/collections/dolls', 
+    name: 'ALL CATEGORIES', 
+    href: '/all-categories', 
     mega: [
-      { title: 'Type', items: ['Baby Dolls', 'Fashion Dolls', 'Doll Houses & Accessories', 'Plush / Soft Dolls', 'Interactive / Talking Dolls', 'Cultural / Traditional Dolls', 'Mini Dolls & Collectibles'] },
-      { title: 'Age Group', items: ['0-2 Years', '3-5 Years', '6-8 Years', '9-12 Years'] },
-      { title: 'Featured', banner: 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?q=80&w=400&auto=format&fit=crop' }
+      { title: 'CLOTHING & ESSENTIALS', items: ['Jhablas', 'Vests', 'Briefs & Boxers', 'Socks', 'Swim Wear', 'Bath Time', 'Athleisure', 'Thermals', 'Sweaters', 'Rainwear'] },
+      { title: 'FOOTWEAR', items: ['Flip Flops', 'Clogs', 'Casual Shoes', 'Sandals', 'Sneakers', 'School Shoes', 'LED Shoes'] },
+      { title: 'SHOP BY PRICE', items: ['Under 199', 'Under 299', 'Under 399', 'Under 499'] },
+      { title: 'SHOP BY BRANDS', items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s'] }
     ]
   },
   { 
-    name: 'Educational Toy', 
-    href: '/collections/educational-toy', 
+    name: 'BOY FASHION', 
+    href: '/collections/boy-fashion', 
     mega: [
-      { title: 'Learning Outcomes', items: ['STEM Toys', 'Montessori Toys', 'Brain Development Toys', 'Learning Kits', 'Coding Toys', 'Memory & Skill Development', 'DIY Learning Kits'] },
-      { title: 'Interests', items: ['Creative Play', 'Outdoor Play', 'Pretend Play', 'Science & Exploration'] },
-      { title: 'New Arrival', banner: 'https://images.unsplash.com/photo-1685358279653-868c0b99fe6c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: [
+          { name: 'Sets & Suits', badge: 'Hot' }, 
+          { name: 'T-Shirts' }, 
+          { name: 'Shorts' }, 
+          { name: 'Onesies' }, 
+          { name: 'Nightwear' }, 
+          { name: 'Jeans & Trousers' }, 
+          { name: 'Ethnic Wear', badge: 'Sale' }, 
+          { name: 'Party Wear' },
+          { name: 'Shirts' },
+          { name: 'Innerwear' }
+        ] 
+      },
+      { 
+        title: 'SHOP BY COLLECTION', 
+        items: [
+          { name: 'Bestsellers', badge: 'New' }, 
+          { name: 'Multi-packs' }, 
+          { name: 'Swimming Essentials' }, 
+          { name: 'Baby Essentials' }
+        ],
+        extra: {
+          title: 'FASHION ACCESSORIES',
+          items: ['Sunglasses', 'Watches', 'Smart Watches', 'Ties', 'Bags']
+        }
+      },
+      { 
+        title: 'SHOP BY AGE', 
+        items: ['0-3 Months', '3-6 Months', '2-4 Years', '4-6 Years', '8+ Years'],
+        extra: {
+          title: 'SHOP BY PRICE',
+          items: ['Under 199', 'Under 299', 'Under 399', 'Under 499']
+        }
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s', 'Earthy Touch', 'Cute Walk', 'Bonfino'] 
+      },
+      { banner: 'https://cdn.fcglcdn.com/brainbees/images/cattemplate/370_270_summer2_rhs_banner_boy_fashion_170426.webp?q=80&w=400&auto=format&fit=crop' }
     ]
   },
   { 
-    name: 'Games & Puzzle', 
-    href: '/collections/games-and-puzzle', 
+    name: 'GIRL FASHION', 
+    href: '/collections/girl-fashion', 
     mega: [
-      { title: 'Format & Difficulty', items: ['Jigsaw Puzzles', 'Board Games', 'Card Games', 'Strategy Games', '3D Puzzles', 'Brain Teasers', 'Family Games', 'Solo Games'] },
-      { title: 'Budget', items: ['Under ₹499', '₹500-₹999', '₹1000-₹1999', '₹2000+'] },
-      { title: 'Best Seller', banner: 'https://images.unsplash.com/photo-1637120149073-54319e6f9fc3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: [
+          { name: 'Frocks & Dresses', badge: 'Hot' }, 
+          { name: 'Sets & Suits' }, 
+          { name: 'Tops & T-shirts' }, 
+          { name: 'Shorts & Skirts' }, 
+          { name: 'Jumpsuits & Dungarees' }, 
+          { name: 'Pajamas & Leggings' },
+          { name: 'Ethnic Wear', badge: 'Sale' },
+          { name: 'Party Wear' }
+        ] 
+      },
+      { 
+        title: 'SHOP BY COLLECTION', 
+        items: [
+          { name: 'Bestsellers', badge: 'New' }, 
+          { name: 'Multi-packs' }, 
+          { name: 'Beach Wear' }, 
+          { name: 'Birthday Boutique' }
+        ],
+        extra: {
+          title: 'FASHION ACCESSORIES',
+          items: ['Hair Bands', 'Hair Clips', 'Jewellery', 'Bags']
+        }
+      },
+      { 
+        title: 'SHOP BY AGE', 
+        items: ['0-3 Months', '3-6 Months', '2-4 Years', '4-6 Years', '8+ Years'],
+        extra: {
+          title: 'SHOP BY PRICE',
+          items: ['Under 199', 'Under 299', 'Under 399', 'Under 499']
+        }
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s', 'Hello Kitty', 'Disney'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=400&auto=format&fit=crop' }
     ]
   },
   { 
-    name: 'Vehicles Toys', 
-    href: '/collections/vehicles-toys', 
+    name: 'FOOTWEAR', 
+    href: '/collections/footwear', 
     mega: [
-      { title: 'Mechanism', items: ['Remote Control (RC) Vehicles', 'Die-Cast Models', 'Battery Operated Vehicles', 'Construction Vehicles', 'Racing Cars', 'Trucks & Utility Vehicles', 'Airplanes & Helicopters', 'Train Sets'] },
-      { title: 'Quick Links', items: ['New In Vehicles', 'Top Rated RC', 'Vehicles Deals'] },
-      { title: 'Speed', banner: 'https://images.unsplash.com/photo-1632435188816-1277a374e696?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Flip Flops', 'Clogs', 'Casual Shoes', 'Sandals', 'Booties', 'Sneakers', 'Ballerinas', 'Sports Shoes', 'School Shoes'] 
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Pine Kids', 'Cute Walk', 'Babyhug', 'Crocs', 'Skechers', 'Adidas'] 
+      },
+      { 
+        title: 'DON\'T MISS', 
+        items: ['Sock Shoes', 'Stockings & Tights', 'Plush Footwear', 'Jibbitz'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=400&auto=format&fit=crop' }
     ]
   },
-  { name: 'Contact', href: '/contact' },
+  { 
+    name: 'TOYS', 
+    href: '/collections/toys', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: [
+          { name: 'Musical Toys', badge: 'New' }, 
+          { name: 'Learning & Educational', badge: 'Hot' }, 
+          { name: 'Soft Toys' }, 
+          { name: 'Indoor & Outdoor Play' }, 
+          { name: 'Blocks & Construction' }, 
+          { name: 'Puzzles' }
+        ] 
+      },
+      { 
+        title: 'RIDE-ONS & SCOOTERS', 
+        items: ['Battery Operated', 'Manual Push', 'Scooters', 'Tricycles', 'Bicycles'] 
+      },
+      { 
+        title: 'BOARD GAMES', 
+        items: ['IQ Games', 'Ludo', 'Snakes & Ladders', 'Monopoly'],
+        extra: {
+          title: 'SHOP BY AGE',
+          items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8-12 Years']
+        }
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Hot Wheels', 'Barbie', 'LEGO', 'Fisher-Price', 'Funskool', 'Nerf'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1531123414780-f74242c2b052?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'DIAPERING', 
+    href: '/collections/diapering', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Diaper Pants', 'Taped Diapers', 'Wipes', 'Cloth Nappies', 'Bed Protectors', 'Diaper Bags', 'Potty Chairs & Seats'] 
+      },
+      { 
+        title: 'BABY DIAPER BY SIZE', 
+        items: ['NB/XS', 'Small', 'Medium', 'Large', 'XL', 'XXL'] 
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Babyhug', 'Huggies', 'Pampers', 'MamyPoko', 'Supples', 'Little\'s'] 
+      },
+      { 
+        title: 'SHOP BY PRICE', 
+        items: ['Under 199', 'Under 499', 'Under 999', '1000 & Above'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1555008882-d4000a6e0df3?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'GEAR', 
+    href: '/collections/gear', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: [
+          { name: 'Strollers & Prams', badge: 'Hot' }, 
+          { name: 'Ride-ons' }, 
+          { name: 'Tricycles' }, 
+          { name: 'Walkers' }, 
+          { name: 'Bouncers & Swings' }, 
+          { name: 'High Chairs' }, 
+          { name: 'Car Seats' }, 
+          { name: 'Baby Carriers' }
+        ] 
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Babyhug', 'LuvLap', 'R for Rabbit', 'Mee Mee', 'Chicco', 'Graco', 'Joie'] 
+      },
+      { 
+        title: 'FEATURED', 
+        items: ['New Arrivals', 'Best Sellers', 'Deals of the Day'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1594913785162-e6786b42dea3?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'FEEDING', 
+    href: '/collections/feeding', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Baby Food & Formula', 'Feeding Bottles', 'Breast Feeding', 'Sippers & Cups', 'Bibs & Hankies', 'Teethers', 'Sterilizers'] 
+      },
+      { 
+        title: 'KIDS FOODS', 
+        items: [
+          { name: 'Dry Fruits', badge: 'Sale' }, 
+          { name: 'Snacks' }, 
+          { name: 'Vitamin Gummies', badge: 'New' }, 
+          { name: 'Health Supplements' }
+        ] 
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Cerelac', 'Aptamil', 'Philips Avent', 'Dr. Brown\'s', 'Pigeon'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'BATH', 
+    href: '/collections/bath', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Lotions', 'Oils & Powders', 'Soaps & Body Wash', 'Shampoos', 'Bath Tubs & Bathers', 'Grooming Essentials', 'Bath Towels'] 
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Mamaearth', 'Himalaya', 'Johnson\'s', 'Sebamed', 'Aveeno', 'Cetaphil'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1559591937-e6205809867c?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'NURSERY', 
+    href: '/collections/nursery', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Cots & Cradles', 'Blankets & Quilts', 'Baby Bedding Sets', 'Wardrobes & Storage', 'Kids Room Furniture', 'Room Decor'] 
+      },
+      { 
+        title: 'SHOP BY BRANDS', 
+        items: ['Babyhug', 'Pine Kids', 'Kinder Valley', 'IKEA', 'Lullaby'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'MOMS', 
+    href: '/collections/moms', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Nursing/Sleep Wear', 'Maternity Dresses', 'Maternity Lingerie', 'Bottom wear', 'Personal Care'] 
+      },
+      { 
+        title: 'NEW MOM ESSENTIALS', 
+        items: ['Breast Feeding support', 'Nutrition & Lactation Boosters', 'Body Pillows'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1531198341253-1f49a365ffed?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'HEALTH', 
+    href: '/collections/health', 
+    mega: [
+      { 
+        title: 'SHOP BY CATEGORY', 
+        items: ['Cleansers & Detergents', 'Oral Care', 'Childproofing & Safety', 'Medical Care', 'Mosquito Repellents'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { 
+    name: 'BOUTIQUES', 
+    href: '/collections/boutiques', 
+    mega: [
+      { 
+        title: 'SECTIONS', 
+        items: ['New Today', 'Bestsellers', 'Last Day Sales'] 
+      },
+      { 
+        title: 'BRANDS', 
+        items: ['International Brands', 'Mompreneur Brands', 'Top Indian Brands'] 
+      },
+      { banner: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=400&auto=format&fit=crop' }
+    ]
+  },
+  { name: 'Contact', href: '/contact', hideOnDesktop: true },
 ]
 
 const C = '#FF4E50'  
-import logo from '../../assets/logo.svg'
+import logo from '../../assets/toyovo.webp'
 
 export function VisionHeader() {
   const [promoIndex, setPromoIndex] = useState(0)
@@ -234,8 +499,8 @@ export function VisionHeader() {
                     {countryDropdown && (
                         <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-48 bg-[#FDF3E7] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
                             {countries.map(c => (
-                                <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-white flex items-center justify-between ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
-                                    {c.name} <span className="text-[10px] opacity-40">{c.currency}</span>
+                                <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[11px] font-bold hover:bg-white flex items-center justify-between whitespace-nowrap ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                    {c.name} <span className="text-[10px] opacity-40 ml-2">{c.currency}</span>
                                 </button>
                             ))}
                         </motion.div>
@@ -250,7 +515,7 @@ export function VisionHeader() {
                     {langDropdown && (
                         <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-32 bg-[#FDF4E6] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
                             {languages.map(l => (
-                                <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-white ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[11px] font-bold hover:bg-white whitespace-nowrap ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
                                     {l}
                                 </button>
                             ))}
@@ -337,35 +602,86 @@ export function VisionHeader() {
             </button>
           </div>
 
-          {/* Logo Section: Centered on Mobile/Tab (Absolute), Left-aligned on Desktop */}
-          <div className="lg:static absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 flex items-center shrink-0 lg:mr-4 xl:mr-10 z-10">
+          <div className="lg:static absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 flex items-center shrink-0 lg:mr-1 xl:mr-4 z-10">
             <Link to="/" onClick={handleLinkClick} className="flex items-center gap-2">
-              <img src={logo} alt="Toyove" className="h-8 md:h-10 lg:h-11 w-auto" />
+              <img src={logo} alt="TOYOVOINDIA" className="h-10 md:h-12 lg:h-11 xl:h-14 w-auto" />
             </Link>
           </div>
 
           {/* Desktop Navigation: Only visible on 1024px+, strictly follows Logo */}
-          <nav className="hidden lg:flex items-center gap-0 flex-none h-full">
-            {mainNavLinks.map(link => (
-              <div key={link.name} className="relative group/nav py-6" onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
-                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-1 xl:px-3 text-[10px] xl:text-[12px] font-bold tracking-widest transition-all uppercase whitespace-nowrap ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
-                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={10} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
+          <nav className="hidden lg:flex items-center justify-center gap-0 xl:gap-0 2xl:gap-0.5 flex-grow h-full px-1 xl:px-1.5">
+            {mainNavLinks.filter(l => !l.hideOnDesktop).map(link => (
+              <div key={link.name} className="group/nav py-6" onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
+                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-0.5 xl:px-0.5 2xl:px-2 text-[8.5px] xl:text-[9px] 2xl:text-[10.5px] font-bold tracking-widest transition-all uppercase whitespace-nowrap font-grandstander ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
+                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={6} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
                 </Link>
                 <AnimatePresence>
                   {activeMenu === link.name && link.mega && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-200 xl:w-250 bg-[#FDF4E6] shadow-2xl rounded-b-3xl border-t-2 border-[#E84949] p-8 grid grid-cols-4 gap-8 z-[1000] overflow-hidden">
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        exit={{ opacity: 0, y: 15 }} 
+                        className="absolute top-full left-1/2 -translate-x-1/2 w-[1100px] xl:w-[1200px] 2xl:w-[1300px] bg-white shadow-[0_25px_60px_rgba(0,0,0,0.2)] rounded-b-3xl border-t-4 border-[#E84949] p-10 grid grid-cols-5 gap-8 z-[1000]"
+                      >
                       {link.mega.map((col, idx) => (
                         <div key={idx} className="col-span-1">
-                          {col.title && <h4 className="font-grandstander font-bold text-[13px] text-[#333] mb-5 border-b border-[#333]/10 pb-2 uppercase tracking-widest">{col.title}</h4>}
+                          {col.title && (
+                            <h4 className="font-grandstander font-extrabold text-[12px] text-[#333] mb-6 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                              {col.title}
+                            </h4>
+                          )}
+                          
                           {col.items && (
-                            <ul className="space-y-2">
-                              {col.items.map(item => <li key={item}><Link to={`/collections/${item.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="text-[12px] text-[#555] p-2 -mx-2 rounded-lg hover:text-[#E84949] hover:bg-[#F9EAD3] hover:translate-x-1 transition-all block font-bold capitalize">{item}</Link></li>)}
+                            <ul className="space-y-3 mb-8">
+                              {col.items.map(item => {
+                                const name = typeof item === 'object' ? item.name : item;
+                                const badge = typeof item === 'object' ? item.badge : null;
+                                return (
+                                  <li key={name}>
+                                    <Link 
+                                      to={`/collections/${name.toLowerCase().replaceAll(' ', '-')}`} 
+                                      onClick={handleLinkClick} 
+                                      className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider"
+                                    >
+                                      <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
+                                      {name}
+                                      {badge && (
+                                        <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
+                                          {badge}
+                                        </span>
+                                      )}
+                                    </Link>
+                                  </li>
+                                );
+                              })}
                             </ul>
                           )}
+
+                          {col.extra && (
+                            <div className="mt-6">
+                              <h4 className="font-grandstander font-extrabold text-[12px] text-[#333] mb-5 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                {col.extra.title}
+                              </h4>
+                              <ul className="space-y-3">
+                                {col.extra.items.map(i => (
+                                  <li key={i}>
+                                    <Link to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
+                                      <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
+                                      {i}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
                           {col.banner && (
-                            <Link to={link.href} onClick={handleLinkClick} className="rounded-2xl overflow-hidden aspect-4/5 relative group/banner cursor-pointer shadow-md block">
+                            <Link to={link.href} onClick={handleLinkClick} className="rounded-3xl overflow-hidden aspect-[3/4] relative group/banner cursor-pointer shadow-xl border-4 border-white block transform hover:-translate-y-2 transition-all duration-500">
                               <img src={col.banner} alt={col.title} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-700" />
-                              <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent p-4 flex flex-col justify-end"><span className="text-white text-[9px] uppercase font-bold tracking-widest">New Collection</span><h5 className="text-white font-grandstander text-[13px] font-bold">Shop {link.name}</h5></div>
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
+                                <span className="text-[#E84949] text-[10px] uppercase font-black tracking-[0.2em] mb-1 drop-shadow-md">Exclusive</span>
+                                <h5 className="text-white font-grandstander text-[16px] font-black leading-tight">Trending Now</h5>
+                              </div>
                             </Link>
                           )}
                         </div>
@@ -385,16 +701,16 @@ export function VisionHeader() {
           {/* Icons Section: Floated right, maintains spacing on all devices */}
           <div className="flex-1 lg:flex-none flex items-center justify-end gap-1 md:gap-2 shrink-0 ml-auto">
             {/* Desktop Search Bar (Static only on LG+) */}
-            <div className="hidden lg:block mr-2">
+            <div className="hidden lg:block mr-1">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <input 
                   type="text" 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search"
-                  className="w-28 xl:w-40 h-8 bg-[#F9EAD3] border border-dashed border-[#333]/25 rounded-xl px-4 py-1.5 text-[11px] xl:text-[13px] font-medium outline-none focus:border-[#E84949] transition-all placeholder:text-[#333]/40"
+                  className="w-16 xl:w-28 2xl:w-36 h-8 bg-[#F9EAD3] border border-dashed border-[#333]/25 rounded-xl px-2 xl:px-4 py-1.5 text-[9px] xl:text-[11px] 2xl:text-[12px] font-medium outline-none focus:border-[#E84949] transition-all placeholder:text-[#333]/40"
                 />
-                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#333]/40"><Search size={15} /></button>
+                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 text-[#333]/40"><Search size={13} /></button>
               </form>
             </div>
 
@@ -551,7 +867,25 @@ export function VisionHeader() {
                               {col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}
                               {col.items && (
                                 <div className="flex flex-col gap-2">
-                                  {col.items.map(i => <Link key={i} to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{i}</Link>)}
+                                  {col.items.map(item => {
+                                    const name = typeof item === 'object' ? item.name : item;
+                                    const badge = typeof item === 'object' ? item.badge : null;
+                                    return (
+                                      <Link 
+                                        key={name} 
+                                        to={`/collections/${name.toLowerCase().replaceAll(' ', '-')}`} 
+                                        onClick={handleLinkClick} 
+                                        className="flex items-center justify-between text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors"
+                                      >
+                                        <span>{name}</span>
+                                        {badge && (
+                                          <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
+                                            {badge}
+                                          </span>
+                                        )}
+                                      </Link>
+                                    );
+                                  })}
                                 </div>
                               )}
                             </div>
@@ -565,7 +899,7 @@ export function VisionHeader() {
                 </div>
 
                 {/* Menu Footer Content Integrated into Single Scroll */}
-                <div className="border-t border-[#333]/10 bg-[#FDF3E7]">
+                <div className="bg-[#FDF3E7]">
                   <div className="px-6 py-5 border-b border-[#333]/5">
                     <Link to={user ? "/account" : "/login"} onClick={handleLinkClick} className="flex items-center gap-3 text-[13px] font-bold text-[#333] uppercase tracking-widest">
                       <User size={18} className="text-[#333]" />
@@ -573,12 +907,12 @@ export function VisionHeader() {
                     </Link>
                   </div>
 
-                  <div className="px-6 py-5 border-b border-[#333]/5 flex items-center gap-6">
+                  <div className="px-6 py-5 border-b border-[#333]/5 flex items-center justify-between gap-2 overflow-hidden">
                     <div className="relative">
-                      <button onClick={() => setCountryDropdown(!countryDropdown)} className="flex items-center gap-3 text-[11px] font-bold text-[#333] uppercase tracking-wider">
-                        <span className="flex items-center justify-center w-5 h-4 bg-[#333]/10 rounded-sm text-[9px]">{selectedCountry.code}</span>
-                        <span>{selectedCountry.name}</span>
-                        <ChevronDown size={14} className="opacity-40" />
+                      <button onClick={() => setCountryDropdown(!countryDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider">
+                        <span className="flex items-center justify-center w-5 h-4 bg-[#333]/10 rounded-sm text-[8px]">{selectedCountry.code}</span>
+                        <span className="whitespace-nowrap truncate max-w-[80px]">{selectedCountry.name}</span>
+                        <ChevronDown size={12} className="opacity-40" />
                       </button>
                       <AnimatePresence>
                           {countryDropdown && (
@@ -594,10 +928,10 @@ export function VisionHeader() {
                     </div>
                     
                     <div className="relative">
-                      <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-3 text-[11px] font-bold text-[#333] uppercase tracking-wider">
-                        <Globe size={14} className="opacity-40" />
-                        <span>{selectedLang}</span>
-                        <ChevronDown size={14} className="opacity-40" />
+                      <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider">
+                        <Globe size={12} className="opacity-40" />
+                        <span className="whitespace-nowrap">{selectedLang}</span>
+                        <ChevronDown size={12} className="opacity-40" />
                       </button>
                       <AnimatePresence>
                           {langDropdown && (

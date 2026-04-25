@@ -8,7 +8,7 @@ export function ReturnPolicy() {
     >
       <section className="space-y-4">
         <h2 className="text-2xl font-grandstander font-bold text-[#333]">Our Return Policy</h2>
-        <p>At Toyove-India, we want you and your little ones to be completely happy with your purchase. If for any reason you are not satisfied, we offer a straightforward return and exchange process.</p>
+        <p>At TOYOVOINDIA, we want you and your little ones to be completely happy with your purchase. If for any reason you are not satisfied, we offer a straightforward return and exchange process.</p>
         <p>You have <strong>30 days</strong> from the date of delivery to initiate a return or exchange for most items in their original, unused condition with all packaging intact.</p>
       </section>
 

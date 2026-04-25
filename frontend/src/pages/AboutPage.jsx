@@ -72,11 +72,11 @@ export function AboutPage() {
         {/* Story Blocks */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32 items-center">
           <div className="text-center lg:text-left space-y-8">
-            <span className="text-[#E84949] font-medium text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto">Toyove Vision</span>
+            <span className="text-[#E84949] font-medium text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto">TOYOVOINDIA Vision</span>
             <h2 className="text-4xl md:text-6xl font-grandstander font-bold text-[#333333] leading-[1.1] tracking-tight">Every Toy Tells an Adventure Story</h2>
             <div className="space-y-8 text-[16px] md:text-[18px] text-[#666] leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              <p>Welcome to Toyove, where innovation meets the timeless magic of play. Our journey began with a simple mission: to create toys that don't just entertain, but inspire children to explore the world around them with curiosity and joy.</p>
-              <p>At Toyove, we believe that toys are the building blocks of childhood memories. That’s why we meticulously design each product to ensure the highest standards of safety, quality, and creative potential, using eco-friendly materials wherever possible.</p>
+              <p>Welcome to TOYOVOINDIA, where innovation meets the timeless magic of play. Our journey began with a simple mission: to create toys that don't just entertain, but inspire children to explore the world around them with curiosity and joy.</p>
+              <p>At TOYOVOINDIA, we believe that toys are the building blocks of childhood memories. That’s why we meticulously design each product to ensure the highest standards of safety, quality, and creative potential, using eco-friendly materials wherever possible.</p>
             </div>
             <button className="h-14 px-12 bg-[#333] text-white rounded-full font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all transform hover:scale-105 shadow-xl">EXPLORE OUR VALUES</button>
           </div>
@@ -113,7 +113,7 @@ export function AboutPage() {
            <InfoBox 
              icon={Mail} 
              title="admin@gmail.com" 
-             content="Our dedicated team is at your service, ready to respond promptly and ensure your experience with 'Toyove' Toys and games Collection is nothing short of regal." 
+             content="Our dedicated team is at your service, ready to respond promptly and ensure your experience with 'TOYOVOINDIA' Toys and games Collection is nothing short of regal." 
            />
         </div>
 

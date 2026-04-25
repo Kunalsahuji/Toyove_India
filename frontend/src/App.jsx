@@ -21,6 +21,7 @@ import { CartPage } from './pages/CartPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
 import { ComparePage } from './pages/ComparePage'
+import { AllCategoriesPage } from './pages/AllCategoriesPage'
 import { AuthProvider } from './context/AuthContext'
 import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
@@ -90,6 +91,7 @@ function AppContent() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-success" element={<OrderSuccessPage />} />
             <Route path="/compare" element={<ComparePage />} />
+            <Route path="/all-categories" element={<AllCategoriesPage />} />
 
             {/* Fallback to home */}
             <Route path="*" element={<HomePage />} />
