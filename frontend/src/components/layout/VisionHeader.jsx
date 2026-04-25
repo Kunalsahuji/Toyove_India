@@ -341,61 +341,77 @@ export function VisionHeader() {
 
                           <div className="flex-1 p-10 grid grid-cols-4 gap-8 overflow-y-auto custom-scrollbar">
                             <div className="col-span-3 grid grid-cols-3 gap-8">
-                              {(link.mega.type === 'master' ? (categoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => (
-                                <div key={idx} className="space-y-6">
-                                  {col.title && (
-                                    <h4 className="font-grandstander font-black text-[13px] text-[#333] border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
-                                      {col.title}
-                                    </h4>
-                                  )}
-                                  
-                                  {col.items && (
-                                    <ul className="space-y-2.5">
-                                      {col.items.map(item => {
-                                        const name = typeof item === 'object' ? item.name : item;
-                                        const badge = typeof item === 'object' ? item.badge : null;
-                                        const type = typeof item === 'object' ? item.type : 'normal';
-                                        
-                                        return (
-                                          <li key={name}>
-                                            <Link 
-                                              to={type === 'link' ? `/product/${name.toLowerCase().replaceAll(' ', '-')}` : `/collections/${name.toLowerCase().replaceAll(' ', '-')}`}
-                                              onClick={handleLinkClick} 
-                                              className={`group/link flex items-center gap-2 text-[11px] transition-all font-bold uppercase tracking-wider ${type === 'link' ? 'text-[#E84949]' : 'text-[#666] hover:text-[#E84949]'}`}
-                                            >
-                                              {type !== 'link' && <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>}
-                                              {name}
-                                              {badge && (
-                                                <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
-                                                  {badge}
-                                                </span>
-                                              )}
-                                            </Link>
-                                          </li>
-                                        );
-                                      })}
-                                    </ul>
-                                  )}
-
-                                  {col.extra && (
-                                    <div className="pt-4">
-                                      <h4 className="font-grandstander font-black text-[13px] text-[#333] mb-4 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
-                                        {col.extra.title}
+                              {(link.mega.type === 'master' ? (categoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => {
+                                let parentSlug = '';
+                                if (link.name === 'ALL CATEGORIES') {
+                                  parentSlug = activeMasterCat?.toLowerCase().replaceAll(' ', '-');
+                                } else {
+                                  parentSlug = link.href.split('/').pop();
+                                }
+                                
+                                return (
+                                  <div key={idx} className="space-y-6">
+                                    {col.title && (
+                                      <h4 className="font-grandstander font-black text-[13px] text-[#333] border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                        {col.title}
                                       </h4>
+                                    )}
+                                    
+                                    {col.items && (
                                       <ul className="space-y-2.5">
-                                        {col.extra.items.map(i => (
-                                          <li key={i}>
-                                            <Link to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
-                                              <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
-                                              {i}
-                                            </Link>
-                                          </li>
-                                        ))}
+                                        {col.items.map(item => {
+                                          const name = typeof item === 'object' ? item.name : item;
+                                          const badge = typeof item === 'object' ? item.badge : null;
+                                          const type = typeof item === 'object' ? item.type : 'normal';
+                                          const itemSlug = name.toLowerCase().replaceAll(' ', '-');
+                                          const finalHref = type === 'link' 
+                                            ? `/product/${itemSlug}` 
+                                            : `/collections/${parentSlug}/${itemSlug}`;
+                                          
+                                          return (
+                                            <li key={name}>
+                                              <Link 
+                                                to={finalHref}
+                                                onClick={handleLinkClick} 
+                                                className={`group/link flex items-center gap-2 text-[11px] transition-all font-bold uppercase tracking-wider ${type === 'link' ? 'text-[#E84949]' : 'text-[#666] hover:text-[#E84949]'}`}
+                                              >
+                                                {type !== 'link' && <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>}
+                                                {name}
+                                                {badge && (
+                                                  <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
+                                                    {badge}
+                                                  </span>
+                                                )}
+                                              </Link>
+                                            </li>
+                                          );
+                                        })}
                                       </ul>
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
+                                    )}
+
+                                    {col.extra && (
+                                      <div className="pt-4">
+                                        <h4 className="font-grandstander font-black text-[13px] text-[#333] mb-4 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                          {col.extra.title}
+                                        </h4>
+                                        <ul className="space-y-2.5">
+                                          {col.extra.items.map(i => {
+                                            const itemSlug = i.toLowerCase().replaceAll(' ', '-');
+                                            return (
+                                              <li key={i}>
+                                                <Link to={`/collections/${parentSlug}/${itemSlug}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
+                                                  <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
+                                                  {i}
+                                                </Link>
+                                              </li>
+                                            );
+                                          })}
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
 
                             {/* Visual Banner (Optional) */}

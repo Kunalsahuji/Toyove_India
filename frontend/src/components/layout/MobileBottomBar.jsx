@@ -7,15 +7,32 @@ export function MobileBottomBar() {
   const [showNav, setShowNav] = useState(false)
   const location = useLocation()
 
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
+
   useEffect(() => {
     const handleScroll = () => {
-      // Show dynamic nav as soon as the top utility bar is scrolled past (~60px)
       setShowNav(window.scrollY > 60)
     }
+
+    const handleResize = () => {
+      // If the viewport height decreases significantly, the keyboard is likely open
+      if (window.visualViewport) {
+        setIsKeyboardOpen(window.visualViewport.height < window.innerHeight * 0.8)
+      }
+    }
+
     window.addEventListener('scroll', handleScroll)
-    // Initial check
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize)
+    }
+    
     handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize)
+      }
+    }
   }, [])
 
   const scrollToTop = () => {
@@ -33,7 +50,7 @@ export function MobileBottomBar() {
   return (
     <>
       <AnimatePresence>
-        {showNav && (
+        {showNav && !isKeyboardOpen && (
           <>
             {/* Scroll To Top Button */}
             <motion.button

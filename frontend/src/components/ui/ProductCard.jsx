@@ -1,111 +1,86 @@
 import { motion } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
-import { Eye, ShoppingBag, Heart, Layers } from 'lucide-react'
-import { useCart } from '../../context/CartContext'
+import { Link } from 'react-router-dom'
+import { ShoppingBag, Heart, Eye, Layers } from 'lucide-react'
 
-export function ProductCard({ p, i = 0 }) {
-  const { addToCart, toggleWishlist, wishlist, toggleCompare } = useCart()
-  const isWishlisted = wishlist.some(item => item.id === p.id)
-  const navigate = useNavigate()
-
-  const handleAction = (e, action, product) => {
-    e.preventDefault()
-    e.stopPropagation()
-    
-    const normalizedProduct = {
-      id: product.id || product.sku || product.name?.toLowerCase().replaceAll(' ', '-'),
-      title: product.name || product.title,
-      price: product.price,
-      img: product.img,
-      sku: product.sku || `TOY-${product.id || '001'}`
-    }
-
-    if (action === 'cart') {
-      addToCart(normalizedProduct, 1)
-      navigate('/cart')
-    }
-    if (action === 'wishlist') {
-      toggleWishlist(normalizedProduct)
-      navigate('/wishlist')
-    }
-    if (action === 'quickview') navigate(`/product/${product.name?.toLowerCase().replaceAll(' ', '-')}`)
-    if (action === 'compare') {
-      toggleCompare(normalizedProduct)
-      navigate('/compare')
-    }
-  }
+export function ProductCard({ p, i, isGridOne = false }) {
+  const finalPrice = (p.price || 0).toFixed(0)
+  const finalOldPrice = p.oldPrice ? p.oldPrice.toFixed(0) : null
+  const discountPercent = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : null
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: (i % 4) * 0.1 }}
-      className="group relative flex flex-col transition-all duration-300 w-full bg-transparent"
+      transition={{ duration: 0.5, delay: i * 0.05 }}
+      className={`group relative flex flex-col bg-transparent mx-auto w-full ${isGridOne ? 'max-w-md md:max-w-lg' : ''}`}
     >
-      {/* Image Container */}
-      <div className="relative aspect-square mb-4 group/img overflow-hidden rounded-[24px] border-[1.5px] border-dashed border-[#333]/20 shadow-sm hover:shadow-lg transition-all duration-500 bg-[#F9EAD3]/50">
-        <Link 
-          to={`/product/${p.name?.toLowerCase().replaceAll(' ', '-')}`} 
-          className="relative block w-full h-full overflow-hidden"
-        >
-          {/* Promo Badge */}
-          {p.discount && (
-            <span className="absolute top-3 left-3 z-30 bg-[#222] text-white text-[9px] md:text-[10px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
-              -{p.discount}%
-            </span>
-          )}
-
-          {/* Action Icons - Persistent on Mobile, Hover on Desktop */}
-          <div className="absolute top-3 right-3 z-40 flex flex-col gap-2 transition-all duration-500 lg:opacity-0 lg:translate-x-4 lg:group-hover/img:opacity-100 lg:group-hover/img:translate-x-0">
-            {[
-              { icon: <Eye size={15} />, label: 'Quick View', act: 'quickview' },
-              { icon: <ShoppingBag size={15} />, label: 'Add to Cart', act: 'cart' },
-              { icon: <Heart size={15} fill={isWishlisted ? 'white' : 'none'} />, label: 'Wishlist', act: 'wishlist' },
-              { icon: <Layers size={15} />, label: 'Compare', act: 'compare' }
-            ].map((btn, idx) => (
-              <button 
-                key={idx} 
-                onClick={(e) => handleAction(e, btn.act, p)}
-                className="h-8 w-8 md:h-9 md:w-9 bg-[#E84949] text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-[#333] transition-all duration-300 hover:scale-110 shrink-0" 
-                title={btn.label}
-              >
-                {btn.icon}
-              </button>
-            ))}
-          </div>
-
-          {/* Product Images */}
+      {/* Dashed Box Container (Image only, NO padding) */}
+      <div className="relative aspect-square rounded-[25px] border-[1.5px] border-dashed border-black/15 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden">
+        <Link to={`/product/${p.id}`} className="block w-full h-full relative z-10">
           <img
             src={p.img}
             alt={p.name}
-            className="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover/img:opacity-0 absolute inset-0 z-20"
+            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
           />
-          <img
-            src={p.hoverImg || p.img}
-            alt={p.name}
-            className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover/img:opacity-100 group-hover/img:scale-105 transition-all duration-700 ease-in-out z-10"
-          />
+          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </Link>
+
+        {/* Action Icons - Red Background, white icons */}
+        <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 transition-all duration-500 transform translate-x-2 opacity-0 lg:group-hover:translate-x-0 lg:group-hover:opacity-100 lg:opacity-0 md:opacity-100 md:translate-x-0 opacity-100">
+          {[
+            { icon: <Eye size={16} />, label: 'Quick View' },
+            { icon: <ShoppingBag size={16} />, label: 'Add to Cart' },
+            { icon: <Heart size={16} />, label: 'Wishlist' },
+            { icon: <Layers size={16} />, label: 'Compare' },
+          ].map((action, idx) => (
+            <button
+              key={idx}
+              className="w-8 h-8 md:w-9 md:h-9 bg-[#E84949] text-white rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
+              title={action.label}
+            >
+              {action.icon}
+            </button>
+          ))}
+        </div>
+
+        {/* Promo Badge */}
+        {discountPercent && (
+          <span className="absolute top-3 left-3 z-20 bg-[#222] text-white text-[9px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
+            -{discountPercent}%
+          </span>
+        )}
       </div>
 
-      <div className="text-center px-1">
-        <Link to={`/product/${(p.name || p.title || 'toy').toLowerCase().replaceAll(' ', '-')}`}>
-          <h3 className="font-grandstander text-[13px] md:text-[15px] font-bold text-[#333] mb-1.5 line-clamp-2 leading-[1.2] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight">
-            {p.name || p.title}
+      {/* Details Section (OUTSIDE the box) */}
+      <div className="mt-4 text-center px-2">
+        <Link to={`/product/${p.id}`}>
+          <h3 className="text-[13px] md:text-[15px] font-bold text-[#444] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight truncate mb-1">
+            {p.name}
           </h3>
         </Link>
-        <div className="flex flex-col items-center gap-1">
-          {p.oldPrice && (
-            <span className="text-[10px] md:text-[12px] text-[#999] line-through font-medium tracking-tight">
-              ${p.oldPrice.toFixed(2)} USD
+        
+        <div className="flex items-center justify-center gap-2">
+          {finalOldPrice && (
+            <span className="text-[10px] md:text-[11px] text-[#444]/20 line-through font-bold tracking-tight whitespace-nowrap">
+              ₹{finalOldPrice}
             </span>
           )}
-          <span className="text-[14px] md:text-[16px] font-black text-[#E84949] tracking-tight">
-            ${(p.price || 0).toFixed(2)} USD
+          <span className="text-[13px] md:text-[15px] font-black text-[#444] group-hover:text-[#E84949] transition-colors tracking-tight whitespace-nowrap">
+            ₹{finalPrice}
           </span>
         </div>
       </div>
+      
+      {/* Mobile persistent icons override */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 1023px) {
+          .group .transform.translate-x-2 {
+            transform: translateX(0) !important;
+            opacity: 1 !important;
+          }
+        }
+      `}} />
     </motion.div>
   )
 }
