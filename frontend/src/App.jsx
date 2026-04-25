@@ -81,7 +81,7 @@ function AppContent() {
             <Route path="/search" element={<SearchPage />} />
             
             {/* Collection / Category Pages */}
-            <Route path="/collections/:category" element={<CollectionPage />} />
+            <Route path="/collections/:category/:subcategory?" element={<CollectionPage />} />
 
             {/* Auth Pages */}
             <Route path="/login" element={<LoginPage />} />
