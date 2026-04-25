@@ -12,7 +12,6 @@ export function ProductCard({ p, i = 0 }) {
     e.preventDefault()
     e.stopPropagation()
     
-    // Normalize product data for cart/wishlist consistency
     const normalizedProduct = {
       id: product.id || product.sku || product.name?.toLowerCase().replaceAll(' ', '-'),
       title: product.name || product.title,
@@ -42,21 +41,23 @@ export function ProductCard({ p, i = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: (i % 4) * 0.1 }}
-      className="group relative flex flex-col transition-all duration-300 w-full"
+      className="group relative flex flex-col transition-all duration-300 w-full bg-transparent"
     >
-      {/* Image Container - Full Bleed */}
-      <div className="relative aspect-square mb-4 group/img overflow-hidden rounded-[24px] border-[1.5px] border-dashed border-[#333]/15 shadow-sm hover:shadow-xl transition-shadow duration-500">
+      {/* Image Container */}
+      <div className="relative aspect-square mb-4 group/img overflow-hidden rounded-[24px] border-[1.5px] border-dashed border-[#333]/20 shadow-sm hover:shadow-lg transition-all duration-500 bg-[#F9EAD3]/50">
         <Link 
           to={`/product/${p.name?.toLowerCase().replaceAll(' ', '-')}`} 
-          className="relative block w-full h-full overflow-hidden bg-[#F9EAD3]"
+          className="relative block w-full h-full overflow-hidden"
         >
           {/* Promo Badge */}
-          <span className="absolute top-3 left-3 z-30 bg-[#222] text-white text-[10px] md:text-[11px] font-bold px-2 py-0.5 rounded shadow-sm uppercase tracking-wider">
-            {p.badge || 'Sale'}%
-          </span>
+          {p.discount && (
+            <span className="absolute top-3 left-3 z-30 bg-[#222] text-white text-[9px] md:text-[10px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
+              -{p.discount}%
+            </span>
+          )}
 
-          {/* Desktop Action Icons (Slide in) */}
-          <div className="hidden lg:flex absolute top-3 -right-12 z-40 flex flex-col gap-2 group-hover/img:right-3 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] opacity-0 group-hover/img:opacity-100">
+          {/* Action Icons - Persistent on Mobile, Hover on Desktop */}
+          <div className="absolute top-3 right-3 z-40 flex flex-col gap-2 transition-all duration-500 lg:opacity-0 lg:translate-x-4 lg:group-hover/img:opacity-100 lg:group-hover/img:translate-x-0">
             {[
               { icon: <Eye size={15} />, label: 'Quick View', act: 'quickview' },
               { icon: <ShoppingBag size={15} />, label: 'Add to Cart', act: 'cart' },
@@ -66,26 +67,8 @@ export function ProductCard({ p, i = 0 }) {
               <button 
                 key={idx} 
                 onClick={(e) => handleAction(e, btn.act, p)}
-                className="h-9 w-9 bg-[#E84949] text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-[#333] transition-all duration-300 hover:scale-110 shrink-0" 
+                className="h-8 w-8 md:h-9 md:w-9 bg-[#E84949] text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-[#333] transition-all duration-300 hover:scale-110 shrink-0" 
                 title={btn.label}
-              >
-                {btn.icon}
-              </button>
-            ))}
-          </div>
-
-          {/* Mobile Action Icons (Always Visible) */}
-          <div className="lg:hidden absolute top-2 right-2 z-40 flex flex-col gap-1.5">
-            {[
-              { icon: <Eye size={13} />, act: 'quickview' },
-              { icon: <ShoppingBag size={13} />, act: 'cart' },
-              { icon: <Heart size={13} fill={isWishlisted ? 'white' : 'none'} />, act: 'wishlist' },
-              { icon: <Layers size={13} />, act: 'compare' }
-            ].map((btn, idx) => (
-              <button 
-                key={idx} 
-                onClick={(e) => handleAction(e, btn.act, p)}
-                className="h-8 w-8 bg-[#E84949] text-white rounded-lg flex items-center justify-center shadow-md shrink-0"
               >
                 {btn.icon}
               </button>
@@ -108,15 +91,17 @@ export function ProductCard({ p, i = 0 }) {
 
       <div className="text-center px-1">
         <Link to={`/product/${(p.name || p.title || 'toy').toLowerCase().replaceAll(' ', '-')}`}>
-          <h3 className="font-grandstander text-[14px] md:text-[16px] lg:text-[18px] font-bold text-[#222] mb-2 line-clamp-2 leading-[1.2] group-hover:text-[#E84949] transition-colors duration-300">
+          <h3 className="font-grandstander text-[13px] md:text-[15px] font-bold text-[#333] mb-1.5 line-clamp-2 leading-[1.2] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight">
             {p.name || p.title}
           </h3>
         </Link>
-        <div className="flex items-center justify-center gap-3">
-          <span className="text-[12px] md:text-[14px] text-[#999] line-through font-medium tracking-tight">
-            ${(p.oldPrice || p.price + 30).toFixed(2)} USD
-          </span>
-          <span className="text-[14px] md:text-[16px] lg:text-[18px] font-bold text-[#E84949] tracking-tight">
+        <div className="flex flex-col items-center gap-1">
+          {p.oldPrice && (
+            <span className="text-[10px] md:text-[12px] text-[#999] line-through font-medium tracking-tight">
+              ${p.oldPrice.toFixed(2)} USD
+            </span>
+          )}
+          <span className="text-[14px] md:text-[16px] font-black text-[#E84949] tracking-tight">
             ${(p.price || 0).toFixed(2)} USD
           </span>
         </div>
