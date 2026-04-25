@@ -100,7 +100,7 @@ const mainNavLinks = [
         title: 'SHOP BY BRANDS', 
         items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s', 'Earthy Touch', 'Cute Walk', 'Bonfino'] 
       },
-      { banner: 'https://cdn.fcglcdn.com/brainbees/images/cattemplate/370_270_summer2_rhs_banner_boy_fashion_170426.webp?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/583x720/19629172a.webp' }
     ]
   },
   { 
@@ -145,7 +145,7 @@ const mainNavLinks = [
         title: 'SHOP BY BRANDS', 
         items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s', 'Hello Kitty', 'Disney'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/32328596/pexels-photo-32328596.jpeg' }
     ]
   },
   { 
@@ -164,7 +164,7 @@ const mainNavLinks = [
         title: 'DON\'T MISS', 
         items: ['Sock Shoes', 'Stockings & Tights', 'Plush Footwear', 'Jibbitz'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/37052023/pexels-photo-37052023.jpeg' }
     ]
   },
   { 
@@ -198,7 +198,7 @@ const mainNavLinks = [
         title: 'SHOP BY BRANDS', 
         items: ['Hot Wheels', 'Barbie', 'LEGO', 'Fisher-Price', 'Funskool', 'Nerf'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1531123414780-f74242c2b052?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/27660140/pexels-photo-27660140.jpeg' }
     ]
   },
   { 
@@ -221,7 +221,7 @@ const mainNavLinks = [
         title: 'SHOP BY PRICE', 
         items: ['Under 199', 'Under 499', 'Under 999', '1000 & Above'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1555008882-d4000a6e0df3?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/32139255/pexels-photo-32139255.jpeg' }
     ]
   },
   { 
@@ -249,7 +249,7 @@ const mainNavLinks = [
         title: 'FEATURED', 
         items: ['New Arrivals', 'Best Sellers', 'Deals of the Day'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1594913785162-e6786b42dea3?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/11506302a.webp' }
     ]
   },
   { 
@@ -273,7 +273,7 @@ const mainNavLinks = [
         title: 'SHOP BY BRANDS', 
         items: ['Cerelac', 'Aptamil', 'Philips Avent', 'Dr. Brown\'s', 'Pigeon'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/36214982/pexels-photo-36214982.jpeg' }
     ]
   },
   { 
@@ -288,7 +288,7 @@ const mainNavLinks = [
         title: 'SHOP BY BRANDS', 
         items: ['Mamaearth', 'Himalaya', 'Johnson\'s', 'Sebamed', 'Aveeno', 'Cetaphil'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1559591937-e6205809867c?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/35979966/pexels-photo-35979966.jpeg' }
     ]
   },
   { 
@@ -303,7 +303,7 @@ const mainNavLinks = [
         title: 'SHOP BY BRANDS', 
         items: ['Babyhug', 'Pine Kids', 'Kinder Valley', 'IKEA', 'Lullaby'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/20139636a.webp' }
     ]
   },
   { 
@@ -318,7 +318,7 @@ const mainNavLinks = [
         title: 'NEW MOM ESSENTIALS', 
         items: ['Breast Feeding support', 'Nutrition & Lactation Boosters', 'Body Pillows'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1531198341253-1f49a365ffed?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/22333906a.webp' }
     ]
   },
   { 
@@ -329,7 +329,7 @@ const mainNavLinks = [
         title: 'SHOP BY CATEGORY', 
         items: ['Cleansers & Detergents', 'Oral Care', 'Childproofing & Safety', 'Medical Care', 'Mosquito Repellents'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/31212340/pexels-photo-31212340.jpeg' }
     ]
   },
   { 
@@ -344,7 +344,7 @@ const mainNavLinks = [
         title: 'BRANDS', 
         items: ['International Brands', 'Mompreneur Brands', 'Top Indian Brands'] 
       },
-      { banner: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=400&auto=format&fit=crop' }
+      { banner: 'https://images.pexels.com/photos/15170532/pexels-photo-15170532.jpeg'}
     ]
   },
   { name: 'Contact', href: '/contact', hideOnDesktop: true },
