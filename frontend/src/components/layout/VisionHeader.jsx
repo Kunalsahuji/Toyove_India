@@ -588,37 +588,57 @@ export function VisionHeader() {
                       </div>
                       {(link.mega || link.dropdown) && activeMobileSub === link.name && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-[#F9EAD3]/30 px-8 py-4 space-y-4">
-                          {link.mega ? (Array.isArray(link.mega) ? link.mega : link.mega.content).map((col, cidx) => (
-                            <div key={cidx}>
-                              {col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}
-                              {col.items && (
-                                <div className="flex flex-col gap-2">
-                                  {col.items.map(item => {
-                                    const name = typeof item === 'object' ? item.name : item;
-                                    const badge = typeof item === 'object' ? item.badge : null;
-                                    const type = typeof item === 'object' ? item.type : 'normal';
-                                    return (
-                                      <Link 
-                                        key={name} 
-                                        to={`/collections/${name.toLowerCase().replaceAll(' ', '-')}`} 
-                                        onClick={handleLinkClick} 
-                                        className="flex items-center justify-between text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors"
-                                      >
-                                        <span>{name}</span>
-                                        {badge && (
-                                          <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
-                                            {badge}
-                                          </span>
-                                        )}
-                                      </Link>
-                                    );
-                                  })}
+                          {link.mega ? (
+                            link.mega.type === 'master' ? (
+                              <div className="flex flex-col gap-3">
+                                {link.mega.sidebar.map(item => (
+                                  <Link 
+                                    key={item.id} 
+                                    to={`/collections/${item.name.toLowerCase().replaceAll(' ', '-')}`} 
+                                    onClick={handleLinkClick} 
+                                    className="flex items-center justify-between text-[13px] text-[#333] font-bold hover:text-[#E84949] transition-colors py-1"
+                                  >
+                                    <span>{item.name}</span>
+                                    <ChevronRight size={12} className="opacity-30" />
+                                  </Link>
+                                ))}
+                              </div>
+                            ) : (
+                              (Array.isArray(link.mega) ? link.mega : (link.mega.content || [])).map((col, cidx) => (
+                                <div key={cidx}>
+                                  {col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}
+                                  {col.items && (
+                                    <div className="flex flex-col gap-2">
+                                      {col.items.map(item => {
+                                        const name = typeof item === 'object' ? item.name : item;
+                                        const badge = typeof item === 'object' ? item.badge : null;
+                                        const type = typeof item === 'object' ? item.type : 'normal';
+                                        return (
+                                          <Link 
+                                            key={name} 
+                                            to={type === 'link' ? `/product/${name.toLowerCase().replaceAll(' ', '-')}` : `/collections/${name.toLowerCase().replaceAll(' ', '-')}`} 
+                                            onClick={handleLinkClick} 
+                                            className="flex items-center justify-between text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors"
+                                          >
+                                            <span>{name}</span>
+                                            {badge && (
+                                              <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
+                                                {badge}
+                                              </span>
+                                            )}
+                                          </Link>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          )) : link.dropdown.map(sub => (
-                            <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{sub.name}</Link>
-                          ))}
+                              ))
+                            )
+                          ) : (
+                            (link.dropdown || []).map(sub => (
+                              <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block text-[12px] text-[#333] font-bold hover:text-[#E84949] transition-colors">{sub.name}</Link>
+                            ))
+                          )}
                         </motion.div>
                       )}
                     </div>
