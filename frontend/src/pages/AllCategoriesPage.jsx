@@ -8,7 +8,7 @@ const categories = [
   { 
     id: 'boy-fashion', 
     name: 'BOY FASHION', 
-    banner: 'https://cdn.fcglcdn.com/brainbees/images/cattemplate/370_270_summer2_rhs_banner_boy_fashion_170426.webp',
+    banner: 'https://cdn.fcglcdn.com/brainbees/images/products/583x720/19629172a.webp',
     sections: [
       { 
         title: 'SHOP BY CATEGORY', 
@@ -36,7 +36,7 @@ const categories = [
   { 
     id: 'girl-fashion', 
     name: 'GIRL FASHION', 
-    banner: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=600&auto=format&fit=crop',
+    banner: 'https://images.pexels.com/photos/32328596/pexels-photo-32328596.jpeg',
     sections: [
       { 
         title: 'SHOP BY CATEGORY', 
@@ -54,7 +54,7 @@ const categories = [
   { 
     id: 'toys', 
     name: 'TOYS', 
-    banner: 'https://images.unsplash.com/photo-1531123414780-f74242c2b052?q=80&w=600&auto=format&fit=crop',
+    banner: 'https://images.pexels.com/photos/27660140/pexels-photo-27660140.jpeg',
     sections: [
       { 
         title: 'SHOP BY CATEGORY', 
@@ -72,7 +72,7 @@ const categories = [
   { 
     id: 'diapering', 
     name: 'DIAPERING', 
-    banner: 'https://images.unsplash.com/photo-1555008882-d4000a6e0df3?q=80&w=600&auto=format&fit=crop',
+    banner: 'https://images.pexels.com/photos/32139255/pexels-photo-32139255.jpeg',
     sections: [
       { 
         title: 'SHOP BY CATEGORY', 
@@ -87,14 +87,14 @@ const categories = [
       { id: 401, name: 'Babyhug Advanced Pant Style Diapers (Large, 128 pcs)', price: 2579, oldPrice: 3200, img: 'https://images.unsplash.com/photo-1544126592-807daf21565c?q=80&w=400&auto=format&fit=crop', brand: 'Babyhug', rating: 4.5 }
     ]
   },
-  { id: 'footwear', name: 'FOOTWEAR', banner: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'gear', name: 'GEAR', banner: 'https://images.unsplash.com/photo-1594913785162-e6786b42dea3?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'feeding', name: 'FEEDING', banner: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'bath', name: 'BATH', banner: 'https://images.unsplash.com/photo-1559591937-e6205809867c?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'nursery', name: 'NURSERY', banner: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'moms', name: 'MOMS', banner: 'https://images.unsplash.com/photo-1531198341253-1f49a365ffed?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'health', name: 'HEALTH & SAFETY', banner: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=600&auto=format&fit=crop', sections: [] },
-  { id: 'boutiques', name: 'BOUTIQUES', banner: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop', sections: [] },
+  { id: 'footwear', name: 'FOOTWEAR', banner: 'https://images.pexels.com/photos/37052023/pexels-photo-37052023.jpeg', sections: [] },
+  { id: 'gear', name: 'GEAR', banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/11506302a.webp', sections: [] },
+  { id: 'feeding', name: 'FEEDING', banner: 'https://images.pexels.com/photos/36214982/pexels-photo-36214982.jpeg', sections: [] },
+  { id: 'bath', name: 'BATH', banner: 'https://images.pexels.com/photos/35979966/pexels-photo-35979966.jpeg', sections: [] },
+  { id: 'nursery', name: 'NURSERY', banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/20139636a.webp', sections: [] },
+  { id: 'moms', name: 'MOMS', banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/22333906a.webp', sections: [] },
+  { id: 'health', name: 'HEALTH & SAFETY', banner: 'https://images.pexels.com/photos/31212340/pexels-photo-31212340.jpeg', sections: [] },
+  { id: 'boutiques', name: 'BOUTIQUES', banner: 'https://images.pexels.com/photos/15170532/pexels-photo-15170532.jpeg', sections: [] },
 ]
 
 export function AllCategoriesPage() {
@@ -110,128 +110,173 @@ export function AllCategoriesPage() {
   )
 
   return (
-    <div className="bg-[#FDF4E6] min-h-screen">
-      {/* Header Section */}
-      <div className="bg-[#E84949] text-white py-12">
-        <div className="shell">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }} 
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-grandstander font-bold text-center mb-6"
+    <div className="bg-[#FDF4E6] min-h-screen font-grandstander overflow-hidden">
+      {/* Playful Header Section */}
+      <div className="relative pt-20 pb-16 overflow-hidden">
+        {/* Decorative Blobs */}
+        <div className="absolute top-[-10%] left-[-5%] w-64 h-64 bg-[#E84949]/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-96 h-96 bg-yellow-400/5 rounded-full blur-3xl animate-pulse delay-700"></div>
+        
+        <div className="shell relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-block px-8 py-2 bg-yellow-400 rounded-full text-[#333] text-[12px] font-black uppercase tracking-[0.3em] mb-6 shadow-sm border-2 border-white"
           >
-            All Categories Directory
+            Directory Hub
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl md:text-7xl font-black text-[#333] mb-8 tracking-tighter"
+          >
+            Explore <span className="text-[#E84949]">Everything</span>
           </motion.h1>
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" size={20} />
-            <input 
-              type="text" 
-              placeholder="Search for categories, brands, or products..."
-              className="w-full h-14 bg-white/20 border-2 border-white/30 rounded-2xl px-12 text-white placeholder:text-white/60 outline-none focus:bg-white/30 focus:border-white transition-all font-bold"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          
+          <div className="max-w-3xl mx-auto relative group">
+            <div className="absolute inset-0 bg-[#E84949]/10 rounded-[30px] blur-xl group-focus-within:blur-2xl transition-all"></div>
+            <div className="relative">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[#333]/30" size={24} />
+              <input 
+                type="text" 
+                placeholder="What are you looking for today?"
+                className="w-full h-16 md:h-20 bg-white border-4 border-white rounded-[30px] px-16 text-[18px] text-[#333] placeholder:text-[#333]/20 outline-none focus:border-[#E84949] transition-all shadow-xl font-bold"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button className="absolute right-4 top-1/2 -translate-y-1/2 h-12 px-8 bg-[#333] text-white rounded-2xl font-bold hover:bg-[#E84949] transition-all shadow-lg active:scale-95">
+                Search
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="shell py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <aside className="w-full lg:w-80 shrink-0">
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden sticky top-24 border-2 border-dashed border-[#333]/10">
-              <div className="p-6 bg-[#333] text-white font-grandstander font-bold text-lg uppercase tracking-widest">
-                Main Categories
+      <div className="shell pb-24">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Sticker-Style Sidebar */}
+          <aside className="w-full lg:w-85 shrink-0">
+            <div className="bg-[#F9EAD3] p-4 rounded-[40px] border-4 border-white shadow-xl sticky top-24">
+              <div className="px-6 py-6 border-b-4 border-dashed border-white mb-4">
+                <h3 className="text-2xl font-black text-[#333] tracking-tight">Categories</h3>
               </div>
-              <div className="max-h-[70vh] overflow-y-auto">
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                 {filteredCategories.map(cat => (
-                  <button
+                  <motion.button
                     key={cat.id}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => setActiveCategory(cat)}
-                    className={`w-full flex items-center justify-between px-6 py-4 border-b border-gray-50 transition-all font-bold text-[13px] uppercase tracking-wider ${
+                    className={`w-full flex items-center justify-between px-6 py-5 rounded-3xl transition-all border-2 ${
                       activeCategory.id === cat.id 
-                        ? 'bg-[#FDF4E6] text-[#E84949] pl-8' 
-                        : 'text-[#333] hover:bg-gray-50'
+                        ? 'bg-[#E84949] text-white border-transparent shadow-lg shadow-[#E84949]/30' 
+                        : 'bg-white text-[#333] border-white hover:border-[#E84949]/20 shadow-md'
                     }`}
                   >
-                    <span>{cat.name}</span>
-                    <ChevronRight size={16} className={activeCategory.id === cat.id ? 'opacity-100' : 'opacity-20'} />
-                  </button>
+                    <span className="font-bold text-[15px] uppercase tracking-wider">{cat.name}</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                      activeCategory.id === cat.id ? 'bg-white text-[#E84949]' : 'bg-[#FDF4E6] text-[#333]/20'
+                    }`}>
+                      <ChevronRight size={16} />
+                    </div>
+                  </motion.button>
                 ))}
               </div>
             </div>
           </aside>
 
-          {/* Content Area */}
-          <main className="flex-1">
+          {/* Magical Content Area */}
+          <main className="flex-1 min-w-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCategory.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.4, type: 'spring', damping: 20 }}
                 className="space-y-12"
               >
-                {/* Category Banner */}
-                <div className="relative h-[250px] md:h-[350px] rounded-[40px] overflow-hidden shadow-2xl group border-4 border-white">
+                {/* Hero Banner with Curvy Mask */}
+                <div className="relative h-[300px] md:h-[450px] rounded-[50px] overflow-hidden shadow-2xl border-[10px] border-white group">
                   <img 
                     src={activeCategory.banner} 
                     alt={activeCategory.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms]" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-12">
-                    <span className="text-[#E84949] font-black uppercase tracking-[0.4em] text-[12px] mb-2">Collection 2026</span>
-                    <h2 className="text-white text-4xl md:text-6xl font-grandstander font-bold drop-shadow-xl">
-                      {activeCategory.name}
-                    </h2>
-                  </div>
-                </div>
-
-                {/* Subcategory Grid */}
-                <div className="bg-white rounded-[40px] shadow-xl p-8 md:p-12 border-2 border-dashed border-[#333]/10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12">
-                    {activeCategory.sections?.map((section, sidx) => (
-                      <div key={sidx} className="space-y-6">
-                        <h3 className="font-grandstander font-black text-[18px] text-[#333] border-b-2 border-dashed border-[#E84949]/20 pb-3 flex items-center gap-3">
-                          <Zap className="text-[#E84949]" size={20} />
-                          {section.title}
-                        </h3>
-                        <ul className="grid grid-cols-1 gap-3">
-                          {section.items.map(item => (
-                            <li key={item}>
-                              <Link 
-                                to={`/collections/${item.toLowerCase().replaceAll(' ', '-')}`}
-                                className="group flex items-center gap-3 text-[14px] font-bold text-[#666] hover:text-[#E84949] transition-all"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-[#E84949] group-hover:scale-125 transition-all"></span>
-                                {item}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                    {(!activeCategory.sections || activeCategory.sections.length === 0) && (
-                      <div className="col-span-full py-12 text-center">
-                        <p className="text-gray-400 font-bold italic">No subcategories listed for this section yet.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Trending Products in this Category */}
-                {activeCategory.products && activeCategory.products.length > 0 && (
-                  <div className="space-y-8">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-2xl md:text-3xl font-grandstander font-bold text-[#333] flex items-center gap-4">
-                        <Star className="text-yellow-500 fill-yellow-500" />
-                        Trending in {activeCategory.name}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex flex-col justify-end p-10 md:p-16">
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <span className="inline-block px-4 py-1 bg-yellow-400 text-[#333] text-[10px] font-black uppercase tracking-[0.3em] rounded-full mb-4">
+                        Premium Store
+                      </span>
+                      <h2 className="text-5xl md:text-8xl font-black text-white drop-shadow-2xl tracking-tighter leading-none mb-2">
+                        {activeCategory.name}
                       </h2>
-                      <Link to={`/collections/${activeCategory.id}`} className="text-[#E84949] font-bold uppercase tracking-widest text-[12px] hover:underline">View All Products</Link>
+                      <p className="text-white/80 text-[16px] font-medium max-w-lg leading-relaxed">
+                        Explore our curated selection of high-quality products designed specifically for your little ones.
+                      </p>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Grid of Sections - Sticker Board Aesthetic */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {activeCategory.sections?.map((section, sidx) => (
+                    <motion.div 
+                      key={sidx}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * sidx }}
+                      className="bg-white p-10 rounded-[45px] shadow-xl border-4 border-dashed border-[#F9EAD3] hover:border-[#E84949]/30 transition-all group"
+                    >
+                      <div className="flex items-center gap-4 mb-8">
+                        <div className="w-14 h-14 bg-[#FDF4E6] rounded-2xl flex items-center justify-center text-[#E84949] group-hover:rotate-12 transition-transform shadow-inner">
+                          <Zap size={28} />
+                        </div>
+                        <h3 className="text-2xl font-black text-[#333] tracking-tight">{section.title}</h3>
+                      </div>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+                        {section.items.map(item => (
+                          <li key={item}>
+                            <Link 
+                              to={`/collections/${item.toLowerCase().replaceAll(' ', '-')}`}
+                              className="flex items-center gap-3 p-3 rounded-2xl bg-[#FDF4E6]/50 hover:bg-[#E84949] text-[#666] hover:text-white transition-all font-bold group/item"
+                            >
+                              <div className="w-2 h-2 rounded-full bg-[#E84949] group-hover/item:bg-white"></div>
+                              <span className="text-[14px] uppercase tracking-wide">{item}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Featured Products Showcase */}
+                {activeCategory.products && activeCategory.products.length > 0 && (
+                  <div className="bg-[#333] p-12 rounded-[60px] shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-[#E84949]/20 rounded-full blur-[100px]"></div>
+                    
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                      <div>
+                        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+                          Weekly <span className="text-[#E84949]">Trending</span>
+                        </h2>
+                        <p className="text-white/50 font-bold uppercase tracking-widest text-[12px]">Top picks from this category</p>
+                      </div>
+                      <Link to={`/collections/${activeCategory.id}`} className="px-8 py-4 bg-white text-[#333] rounded-2xl font-black uppercase tracking-widest text-[12px] hover:bg-[#E84949] hover:text-white transition-all shadow-xl active:scale-95">
+                        Shop All Products
+                      </Link>
                     </div>
-                    <div className="grid grid-cols-2 xl:grid-cols-3 gap-8">
+
+                    <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 relative z-10">
                       {activeCategory.products.map((p, i) => (
-                        <ProductCard key={p.id} p={p} i={i} />
+                        <div key={p.id} className="bg-white rounded-[40px] p-2 shadow-xl hover:-translate-y-2 transition-transform duration-500">
+                          <ProductCard p={p} i={i} />
+                        </div>
                       ))}
                     </div>
                   </div>

@@ -30,325 +30,7 @@ const PtIcon = () => (
   </svg>
 )
 
-const PROMO = '10% off your next order, use code : TOYOVOINDIA001'
-const promoMessages = [PROMO, 'Free Shipping On Orders Over ₹999!', 'New Arrivals Every Week — Shop Now']
-
-const countries = [
-    { name: 'United States', code: 'US', currency: 'USD' },
-    { name: 'India', code: 'IN', currency: 'INR' },
-    { name: 'United Kingdom', code: 'GB', currency: 'GBP' },
-    { name: 'Canada', code: 'CA', currency: 'CAD' },
-    { name: 'Australia', code: 'AU', currency: 'AUD' },
-]
-
-const languages = ['English', 'Hindi', 'French', 'Spanish', 'German']
-
-const mainNavLinks = [
-  { name: 'Home', href: '/', hideOnDesktop: true },
-  { name: 'About', href: '/about', hideOnDesktop: true },
-  { 
-    name: 'ALL CATEGORIES', 
-    href: '/all-categories', 
-    mega: [
-      { title: 'CLOTHING & ESSENTIALS', items: ['Jhablas', 'Vests', 'Briefs & Boxers', 'Socks', 'Swim Wear', 'Bath Time', 'Athleisure', 'Thermals', 'Sweaters', 'Rainwear'] },
-      { title: 'FOOTWEAR', items: ['Flip Flops', 'Clogs', 'Casual Shoes', 'Sandals', 'Sneakers', 'School Shoes', 'LED Shoes'] },
-      { title: 'SHOP BY PRICE', items: ['Under 199', 'Under 299', 'Under 399', 'Under 499'] },
-      { title: 'SHOP BY BRANDS', items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s'] }
-    ]
-  },
-  { 
-    name: 'BOY FASHION', 
-    href: '/collections/boy-fashion', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: [
-          { name: 'Sets & Suits', badge: 'Hot' }, 
-          { name: 'T-Shirts' }, 
-          { name: 'Shorts' }, 
-          { name: 'Onesies' }, 
-          { name: 'Nightwear' }, 
-          { name: 'Jeans & Trousers' }, 
-          { name: 'Ethnic Wear', badge: 'Sale' }, 
-          { name: 'Party Wear' },
-          { name: 'Shirts' },
-          { name: 'Innerwear' }
-        ] 
-      },
-      { 
-        title: 'SHOP BY COLLECTION', 
-        items: [
-          { name: 'Bestsellers', badge: 'New' }, 
-          { name: 'Multi-packs' }, 
-          { name: 'Swimming Essentials' }, 
-          { name: 'Baby Essentials' }
-        ],
-        extra: {
-          title: 'FASHION ACCESSORIES',
-          items: ['Sunglasses', 'Watches', 'Smart Watches', 'Ties', 'Bags']
-        }
-      },
-      { 
-        title: 'SHOP BY AGE', 
-        items: ['0-3 Months', '3-6 Months', '2-4 Years', '4-6 Years', '8+ Years'],
-        extra: {
-          title: 'SHOP BY PRICE',
-          items: ['Under 199', 'Under 299', 'Under 399', 'Under 499']
-        }
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s', 'Earthy Touch', 'Cute Walk', 'Bonfino'] 
-      },
-      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/583x720/19629172a.webp' }
-    ]
-  },
-  { 
-    name: 'GIRL FASHION', 
-    href: '/collections/girl-fashion', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: [
-          { name: 'Frocks & Dresses', badge: 'Hot' }, 
-          { name: 'Sets & Suits' }, 
-          { name: 'Tops & T-shirts' }, 
-          { name: 'Shorts & Skirts' }, 
-          { name: 'Jumpsuits & Dungarees' }, 
-          { name: 'Pajamas & Leggings' },
-          { name: 'Ethnic Wear', badge: 'Sale' },
-          { name: 'Party Wear' }
-        ] 
-      },
-      { 
-        title: 'SHOP BY COLLECTION', 
-        items: [
-          { name: 'Bestsellers', badge: 'New' }, 
-          { name: 'Multi-packs' }, 
-          { name: 'Beach Wear' }, 
-          { name: 'Birthday Boutique' }
-        ],
-        extra: {
-          title: 'FASHION ACCESSORIES',
-          items: ['Hair Bands', 'Hair Clips', 'Jewellery', 'Bags']
-        }
-      },
-      { 
-        title: 'SHOP BY AGE', 
-        items: ['0-3 Months', '3-6 Months', '2-4 Years', '4-6 Years', '8+ Years'],
-        extra: {
-          title: 'SHOP BY PRICE',
-          items: ['Under 199', 'Under 299', 'Under 399', 'Under 499']
-        }
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Babyhug', 'Babyoye', 'Pine Kids', 'Carter\'s', 'Hello Kitty', 'Disney'] 
-      },
-      { banner: 'https://images.pexels.com/photos/32328596/pexels-photo-32328596.jpeg' }
-    ]
-  },
-  { 
-    name: 'FOOTWEAR', 
-    href: '/collections/footwear', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Flip Flops', 'Clogs', 'Casual Shoes', 'Sandals', 'Booties', 'Sneakers', 'Ballerinas', 'Sports Shoes', 'School Shoes'] 
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Pine Kids', 'Cute Walk', 'Babyhug', 'Crocs', 'Skechers', 'Adidas'] 
-      },
-      { 
-        title: 'DON\'T MISS', 
-        items: ['Sock Shoes', 'Stockings & Tights', 'Plush Footwear', 'Jibbitz'] 
-      },
-      { banner: 'https://images.pexels.com/photos/37052023/pexels-photo-37052023.jpeg' }
-    ]
-  },
-  { 
-    name: 'TOYS', 
-    href: '/collections/toys', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: [
-          { name: 'Musical Toys', badge: 'New' }, 
-          { name: 'Learning & Educational', badge: 'Hot' }, 
-          { name: 'Soft Toys' }, 
-          { name: 'Indoor & Outdoor Play' }, 
-          { name: 'Blocks & Construction' }, 
-          { name: 'Puzzles' }
-        ] 
-      },
-      { 
-        title: 'RIDE-ONS & SCOOTERS', 
-        items: ['Battery Operated', 'Manual Push', 'Scooters', 'Tricycles', 'Bicycles'] 
-      },
-      { 
-        title: 'BOARD GAMES', 
-        items: ['IQ Games', 'Ludo', 'Snakes & Ladders', 'Monopoly'],
-        extra: {
-          title: 'SHOP BY AGE',
-          items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8-12 Years']
-        }
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Hot Wheels', 'Barbie', 'LEGO', 'Fisher-Price', 'Funskool', 'Nerf'] 
-      },
-      { banner: 'https://images.pexels.com/photos/27660140/pexels-photo-27660140.jpeg' }
-    ]
-  },
-  { 
-    name: 'DIAPERING', 
-    href: '/collections/diapering', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Diaper Pants', 'Taped Diapers', 'Wipes', 'Cloth Nappies', 'Bed Protectors', 'Diaper Bags', 'Potty Chairs & Seats'] 
-      },
-      { 
-        title: 'BABY DIAPER BY SIZE', 
-        items: ['NB/XS', 'Small', 'Medium', 'Large', 'XL', 'XXL'] 
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Babyhug', 'Huggies', 'Pampers', 'MamyPoko', 'Supples', 'Little\'s'] 
-      },
-      { 
-        title: 'SHOP BY PRICE', 
-        items: ['Under 199', 'Under 499', 'Under 999', '1000 & Above'] 
-      },
-      { banner: 'https://images.pexels.com/photos/32139255/pexels-photo-32139255.jpeg' }
-    ]
-  },
-  { 
-    name: 'GEAR', 
-    href: '/collections/gear', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: [
-          { name: 'Strollers & Prams', badge: 'Hot' }, 
-          { name: 'Ride-ons' }, 
-          { name: 'Tricycles' }, 
-          { name: 'Walkers' }, 
-          { name: 'Bouncers & Swings' }, 
-          { name: 'High Chairs' }, 
-          { name: 'Car Seats' }, 
-          { name: 'Baby Carriers' }
-        ] 
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Babyhug', 'LuvLap', 'R for Rabbit', 'Mee Mee', 'Chicco', 'Graco', 'Joie'] 
-      },
-      { 
-        title: 'FEATURED', 
-        items: ['New Arrivals', 'Best Sellers', 'Deals of the Day'] 
-      },
-      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/11506302a.webp' }
-    ]
-  },
-  { 
-    name: 'FEEDING', 
-    href: '/collections/feeding', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Baby Food & Formula', 'Feeding Bottles', 'Breast Feeding', 'Sippers & Cups', 'Bibs & Hankies', 'Teethers', 'Sterilizers'] 
-      },
-      { 
-        title: 'KIDS FOODS', 
-        items: [
-          { name: 'Dry Fruits', badge: 'Sale' }, 
-          { name: 'Snacks' }, 
-          { name: 'Vitamin Gummies', badge: 'New' }, 
-          { name: 'Health Supplements' }
-        ] 
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Cerelac', 'Aptamil', 'Philips Avent', 'Dr. Brown\'s', 'Pigeon'] 
-      },
-      { banner: 'https://images.pexels.com/photos/36214982/pexels-photo-36214982.jpeg' }
-    ]
-  },
-  { 
-    name: 'BATH', 
-    href: '/collections/bath', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Lotions', 'Oils & Powders', 'Soaps & Body Wash', 'Shampoos', 'Bath Tubs & Bathers', 'Grooming Essentials', 'Bath Towels'] 
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Mamaearth', 'Himalaya', 'Johnson\'s', 'Sebamed', 'Aveeno', 'Cetaphil'] 
-      },
-      { banner: 'https://images.pexels.com/photos/35979966/pexels-photo-35979966.jpeg' }
-    ]
-  },
-  { 
-    name: 'NURSERY', 
-    href: '/collections/nursery', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Cots & Cradles', 'Blankets & Quilts', 'Baby Bedding Sets', 'Wardrobes & Storage', 'Kids Room Furniture', 'Room Decor'] 
-      },
-      { 
-        title: 'SHOP BY BRANDS', 
-        items: ['Babyhug', 'Pine Kids', 'Kinder Valley', 'IKEA', 'Lullaby'] 
-      },
-      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/20139636a.webp' }
-    ]
-  },
-  { 
-    name: 'MOMS', 
-    href: '/collections/moms', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Nursing/Sleep Wear', 'Maternity Dresses', 'Maternity Lingerie', 'Bottom wear', 'Personal Care'] 
-      },
-      { 
-        title: 'NEW MOM ESSENTIALS', 
-        items: ['Breast Feeding support', 'Nutrition & Lactation Boosters', 'Body Pillows'] 
-      },
-      { banner: 'https://cdn.fcglcdn.com/brainbees/images/products/zoom/22333906a.webp' }
-    ]
-  },
-  { 
-    name: 'HEALTH', 
-    href: '/collections/health', 
-    mega: [
-      { 
-        title: 'SHOP BY CATEGORY', 
-        items: ['Cleansers & Detergents', 'Oral Care', 'Childproofing & Safety', 'Medical Care', 'Mosquito Repellents'] 
-      },
-      { banner: 'https://images.pexels.com/photos/31212340/pexels-photo-31212340.jpeg' }
-    ]
-  },
-  { 
-    name: 'BOUTIQUES', 
-    href: '/collections/boutiques', 
-    mega: [
-      { 
-        title: 'SECTIONS', 
-        items: ['New Today', 'Bestsellers', 'Last Day Sales'] 
-      },
-      { 
-        title: 'BRANDS', 
-        items: ['International Brands', 'Mompreneur Brands', 'Top Indian Brands'] 
-      },
-      { banner: 'https://images.pexels.com/photos/15170532/pexels-photo-15170532.jpeg'}
-    ]
-  },
-  { name: 'Contact', href: '/contact', hideOnDesktop: true },
-]
+import { countries, languages, promoMessages, mainNavLinks, categoryData } from '../../data/navigationData'
 
 const C = '#FF4E50'  
 import logo from '../../assets/toyovo.webp'
@@ -361,6 +43,7 @@ export function VisionHeader() {
   const [isPastHero, setIsPastHero] = useState(false)
   const [activeMobileSub, setActiveMobileSub] = useState(null)
   
+  const [activeMasterCat, setActiveMasterCat] = useState('BOY FASHION')
   const [activeMenu, setActiveMenu] = useState(null)
   const [profileDropdown, setProfileDropdown] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
@@ -621,73 +304,116 @@ export function VisionHeader() {
                         initial={{ opacity: 0, y: 15 }} 
                         animate={{ opacity: 1, y: 0 }} 
                         exit={{ opacity: 0, y: 15 }} 
-                        className="absolute top-full left-1/2 -translate-x-1/2 w-[1100px] xl:w-[1200px] 2xl:w-[1300px] bg-white shadow-[0_25px_60px_rgba(0,0,0,0.2)] rounded-b-3xl border-t-4 border-[#E84949] p-10 grid grid-cols-5 gap-8 z-[1000]"
+                        className={`absolute top-full left-1/2 -translate-x-1/2 ${link.mega.type === 'master' ? 'w-[1200px] xl:w-[1300px] 2xl:w-[1400px]' : 'w-[1100px] xl:w-[1200px] 2xl:w-[1300px]'} bg-white shadow-[0_40px_100px_rgba(0,0,0,0.15)] rounded-b-[40px] border-t-4 border-[#E84949] flex overflow-hidden z-[1000]`}
                       >
-                      {link.mega.map((col, idx) => (
-                        <div key={idx} className="col-span-1">
-                          {col.title && (
-                            <h4 className="font-grandstander font-extrabold text-[12px] text-[#333] mb-6 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
-                              {col.title}
-                            </h4>
-                          )}
-                          
-                          {col.items && (
-                            <ul className="space-y-3 mb-8">
-                              {col.items.map(item => {
-                                const name = typeof item === 'object' ? item.name : item;
-                                const badge = typeof item === 'object' ? item.badge : null;
-                                return (
-                                  <li key={name}>
-                                    <Link 
-                                      to={`/collections/${name.toLowerCase().replaceAll(' ', '-')}`} 
-                                      onClick={handleLinkClick} 
-                                      className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider"
-                                    >
-                                      <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
-                                      {name}
-                                      {badge && (
-                                        <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
-                                          {badge}
-                                        </span>
-                                      )}
-                                    </Link>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          )}
+                        {/* Sidebar (Optional) */}
+                        {link.mega.type === 'master' ? (
+                          <div className="w-72 bg-[#FDF3E7] border-r border-black/5 p-8 space-y-1.5 h-[550px] overflow-y-auto custom-scrollbar">
+                             {link.mega.sidebar.map(s => (
+                               <button 
+                                key={s.name} 
+                                onMouseEnter={() => setActiveMasterCat(s.name)}
+                                className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-white/60'}`}
+                               >
+                                 {s.name}
+                               </button>
+                             ))}
+                          </div>
+                        ) : link.mega.sidebar ? (
+                          <div className="w-64 bg-[#FDF3E7] border-r border-black/5 p-6 space-y-2">
+                             {link.mega.sidebar.map(s => (
+                               <button key={s.name} className={`w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${s.active ? 'bg-[#E84949] text-white shadow-lg shadow-[#E84949]/20' : 'text-[#333] hover:bg-white'}`}>
+                                 {s.name}
+                               </button>
+                             ))}
+                          </div>
+                        ) : null}
 
-                          {col.extra && (
-                            <div className="mt-6">
-                              <h4 className="font-grandstander font-extrabold text-[12px] text-[#333] mb-5 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
-                                {col.extra.title}
-                              </h4>
-                              <ul className="space-y-3">
-                                {col.extra.items.map(i => (
-                                  <li key={i}>
-                                    <Link to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
-                                      <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
-                                      {i}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
+                        {/* Main Content Area */}
+                        <div className="flex-1 flex flex-col h-[550px]">
+                          {/* Master Top Header (Optional) */}
+                          {link.mega.type === 'master' && (
+                            <div className="px-10 pt-8 pb-4 border-b border-black/5 bg-white/50 backdrop-blur-md sticky top-0 z-10">
+                              <h3 className="text-[#E84949] font-black text-xs tracking-[0.3em] uppercase mb-1">ALL</h3>
+                              <div className="w-10 h-0.5 bg-[#E84949] rounded-full"></div>
                             </div>
                           )}
 
-                          {col.banner && (
-                            <Link to={link.href} onClick={handleLinkClick} className="rounded-3xl overflow-hidden aspect-[3/4] relative group/banner cursor-pointer shadow-xl border-4 border-white block transform hover:-translate-y-2 transition-all duration-500">
-                              <img src={col.banner} alt={col.title} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-700" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
-                                <span className="text-[#E84949] text-[10px] uppercase font-black tracking-[0.2em] mb-1 drop-shadow-md">Exclusive</span>
-                                <h5 className="text-white font-grandstander text-[16px] font-black leading-tight">Trending Now</h5>
+                          <div className="flex-1 p-10 grid grid-cols-4 gap-8 overflow-y-auto custom-scrollbar">
+                            <div className="col-span-3 grid grid-cols-3 gap-8">
+                              {(link.mega.type === 'master' ? (categoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => (
+                                <div key={idx} className="space-y-6">
+                                  {col.title && (
+                                    <h4 className="font-grandstander font-black text-[13px] text-[#333] border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                      {col.title}
+                                    </h4>
+                                  )}
+                                  
+                                  {col.items && (
+                                    <ul className="space-y-2.5">
+                                      {col.items.map(item => {
+                                        const name = typeof item === 'object' ? item.name : item;
+                                        const badge = typeof item === 'object' ? item.badge : null;
+                                        const type = typeof item === 'object' ? item.type : 'normal';
+                                        
+                                        return (
+                                          <li key={name}>
+                                            <Link 
+                                              to={type === 'link' ? `/product/${name.toLowerCase().replaceAll(' ', '-')}` : `/collections/${name.toLowerCase().replaceAll(' ', '-')}`}
+                                              onClick={handleLinkClick} 
+                                              className={`group/link flex items-center gap-2 text-[11px] transition-all font-bold uppercase tracking-wider ${type === 'link' ? 'text-[#E84949]' : 'text-[#666] hover:text-[#E84949]'}`}
+                                            >
+                                              {type !== 'link' && <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>}
+                                              {name}
+                                              {badge && (
+                                                <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
+                                                  {badge}
+                                                </span>
+                                              )}
+                                            </Link>
+                                          </li>
+                                        );
+                                      })}
+                                    </ul>
+                                  )}
+
+                                  {col.extra && (
+                                    <div className="pt-4">
+                                      <h4 className="font-grandstander font-black text-[13px] text-[#333] mb-4 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                        {col.extra.title}
+                                      </h4>
+                                      <ul className="space-y-2.5">
+                                        {col.extra.items.map(i => (
+                                          <li key={i}>
+                                            <Link to={`/collections/${i.toLowerCase().replaceAll(' ', '-')}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
+                                              <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
+                                              {i}
+                                            </Link>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Visual Banner (Optional) */}
+                            {(link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner) && (
+                              <div className="col-span-1 flex flex-col items-center justify-start pt-2">
+                                <div className="rounded-[35px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-4 border-white transform hover:-translate-y-2 transition-all duration-700 w-full">
+                                    <img src={link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner} alt={link.name} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-6 flex flex-col justify-end">
+                                      <span className="text-[#E84949] text-[9px] uppercase font-black tracking-[0.3em] mb-1">Featured</span>
+                                      <h5 className="text-white font-grandstander text-[15px] font-black uppercase">Collection 2026</h5>
+                                    </div>
+                                </div>
                               </div>
-                            </Link>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      ))}
-                    </motion.div>
-                  )}
+                      </motion.div>
+                    )}
                   {activeMenu === link.name && link.dropdown && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-2 border-[#E84949] py-2 z-[1000]">
                       {link.dropdown.map(sub => <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block px-5 py-2.5 text-[12px] text-[#555] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all font-bold uppercase tracking-wider">{sub.name}</Link>)}
@@ -862,7 +588,7 @@ export function VisionHeader() {
                       </div>
                       {(link.mega || link.dropdown) && activeMobileSub === link.name && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="bg-[#F9EAD3]/30 px-8 py-4 space-y-4">
-                          {link.mega ? link.mega.map((col, cidx) => (
+                          {link.mega ? (Array.isArray(link.mega) ? link.mega : link.mega.content).map((col, cidx) => (
                             <div key={cidx}>
                               {col.title && <h5 className="text-[10px] font-bold text-[#666] uppercase mb-2 tracking-widest">{col.title}</h5>}
                               {col.items && (
@@ -870,6 +596,7 @@ export function VisionHeader() {
                                   {col.items.map(item => {
                                     const name = typeof item === 'object' ? item.name : item;
                                     const badge = typeof item === 'object' ? item.badge : null;
+                                    const type = typeof item === 'object' ? item.type : 'normal';
                                     return (
                                       <Link 
                                         key={name} 
