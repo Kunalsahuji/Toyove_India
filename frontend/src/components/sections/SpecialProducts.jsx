@@ -49,8 +49,8 @@ export function SpecialProducts() {
                   setActiveTab(tab);
                 }}
                 className={`h-9 px-6 rounded-md text-[13px] font-bold transition-all duration-200 shadow-md font-grandstander ${activeTab === tab
-                    ? 'bg-[#F1641E] text-white border border-[#F1641E]'
-                    : 'bg-[#1A1A1A] text-white border border-[#1A1A1A] hover:bg-[#6651A4] hover:border-[#6651A4]'
+                  ? 'bg-[#F1641E] text-white border border-[#F1641E]'
+                  : 'bg-[#1A1A1A] text-white border border-[#1A1A1A] hover:bg-[#6651A4] hover:border-[#6651A4]'
                   }`}
               >
                 {tab}
@@ -58,20 +58,17 @@ export function SpecialProducts() {
             ))}
           </div>
         </div>
-
-        <div className="min-h-[600px] md:min-h-[800px] lg:min-h-[1000px] bg-red-500">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
-          >
-            {products[activeTab].map((p, i) => (
-              <ProductCard key={p.id} p={p} i={i} />
-            ))}
-          </motion.div>
-        </div>
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+        >
+          {products[activeTab].map((p, i) => (
+            <ProductCard key={p.id} p={p} i={i} />
+          ))}
+        </motion.div>
       </div>
     </section>
   )
