@@ -157,11 +157,11 @@ export function ProductDetailPage() {
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
-            className="fixed bottom-0 left-0 w-full z-90 bg-[#F9EAD3] border-t-[1.6px] border-dashed border-[#333333] py-3 shadow-lg"
+            className="fixed bottom-0 left-0 w-full z-[1000] bg-[#F9EAD3] border-t-[1.6px] border-dashed border-[#333333]/10 py-3 shadow-2xl"
           >
-            <div className="max-w-350 mx-auto px-4 md:px-10 flex items-center justify-between gap-4">
+            <div className="shell flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="hidden sm:block w-12 h-12 rounded-lg border-[1.2px] border-dashed border-[#333]/30 overflow-hidden bg-white">
+                <div className="hidden sm:block w-12 h-12 rounded-lg border-[1.2px] border-dashed border-[#333]/30 overflow-hidden bg-[#FDF4E6]">
                   <img src={product.img} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div>
@@ -186,7 +186,7 @@ export function ProductDetailPage() {
       </AnimatePresence>
 
       <div className="pt-6 sm:pt-10">
-        <div className="max-w-350 mx-auto px-4 md:px-10">
+        <div className="shell ">
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-[11px] md:text-[12px] text-[#666] mb-8 tracking-widest font-bold">
             <Link to="/" className="hover:text-[#E84949] transition-colors">Home</Link>
@@ -194,34 +194,44 @@ export function ProductDetailPage() {
             <span className="text-[#333] capitalize">{product.title}</span>
           </nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
-            {/* Gallery - Grid Layout for TOYOVOINDIA Parity */}
-            <div className="lg:col-span-7 grid grid-cols-2 gap-4 h-fit">
-              {productImages.slice(0, 6).map((img, i) => (
-                <div key={i} className="aspect-square rounded-3xl overflow-hidden bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/15 group">
-                  <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-                </div>
-              ))}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12">
+            {/* Gallery Section - Toykio Style */}
+            <div className="lg:col-span-7 flex flex-col md:flex-row-reverse gap-4">
+              {/* Main Image */}
+              <div className="flex-1 aspect-square rounded-[30px] overflow-hidden border border-[#E5E5E5] group cursor-zoom-in">
+                <img src={productImages[selectedImg]} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              </div>
+
+              {/* Thumbnails - Horizontal on Mobile, Vertical on Desktop */}
+              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar md:max-h-[550px] shrink-0">
+                {productImages.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImg(i)}
+                    className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${selectedImg === i ? 'border-[#E84949] shadow-md scale-95' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Buy Box */}
             <div className="lg:col-span-5 flex flex-col gap-6">
               <div className="space-y-4">
-                <p className="text-[11px] font-medium tracking-[0.25em] text-[#666] font-roboto uppercase">Home Furniture</p>
-                <h1 style={{
-                  fontFamily: 'var(--font-header)',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.12)',
-                  lineHeight: 1.05,
-                  fontSize: 'clamp(32px, 7vw, 68px)',
-                  letterSpacing: '-0.04em'
-                }} className="font-grandstander font-bold text-[#333] tracking-tighter">{product.title}</h1>
+                <div className="flex items-center gap-2">
+                  <p className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-[#666] uppercase">Home Furniture</p>
+                  <span className="w-1 h-1 rounded-full bg-gray-300" />
+                  <p className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-[#E84949] uppercase">In Stock</p>
+                </div>
+                
+                <h1 className="font-grandstander font-black text-[#333] text-[28px] md:text-[36px] xl:text-[42px] leading-tight tracking-tight">{product.title}</h1>
 
-                <div className="flex items-center gap-4">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl text-gray-400 line-through font-bold tracking-tighter">${product.oldPrice.toFixed(2)}</span>
-                    <span className="text-3xl lg:text-4xl font-bold text-[#E84949] tracking-tighter">${product.price.toFixed(2)} USD</span>
+                <div className="flex items-center gap-4 pt-2">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-2xl md:text-3xl font-black text-[#E84949] tracking-tight">${product.price.toFixed(2)}</span>
+                    <span className="text-lg text-gray-400 line-through font-bold tracking-tight">${product.oldPrice.toFixed(2)}</span>
                   </div>
-                  <span className="bg-[#333] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">Sale</span>
+                  <span className="bg-[#E84949] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-widest">Sale</span>
                 </div>
 
                 <div className="space-y-4 py-5 border-y border-dashed border-gray-300">
@@ -283,23 +293,23 @@ export function ProductDetailPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="h-12 w-full sm:w-32 bg-white border-[1.6px] border-dashed border-[#333] rounded flex items-center justify-between px-4">
-                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-[#666] hover:text-[#E84949] transition-colors"><Minus size={14} /></button>
-                      <span className="font-grandstander text-[16px] text-[#333] font-bold">{quantity}</span>
-                      <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={14} /></button>
+                <div className="space-y-4 pt-6">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="h-13 w-full sm:w-36 bg-white border border-[#E5E5E5] rounded-xl flex items-center justify-between px-5 shadow-sm">
+                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-[#666] hover:text-[#E84949] transition-colors"><Minus size={16} /></button>
+                      <span className="font-black text-[16px] text-[#333]">{quantity}</span>
+                      <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={16} /></button>
                     </div>
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-[1.01] transition-all py-3"
+                      className="flex-1 h-13 bg-[#E84949] text-white rounded-xl font-black text-[12px] tracking-[0.2em] uppercase hover:opacity-90 transition-all shadow-lg shadow-[#E84949]/20"
                     >
                       ADD TO CART
                     </button>
                   </div>
                   <button
                     onClick={handleBuyNow}
-                    className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all"
+                    className="w-full h-13 bg-[#333] text-white rounded-xl font-black text-[12px] tracking-[0.2em] uppercase hover:bg-black transition-all"
                   >
                     BUY IT NOW
                   </button>
@@ -331,24 +341,24 @@ export function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Tabs Section - Refined for TOYOVOINDIA Parity */}
-      <div className="py-20 max-w-350 mx-auto px-4 md:px-10">
-        <div className="flex flex-wrap gap-0">
+      {/* Tabs Section - Toykio Exact Style */}
+      <div className="py-16 md:py-24 shell">
+        <div className="flex overflow-x-auto no-scrollbar border-b border-[#E5E5E5] gap-0">
           {['Description', 'Additional', 'Variant', 'Custom'].map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t.toLowerCase())}
-              className={`px-8 md:px-10 py-4 text-[12px] font-bold tracking-[0.2em] transition-all border-[#E5E5E5] border  -mr-px -mb-1px relative font-grandstander ${activeTab === t.toLowerCase() ? 'text-[#333] bg-[#FDF4E6] z-10 border-b-[#FDF4E6]' : 'text-[#666] bg-[#FDF4E6]/50 hover:bg-[#FDF4E6]'}`}
+              className={`px-8 md:px-12 py-5 text-[11px] md:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative border-x border-t border-transparent -mb-[1px] whitespace-nowrap ${activeTab === t.toLowerCase() ? 'text-[#333]  border-[#E5E5E5] rounded-t-xl' : 'text-[#999] hover:text-[#666]'}`}
             >
-              {t}
+              {t === 'Description' ? 'Product Description' : t === 'Additional' ? 'Additional information' : t === 'Variant' ? 'Variant Information' : 'Custom field'}
             </button>
           ))}
         </div>
-        <div className="bg-[#FDF4E6] p-10 border  border-[#E5E5E5] text-[#666] leading-relaxed font-roboto text-[16px] relative shadow-sm h-full min-h-75">
+        <div className=" p-8 md:p-12 border border-t-0 border-[#E5E5E5] text-[#666] leading-relaxed font-roboto text-[15px] md:text-[16px] shadow-sm rounded-b-3xl">
           <AnimatePresence mode="wait">
-            <motion.div key={activeTab} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}>
+            <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
               {activeTab === 'description' && (
-                <div className="space-y-6 max-w-5xl">
+                <div className="space-y-6">
                   <p>Discover TOYOVOINDIA, the ultimate Shopify 2.0 theme meticulously crafted for baby shops and kids' toy stores. Elevate your online presence with TOYOVOINDIA’s seamless fusion of aesthetic charm and robust functionality, designed to make your products shine on every device.</p>
                   <p>At the heart of TOYOVOINDIA its flawless integration with Shopify 2.0, offering advanced features that enhance user experience and propel your store to top search engine rankings. Whether your inventory focuses on educational toys, plush baby essentials, or trendy kids' gadgets, TOYOVOINDIA responsive design ensures impeccable presentation across desktops, tablets, and smartphones.</p>
                   <p>Customization is effortless with TOYOVOINDIA or your store’s appearance effortlessly—adjust colors, fonts, and layouts without touching a single line of code. The drag-and-drop interface empowers you to establish a unique brand identity that resonates deeply with your discerning clientele.</p>
@@ -362,8 +372,8 @@ export function ProductDetailPage() {
                 </div>
               )}
               {activeTab === 'additional' &&
-                <div className="space-y-6 max-w-5xl">
-                  <span className=" whitespace-pre-line">
+                <div className="space-y-6">
+                  <span className=" whitespace-pre-line w-full">
                     {`1) This information tab works when you add some description in metafield.
  
  2) Settings > Custom Data > Product > Add definition > give name as needed > in key "custom.additional_information" add this code and save the page.
@@ -389,7 +399,7 @@ export function ProductDetailPage() {
                 </div>
               }
               {activeTab === 'variant' &&
-                <div className="space-y-6 max-w-5xl">
+                <div className="space-y-6">
                   <span className='whitespace-pre-line'>
                     <p>Variant details and specific configuration options for this item.</p>
                     <p>Variant details and specific configuration options for this item.</p>
@@ -397,7 +407,7 @@ export function ProductDetailPage() {
                 </div>
               }
               {activeTab === 'custom' &&
-                <div className="space-y-6 max-w-5xl">
+                <div className="space-y-6">
                   <span className='whitespace-pre-line'>
                     <p>Custom Field Information</p>
                   </span>
@@ -409,40 +419,34 @@ export function ProductDetailPage() {
       </div>
 
       {/* Suggested Products (YOU MAY ALSO LIKE) */}
-      <div className="max-w-350 mx-auto px-4 md:px-10 py-16">
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-grandstander font-bold text-[#333] tracking-tight">You May Also Like</h2>
+      <div className="shell py-16 md:py-20">
+        <div className="mb-12">
+          <h2 className="text-2xl md:text-4xl font-black text-[#333] uppercase tracking-tighter">You May Also <span className="text-[#E84949]">Like</span></h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {related.map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {related.slice(0, 4).map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
         </div>
       </div>
 
       {/* Recently Viewed Section */}
-      <div className="max-w-350 mx-auto px-4 md:px-10 py-16">
-        <div className="flex flex-col items-center justify-between mb-12 gap-6">
-          <div className="text-center w-full">
-            {/* make responsive and text-align center for all devices. */}
-            <h2 className="text-3xl md:text-4xl font-grandstander font-bold text-[#333] leading-none tracking-tight text-center">Recently Viewed</h2>
-          </div>
-          <Link to="/collections/all" className="flex items-center gap-2 font-bold text-[12px] tracking-widest hover:text-[#E84949] transition-colors font-grandstander uppercase">
-            View All Products <ChevronRight size={16} />
-          </Link>
+      <div className="shell py-16 md:py-20 border-t border-black/5">
+        <div className="flex items-center justify-between mb-12">
+          <h2 className="text-2xl md:text-4xl font-black text-[#333] uppercase tracking-tighter">Recently <span className="text-[#E84949]">Viewed</span></h2>
+          <Link to="/all-categories" className="text-[11px] font-black uppercase tracking-widest text-[#E84949] border-b-2 border-[#E84949] hover:opacity-70 transition-opacity">View All</Link>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-          {recentlyViewed.map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {recentlyViewed.slice(0, 5).map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
         </div>
       </div>
 
       {/* FAQ Section */}
-      <div className="max-w-350 mx-auto px-4 md:px-10 py-24 mb-10 border-t border-[#E5E5E5]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <div className="relative aspect-4/3 rounded-4xl overflow-hidden group border-[1.6px] border-[#E5E5E5]">
-            <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 p-2 rounded-4xl " />
-            <div className="absolute inset-0 bg-[#333]/3 group-hover:bg-transparent transition-colors" />
+      <div className="shell py-16 md:py-20 mb-6 border-t border-[#E5E5E5]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="relative aspect-[4/3] rounded-[40px] overflow-hidden group border border-[#E5E5E5] p-3">
+            <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 rounded-[30px]" />
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333] mb-12 leading-none tracking-tighter">Frequently Ask Questions</h2>
+            <h2 className="text-3xl md:text-5xl font-black text-[#333] mb-12 uppercase tracking-tighter">Frequently <span className="text-[#E84949]">Asked</span> Questions</h2>
             <div className="space-y-0">
               {[
                 { q: "What Types Of Furniture Can I Showcase With This Theme?", a: "TOYOVOINDIA is perfect for all types of kids furniture - from cribs and beds to play tables and storage units." },
