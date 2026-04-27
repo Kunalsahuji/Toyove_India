@@ -166,7 +166,7 @@ export function CollectionPage() {
         { id: 'availability', title: 'availability', items: ['in stock', 'out of stock'] },
         { id: 'brand', title: 'brands', items: ['Babyhug', 'Toykio', 'Carter\'s', 'Lego', 'Pampers'] },
         { id: 'gender', title: 'gender', items: ['Boy', 'Girl', 'Unisex'] },
-        { id: 'age', title: 'age', items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8+ Years'] },
+        { id: 'age', title: 'ato the ge', items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8+ Years'] },
         { id: 'size', title: 'size', items: ['Small', 'Medium', 'Large', 'XL'] },
         { id: 'color', title: 'colors', items: ['Red', 'Blue', 'Pink', 'Yellow', 'White', 'Black'] },
         { id: 'material', title: 'material', items: ['Cotton', 'Wool', 'Plastic', 'Wood', 'Silicone'] },
@@ -200,9 +200,9 @@ export function CollectionPage() {
   return (
     <div className="bg-[#FDF4E6] min-h-screen font-grandstander overflow-x-hidden">
       {/* Hero Section */}
-      <div className="relative h-[250px] md:h-[400px] overflow-hidden flex items-center justify-center">
+      <div className="shell relative h-[350px] md:h-[450px] overflow-hidden flex items-center justify-center ">
         <img src={bannerImg} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover brightness-[0.5] scale-105" />
-        <div className="relative z-10 text-center shell">
+        <div className="relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
              <p className="text-[#E84949] text-[10px] md:text-[12px] font-black uppercase tracking-[0.5em] mb-4">Premium {category?.replaceAll('-', ' ')} Collection</p>
              <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase">{displayTitle}</h1>
@@ -210,9 +210,9 @@ export function CollectionPage() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 md:px-8 pb-24">
+      <div className="shell pb-12">
         {/* Breadcrumbs & Search */}
-        <div className="pt-12 mb-10 space-y-8">
+        <div className="py-6 md:py-12 space-y-4 md:space-y-8">
           <nav className="flex items-center gap-2 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#444]/30 overflow-hidden whitespace-nowrap">
             <Link to="/" className="hover:text-[#E84949]">Home</Link>
             <ChevronRight size={10} />
@@ -247,7 +247,7 @@ export function CollectionPage() {
             </div>
           </aside>
 
-          <main className="flex-1 w-full space-y-8 overflow-hidden">
+          <main className="flex-1 w-full space-y-6 overflow-hidden">
             {/* Refined Toolbar - Toykio Style */}
             <div className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[25px] p-3 md:p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -300,7 +300,7 @@ export function CollectionPage() {
             </div>
 
             {/* Product Grid */}
-            <div className={`grid gap-8 ${
+            <div className={`grid gap-6 md:gap-8 ${
               gridCols === 3 ? 'grid-cols-2 xl:grid-cols-3' : 
               gridCols === 2 ? 'grid-cols-2' : 
               'grid-cols-1'

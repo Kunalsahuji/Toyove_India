@@ -61,8 +61,8 @@ const FilterSection = ({ title, children, defaultOpen = true }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen)
   return (
     <div className="border-b border-black/5 py-4">
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
+      <button
+        onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between text-[13px] font-black uppercase tracking-widest text-[#444] hover:text-[#E84949] transition-colors"
       >
         <span>{title}</span>
@@ -222,12 +222,12 @@ export function AllCategoriesPage() {
   return (
     <div className="bg-[#FDF4E6] min-h-screen font-grandstander overflow-x-hidden">
       <div className="shell pt-12 pb-12 text-center">
-        <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-7xl font-black text-[#444] tracking-tighter mb-8 uppercase">
+        <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl md:text-5xl font-black text-[#444] tracking-tighter mb-5 uppercase">
           Toyoveindia <span className="text-[#E84949]">Collection</span>
         </motion.h1>
 
         <div className="max-w-2xl mx-auto relative group">
-          <input 
+          <input
             type="text"
             value={innerSearch}
             onChange={(e) => setInnerSearch(e.target.value)}
@@ -238,44 +238,44 @@ export function AllCategoriesPage() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 md:px-8 pb-24">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          
+      <div className="shell pb-12">
+        <div className="flex flex-col lg:flex-row gap-2 items-start">
+
           <aside className="hidden lg:block w-72 xl:w-80 shrink-0 sticky top-28">
             <div className="border-[1.5px] border-dashed border-black/10 rounded-[35px] p-8">
-               <h3 className="text-[14px] font-black uppercase tracking-widest text-[#444] mb-6 flex items-center gap-2">
-                 <SlidersHorizontal size={16} className="text-[#E84949]" /> Filter:
-               </h3>
-               <FilterContent />
+              <h3 className="text-[14px] font-black uppercase tracking-widest text-[#444] mb-6 flex items-center gap-2">
+                <SlidersHorizontal size={16} className="text-[#E84949]" /> Filter:
+              </h3>
+              <FilterContent />
             </div>
           </aside>
 
-          <main className="flex-1 w-full space-y-8 overflow-hidden">
-            
-            {/* Refined Toolbar - Toykio Style */}
+          <main className="flex-1 w-full space-y-6 overflow-hidden ">
+
+            {/* Refined Toolbar*/}
             <div className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[25px] p-3 md:p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <button onClick={() => setIsFilterOpen(true)} className="lg:hidden p-2.5 rounded-xl bg-[#FDF4E6] border border-dashed border-black/5 shadow-sm transition-all active:scale-95"><SlidersHorizontal size={16} className="text-[#444]"/></button>
-                
+                <button onClick={() => setIsFilterOpen(true)} className="lg:hidden p-2.5 rounded-xl bg-[#FDF4E6] border border-dashed border-black/5 shadow-sm transition-all active:scale-95"><SlidersHorizontal size={16} className="text-[#444]" /></button>
+
                 {/* Desktop Grid Toggles - Softened Style */}
                 <div className="hidden lg:flex items-center gap-2">
                   <button onClick={() => setGridCols(3)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 3 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
                     <div className="flex gap-[2px]">
-                      <div className="w-[3px] h-4 bg-current rounded-full"/>
-                      <div className="w-[3px] h-4 bg-current rounded-full"/>
-                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full" />
+                      <div className="w-[3px] h-4 bg-current rounded-full" />
+                      <div className="w-[3px] h-4 bg-current rounded-full" />
                     </div>
                   </button>
                   <button onClick={() => setGridCols(2)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 2 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
                     <div className="flex gap-[2px]">
-                      <div className="w-[3px] h-4 bg-current rounded-full"/>
-                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full" />
+                      <div className="w-[3px] h-4 bg-current rounded-full" />
                     </div>
                   </button>
                   <button onClick={() => setGridCols(1)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 1 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
                     <div className="flex flex-col gap-[3px]">
-                      <div className="w-4 h-[2px] bg-current rounded-full"/>
-                      <div className="w-4 h-[2px] bg-current rounded-full"/>
+                      <div className="w-4 h-[2px] bg-current rounded-full" />
+                      <div className="w-4 h-[2px] bg-current rounded-full" />
                     </div>
                   </button>
                 </div>
@@ -284,16 +284,16 @@ export function AllCategoriesPage() {
               {/* Centered Sort By - More compact on mobile */}
               <div className="flex-1 flex justify-center">
                 <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 flex items-center gap-2 md:gap-3 shadow-sm">
-                   <span className="hidden sm:inline text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-[#444]/60">Sort:</span>
-                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent text-[11px] md:text-[12px] font-black outline-none cursor-pointer text-[#444] min-w-[100px] md:min-w-[140px]">
-                      <option value="relevance">Featured</option>
-                      <option value="best-selling">Best selling</option>
-                      <option value="alpha-asc">A-Z</option>
-                      <option value="alpha-desc">Z-A</option>
-                      <option value="price-asc">Low to high</option>
-                      <option value="price-desc">High to low</option>
-                      <option value="newest">Newest</option>
-                   </select>
+                  <span className="hidden sm:inline text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-[#444]/60">Sort:</span>
+                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent text-[11px] md:text-[12px] font-black outline-none cursor-pointer text-[#444] min-w-[100px] md:min-w-[140px]">
+                    <option value="relevance">Featured</option>
+                    <option value="best-selling">Best selling</option>
+                    <option value="alpha-asc">A-Z</option>
+                    <option value="alpha-desc">Z-A</option>
+                    <option value="price-asc">Low to high</option>
+                    <option value="price-desc">High to low</option>
+                    <option value="newest">Newest</option>
+                  </select>
                 </div>
               </div>
 
@@ -304,11 +304,10 @@ export function AllCategoriesPage() {
             </div>
 
             {/* Product Grid */}
-            <div className={`grid gap-8 ${
-              gridCols === 3 ? 'grid-cols-2 xl:grid-cols-3' : 
-              gridCols === 2 ? 'grid-cols-2' : 
-              'grid-cols-1'
-            }`}>
+            <div className={`grid gap-6 md:gap-8 ${gridCols === 3 ? 'grid-cols-2 xl:grid-cols-3' :
+                gridCols === 2 ? 'grid-cols-2' :
+                  'grid-cols-1'
+              }`}>
               <AnimatePresence mode="popLayout">
                 {isLoading ? (
                   Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
@@ -322,11 +321,11 @@ export function AllCategoriesPage() {
 
             {/* Pagination (Refined Responsive) */}
             {!isLoading && totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 pt-12">
+              <div className="flex items-center justify-center gap-3 pt-6">
                 <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="w-12 h-12 rounded-2xl border-2 border-dashed border-black/10 flex items-center justify-center text-[#444] disabled:opacity-10 hover:border-[#E84949] transition-all">
                   <ChevronLeft size={20} />
                 </button>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-6">
                   {getVisiblePages().map(page => (
                     <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 rounded-2xl font-black text-[14px] transition-all ${currentPage === page ? 'bg-[#E84949] text-white shadow-lg scale-110' : 'bg-transparent border-2 border-dashed border-black/10 text-[#444] hover:border-[#E84949]'}`}>
                       {page}
@@ -340,22 +339,22 @@ export function AllCategoriesPage() {
             )}
 
             {/* Weekly Trending Section (Standardized Scale & Responsive Snap) */}
-            <section className="mt-24 border-[1.5px] border-dashed border-black/10 p-6 md:p-10 rounded-[50px] bg-white/10 overflow-hidden">
-               <div className="flex items-center justify-between mb-8 px-2">
-                  <h2 className="text-2xl md:text-4xl font-black text-[#444] uppercase tracking-tighter">Weekly <span className="text-[#E84949]">Trending</span></h2>
-                  <Link to="/all-categories" className="text-[11px] font-black uppercase tracking-widest text-[#E84949] border-b-2 border-[#E84949] hover:opacity-70 transition-opacity">View All</Link>
-               </div>
-               
-               <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar scroll-smooth">
-                  {allProducts.slice(0, 10).map((p, i) => (
-                    <div 
-                      key={`trend-${p.id}`} 
-                      className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] xl:w-[calc(25%-18px)] snap-start shrink-0"
-                    >
-                      <ProductCard p={p} i={i} />
-                    </div>
-                  ))}
-               </div>
+            <section className="mt-12 border-[1.5px] border-dashed border-black/10 p-6 md:p-10 rounded-[50px] bg-white/10 overflow-hidden">
+              <div className="flex items-center justify-between mb-8 px-2">
+                <h2 className="text-2xl md:text-4xl font-black text-[#444] uppercase tracking-tighter">Weekly <span className="text-[#E84949]">Trending</span></h2>
+                <Link to="/all-categories" className="text-[11px] font-black uppercase tracking-widest text-[#E84949] border-b-2 border-[#E84949] hover:opacity-70 transition-opacity">View All</Link>
+              </div>
+
+              <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar scroll-smooth">
+                {allProducts.slice(0, 10).map((p, i) => (
+                  <div
+                    key={`trend-${p.id}`}
+                    className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] xl:w-[calc(25%-18px)] snap-start shrink-0"
+                  >
+                    <ProductCard p={p} i={i} />
+                  </div>
+                ))}
+              </div>
             </section>
           </main>
         </div>
@@ -367,9 +366,9 @@ export function AllCategoriesPage() {
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsFilterOpen(false)} className="fixed inset-0 bg-black/40 z-[2000] backdrop-blur-sm" />
             <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed inset-y-0 left-0 w-[85%] max-w-[340px] bg-[#FDF4E6] z-[2100] p-6 overflow-y-auto custom-scrollbar shadow-2xl flex flex-col">
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-5">
                 <h3 className="text-xl font-black text-[#444] uppercase tracking-tight">Filters</h3>
-                <button onClick={() => setIsFilterOpen(false)} className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center"><X size={20}/></button>
+                <button onClick={() => setIsFilterOpen(false)} className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center"><X size={20} /></button>
               </div>
               <div className="flex-1">
                 <FilterContent />

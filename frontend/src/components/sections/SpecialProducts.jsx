@@ -59,7 +59,7 @@ export function SpecialProducts() {
           </div>
         </div>
 
-        <div className="min-h-[600px] md:min-h-[800px] lg:min-h-[1000px]">
+        <div className="min-h-[600px] md:min-h-[800px] lg:min-h-[1000px] bg-red-500">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 16 }}
