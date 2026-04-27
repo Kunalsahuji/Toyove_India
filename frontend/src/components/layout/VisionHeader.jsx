@@ -312,8 +312,8 @@ export function VisionHeader() {
                              {link.mega.sidebar.map(s => (
                                <button 
                                 key={s.name} 
-                                onMouseEnter={() => setActiveMasterCat(s.name)}
-                                className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-white/60'}`}
+                                onClick={() => setActiveMasterCat(s.name)}
+                                className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-white/60 hover:text-[#E84949]'}`}
                                >
                                  {s.name}
                                </button>

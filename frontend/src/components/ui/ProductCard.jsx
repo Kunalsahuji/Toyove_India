@@ -1,86 +1,213 @@
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ShoppingBag, Heart, Eye, Layers } from 'lucide-react'
+import { ShoppingBag, Heart, Eye, Layers, X, Star, Plus, Minus } from 'lucide-react'
+import { useCart } from '../../context/CartContext'
+
+const QuickViewModal = ({ p, isOpen, onClose }) => {
+  const { addToCart } = useCart()
+  const [qty, setQty] = useState(1)
+
+  // Scroll lock implementation
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-10">
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          exit={{ opacity: 0 }} 
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+        />
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0, y: 50 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 50 }}
+          className="relative bg-[#FDF4E6] w-full max-w-4xl max-h-[90vh] md:max-h-[85vh] rounded-[30px] md:rounded-[50px] overflow-hidden shadow-2xl flex flex-col md:flex-row border-[1.5px] border-dashed border-black/10 overflow-y-auto no-scrollbar"
+        >
+          {/* Close Button */}
+          <button 
+            onClick={onClose} 
+            className="absolute top-4 right-4 md:top-8 md:right-8 z-[100] w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-all active:scale-90"
+          >
+            <X size={20}/>
+          </button>
+          
+          {/* Left: Image Section */}
+          <div className="w-full md:w-[45%] bg-[#F9EAD3] p-6 md:p-10 flex items-center justify-center border-b md:border-b-0 md:border-r border-dashed border-black/10 shrink-0">
+            <div className="relative w-full aspect-square max-w-[300px] md:max-w-none">
+              <img 
+                src={p.img} 
+                alt={p.name} 
+                className="w-full h-full object-cover rounded-[25px] md:rounded-[40px] shadow-xl border-[1.5px] border-dashed border-black/10" 
+              />
+            </div>
+          </div>
+
+          {/* Right: Info Section */}
+          <div className="w-full md:w-[55%] p-6 md:p-14 flex flex-col justify-center">
+            <div className="space-y-4 md:space-y-6">
+              <div className="space-y-2">
+                <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-[#E84949]">Limited Edition</p>
+                <h2 className="text-2xl md:text-5xl font-grandstander font-bold text-[#333] tracking-tighter leading-[0.95]">{p.name}</h2>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex text-[#E84949]"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/></div>
+                <span className="text-[10px] md:text-[12px] font-bold text-gray-400 uppercase tracking-widest">(12 Customer Reviews)</span>
+              </div>
+
+              <div className="flex items-center gap-4 py-4 md:py-6 border-y border-dashed border-black/10">
+                <span className="text-3xl md:text-5xl font-black text-[#E84949]">₹{p.price}</span>
+                {p.oldPrice && <span className="text-base md:text-xl text-gray-400 line-through font-bold">₹{p.oldPrice}</span>}
+              </div>
+
+              <p className="text-[13px] md:text-[15px] text-gray-500 leading-relaxed font-roboto italic opacity-80">Experience the joy of premium toys crafted with love. Perfect for gifts and creative playtime adventures that inspire imagination and endless smiles.</p>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
+                <div className="flex items-center justify-between h-14 md:h-20 bg-white border-[1.5px] border-dashed border-black/10 rounded-2xl px-6 sm:w-36 shrink-0">
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-8 flex justify-center text-[#666] hover:text-[#E84949] transition-colors"><Minus size={18} /></button>
+                  <span className="w-10 text-center font-bold text-2xl font-grandstander">{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} className="w-8 flex justify-center text-[#666] hover:text-[#E84949] transition-colors"><Plus size={18} /></button>
+                </div>
+                <button 
+                  onClick={() => { addToCart(p, qty); onClose(); }}
+                  className="flex-1 h-14 md:h-20 bg-[#E84949] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[13px] md:text-[14px] shadow-xl shadow-[#E84949]/20 hover:bg-[#333] transition-all active:scale-95 flex items-center justify-center gap-3 px-8 py-4 md:py-6"
+                >
+                  <ShoppingBag size={22}/> Add to Cart
+                </button>
+              </div>
+              
+              <Link 
+                to={`/product/${p.id}`} 
+                onClick={onClose} 
+                className="block text-center text-[10px] md:text-[12px] font-black text-[#333] uppercase tracking-widest underline underline-offset-4 decoration-2 decoration-[#E84949]/30 hover:text-[#E84949] transition-colors pt-4"
+              >
+                View Full Product Details
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  )
+}
 
 export function ProductCard({ p, i, isGridOne = false }) {
+  const { addToCart, toggleWishlist, toggleCompare, wishlist, compare } = useCart()
+  const [showQuickView, setShowQuickView] = useState(false)
+  
   const finalPrice = (p.price || 0).toFixed(0)
   const finalOldPrice = p.oldPrice ? p.oldPrice.toFixed(0) : null
   const discountPercent = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : null
 
+  const isWishlisted = wishlist?.find(item => item.id === p.id)
+  const isCompared = compare?.find(item => item.id === p.id)
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: i * 0.05 }}
-      className={`group relative flex flex-col bg-transparent mx-auto w-full ${isGridOne ? 'max-w-md md:max-w-lg' : ''}`}
-    >
-      {/* Dashed Box Container (Image only, NO padding) */}
-      <div className="relative aspect-square rounded-[25px] border-[1.5px] border-dashed border-black/15 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden">
-        <Link to={`/product/${p.id}`} className="block w-full h-full relative z-10">
-          <img
-            src={p.img}
-            alt={p.name}
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        </Link>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: i * 0.05 }}
+        className={`group relative flex flex-col bg-transparent mx-auto w-full ${isGridOne ? 'max-w-md md:max-w-lg' : ''}`}
+      >
+        {/* Dashed Box Container */}
+        <div className="relative aspect-square rounded-[25px] border-[1.5px] border-dashed border-black/15 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden">
+          <Link to={`/product/${p.id}`} className="block w-full h-full relative z-10">
+            <img
+              src={p.img}
+              alt={p.name}
+              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          </Link>
 
-        {/* Action Icons - Red Background, white icons */}
-        <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 transition-all duration-500 transform translate-x-2 opacity-0 lg:group-hover:translate-x-0 lg:group-hover:opacity-100 lg:opacity-0 md:opacity-100 md:translate-x-0 opacity-100">
-          {[
-            { icon: <Eye size={16} />, label: 'Quick View' },
-            { icon: <ShoppingBag size={16} />, label: 'Add to Cart' },
-            { icon: <Heart size={16} />, label: 'Wishlist' },
-            { icon: <Layers size={16} />, label: 'Compare' },
-          ].map((action, idx) => (
-            <button
-              key={idx}
-              className="w-8 h-8 md:w-9 md:h-9 bg-[#E84949] text-white rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
-              title={action.label}
-            >
-              {action.icon}
-            </button>
-          ))}
-        </div>
+          {/* Action Icons - Red Background, white icons */}
+          {/* Logic: 
+              - By default, hidden (opacity-0) and pushed right (translate-x-4).
+              - On hover (any device), show (opacity-100, translate-x-0).
+              - On screens SMALLER than 1024px (Mobile/Tab), ALWAYS show (opacity-100, translate-x-0) regardless of hover.
+          */}
+          <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 transition-all duration-500 transform 
+            opacity-0 translate-x-4
+            group-hover:opacity-100 group-hover:translate-x-0
+            max-[1023px]:opacity-100 max-[1023px]:translate-x-0">
+            
+            {[
+              { icon: <Eye size={16} />, label: 'Quick View', action: () => setShowQuickView(true) },
+              { icon: <ShoppingBag size={16} />, label: 'Add to Cart', action: () => addToCart(p) },
+              { icon: <Heart size={16} className={isWishlisted ? 'fill-white' : ''} />, label: 'Wishlist', action: () => toggleWishlist(p) },
+              { icon: <Layers size={16} className={isCompared ? 'fill-white' : ''} />, label: 'Compare', action: () => toggleCompare(p) },
+            ].map((action, idx) => (
+              <button
+                key={idx}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  action.action();
+                }}
+                className="w-8 h-8 md:w-9 md:h-9 bg-[#E84949] text-white rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
+                title={action.label}
+              >
+                {action.icon}
+              </button>
+            ))}
+          </div>
 
-        {/* Promo Badge */}
-        {discountPercent && (
-          <span className="absolute top-3 left-3 z-20 bg-[#222] text-white text-[9px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
-            -{discountPercent}%
-          </span>
-        )}
-      </div>
-
-      {/* Details Section (OUTSIDE the box) */}
-      <div className="mt-4 text-center px-2">
-        <Link to={`/product/${p.id}`}>
-          <h3 className="text-[13px] md:text-[15px] font-bold text-[#444] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight truncate mb-1">
-            {p.name}
-          </h3>
-        </Link>
-        
-        <div className="flex items-center justify-center gap-2">
-          {finalOldPrice && (
-            <span className="text-[10px] md:text-[11px] text-[#444]/20 line-through font-bold tracking-tight whitespace-nowrap">
-              ₹{finalOldPrice}
+          {/* Promo Badge */}
+          {discountPercent && (
+            <span className="absolute top-3 left-3 z-20 bg-[#222] text-white text-[9px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
+              -{discountPercent}%
             </span>
           )}
-          <span className="text-[13px] md:text-[15px] font-black text-[#444] group-hover:text-[#E84949] transition-colors tracking-tight whitespace-nowrap">
-            ₹{finalPrice}
-          </span>
         </div>
-      </div>
-      
-      {/* Mobile persistent icons override */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media (max-width: 1023px) {
-          .group .transform.translate-x-2 {
-            transform: translateX(0) !important;
-            opacity: 1 !important;
-          }
-        }
-      `}} />
-    </motion.div>
+
+        {/* Details Section (OUTSIDE the box) */}
+        <div className="mt-4 text-center px-2">
+          <Link to={`/product/${p.id}`}>
+            <h3 className="text-[13px] md:text-[15px] font-bold text-[#444] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight truncate mb-1">
+              {p.name}
+            </h3>
+          </Link>
+          
+          <div className="flex items-center justify-center gap-2">
+            {finalOldPrice && (
+              <span className="text-[10px] md:text-[11px] text-[#444]/20 line-through font-bold tracking-tight whitespace-nowrap">
+                ₹{finalOldPrice}
+              </span>
+            )}
+            <span className="text-[13px] md:text-[15px] font-black text-[#444] group-hover:text-[#E84949] transition-colors tracking-tight whitespace-nowrap">
+              ₹{finalPrice}
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
+      <QuickViewModal p={p} isOpen={showQuickView} onClose={() => setShowQuickView(false)} />
+    </>
   )
 }

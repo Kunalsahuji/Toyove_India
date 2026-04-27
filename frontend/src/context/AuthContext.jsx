@@ -38,8 +38,23 @@ export function AuthProvider({ children }) {
     localStorage.setItem('TOYOVOINDIA_payment_methods', JSON.stringify(savedMethods));
   }, [savedMethods]);
 
-  const login = (userData) => {
-    setUser({ ...userData, firstName: userData.firstName || 'User', lastName: userData.lastName || '' });
+  const login = (email, password) => {
+    // Basic mock login
+    if (email && password) {
+      const userData = { email, firstName: 'User', lastName: '' };
+      setUser(userData);
+      return { success: true };
+    }
+    return { success: false, message: 'Invalid credentials' };
+  };
+
+  const register = (userData) => {
+    // Basic mock register
+    if (userData.email && userData.password) {
+      setUser({ ...userData });
+      return { success: true };
+    }
+    return { success: false, message: 'Please fill all fields' };
   };
 
   const logout = () => {
@@ -79,6 +94,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ 
       user, 
       login, 
+      register,
       logout, 
       updateUser, 
       addresses, 
