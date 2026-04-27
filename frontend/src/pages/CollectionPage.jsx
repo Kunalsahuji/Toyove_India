@@ -166,7 +166,7 @@ export function CollectionPage() {
         { id: 'availability', title: 'availability', items: ['in stock', 'out of stock'] },
         { id: 'brand', title: 'brands', items: ['Babyhug', 'Toykio', 'Carter\'s', 'Lego', 'Pampers'] },
         { id: 'gender', title: 'gender', items: ['Boy', 'Girl', 'Unisex'] },
-        { id: 'age', title: 'ato the ge', items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8+ Years'] },
+        { id: 'age', title: 'age', items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8+ Years'] },
         { id: 'size', title: 'size', items: ['Small', 'Medium', 'Large', 'XL'] },
         { id: 'color', title: 'colors', items: ['Red', 'Blue', 'Pink', 'Yellow', 'White', 'Black'] },
         { id: 'material', title: 'material', items: ['Cotton', 'Wool', 'Plastic', 'Wood', 'Silicone'] },
@@ -200,7 +200,7 @@ export function CollectionPage() {
   return (
     <div className="bg-[#FDF4E6] min-h-screen font-grandstander overflow-x-hidden">
       {/* Hero Section */}
-      <div className="shell relative h-[350px] md:h-[450px] overflow-hidden flex items-center justify-center ">
+      <div className="shell relative h-[350px] md:h-[450px] overflow-hidden flex items-center justify-center rounded-[30px] md:rounded-[50px] mt-6">
         <img src={bannerImg} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover brightness-[0.5] scale-105" />
         <div className="relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -237,7 +237,7 @@ export function CollectionPage() {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-2 items-start">
           <aside className="hidden lg:block w-72 xl:w-80 shrink-0 sticky top-28">
             <div className="border-[1.5px] border-dashed border-black/10 rounded-[35px] p-8">
                <h3 className="text-[14px] font-black uppercase tracking-widest text-[#444] mb-6 flex items-center gap-2">
