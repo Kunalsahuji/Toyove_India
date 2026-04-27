@@ -252,49 +252,54 @@ export function AllCategoriesPage() {
 
           <main className="flex-1 w-full space-y-8 overflow-hidden">
             
-            {/* Toolbar */}
-            <div className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[25px] p-4 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-4">
-                <button onClick={() => setIsFilterOpen(true)} className="lg:hidden p-2 rounded-lg bg-white/50 border border-dashed border-black/10"><SlidersHorizontal size={18}/></button>
+            {/* Refined Toolbar - Toykio Style */}
+            <div className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[25px] p-3 md:p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setIsFilterOpen(true)} className="lg:hidden p-2.5 rounded-xl bg-[#FDF4E6] border border-dashed border-black/5 shadow-sm transition-all active:scale-95"><SlidersHorizontal size={16} className="text-[#444]"/></button>
                 
-                {/* Desktop Grid Toggles */}
+                {/* Desktop Grid Toggles - Softened Style */}
                 <div className="hidden lg:flex items-center gap-2">
-                  <button onClick={() => setGridCols(3)} className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${gridCols === 3 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-transparent text-[#444] hover:bg-black/5'}`}>
-                    <div className="flex gap-[2px] items-center">
-                      <div className="w-[3px] h-3 bg-current rounded-full"/>
-                      <div className="w-[3px] h-3 bg-current rounded-full"/>
-                      <div className="w-[3px] h-3 bg-current rounded-full"/>
+                  <button onClick={() => setGridCols(3)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 3 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
+                    <div className="flex gap-[2px]">
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
                     </div>
                   </button>
-                  <button onClick={() => setGridCols(2)} className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${gridCols === 2 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-transparent text-[#444] hover:bg-black/5'}`}>
-                    <div className="flex gap-[2px] items-center">
-                      <div className="w-[3px] h-3 bg-current rounded-full"/>
-                      <div className="w-[3px] h-3 bg-current rounded-full"/>
+                  <button onClick={() => setGridCols(2)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 2 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
+                    <div className="flex gap-[2px]">
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
                     </div>
                   </button>
-                  <button onClick={() => setGridCols(1)} className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${gridCols === 1 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-transparent text-[#444] hover:bg-black/5'}`}>
-                    <div className="w-[3px] h-3 bg-current rounded-full"/>
+                  <button onClick={() => setGridCols(1)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 1 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
+                    <div className="flex flex-col gap-[3px]">
+                      <div className="w-4 h-[2px] bg-current rounded-full"/>
+                      <div className="w-4 h-[2px] bg-current rounded-full"/>
+                    </div>
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-6">
-                <div className="hidden md:flex items-center gap-3">
-                   <span className="text-[11px] font-black uppercase tracking-widest text-[#444]/40">Sort by:</span>
-                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent text-[12px] font-black outline-none cursor-pointer text-[#444]">
+              {/* Centered Sort By - More compact on mobile */}
+              <div className="flex-1 flex justify-center">
+                <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 flex items-center gap-2 md:gap-3 shadow-sm">
+                   <span className="hidden sm:inline text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-[#444]/60">Sort:</span>
+                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent text-[11px] md:text-[12px] font-black outline-none cursor-pointer text-[#444] min-w-[100px] md:min-w-[140px]">
                       <option value="relevance">Featured</option>
                       <option value="best-selling">Best selling</option>
-                      <option value="alpha-asc">Alphabetically, A-Z</option>
-                      <option value="alpha-desc">Alphabetically, Z-A</option>
-                      <option value="price-asc">Price, Low to high</option>
-                      <option value="price-desc">Price, high to low</option>
-                      <option value="oldest">Date, old to new</option>
-                      <option value="newest">Date, new to old</option>
+                      <option value="alpha-asc">A-Z</option>
+                      <option value="alpha-desc">Z-A</option>
+                      <option value="price-asc">Low to high</option>
+                      <option value="price-desc">High to low</option>
+                      <option value="newest">Newest</option>
                    </select>
                 </div>
-                <div className="bg-white px-3 py-1.5 rounded-lg border border-dashed border-black/10 text-[11px] font-black text-[#444]">
-                  {processedProducts.length} products
-                </div>
+              </div>
+
+              {/* Right Aligned Count - More compact on mobile */}
+              <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 text-[10px] md:text-[12px] font-black text-[#444] whitespace-nowrap shadow-sm">
+                {processedProducts.length} <span className="hidden sm:inline">products</span><span className="sm:hidden">pcs</span>
               </div>
             </div>
 
@@ -334,18 +339,20 @@ export function AllCategoriesPage() {
               </div>
             )}
 
-            {/* Weekly Trending Section (Refined Card Scale) */}
-            <section className="mt-24 border-[1.5px] border-dashed border-black/10 p-8 md:p-12 rounded-[50px] bg-white/10 overflow-hidden">
-               <div className="flex items-center justify-between mb-10">
-                  <h2 className="text-3xl md:text-4xl font-black text-[#444] uppercase tracking-tighter">Weekly <span className="text-[#E84949]">Trending</span></h2>
-                  <Link to="/all-categories" className="text-[11px] font-black uppercase tracking-widest text-[#E84949] border-b-2 border-[#E84949]">View All</Link>
+            {/* Weekly Trending Section (Standardized Scale & Responsive Snap) */}
+            <section className="mt-24 border-[1.5px] border-dashed border-black/10 p-6 md:p-10 rounded-[50px] bg-white/10 overflow-hidden">
+               <div className="flex items-center justify-between mb-8 px-2">
+                  <h2 className="text-2xl md:text-4xl font-black text-[#444] uppercase tracking-tighter">Weekly <span className="text-[#E84949]">Trending</span></h2>
+                  <Link to="/all-categories" className="text-[11px] font-black uppercase tracking-widest text-[#E84949] border-b-2 border-[#E84949] hover:opacity-70 transition-opacity">View All</Link>
                </div>
-               <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar">
+               
+               <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar scroll-smooth">
                   {allProducts.slice(0, 10).map((p, i) => (
-                    <div key={`trend-${p.id}`} className="min-w-[85%] md:min-w-[45%] lg:min-w-[22%] snap-center shrink-0">
-                      <div className="scale-95 hover:scale-100 transition-transform duration-500">
-                        <ProductCard p={p} i={i} />
-                      </div>
+                    <div 
+                      key={`trend-${p.id}`} 
+                      className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] xl:w-[calc(25%-18px)] snap-start shrink-0"
+                    >
+                      <ProductCard p={p} i={i} />
                     </div>
                   ))}
                </div>

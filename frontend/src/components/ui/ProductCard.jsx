@@ -140,10 +140,16 @@ export function ProductCard({ p, i, isGridOne = false }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: i * 0.05 }}
-        className={`group relative flex flex-col bg-transparent mx-auto w-full ${isGridOne ? 'max-w-md md:max-w-lg' : ''}`}
+        className={`group relative flex bg-transparent w-full transition-all duration-500 ${
+          isGridOne 
+            ? 'flex-col md:flex-row items-center gap-6 md:gap-10 max-w-none' 
+            : 'flex-col mx-auto'
+        }`}
       >
         {/* Dashed Box Container */}
-        <div className="relative aspect-square rounded-[25px] border-[1.5px] border-dashed border-black/15 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden">
+        <div className={`relative aspect-square rounded-[25px] border-[1.5px] border-dashed border-black/15 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden shrink-0 ${
+          isGridOne ? 'w-full md:w-[320px] lg:w-[400px]' : 'w-full'
+        }`}>
           <Link to={`/product/${p.id}`} className="block w-full h-full relative z-10">
             <img
               src={p.img}
@@ -189,23 +195,29 @@ export function ProductCard({ p, i, isGridOne = false }) {
         </div>
 
         {/* Details Section (OUTSIDE the box) */}
-        <div className="mt-4 text-center px-2">
+        <div className={`mt-4 flex flex-col ${isGridOne ? 'text-left items-start md:mt-0' : 'text-center items-center'} px-2`}>
           <Link to={`/product/${p.id}`}>
-            <h3 className="text-[13px] md:text-[15px] font-bold text-[#444] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight truncate mb-1">
+            <h3 className={`${isGridOne ? 'text-xl md:text-3xl' : 'text-[13px] md:text-[15px]'} font-bold text-[#444] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight mb-1`}>
               {p.name}
             </h3>
           </Link>
           
-          <div className="flex items-center justify-center gap-2">
+          <div className={`flex items-center gap-2 ${isGridOne ? 'justify-start' : 'justify-center'}`}>
             {finalOldPrice && (
-              <span className="text-[10px] md:text-[11px] text-[#444]/20 line-through font-bold tracking-tight whitespace-nowrap">
+              <span className={`${isGridOne ? 'text-sm md:text-lg' : 'text-[10px] md:text-[11px]'} text-[#444]/20 line-through font-bold tracking-tight whitespace-nowrap`}>
                 ₹{finalOldPrice}
               </span>
             )}
-            <span className="text-[13px] md:text-[15px] font-black text-[#444] group-hover:text-[#E84949] transition-colors tracking-tight whitespace-nowrap">
+            <span className={`${isGridOne ? 'text-lg md:text-2xl' : 'text-[13px] md:text-[15px]'} font-black text-[#444] group-hover:text-[#E84949] transition-colors tracking-tight whitespace-nowrap`}>
               ₹{finalPrice}
             </span>
           </div>
+
+          {isGridOne && (
+             <p className="hidden md:block mt-6 text-gray-400 text-sm md:text-base leading-relaxed max-w-xl italic">
+                Experience the magic of creative play with our premium quality toys. Designed to inspire imagination and bring endless joy to every child's world.
+             </p>
+          )}
         </div>
         
         {/* Responsive Visibility Logic */}
