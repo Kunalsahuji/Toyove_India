@@ -8,7 +8,7 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
   const { addToCart } = useCart()
   const [qty, setQty] = useState(1)
 
-  // Scroll lock implementation
+  // Scroll lock implementation - Refined to prevent initial mount scroll jump
   useEffect(() => {
     if (isOpen) {
       const scrollY = window.scrollY;
@@ -16,16 +16,23 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      // Only restore scroll if we actually have a saved position (prevents jump on mount)
+      const savedScrollY = document.body.style.top;
+      if (savedScrollY) {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, parseInt(savedScrollY || '0') * -1);
+      }
     }
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
+      // Cleanup: Only reset if the modal being unmounted is actually the one that locked the scroll
+      // (This prevents multiple cards from fighting over the body style during unmount)
+      if (isOpen) {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+      }
     };
   }, [isOpen]);
 
@@ -146,12 +153,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
             <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </Link>
 
-          {/* Action Icons - Red Background, white icons */}
-          {/* Logic: 
-              - By default, hidden (opacity-0) and pushed right (translate-x-4).
-              - On hover (any device), show (opacity-100, translate-x-0).
-              - On screens SMALLER than 1024px (Mobile/Tab), ALWAYS show (opacity-100, translate-x-0) regardless of hover.
-          */}
+          {/* Action Icons */}
           <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 transition-all duration-500 transform 
             opacity-0 translate-x-4
             group-hover:opacity-100 group-hover:translate-x-0
@@ -180,7 +182,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
 
           {/* Promo Badge */}
           {discountPercent && (
-            <span className="absolute top-3 left-3 z-20 bg-[#222] text-white text-[9px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
+            <span className="absolute top-3 left-3 z-20 bg-[#222] text-[#fff] text-[9px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-wider">
               -{discountPercent}%
             </span>
           )}
@@ -205,6 +207,16 @@ export function ProductCard({ p, i, isGridOne = false }) {
             </span>
           </div>
         </div>
+        
+        {/* Responsive Visibility Logic */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (max-width: 1023px) {
+            .group .transform.lg\\:translate-x-4 {
+              transform: translateX(0) !important;
+              opacity: 1 !important;
+            }
+          }
+        `}} />
       </motion.div>
 
       <QuickViewModal p={p} isOpen={showQuickView} onClose={() => setShowQuickView(false)} />

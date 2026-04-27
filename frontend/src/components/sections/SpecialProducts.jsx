@@ -43,7 +43,11 @@ export function SpecialProducts() {
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab(tab);
+                }}
                 className={`h-9 px-6 rounded-md text-[13px] font-bold transition-all duration-200 shadow-md font-grandstander ${activeTab === tab
                     ? 'bg-[#F1641E] text-white border border-[#F1641E]'
                     : 'bg-[#1A1A1A] text-white border border-[#1A1A1A] hover:bg-[#6651A4] hover:border-[#6651A4]'
@@ -55,7 +59,7 @@ export function SpecialProducts() {
           </div>
         </div>
 
-        <div className="min-h-[250px]">
+        <div className="min-h-[600px] md:min-h-[800px] lg:min-h-[1000px]">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 16 }}
