@@ -23,7 +23,7 @@ export function ContactPage() {
 
       {/* Map Header - Full Width */}
       <div className="w-full h-100 md:h-125 bg-gray-200 overflow-hidden relative grayscale-[0.2] border-b border-[#E5E5E5]">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235527.49482598295!2d75.69903743903554!3d22.723888289938085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3962fcad1b410ddb%3A0x96ec4da356240f4!2sIndore%2C%20Madhya%20Pradesh!5e0!3m2!1sen!2sin!4v1776510456462!5m2!1sen!2sin"
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13728.484247833054!2d76.81491746682662!3d30.651528642738942!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390f94d01f1f51f1%3A0x6e2f1f1f1f1f1f1f!2sZirakpur%2C%20Punjab!5e0!3m2!1sen!2sin!4v1714201000000!5m2!1sen!2sin"
           width="100%"
           height="100%"
           style={{ border: 0 }}
@@ -40,24 +40,24 @@ export function ContactPage() {
           <div className="flex flex-col gap-8">
             <h2 className="text-[32px] md:text-[42px] font-grandstander font-bold text-[#333333] leading-tight tracking-tight">Our Information</h2>
             <p className="text-[15px] text-[#666] leading-relaxed font-roboto">
-              Our web company consists of web programmers and designers with extensive experience in the web market. Each of us worked as hired worker to create templates for Magento, Shopify, Wordpress and others.
+               TOYOVO INDIA (OPC) PRIVATE LIMITED is an officially registered enterprise committed to bringing high-quality toys and joy to families across India. We believe in creativity, safety, and endless smiles.
             </p>
 
             <div className="mt-4 flex flex-col gap-2">
               <ContactInfoItem
                 icon={MapPin}
                 title="Address"
-                content="1010 White Street Block, USA"
+                content="Unit 703, 7th Floor, Block 1 Mayagarden, Zirakpur, Rajpura, Mohali- 140603, Punjab"
               />
               <ContactInfoItem
                 icon={Phone}
                 title="Phone"
-                content="+01 0123 456 789"
+                content="+91 98765 43210"
               />
               <ContactInfoItem
                 icon={Mail}
                 title="Email"
-                content="admin@gmail.com"
+                content="hello@toyovoindia.com"
               />
               <ContactInfoItem
                 icon={Clock}

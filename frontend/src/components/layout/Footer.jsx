@@ -113,21 +113,21 @@ export function Footer() {
                   <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#E84949] transition-colors"><Phone size={14} className="text-white" /></div>
                   <div className="flex flex-col">
                     <span className="text-[10px] text-white/50 uppercase tracking-widest font-bold">Call Us</span>
-                    <span>+01 0123 456 789</span>
+                    <span>+91 98765 43210</span>
                   </div>
                 </li>
                 <li className="flex gap-4 items-start group">
                   <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#E84949] transition-colors"><MapPin size={14} className="text-white" /></div>
                   <div className="flex flex-col">
                     <span className="text-[10px] text-white/50 uppercase tracking-widest font-bold">Visit Us</span>
-                    <span>1010 White Street Block, USA</span>
+                    <span className="leading-relaxed">Unit 703, 7th Floor, Block 1 Mayagarden, Zirakpur, Rajpura, Mohali- 140603, Punjab</span>
                   </div>
                 </li>
                 <li className="flex gap-4 items-start group">
                   <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#E84949] transition-colors"><Mail size={14} className="text-white" /></div>
                   <div className="flex flex-col">
                     <span className="text-[10px] text-white/50 uppercase tracking-widest font-bold">Email Us</span>
-                    <a href="mailto:admin@gmail.com" className="hover:text-white">admin@gmail.com</a>
+                    <a href="mailto:hello@toyovoindia.com" className="hover:text-white">hello@toyovoindia.com</a>
                   </div>
                 </li>
               </ul>
@@ -135,11 +135,23 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <p className="text-[13px] md:text-[14px] text-white/60 text-center sm:text-left font-medium">
-            © 2026, <span className="text-white font-bold">TOYOVOINDIA</span> Powered by Appzeto
+        <div className="border-t border-white/10 py-8 flex flex-col gap-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col gap-1 text-center md:text-left">
+              <p className="text-[13px] md:text-[14px] text-white/60 font-medium">
+                © 2026, <span className="text-white font-bold tracking-tight">TOYOVO INDIA (OPC) PRIVATE LIMITED</span>
+              </p>
+              <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-1 text-[10px] font-bold text-white/30 uppercase tracking-[0.1em]">
+                <span>CIN: U47912PB2026OPC068091</span>
+                <span>PAN: AANCT0674K</span>
+                <span>TAN: PTLT16619B</span>
+              </div>
+            </div>
+            <PaymentBadges />
+          </div>
+          <p className="text-center text-[10px] text-white/20 font-bold uppercase tracking-[0.3em]">
+            Incorporated Under The Companies Act, 2013 | Ministry of Corporate Affairs, India
           </p>
-          <PaymentBadges />
         </div>
       </div>
 

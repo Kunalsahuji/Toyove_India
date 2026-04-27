@@ -75,8 +75,8 @@ export function AboutPage() {
             <span className="text-[#E84949] font-medium text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto">TOYOVOINDIA Vision</span>
             <h2 className="text-4xl md:text-6xl font-grandstander font-bold text-[#333333] leading-[1.1] tracking-tight">Every Toy Tells an Adventure Story</h2>
             <div className="space-y-8 text-[16px] md:text-[18px] text-[#666] leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              <p>Welcome to TOYOVOINDIA, where innovation meets the timeless magic of play. Our journey began with a simple mission: to create toys that don't just entertain, but inspire children to explore the world around them with curiosity and joy.</p>
-              <p>At TOYOVOINDIA, we believe that toys are the building blocks of childhood memories. That’s why we meticulously design each product to ensure the highest standards of safety, quality, and creative potential, using eco-friendly materials wherever possible.</p>
+              <p>Welcome to TOYOVOINDIA, where innovation meets the timeless magic of play. Officially incorporated on April 22, 2026, as TOYOVO INDIA (OPC) PRIVATE LIMITED, we are a legally recognized entity committed to transparency and excellence.</p>
+              <p>Our journey began with a simple mission: to create toys that don't just entertain, but inspire children to explore the world around them with curiosity and joy. As a Ministry of Corporate Affairs registered company, we adhere to the highest standards of safety and quality.</p>
             </div>
             <button className="h-14 px-12 bg-[#333] text-white rounded-full font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all transform hover:scale-105 shadow-xl">EXPLORE OUR VALUES</button>
           </div>
@@ -85,35 +85,27 @@ export function AboutPage() {
                <img src="https://toykio.myshopify.com/cdn/shop/files/about-us.webp?v=1711002747" alt="Story" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
             </div>
             <div className="absolute -bottom-8 -right-8 md:-bottom-12 md:-right-12 w-48 h-48 md:w-56 md:h-56 bg-[#E84949] rounded-[40px] flex items-center justify-center p-8 -rotate-6 shadow-2xl hidden sm:flex border-4 border-white group-hover:rotate-0 transition-all duration-700">
-               <p className="text-white font-grandstander font-bold text-2xl md:text-3xl text-center leading-tight tracking-tighter">10+ Years of Crafting Joy</p>
+               <p className="text-white font-grandstander font-bold text-2xl md:text-3xl text-center leading-tight tracking-tighter">Registered & Certified Since 2026</p>
             </div>
           </div>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-10 md:mt-20">
-           <MetricCard icon={Users} value="50K+" label="Happy Kids" />
-           <MetricCard icon={Star} value="4.9" label="Avg Rating" />
-           <MetricCard icon={CheckCircle2} value="200+" label="Safe Designs" />
-           <MetricCard icon={Trophy} value="12" label="Global Awards" />
         </div>
 
         {/* Info Box Section - Added for Parity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 md:mt-20 mt-12 gap-8">
            <InfoBox 
              icon={Phone} 
-             title="+01 0123 456 789" 
+             title="+91 98765 43210" 
              content="We're thrilled to connect with you and assist in every way possible. Feel free to reach out to us for any inquiries, suggestions, or assistance you might need." 
            />
            <InfoBox 
              icon={MapPin} 
-             title="1010-white street block, usa" 
-             content="We look forward to hearing from you and being part of your journey in embracing elegance and grace through our exquisite children's toys Collection." 
+             title="Mohali, Punjab, India" 
+             content="Unit 703, 7th Floor, Block 1 Mayagarden, Zirakpur, Rajpura, Mohali- 140603, Punjab. We look forward to seeing you!" 
            />
            <InfoBox 
              icon={Mail} 
-             title="admin@gmail.com" 
-             content="Our dedicated team is at your service, ready to respond promptly and ensure your experience with 'TOYOVOINDIA' Toys and games Collection is nothing short of regal." 
+             title="hello@toyovoindia.com" 
+             content="Our dedicated team is at your service, ready to respond promptly and ensure your experience with TOYOVOINDIA is nothing short of exceptional." 
            />
         </div>
 
