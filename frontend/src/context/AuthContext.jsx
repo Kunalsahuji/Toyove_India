@@ -39,9 +39,19 @@ export function AuthProvider({ children }) {
   }, [savedMethods]);
 
   const login = (email, password) => {
-    // Basic mock login
+    // Check simulated database in localStorage
+    const allUsers = JSON.parse(localStorage.getItem('TOYOVOINDIA_users_list') || '[]');
+    const foundUser = allUsers.find(u => u.email === email && u.password === password);
+
+    if (foundUser) {
+      setUser(foundUser);
+      return { success: true };
+    }
+    
+    // Fallback for demo purposes if someone just types anything
     if (email && password) {
-      const userData = { email, firstName: 'User', lastName: '' };
+      const fallbackName = email.split('@')[0];
+      const userData = { email, firstName: fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1), lastName: '' };
       setUser(userData);
       return { success: true };
     }
@@ -49,9 +59,18 @@ export function AuthProvider({ children }) {
   };
 
   const register = (userData) => {
-    // Basic mock register
     if (userData.email && userData.password) {
-      setUser({ ...userData });
+      // Save to simulated database
+      const allUsers = JSON.parse(localStorage.getItem('TOYOVOINDIA_users_list') || '[]');
+      if (allUsers.find(u => u.email === userData.email)) {
+        return { success: false, message: 'Email already exists' };
+      }
+      
+      const newUser = { ...userData };
+      allUsers.push(newUser);
+      localStorage.setItem('TOYOVOINDIA_users_list', JSON.stringify(allUsers));
+      
+      setUser(newUser);
       return { success: true };
     }
     return { success: false, message: 'Please fill all fields' };
