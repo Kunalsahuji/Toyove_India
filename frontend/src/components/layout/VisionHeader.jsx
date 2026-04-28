@@ -301,28 +301,29 @@ export function VisionHeader() {
                 <AnimatePresence>
                   {activeMenu === link.name && link.mega && (
                       <motion.div 
-                        initial={{ opacity: 0, y: 15 }} 
-                        animate={{ opacity: 1, y: 0 }} 
-                        exit={{ opacity: 0, y: 15 }} 
-                        className={`absolute top-full left-1/2 -translate-x-1/2 ${link.mega.type === 'master' ? 'w-[1200px] xl:w-[1300px] 2xl:w-[1400px]' : 'w-[1100px] xl:w-[1200px] 2xl:w-[1300px]'} bg-white shadow-[0_40px_100px_rgba(0,0,0,0.15)] rounded-b-[40px] border-t-4 border-[#E84949] flex overflow-hidden z-[1000]`}
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }} 
+                        exit={{ opacity: 0 }} 
+                        transition={{ duration: 0.15 }}
+                        className={`absolute top-full left-1/2 -translate-x-1/2 ${link.mega.type === 'master' ? 'w-[1200px] xl:w-[1300px] 2xl:w-[1400px]' : 'w-[1100px] xl:w-[1200px] 2xl:w-[1300px]'} bg-[#FDF4E6] shadow-[0_40px_100px_rgba(0,0,0,0.15)] rounded-b-[40px] border-t-[1.5px] border-[#E84949] flex overflow-hidden z-[1000]`}
                       >
                         {/* Sidebar (Optional) */}
                         {link.mega.type === 'master' ? (
-                          <div className="w-72 bg-[#FDF3E7] border-r border-black/5 p-8 space-y-1.5 h-[550px] overflow-y-auto custom-scrollbar">
+                          <div className="w-72 bg-[#F9EAD3] border-r border-black/5 p-8 space-y-1.5 h-[550px] overflow-y-auto custom-scrollbar">
                              {link.mega.sidebar.map(s => (
                                <button 
                                 key={s.name} 
                                 onClick={() => setActiveMasterCat(s.name)}
-                                className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-white/60 hover:text-[#E84949]'}`}
+                                className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6] hover:text-[#E84949]'}`}
                                >
                                  {s.name}
                                </button>
                              ))}
                           </div>
                         ) : link.mega.sidebar ? (
-                          <div className="w-64 bg-[#FDF3E7] border-r border-black/5 p-6 space-y-2">
+                          <div className="w-64 bg-[#F9EAD3] border-r border-black/5 p-6 space-y-2">
                              {link.mega.sidebar.map(s => (
-                               <button key={s.name} className={`w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${s.active ? 'bg-[#E84949] text-white shadow-lg shadow-[#E84949]/20' : 'text-[#333] hover:bg-white'}`}>
+                               <button key={s.name} className={`w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${s.active ? 'bg-[#E84949] text-white shadow-lg shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6]'}`}>
                                  {s.name}
                                </button>
                              ))}
@@ -333,9 +334,9 @@ export function VisionHeader() {
                         <div className="flex-1 flex flex-col h-[550px]">
                           {/* Master Top Header (Optional) */}
                           {link.mega.type === 'master' && (
-                            <div className="px-10 pt-8 pb-4 border-b border-black/5 bg-white/50 backdrop-blur-md sticky top-0 z-10">
+                            <div className="px-10 pt-8 pb-4 border-b border-black/5 bg-[#FDF4E6]/95 backdrop-blur-md sticky top-0 z-10">
                               <h3 className="text-[#E84949] font-black text-xs tracking-[0.3em] uppercase mb-1">ALL</h3>
-                              <div className="w-10 h-0.5 bg-[#E84949] rounded-full"></div>
+                              <div className="w-10 h-[1.5px] bg-[#E84949] rounded-full"></div>
                             </div>
                           )}
 
@@ -417,7 +418,7 @@ export function VisionHeader() {
                             {/* Visual Banner (Optional) */}
                             {(link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner) && (
                               <div className="col-span-1 flex flex-col items-center justify-start pt-2">
-                                <div className="rounded-[35px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-4 border-white transform hover:-translate-y-2 transition-all duration-700 w-full">
+                                <div className="rounded-[35px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-4 border-[#F9EAD3] transform hover:-translate-y-2 transition-all duration-700 w-full">
                                     <img src={link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner} alt={link.name} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-6 flex flex-col justify-end">
                                       <span className="text-[#E84949] text-[9px] uppercase font-black tracking-[0.3em] mb-1">Featured</span>
@@ -431,7 +432,7 @@ export function VisionHeader() {
                       </motion.div>
                     )}
                   {activeMenu === link.name && link.dropdown && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-2 border-[#E84949] py-2 z-[1000]">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-[1.5px] border-[#E84949] py-2 z-[1000]">
                       {link.dropdown.map(sub => <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block px-5 py-2.5 text-[12px] text-[#555] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all font-bold uppercase tracking-wider">{sub.name}</Link>)}
                     </motion.div>
                   )}

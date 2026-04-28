@@ -22,7 +22,7 @@ export function PolicyPageLayout({ title, subtitle, children }) {
           animate={{ opacity: 1, y: 0 }}
           className="shell relative z-20"
         >
-          <p className="text-white/90 font-bold text-[12px] md:text-[14px] uppercase tracking-[0.3em] mb-4">
+          <p className="text-[#e84949] font-bold text-[12px] md:text-[14px] uppercase tracking-[0.3em] mb-4">
             {subtitle || "Legal & Information"}
           </p>
           <h1 className="text-4xl md:text-5xl font-grandstander font-bold text-white leading-none tracking-tight drop-shadow-md">
