@@ -294,7 +294,7 @@ export function VisionHeader() {
           {/* Desktop Navigation: Only visible on 1024px+, strictly follows Logo */}
           <nav className="hidden lg:flex items-center justify-center gap-0 xl:gap-0 2xl:gap-0.5 flex-grow h-full px-1 xl:px-1.5">
             {mainNavLinks.filter(l => !l.hideOnDesktop).map(link => (
-              <div key={link.name} className="group/nav py-6" onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
+              <div key={link.name} className={`group/nav py-6 ${link.dropdown ? 'relative' : ''}`} onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
                 <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-0.5 xl:px-0.5 2xl:px-2 text-[8.5px] xl:text-[9px] 2xl:text-[10.5px] font-bold tracking-widest transition-all uppercase whitespace-nowrap font-grandstander ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
                   {link.name} {(link.mega || link.dropdown) && <ChevronDown size={6} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
                 </Link>
@@ -305,134 +305,136 @@ export function VisionHeader() {
                         animate={{ opacity: 1 }} 
                         exit={{ opacity: 0 }} 
                         transition={{ duration: 0.15 }}
-                        className={`absolute top-full left-1/2 -translate-x-1/2 ${link.mega.type === 'master' ? 'w-[1200px] xl:w-[1300px] 2xl:w-[1400px]' : 'w-[1100px] xl:w-[1200px] 2xl:w-[1300px]'} bg-[#FDF4E6] shadow-[0_40px_100px_rgba(0,0,0,0.15)] rounded-b-[40px] border-t-[1.5px] border-[#E84949] flex overflow-hidden z-[1000]`}
+                        className="absolute top-full left-1/2 -translate-x-1/2 w-screen bg-[#FDF4E6] shadow-[0_40px_100px_rgba(0,0,0,0.12)] border-t border-[#ebebeb] flex justify-center z-[1000]"
                       >
-                        {/* Sidebar (Optional) */}
-                        {link.mega.type === 'master' ? (
-                          <div className="w-72 bg-[#F9EAD3] border-r border-black/5 p-8 space-y-1.5 h-[550px] overflow-y-auto custom-scrollbar">
-                             {link.mega.sidebar.map(s => (
-                               <button 
-                                key={s.name} 
-                                onClick={() => setActiveMasterCat(s.name)}
-                                className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6] hover:text-[#E84949]'}`}
-                               >
-                                 {s.name}
-                               </button>
-                             ))}
-                          </div>
-                        ) : link.mega.sidebar ? (
-                          <div className="w-64 bg-[#F9EAD3] border-r border-black/5 p-6 space-y-2">
-                             {link.mega.sidebar.map(s => (
-                               <button key={s.name} className={`w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${s.active ? 'bg-[#E84949] text-white shadow-lg shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6]'}`}>
-                                 {s.name}
-                               </button>
-                             ))}
-                          </div>
-                        ) : null}
-
-                        {/* Main Content Area */}
-                        <div className="flex-1 flex flex-col h-[550px]">
-                          {/* Master Top Header (Optional) */}
-                          {link.mega.type === 'master' && (
-                            <div className="px-10 pt-8 pb-4 border-b border-black/5 bg-[#FDF4E6]/95 backdrop-blur-md sticky top-0 z-10">
-                              <h3 className="text-[#E84949] font-black text-xs tracking-[0.3em] uppercase mb-1">ALL</h3>
-                              <div className="w-10 h-[1.5px] bg-[#E84949] rounded-full"></div>
+                        <div className="w-full max-w-[1400px] flex h-[420px]">
+                          {/* Sidebar (Optional) */}
+                          {link.mega.type === 'master' ? (
+                            <div className="w-72 bg-[#F9EAD3] border-x border-black/5 p-8 space-y-1.5 h-full overflow-y-auto custom-scrollbar shrink-0">
+                               {link.mega.sidebar.map(s => (
+                                 <button 
+                                  key={s.name} 
+                                  onClick={() => setActiveMasterCat(s.name)}
+                                  className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6] hover:text-[#E84949]'}`}
+                                 >
+                                   {s.name}
+                                 </button>
+                               ))}
                             </div>
-                          )}
+                          ) : link.mega.sidebar ? (
+                            <div className="w-64 bg-[#F9EAD3] border-x border-black/5 p-6 space-y-2 h-full overflow-y-auto shrink-0">
+                               {link.mega.sidebar.map(s => (
+                                 <button key={s.name} className={`w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${s.active ? 'bg-[#E84949] text-white shadow-lg shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6]'}`}>
+                                   {s.name}
+                                 </button>
+                               ))}
+                            </div>
+                          ) : null}
 
-                          <div className="flex-1 p-10 grid grid-cols-4 gap-8 overflow-y-auto custom-scrollbar">
-                            <div className="col-span-3 grid grid-cols-3 gap-8">
-                              {(link.mega.type === 'master' ? (categoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => {
-                                let parentSlug = '';
-                                if (link.name === 'ALL CATEGORIES') {
-                                  parentSlug = activeMasterCat?.toLowerCase().replaceAll(' ', '-');
-                                } else {
-                                  parentSlug = link.href.split('/').pop();
-                                }
-                                
-                                return (
-                                  <div key={idx} className="space-y-6">
-                                    {col.title && (
-                                      <h4 className="font-grandstander font-black text-[13px] text-[#333] border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
-                                        {col.title}
-                                      </h4>
-                                    )}
-                                    
-                                    {col.items && (
-                                      <ul className="space-y-2.5">
-                                        {col.items.map(item => {
-                                          const name = typeof item === 'object' ? item.name : item;
-                                          const badge = typeof item === 'object' ? item.badge : null;
-                                          const type = typeof item === 'object' ? item.type : 'normal';
-                                          const itemSlug = name.toLowerCase().replaceAll(' ', '-');
-                                          const finalHref = type === 'link' 
-                                            ? `/product/${itemSlug}` 
-                                            : `/collections/${parentSlug}/${itemSlug}`;
-                                          
-                                          return (
-                                            <li key={name}>
-                                              <Link 
-                                                to={finalHref}
-                                                onClick={handleLinkClick} 
-                                                className={`group/link flex items-center gap-2 text-[11px] transition-all font-bold uppercase tracking-wider ${type === 'link' ? 'text-[#E84949]' : 'text-[#666] hover:text-[#E84949]'}`}
-                                              >
-                                                {type !== 'link' && <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>}
-                                                {name}
-                                                {badge && (
-                                                  <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
-                                                    {badge}
-                                                  </span>
-                                                )}
-                                              </Link>
-                                            </li>
-                                          );
-                                        })}
-                                      </ul>
-                                    )}
+                          {/* Main Content Area */}
+                          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FDF4E6]">
+                            {/* Master Top Header (Optional) */}
+                            {link.mega.type === 'master' && (
+                              <div className="px-10 pt-8 pb-4 border-b border-black/5 bg-[#FDF4E6]/95 backdrop-blur-md sticky top-0 z-10">
+                                <h3 className="text-[#E84949] font-black text-xs tracking-[0.3em] uppercase mb-1">ALL</h3>
+                                <div className="w-10 h-[1.5px] bg-[#E84949] rounded-full"></div>
+                              </div>
+                            )}
 
-                                    {col.extra && (
-                                      <div className="pt-4">
-                                        <h4 className="font-grandstander font-black text-[13px] text-[#333] mb-4 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
-                                          {col.extra.title}
+                            <div className="flex-1 p-8 xl:p-10 grid grid-cols-4 gap-8 overflow-y-auto custom-scrollbar">
+                              <div className="col-span-3 grid grid-cols-3 gap-8 h-max">
+                                {(link.mega.type === 'master' ? (categoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => {
+                                  let parentSlug = '';
+                                  if (link.name === 'ALL CATEGORIES') {
+                                    parentSlug = activeMasterCat?.toLowerCase().replaceAll(' ', '-');
+                                  } else {
+                                    parentSlug = link.href.split('/').pop();
+                                  }
+                                  
+                                  return (
+                                    <div key={idx} className="space-y-6">
+                                      {col.title && (
+                                        <h4 className="font-grandstander font-black text-[13px] text-[#333] border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                          {col.title}
                                         </h4>
+                                      )}
+                                      
+                                      {col.items && (
                                         <ul className="space-y-2.5">
-                                          {col.extra.items.map(i => {
-                                            const itemSlug = i.toLowerCase().replaceAll(' ', '-');
+                                          {col.items.map(item => {
+                                            const name = typeof item === 'object' ? item.name : item;
+                                            const badge = typeof item === 'object' ? item.badge : null;
+                                            const type = typeof item === 'object' ? item.type : 'normal';
+                                            const itemSlug = name.toLowerCase().replaceAll(' ', '-');
+                                            const finalHref = type === 'link' 
+                                              ? `/product/${itemSlug}` 
+                                              : `/collections/${parentSlug}/${itemSlug}`;
+                                            
                                             return (
-                                              <li key={i}>
-                                                <Link to={`/collections/${parentSlug}/${itemSlug}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
-                                                  <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
-                                                  {i}
+                                              <li key={name}>
+                                                <Link 
+                                                  to={finalHref}
+                                                  onClick={handleLinkClick} 
+                                                  className={`group/link flex items-center gap-2 text-[11px] transition-all font-bold uppercase tracking-wider ${type === 'link' ? 'text-[#E84949]' : 'text-[#666] hover:text-[#E84949]'}`}
+                                                >
+                                                  {type !== 'link' && <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>}
+                                                  {name}
+                                                  {badge && (
+                                                    <span className={`text-[7px] px-1.5 py-0.5 rounded-full text-white font-black uppercase ${badge === 'Hot' ? 'bg-orange-500' : badge === 'Sale' ? 'bg-[#E84949]' : 'bg-blue-500'}`}>
+                                                      {badge}
+                                                    </span>
+                                                  )}
                                                 </Link>
                                               </li>
                                             );
                                           })}
                                         </ul>
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
+                                      )}
 
-                            {/* Visual Banner (Optional) */}
-                            {(link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner) && (
-                              <div className="col-span-1 flex flex-col items-center justify-start pt-2">
-                                <div className="rounded-[35px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-4 border-[#F9EAD3] transform hover:-translate-y-2 transition-all duration-700 w-full">
-                                    <img src={link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner} alt={link.name} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-6 flex flex-col justify-end">
-                                      <span className="text-[#E84949] text-[9px] uppercase font-black tracking-[0.3em] mb-1">Featured</span>
-                                      <h5 className="text-white font-grandstander text-[15px] font-black uppercase">Collection 2026</h5>
+                                      {col.extra && (
+                                        <div className="pt-4">
+                                          <h4 className="font-grandstander font-black text-[13px] text-[#333] mb-4 border-b-2 border-dashed border-[#E84949]/20 pb-2 uppercase tracking-[0.2em]">
+                                            {col.extra.title}
+                                          </h4>
+                                          <ul className="space-y-2.5">
+                                            {col.extra.items.map(i => {
+                                              const itemSlug = i.toLowerCase().replaceAll(' ', '-');
+                                              return (
+                                                <li key={i}>
+                                                  <Link to={`/collections/${parentSlug}/${itemSlug}`} className="group/link flex items-center gap-2 text-[11px] text-[#666] hover:text-[#E84949] transition-all font-bold uppercase tracking-wider">
+                                                    <span className="w-1 h-1 bg-[#E84949]/0 group-hover/link:bg-[#E84949] group-hover/link:w-2 transition-all rounded-full"></span>
+                                                    {i}
+                                                  </Link>
+                                                </li>
+                                              );
+                                            })}
+                                          </ul>
+                                        </div>
+                                      )}
                                     </div>
-                                </div>
+                                  );
+                                })}
                               </div>
-                            )}
+
+                              {/* Visual Banner (Optional) */}
+                              {(link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner) && (
+                                <div className="col-span-1 flex flex-col items-center justify-start pt-2">
+                                  <div className="rounded-[35px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-4 border-[#F9EAD3] transform hover:-translate-y-2 transition-all duration-700 w-full">
+                                      <img src={link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner} alt={link.name} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-6 flex flex-col justify-end">
+                                        <span className="text-[#E84949] text-[9px] uppercase font-black tracking-[0.3em] mb-1">Featured</span>
+                                        <h5 className="text-white font-grandstander text-[15px] font-black uppercase">Collection 2026</h5>
+                                      </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </motion.div>
                     )}
                   {activeMenu === link.name && link.dropdown && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t-[1.5px] border-[#E84949] py-2 z-[1000]">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="absolute top-full left-0 w-56 bg-[#FDF4E6] shadow-xl rounded-b-xl border-t border-[#ebebeb] py-2 z-[1000]">
                       {link.dropdown.map(sub => <Link key={sub.name} to={sub.href} onClick={handleLinkClick} className="block px-5 py-2.5 text-[12px] text-[#555] hover:text-[#E84949] hover:bg-[#F9EAD3] transition-all font-bold uppercase tracking-wider">{sub.name}</Link>)}
                     </motion.div>
                   )}
