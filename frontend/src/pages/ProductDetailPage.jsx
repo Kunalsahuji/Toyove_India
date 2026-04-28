@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { Star, Heart, Share2, Eye, ShoppingCart, Search, Repeat, Plus, Minus, CheckCircle, X, ChevronRight, Share } from 'lucide-react'
+import { Star, Heart, Share2, Eye, ShoppingCart, Search, Repeat, Plus, Minus, CheckCircle, X, ChevronRight, Share, ZoomIn } from 'lucide-react'
 
 
 const productImages = [
@@ -47,6 +47,7 @@ export function ProductDetailPage() {
   const [showToast, setShowToast] = useState(false)
   const [selectedSize, setSelectedSize] = useState('Small')
   const [selectedColor, setSelectedColor] = useState('Red')
+  const [isZoomed, setIsZoomed] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -124,6 +125,22 @@ export function ProductDetailPage() {
 
   return (
     <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden">
+      {/* Full Screen Zoom Overlay */}
+      <AnimatePresence>
+        {isZoomed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4"
+          >
+            <button onClick={() => setIsZoomed(false)} className="absolute top-6 left-6 text-white p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors z-10 shadow-lg">
+              <X size={24} />
+            </button>
+            <img src={productImages[selectedImg]} alt="Zoomed" className="w-full h-auto max-h-[95vh] object-contain" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sales Toast */}
       <AnimatePresence>
@@ -173,7 +190,7 @@ export function ProductDetailPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex items-center h-10 border border-[#333]/20 rounded-full px-2 bg-white">
+                <div className="flex items-center h-10 bg-[#FDF4E6] border border-[#333]/20 rounded-full px-2">
                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-8 text-[#666] hover:text-[#E84949]"><Minus size={14} /></button>
                   <span className="w-6 text-center font-bold text-[13px] text-[#333]">{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} className="w-8 text-[#666] hover:text-[#E84949]"><Plus size={14} /></button>
@@ -194,30 +211,95 @@ export function ProductDetailPage() {
             <span className="text-[#333] capitalize">{product.title}</span>
           </nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12">
-            {/* Gallery Section - Toykio Style */}
-            <div className="lg:col-span-7 flex flex-col md:flex-row-reverse gap-4">
-              {/* Main Image */}
-              <div className="flex-1 aspect-square rounded-[30px] overflow-hidden border border-[#E5E5E5] group cursor-zoom-in">
-                <img src={productImages[selectedImg]} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 xl:gap-12 items-stretch relative">
+            {/* Gallery Section - Toykio Exact Style */}
+            <div className="md:col-span-7 relative">
+              {/* Desktop/Tablet 2-Column Grid */}
+              <div className="hidden md:block absolute inset-0 overflow-y-auto [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full pr-3 pb-4">
+                <div className="grid grid-cols-2 gap-4">
+                  {productImages.map((img, i) => (
+                    <div key={i} className="aspect-square rounded-2xl overflow-hidden bg-[#FDF4E6] relative group">
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => { setSelectedImg(i); setIsZoomed(true); }}
+                        className="absolute top-4 left-4 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <ZoomIn size={14} className="text-[#333]" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Thumbnails - Horizontal on Mobile, Vertical on Desktop */}
-              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar md:max-h-[550px] shrink-0">
-                {productImages.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImg(i)}
-                    className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${selectedImg === i ? 'border-[#E84949] shadow-md scale-95' : 'border-transparent opacity-60 hover:opacity-100'}`}
+              {/* Mobile Slider */}
+              <div className="md:hidden flex flex-col gap-4">
+                <div 
+                  id="mobile-gallery-top"
+                  className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                  onScroll={(e) => {
+                    const index = Math.round(e.target.scrollLeft / e.target.offsetWidth);
+                    if(index !== selectedImg) setSelectedImg(index);
+                  }}
+                  style={{ scrollBehavior: 'smooth' }}
+                >
+                  {productImages.map((img, i) => (
+                    <div key={i} className="w-full shrink-0 snap-center relative aspect-square rounded-2xl overflow-hidden bg-[#FDF4E6]">
+                       <img src={img} alt="" className="w-full h-full object-cover" />
+                       <button onClick={() => setIsZoomed(true)} className="absolute top-4 left-4 w-8 h-8  rounded-full flex items-center justify-center shadow-sm">
+                          <ZoomIn size={14} className="text-[#333]" />
+                       </button>
+                    </div>
+                  ))}
+                </div>
+                {/* Mobile Thumbnails with borders and arrows */}
+                <div className="relative border border-dashed border-[#E5E5E5] p-2 rounded-xl">
+                  <button 
+                    disabled={selectedImg === 0}
+                    onClick={() => {
+                      const newIdx = Math.max(0, selectedImg - 1);
+                      setSelectedImg(newIdx);
+                      const topGallery = document.getElementById('mobile-gallery-top');
+                      if(topGallery) topGallery.scrollLeft = topGallery.offsetWidth * newIdx;
+                    }} 
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-sm z-10 shadow-sm transition-colors ${selectedImg === 0 ? 'bg-[#E5E5E5] text-white' : 'bg-[#E84949] text-white'}`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <ChevronRight size={14} className="rotate-180" />
                   </button>
-                ))}
+                  
+                  <div className="flex gap-2 overflow-x-auto scrollbar-hide px-6">
+                    {productImages.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setSelectedImg(i);
+                          const topGallery = document.getElementById('mobile-gallery-top');
+                          if(topGallery) topGallery.scrollLeft = topGallery.offsetWidth * i;
+                        }}
+                        className={`w-16 h-16 rounded-lg overflow-hidden border transition-all shrink-0 ${selectedImg === i ? 'border-[#333] p-[1px]' : 'border-transparent opacity-60'}`}
+                      >
+                        <img src={img} alt="" className="w-full h-full object-cover rounded-md" />
+                      </button>
+                    ))}
+                  </div>
+
+                  <button 
+                    disabled={selectedImg === productImages.length - 1}
+                    onClick={() => {
+                      const newIdx = Math.min(productImages.length - 1, selectedImg + 1);
+                      setSelectedImg(newIdx);
+                      const topGallery = document.getElementById('mobile-gallery-top');
+                      if(topGallery) topGallery.scrollLeft = topGallery.offsetWidth * newIdx;
+                    }} 
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-sm z-10 shadow-sm transition-colors ${selectedImg === productImages.length - 1 ? 'bg-[#E5E5E5] text-white' : 'bg-[#E84949] text-white'}`}
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="lg:col-span-5 flex flex-col gap-6">
-              <div className="space-y-4">
+            <div className="md:col-span-5 flex flex-col gap-2">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <p className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-[#666] uppercase">Home Furniture</p>
                   <span className="w-1 h-1 rounded-full bg-gray-300" />
@@ -246,7 +328,7 @@ export function ProductDetailPage() {
                   <div className="flex gap-3 pt-1">
                     <button
                       onClick={() => { toggleWishlist(product); navigate('/wishlist'); }}
-                      className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform ${isWishlisted ? 'bg-[#333] text-white' : 'bg-[#E84949] text-white'}`}
+                      className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform ${isWishlisted ? 'bg-[#E84949] text-white' : 'bg-[#E84949] text-white'}`}
                     >
                       <Heart size={16} fill={isWishlisted ? 'white' : 'none'} />
                     </button>
@@ -263,7 +345,7 @@ export function ProductDetailPage() {
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all font-grandstander ${selectedSize === size ? 'bg-[#E84949] text-white border-[#E84949]' : 'bg-white text-[#333] border-[#E5E5E5] hover:border-[#E84949]'}`}
+                          className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all font-grandstander ${selectedSize === size ? 'bg-[#E84949] text-white border-[#E84949]' : 'bg-[#FDF4E6] text-[#333] border-[#E5E5E5] hover:border-[#E84949]'}`}
                         >
                           {size}
                         </button>
@@ -293,23 +375,26 @@ export function ProductDetailPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-6">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="h-13 w-full sm:w-36 bg-white border border-[#E5E5E5] rounded-xl flex items-center justify-between px-5 shadow-sm">
-                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-[#666] hover:text-[#E84949] transition-colors"><Minus size={16} /></button>
-                      <span className="font-black text-[16px] text-[#333]">{quantity}</span>
-                      <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={16} /></button>
+                <div className="space-y-4 pt-4">
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[13px] text-[#333] font-medium">Quantity</p>
+                    <div className="flex flex-row gap-4">
+                      <div className="h-12 w-32 bg-[#FDF4E6] border border-[#222] rounded flex items-center justify-between px-4 shadow-sm shrink-0">
+                        <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-[#666] hover:text-[#E84949] transition-colors"><Minus size={14} /></button>
+                        <span className="font-bold text-[14px] text-[#333]">{quantity}</span>
+                        <button onClick={() => setQuantity(quantity + 1)} className="text-[#666] hover:text-[#E84949] transition-colors"><Plus size={14} /></button>
+                      </div>
+                      <button
+                        onClick={handleAddToCart}
+                        className="flex-1 h-12 bg-[#E84949] text-white rounded font-bold text-[12px] tracking-widest uppercase hover:opacity-90 transition-all shadow-md"
+                      >
+                        ADD TO CART
+                      </button>
                     </div>
-                    <button
-                      onClick={handleAddToCart}
-                      className="flex-1 h-13 bg-[#E84949] text-white rounded-xl font-black text-[12px] tracking-[0.2em] uppercase hover:opacity-90 transition-all shadow-lg shadow-[#E84949]/20"
-                    >
-                      ADD TO CART
-                    </button>
                   </div>
                   <button
                     onClick={handleBuyNow}
-                    className="w-full h-13 bg-[#333] text-white rounded-xl font-black text-[12px] tracking-[0.2em] uppercase hover:bg-black transition-all"
+                    className="w-full h-12 bg-[#333] text-white rounded font-bold text-[12px] tracking-widest uppercase hover:bg-black transition-all"
                   >
                     BUY IT NOW
                   </button>
@@ -330,7 +415,7 @@ export function ProductDetailPage() {
 
                   <button
                     onClick={handleShare}
-                    className="w-full py-3 bg-[#E84949] text-white rounded font-bold text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm"
+                    className="w-[30%] py-3 bg-[#E84949] text-white rounded font-bold text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm"
                   >
                     <Share size={14} /> SHARE
                   </button>
@@ -341,20 +426,24 @@ export function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Tabs Section - Toykio Exact Style */}
-      <div className="py-16 md:py-24 shell">
-        <div className="flex overflow-x-auto no-scrollbar border-b border-[#E5E5E5] gap-0">
+      {/* Tabs Section */}
+      <div className="py-12 md:py-16 shell">
+        <div className="flex overflow-x-auto w-full border border-[#E5E5E5] rounded-t-lg bg-[#FDF4E6] [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
           {['Description', 'Additional', 'Variant', 'Custom'].map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t.toLowerCase())}
-              className={`px-8 md:px-12 py-5 text-[11px] md:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative border-x border-t border-transparent -mb-[1px] whitespace-nowrap ${activeTab === t.toLowerCase() ? 'text-[#333]  border-[#E5E5E5] rounded-t-xl' : 'text-[#999] hover:text-[#666]'}`}
+              className={`flex-1 min-w-[150px] px-4 md:px-6 py-4 md:py-5 text-[12px] md:text-[14px] font-bold transition-all relative border-r border-[#E5E5E5] last:border-r-0 whitespace-nowrap text-center ${
+                activeTab === t.toLowerCase() 
+                ? 'text-[#333] bg-[#FDF4E6] border-b border-b-[#FDF4E6]' 
+                : 'text-[#666] bg-[#FDF4E6]/40 hover:bg-[#FDF4E6]/70 border-b border-b-[#E5E5E5]'
+              }`}
             >
               {t === 'Description' ? 'Product Description' : t === 'Additional' ? 'Additional information' : t === 'Variant' ? 'Variant Information' : 'Custom field'}
             </button>
           ))}
         </div>
-        <div className=" p-8 md:p-12 border border-t-0 border-[#E5E5E5] text-[#666] leading-relaxed font-roboto text-[15px] md:text-[16px] shadow-sm rounded-b-3xl">
+        <div className="bg-[#FDF4E6] p-6 md:p-10 border border-t-0 border-[#E5E5E5] text-[#666] leading-relaxed font-roboto text-[14px] md:text-[15px] shadow-sm rounded-b-lg -mt-[1px]">
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
               {activeTab === 'description' && (
@@ -419,29 +508,29 @@ export function ProductDetailPage() {
       </div>
 
       {/* Suggested Products (YOU MAY ALSO LIKE) */}
-      <div className="shell py-16 md:py-20">
-        <div className="mb-12">
-          <h2 className="text-2xl md:text-4xl font-black text-[#333] uppercase tracking-tighter">You May Also <span className="text-[#E84949]">Like</span></h2>
+      <div className="shell py-8 md:py-12">
+        <div className="mb-8 text-center">
+          <h2 className="text-[28px] md:text-[36px] font-bold text-[#333] tracking-tighter">You May Also Like</h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
           {related.slice(0, 4).map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
         </div>
       </div>
 
       {/* Recently Viewed Section */}
-      <div className="shell py-16 md:py-20 border-t border-black/5">
-        <div className="flex items-center justify-between mb-12">
-          <h2 className="text-2xl md:text-4xl font-black text-[#333] uppercase tracking-tighter">Recently <span className="text-[#E84949]">Viewed</span></h2>
-          <Link to="/all-categories" className="text-[11px] font-black uppercase tracking-widest text-[#E84949] border-b-2 border-[#E84949] hover:opacity-70 transition-opacity">View All</Link>
+      <div className="shell py-8 md:py-12 border-t border-black/5">
+        <div className="flex flex-col items-center justify-between mb-8 gap-4">
+          <h2 className="text-[28px] md:text-[36px] font-bold text-[#333] tracking-tighter text-center">Recently Viewed</h2>
+          <Link to="/all-categories" className="text-[12px] font-bold uppercase tracking-widest text-[#333] border-b-2 border-[#333] hover:opacity-70 transition-opacity">View All</Link>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
           {recentlyViewed.slice(0, 5).map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
         </div>
       </div>
 
       {/* FAQ Section */}
-      <div className="shell py-16 md:py-20 mb-6 border-t border-[#E5E5E5]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="shell py-8 md:py-12 mb-4 border-t border-[#E5E5E5]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="relative aspect-[4/3] rounded-[40px] overflow-hidden group border border-[#E5E5E5] p-3">
             <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 rounded-[30px]" />
           </div>

@@ -147,7 +147,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
         }`}
       >
         {/* Dashed Box Container */}
-        <div className={`relative aspect-square rounded-[25px] border-[1.5px] border-dashed border-black/15 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden shrink-0 ${
+        <div className={`relative aspect-square rounded-[16px] md:rounded-[20px] border-[1.5px] border-dashed border-[#333]/30 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden shrink-0 ${
           isGridOne ? 'w-full md:w-[320px] lg:w-[400px]' : 'w-full'
         }`}>
           <Link to={`/product/${p.id}`} className="block w-full h-full relative z-10">
@@ -160,16 +160,16 @@ export function ProductCard({ p, i, isGridOne = false }) {
           </Link>
 
           {/* Action Icons */}
-          <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 transition-all duration-500 transform 
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30 flex flex-col gap-1.5 md:gap-2 transition-all duration-500 transform 
             opacity-0 translate-x-4
             group-hover:opacity-100 group-hover:translate-x-0
             max-[1023px]:opacity-100 max-[1023px]:translate-x-0">
             
             {[
-              { icon: <Eye size={16} />, label: 'Quick View', action: () => setShowQuickView(true) },
-              { icon: <ShoppingBag size={16} />, label: 'Add to Cart', action: () => addToCart(p) },
-              { icon: <Heart size={16} className={isWishlisted ? 'fill-white' : ''} />, label: 'Wishlist', action: () => toggleWishlist(p) },
-              { icon: <Layers size={16} className={isCompared ? 'fill-white' : ''} />, label: 'Compare', action: () => toggleCompare(p) },
+              { icon: <Eye size={14} className="md:w-4 md:h-4" />, label: 'Quick View', action: () => setShowQuickView(true) },
+              { icon: <ShoppingBag size={14} className="md:w-4 md:h-4" />, label: 'Add to Cart', action: () => addToCart(p) },
+              { icon: <Heart size={14} className={`md:w-4 md:h-4 ${isWishlisted ? 'fill-white' : ''}`} />, label: 'Wishlist', action: () => toggleWishlist(p) },
+              { icon: <Layers size={14} className={`md:w-4 md:h-4 ${isCompared ? 'fill-white' : ''}`} />, label: 'Compare', action: () => toggleCompare(p) },
             ].map((action, idx) => (
               <button
                 key={idx}
@@ -178,7 +178,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
                   e.stopPropagation();
                   action.action();
                 }}
-                className="w-8 h-8 md:w-9 md:h-9 bg-[#E84949] text-white rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
+                className="w-7 h-7 md:w-9 md:h-9 bg-[#E84949] text-white rounded-[8px] md:rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
                 title={action.label}
               >
                 {action.icon}
