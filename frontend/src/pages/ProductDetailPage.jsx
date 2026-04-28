@@ -124,7 +124,7 @@ export function ProductDetailPage() {
   ]
 
   return (
-    <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden">
+    <div className="bg-[#FDF4E6] pb-8 overflow-x-hidden">
       {/* Full Screen Zoom Overlay */}
       <AnimatePresence>
         {isZoomed && (
@@ -212,7 +212,7 @@ export function ProductDetailPage() {
           </nav>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 xl:gap-12 items-stretch relative">
-            {/* Gallery Section - Toykio Exact Style */}
+            {/* Gallery Section*/}
             <div className="md:col-span-7 relative">
               {/* Desktop/Tablet 2-Column Grid */}
               <div className="hidden md:block absolute inset-0 overflow-y-auto [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full pr-3 pb-4">
@@ -529,14 +529,14 @@ export function ProductDetailPage() {
       </div>
 
       {/* FAQ Section */}
-      <div className="shell py-8 md:py-12 mb-4 border-t border-[#E5E5E5]">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <div className="shell py-8 md:py-12 mb-0 border-t border-[#E5E5E5]">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-8 items-center">
           <div className="relative aspect-[4/3] rounded-[40px] overflow-hidden group border border-[#E5E5E5] p-3">
             <img src="https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=950" alt="FAQ" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 rounded-[30px]" />
           </div>
           <div className="flex flex-col justify-center">
             <h2 className="text-3xl md:text-5xl font-black text-[#333] mb-12 uppercase tracking-tighter">Frequently <span className="text-[#E84949]">Asked</span> Questions</h2>
-            <div className="space-y-0">
+            <div className="space-y-5">
               {[
                 { q: "What Types Of Furniture Can I Showcase With This Theme?", a: "TOYOVOINDIA is perfect for all types of kids furniture - from cribs and beds to play tables and storage units." },
                 { q: "Is This Theme Mobile-Friendly?", a: "Yes, TOYOVOINDIA is engineered with a mobile-first philosophy, providing a lightning-fast and intuitive experience on all mobile devices." },

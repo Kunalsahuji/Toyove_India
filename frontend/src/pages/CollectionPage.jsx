@@ -248,7 +248,7 @@ export function CollectionPage() {
           </aside>
 
           <main className="flex-1 w-full space-y-6 overflow-hidden">
-            {/* Refined Toolbar - Toykio Style */}
+            {/* Refined Toolbar */}
             <div className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[25px] p-3 md:p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button onClick={() => setIsFilterOpen(true)} className="lg:hidden p-2.5 rounded-xl bg-[#FDF4E6] border border-dashed border-black/5 shadow-sm transition-all active:scale-95"><SlidersHorizontal size={16} className="text-[#444]"/></button>

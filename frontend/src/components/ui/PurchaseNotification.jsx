@@ -78,8 +78,8 @@ export function PurchaseNotification() {
           /* Positioned above the mobile bottom bar (bottom-[84px]) on small screens, and at bottom-6 on large screens */
           className="fixed bottom-[84px] md:bottom-6 left-5 md:left-6 z-[1001] w-[280px] md:w-[350px]"
         >
-          <div className="bg-[#FFF8EE] border border-[#333]/10 rounded-2xl p-3 md:p-4 shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative group">
-            {/* Close Button - Toykio Style Red Box */}
+          <div className="bg-[#FFF8EE] border border-[#333]/10 rounded-2xl p-3 md:p-4 shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative group ">
+            {/* Close Button */}
             <button 
               onClick={handleClose}
               className="absolute -top-2 -right-2 w-6 h-6 bg-[#E84949] text-white flex items-center justify-center rounded-lg shadow-lg hover:scale-110 transition-all z-50"
