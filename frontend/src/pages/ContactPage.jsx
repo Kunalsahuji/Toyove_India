@@ -33,8 +33,8 @@ export function ContactPage() {
         ></iframe>
       </div>
 
-      <div className="max-w-350 mx-auto px-4 md:px-10 mt-20 md:mt-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32">
+      <div className="shell">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32 mt-12 md:mt-20">
 
           {/* Left Column: Our Information */}
           <div className="flex flex-col gap-8">

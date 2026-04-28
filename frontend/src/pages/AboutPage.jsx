@@ -46,7 +46,7 @@ export function AboutPage() {
     <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden font-roboto">
       
       {/* Hero Section */}
-      <div className="relative h-[350px] md:h-[550px] overflow-hidden flex items-center justify-center text-center group">
+      <div className="relative h-[350px] md:h-[450px] overflow-hidden flex items-center justify-center text-center group rounded-lg mx-4">
          <div className="absolute inset-0 bg-[#333]/30 z-10 transition-opacity duration-700 group-hover:opacity-40" />
          <img src="https://toykio.myshopify.com/cdn/shop/files/about-us.webp?v=1711002747" alt="About Hero" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
          <div className="relative z-20 max-w-350 mx-auto px-4 w-full">
@@ -68,11 +68,11 @@ export function AboutPage() {
          </div>
       </div>
 
-      <div className="max-w-350 mx-auto px-4 md:px-10 mt-10 md:mt-20">
+      <div className="shell">
         {/* Story Blocks */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-32 items-center">
           <div className="text-center lg:text-left space-y-8">
-            <span className="text-[#E84949] font-medium text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto">TOYOVOINDIA Vision</span>
+            <span className="text-[#E84949] font-medium text-[12px] md:text-[14px] uppercase tracking-[0.4em] block font-roboto mt-10 md:mt-10">TOYOVOINDIA Vision</span>
             <h2 className="text-4xl md:text-6xl font-grandstander font-bold text-[#333333] leading-[1.1] tracking-tight">Every Toy Tells an Adventure Story</h2>
             <div className="space-y-8 text-[16px] md:text-[18px] text-[#666] leading-relaxed max-w-2xl mx-auto lg:mx-0">
               <p>Welcome to TOYOVOINDIA, where innovation meets the timeless magic of play. Officially incorporated on April 22, 2026, as TOYOVO INDIA (OPC) PRIVATE LIMITED, we are a legally recognized entity committed to transparency and excellence.</p>
@@ -81,10 +81,10 @@ export function AboutPage() {
             <button className="h-14 px-12 bg-[#333] text-white rounded-full font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#E84949] transition-all transform hover:scale-105 shadow-xl">EXPLORE OUR VALUES</button>
           </div>
           <div className="relative group p-6">
-            <div className="aspect-4/3 rounded-[48px] md:rounded-[64px] overflow-hidden shadow-2xl skew-x-[-1deg] group-hover:skew-x-0 transition-all duration-1000 border-[3px] border-dashed border-[#333333]/20 bg-[#F9EAD3]">
+            <div className="aspect-4/3 rounded-md sm:rounded-lg md:rounded-lg overflow-hidden shadow-2xl skew-x-[-1deg] group-hover:skew-x-0 transition-all duration-1000 border-[3px] border-dashed border-[#333333]/10 bg-[#F9EAD3]">
                <img src="https://toykio.myshopify.com/cdn/shop/files/about-us.webp?v=1711002747" alt="Story" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
             </div>
-            <div className="absolute -bottom-8 -right-8 md:-bottom-12 md:-right-12 w-48 h-48 md:w-56 md:h-56 bg-[#E84949] rounded-[40px] flex items-center justify-center p-8 -rotate-6 shadow-2xl hidden sm:flex border-4 border-white group-hover:rotate-0 transition-all duration-700">
+            <div className="absolute -bottom-8 -right-0 md:-bottom-12 md:-right-0 w-56 h-48 md:w-56 md:h-56 bg-[#E84949] rounded-[64px] flex items-center justify-center p-8 -rotate-6 shadow-2xl hidden sm:flex border-4 border-white group-hover:rotate-0 transition-all duration-700">
                <p className="text-white font-grandstander font-bold text-2xl md:text-3xl text-center leading-tight tracking-tighter">Registered & Certified Since 2026</p>
             </div>
           </div>

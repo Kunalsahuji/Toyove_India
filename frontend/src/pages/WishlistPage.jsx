@@ -14,12 +14,12 @@ export function WishlistPage() {
 
   if (wishlist.length === 0) {
     return (
-      <div className="bg-[#FDF4E6] min-h-screen py-24">
-        <div className="max-w-5xl mx-auto px-4 text-center">
+      <div className="bg-[#FDF4E6] h-full py-24">
+        <div className="shell">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center p-16 md:p-24 bg-[#FAEAD3] rounded-[48px] border-[1.6px] border-dashed border-[#333333]/15 shadow-xl"
+            className="flex flex-col items-center justify-center"
           >
             <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center text-[#E84949] mb-10 shadow-sm">
               <Heart size={40} fill="#E84949" />
@@ -42,7 +42,7 @@ export function WishlistPage() {
 
   return (
     <div className="bg-[#FDF4E6] min-h-screen py-16 font-roboto">
-       <div className="max-w-7xl mx-auto px-4">
+       <div className="shell">
           <div className="text-center mb-16">
              <h1 className="text-5xl font-grandstander font-bold text-[#333] mb-4">My Saved Joy</h1>
              <p className="text-[#666] uppercase tracking-[0.3em] text-[11px] font-bold">Your personal collection of magic</p>
