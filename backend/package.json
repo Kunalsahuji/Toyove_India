@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Toyovo India Backend",
   "main": "src/server.js",
   "scripts": {

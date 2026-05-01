@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, Users, Package, ShoppingCart, 
   Settings, LogOut, Menu, X, Bell, Search, 
-  ChevronRight, CircleUser
+  ChevronRight, CircleUser, Wallet, PackageOpen
 } from 'lucide-react'
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -22,6 +23,7 @@ export function AdminLayout() {
     { path: '/admin/users', label: 'Users Hub', icon: <Users size={20} /> },
     { path: '/admin/products', label: 'Toy Catalog', icon: <Package size={20} /> },
     { path: '/admin/orders', label: 'Order Command', icon: <ShoppingCart size={20} /> },
+    { path: '/admin/finance', label: 'Financial Hub', icon: <Wallet size={20} /> },
     { path: '/admin/settings', label: 'Settings', icon: <Settings size={20} /> },
   ]
 
@@ -46,10 +48,10 @@ export function AdminLayout() {
       >
         <div className="h-20 flex items-center justify-between px-6 border-b border-black/[0.05]">
           <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
-            <div className="w-10 h-10 bg-[#6651A4] rounded-xl flex items-center justify-center text-white font-grandstander font-bold text-xl shrink-0">
-              T
+            <div className="w-12 h-12 flex items-center justify-center shrink-0">
+               <img src="/favicon.webp" alt="Toyovo Logo" className="w-full h-full object-contain" />
             </div>
-            {sidebarOpen && <span className="font-grandstander font-bold text-2xl text-[#6651A4] tracking-tight">Toyovo<span className="text-[#F1641E]">Admin</span></span>}
+            {sidebarOpen && <span className="font-grandstander font-bold text-[26px] text-[#6651A4] tracking-tight -ml-1">Toyovo<span className="text-[#F1641E]">Admin</span></span>}
           </div>
           <button className="lg:hidden p-2 text-gray-400 hover:text-[#E8312A] transition-colors" onClick={() => setMobileMenuOpen(false)}>
             <X size={20} />
@@ -124,12 +126,18 @@ export function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-3 md:gap-5">
-            <button className="relative p-2.5 text-gray-400 hover:text-[#6651A4] transition-colors bg-[#FAEAD3]/30 hover:bg-[#FAEAD3] rounded-full">
+            <button 
+              onClick={() => navigate('/admin/notifications')}
+              className="relative p-2.5 text-gray-400 hover:text-[#6651A4] transition-colors bg-[#FAEAD3]/30 hover:bg-[#FAEAD3] rounded-full"
+            >
               <Bell size={20} />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#E8312A] rounded-full animate-pulse" />
             </button>
             <div className="h-8 w-[1px] bg-gray-200 hidden md:block" />
-            <div className="flex items-center gap-3 cursor-pointer group">
+            <div 
+              onClick={() => navigate('/admin/settings')}
+              className="flex items-center gap-3 cursor-pointer group"
+            >
               <div className="text-right hidden md:block">
                 <p className="text-[13px] font-bold text-gray-800 leading-tight">Admin User</p>
                 <p className="text-[10px] font-bold text-[#F1641E] uppercase tracking-widest">Super Admin</p>

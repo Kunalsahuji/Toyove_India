@@ -14,7 +14,7 @@ export function AdminDashboard() {
   }, [])
 
   const stats = [
-    { title: 'Total Revenue', value: '$24,562.00', trend: '+14.5%', isUp: true, icon: <DollarSign size={24} />, color: 'bg-green-500', route: '/admin/transactions' },
+    { title: 'Total Revenue', value: '$24,562.00', trend: '+14.5%', isUp: true, icon: <DollarSign size={24} />, color: 'bg-green-500', route: '/admin/finance' },
     { title: 'Active Explorers', value: '1,245', trend: '+5.2%', isUp: true, icon: <Users size={24} />, color: 'bg-[#6651A4]', route: '/admin/users' },
     { title: 'Total Orders', value: '458', trend: '-2.4%', isUp: false, icon: <ShoppingCart size={24} />, color: 'bg-[#F1641E]', route: '/admin/orders' },
     { title: 'Products in Catalog', value: '184', trend: '+12 new', isUp: true, icon: <Package size={24} />, color: 'bg-[#E8312A]', route: '/admin/products' },

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, PackageOpen, Plus, Tag, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react'
 
 export function AdminProducts() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
@@ -44,7 +46,10 @@ export function AdminProducts() {
           <h1 className="text-3xl md:text-4xl font-grandstander font-bold text-gray-800">Toy Catalog</h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Manage inventory, prices, and visibility.</p>
         </div>
-        <button className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-[#5a4892] hover:-translate-y-0.5 transition-all w-max flex items-center gap-2">
+        <button 
+          onClick={() => navigate('/admin/products/new')}
+          className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-[#5a4892] hover:-translate-y-0.5 transition-all w-max flex items-center gap-2"
+        >
           <Plus size={16} /> Add New Toy
         </button>
       </div>
@@ -103,7 +108,8 @@ export function AdminProducts() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               key={product.id} 
-              className="bg-white p-4 rounded-[32px] border border-black/[0.03] shadow-sm hover:shadow-xl transition-all group"
+              onClick={() => navigate(`/admin/products/${product.id}`)}
+              className="bg-white p-4 rounded-[32px] border border-black/[0.03] shadow-sm hover:shadow-xl transition-all group cursor-pointer"
             >
               <div className="relative w-full aspect-square bg-[#FDF4E6] rounded-[24px] mb-4 overflow-hidden">
                 <img src={product.img} alt={product.title} className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, Shield, UserX, Mail, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function AdminUsers() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -55,7 +57,10 @@ export function AdminUsers() {
           <h1 className="text-3xl md:text-4xl font-grandstander font-bold text-gray-800">Explorer Directory</h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Manage user identities and access levels.</p>
         </div>
-        <button className="h-11 px-6 bg-[#E8312A] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-red-700 hover:-translate-y-0.5 transition-all w-max">
+        <button 
+          onClick={() => navigate('/admin/users/new')}
+          className="h-11 px-6 bg-[#E8312A] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-red-700 hover:-translate-y-0.5 transition-all w-max"
+        >
           + Add Explorer
         </button>
       </div>
@@ -135,6 +140,7 @@ export function AdminUsers() {
                   <motion.tr 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                     key={user.id} 
+                    onClick={() => navigate(`/admin/users/${user.id}`)}
                     className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors group cursor-pointer"
                   >
                     <td className="py-4 px-6">

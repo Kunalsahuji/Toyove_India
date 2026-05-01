@@ -43,9 +43,14 @@ import { PaymentProvider } from './context/PaymentContext'
 const AdminLayout = React.lazy(() => import('./admin/AdminLayout').then(m => ({ default: m.AdminLayout })))
 const AdminDashboard = React.lazy(() => import('./admin/pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })))
 const AdminUsers = React.lazy(() => import('./admin/pages/AdminUsers').then(m => ({ default: m.AdminUsers })))
+const AdminUserDetail = React.lazy(() => import('./admin/pages/AdminUserDetail').then(m => ({ default: m.AdminUserDetail })))
 const AdminProducts = React.lazy(() => import('./admin/pages/AdminProducts').then(m => ({ default: m.AdminProducts })))
+const AdminProductDetail = React.lazy(() => import('./admin/pages/AdminProductDetail').then(m => ({ default: m.AdminProductDetail })))
 const AdminOrders = React.lazy(() => import('./admin/pages/AdminOrders').then(m => ({ default: m.AdminOrders })))
 const AdminTransactions = React.lazy(() => import('./admin/pages/AdminTransactions').then(m => ({ default: m.AdminTransactions })))
+const AdminFinance = React.lazy(() => import('./admin/pages/AdminFinance').then(m => ({ default: m.AdminFinance })))
+const AdminSettings = React.lazy(() => import('./admin/pages/AdminSettings').then(m => ({ default: m.AdminSettings })))
+const AdminNotifications = React.lazy(() => import('./admin/pages/AdminNotifications').then(m => ({ default: m.AdminNotifications })))
 const AdminTransactionDetail = React.lazy(() => import('./admin/pages/AdminTransactionDetail').then(m => ({ default: m.AdminTransactionDetail })))
 const AdminReports = React.lazy(() => import('./admin/pages/AdminReports').then(m => ({ default: m.AdminReports })))
 const AdminSystemLogs = React.lazy(() => import('./admin/pages/AdminSystemLogs').then(m => ({ default: m.AdminSystemLogs })))
@@ -92,8 +97,13 @@ function AppContent() {
           }>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="users/:id" element={<AdminUserDetail />} />
             <Route path="products" element={<AdminProducts />} />
+            <Route path="products/:id" element={<AdminProductDetail />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="finance" element={<AdminFinance />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="notifications" element={<AdminNotifications />} />
             <Route path="transactions" element={<AdminTransactions />} />
             <Route path="transactions/:id" element={<AdminTransactionDetail />} />
             <Route path="reports" element={<AdminReports />} />
