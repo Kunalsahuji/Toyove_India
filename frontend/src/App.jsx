@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import React, { useEffect, Suspense } from 'react'
 import { VisionHeader } from './components/layout/VisionHeader'
 import { Footer }       from './components/layout/Footer'
 import { HomePage }     from './pages/HomePage'
@@ -39,6 +39,24 @@ function ScrollToTop() {
 import { CartProvider } from './context/CartContext'
 import { PaymentProvider } from './context/PaymentContext'
 
+// Lazy load admin module
+const AdminLayout = React.lazy(() => import('./admin/AdminLayout').then(m => ({ default: m.AdminLayout })))
+const AdminDashboard = React.lazy(() => import('./admin/pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })))
+const AdminUsers = React.lazy(() => import('./admin/pages/AdminUsers').then(m => ({ default: m.AdminUsers })))
+const AdminProducts = React.lazy(() => import('./admin/pages/AdminProducts').then(m => ({ default: m.AdminProducts })))
+const AdminOrders = React.lazy(() => import('./admin/pages/AdminOrders').then(m => ({ default: m.AdminOrders })))
+const AdminTransactions = React.lazy(() => import('./admin/pages/AdminTransactions').then(m => ({ default: m.AdminTransactions })))
+const AdminTransactionDetail = React.lazy(() => import('./admin/pages/AdminTransactionDetail').then(m => ({ default: m.AdminTransactionDetail })))
+const AdminReports = React.lazy(() => import('./admin/pages/AdminReports').then(m => ({ default: m.AdminReports })))
+const AdminSystemLogs = React.lazy(() => import('./admin/pages/AdminSystemLogs').then(m => ({ default: m.AdminSystemLogs })))
+
+const AdminFallback = () => (
+  <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#FDF4E6]">
+    <div className="w-12 h-12 border-4 border-white border-t-[#6651A4] rounded-full animate-spin shadow-md mb-4"></div>
+    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest animate-pulse">Loading Workspace...</p>
+  </div>
+)
+
 export default function App() {
   return (
     <AuthProvider>
@@ -56,12 +74,41 @@ export default function App() {
 function AppContent() {
   const location = useLocation()
   const isCheckout = location.pathname === '/checkout'
+  const isAdmin = location.pathname.startsWith('/admin')
+  const hideLayouts = isCheckout || isAdmin
+
+  // If we are entirely inside admin, we don't need the flex-col bg-[#FDF4E6] wrapper of the user site,
+  // but it's okay because AdminLayout fills the screen anyway. Let's just conditionally render components.
+
+  if (isAdmin) {
+    return (
+      <>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/admin" element={
+            <Suspense fallback={<AdminFallback />}>
+              <AdminLayout />
+            </Suspense>
+          }>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="transactions" element={<AdminTransactions />} />
+            <Route path="transactions/:id" element={<AdminTransactionDetail />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="system-logs" element={<AdminSystemLogs />} />
+          </Route>
+        </Routes>
+      </>
+    )
+  }
 
   return (
     <>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col bg-[#FDF4E6] overflow-x-hidden relative">
-        {!isCheckout && <VisionHeader />}
+        {!hideLayouts && <VisionHeader />}
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -97,10 +144,10 @@ function AppContent() {
             <Route path="*" element={<HomePage />} />
           </Routes>
         </main>
-        {!isCheckout && <Footer />}
-        {!isCheckout && <MobileBottomBar />}
-        {!isCheckout && <AsideSidebar />}
-        {!isCheckout && <PurchaseNotification />}
+        {!hideLayouts && <Footer />}
+        {!hideLayouts && <MobileBottomBar />}
+        {!hideLayouts && <AsideSidebar />}
+        {!hideLayouts && <PurchaseNotification />}
       </div>
     </>
   )
