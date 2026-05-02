@@ -79,72 +79,41 @@ export function AdminTransactions() {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] flex flex-wrap gap-4 items-center justify-between">
-        <div className="relative flex-1 min-w-[300px]">
+      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] space-y-4">
+        <div className="relative w-full">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
-            type="text" placeholder="Search TXN ID or Explorer..." 
+            type="text" placeholder="Search ID, Explorer, or Ref..." 
             value={search} onChange={(e) => setSearch(e.target.value)}
             className="w-full h-12 pl-12 pr-4 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 font-medium text-[13px] transition-all"
           />
         </div>
         
-        <div className="flex flex-wrap gap-3 w-full lg:w-auto">
-          {/* Category Filter */}
-          <div className="relative shrink-0">
-            <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select 
-              value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[11px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
-            >
-              <option value="All">All Categories</option>
-              <option value="Wallet Top-up">Wallet Top-up</option>
-              <option value="Order Payment">Order Payments</option>
-              <option value="Refund">Refunds</option>
-            </select>
-          </div>
-
-          {/* Method Filter */}
-          <div className="relative shrink-0">
-            <CreditCard size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select 
-              value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[11px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
-            >
-              <option value="All">All Methods</option>
-              <option value="UPI">UPI</option>
-              <option value="Card">Cards</option>
-              <option value="Wallet">Wallet</option>
-              <option value="NetBanking">NetBanking</option>
-            </select>
-          </div>
-
-          {/* Status Filter */}
-          <div className="relative shrink-0">
-            <Activity size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select 
-              value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[11px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
-            >
-              <option value="All">All Status</option>
-              <option value="Success">Success</option>
-              <option value="Processing">Processing</option>
-              <option value="Failed">Failed</option>
-            </select>
-          </div>
-
-          {/* Type Filter */}
-          <div className="relative shrink-0">
-            <ArrowUpDown size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select 
-              value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[11px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
-            >
-              <option value="All">All Types</option>
-              <option value="Credit">Credit (In)</option>
-              <option value="Debit">Debit (Out)</option>
-            </select>
-          </div>
+        <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
+          {[
+            { id: 'cat', icon: <Tag size={14} />, value: categoryFilter, setter: setCategoryFilter, options: [
+              { v: 'All', l: 'All Categories' }, { v: 'Wallet Top-up', l: 'Top-ups' }, { v: 'Order Payment', l: 'Payments' }, { v: 'Refund', l: 'Refunds' }
+            ]},
+            { id: 'meth', icon: <CreditCard size={14} />, value: methodFilter, setter: setMethodFilter, options: [
+              { v: 'All', l: 'All Methods' }, { v: 'UPI', l: 'UPI' }, { v: 'Card', l: 'Cards' }, { v: 'Wallet', l: 'Wallet' }
+            ]},
+            { id: 'stat', icon: <Activity size={14} />, value: statusFilter, setter: setStatusFilter, options: [
+              { v: 'All', l: 'All Status' }, { v: 'Success', l: 'Success' }, { v: 'Processing', l: 'Process' }, { v: 'Failed', l: 'Failed' }
+            ]},
+            { id: 'type', icon: <ArrowUpDown size={14} />, value: typeFilter, setter: setTypeFilter, options: [
+              { v: 'All', l: 'All Types' }, { v: 'Credit', l: 'Credit' }, { v: 'Debit', l: 'Debit' }
+            ]}
+          ].map((f) => (
+            <div key={f.id} className="relative shrink-0 min-w-[120px]">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">{f.icon}</span>
+              <select 
+                value={f.value} onChange={(e) => f.setter(e.target.value)}
+                className="w-full h-11 pl-9 pr-6 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[10px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
+              >
+                {f.options.map(opt => <option key={opt.v} value={opt.v}>{opt.l}</option>)}
+              </select>
+            </div>
+          ))}
         </div>
       </div>
 

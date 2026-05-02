@@ -32,10 +32,27 @@ function AdminContentSkeleton() {
 }
 
 export function AdminLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Handle window resize for responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (!mobile) {
+        setMobileMenuOpen(false)
+        setSidebarOpen(true)
+      } else {
+        setSidebarOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -52,15 +69,18 @@ export function AdminLayout() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#FDF4E6] text-[#222222] font-roboto flex overflow-hidden">
+    <div className="min-h-screen bg-[#FDF4E6] text-[#222222] font-roboto flex overflow-hidden relative">
       
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {(mobileMenuOpen || (isMobile && sidebarOpen)) && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#222222]/50 z-[100] lg:hidden backdrop-blur-sm"
-            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 bg-[#222222]/60 z-[100] lg:hidden backdrop-blur-md"
+            onClick={() => {
+              setMobileMenuOpen(false)
+              setSidebarOpen(false)
+            }}
           />
         )}
       </AnimatePresence>
@@ -69,20 +89,21 @@ export function AdminLayout() {
       <motion.aside
         initial={false}
         animate={{ 
-          width: sidebarOpen ? 280 : (mobileMenuOpen ? 280 : 0),
-          x: mobileMenuOpen ? 0 : (sidebarOpen ? 0 : (window.innerWidth < 1024 ? -280 : 0))
+          width: sidebarOpen ? 280 : 0,
+          x: (isMobile && !sidebarOpen) ? -280 : 0,
+          display: (isMobile && !sidebarOpen) ? 'none' : 'flex'
         }}
         transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-        className={`fixed lg:relative z-[101] h-screen bg-white border-r border-black/[0.05] flex flex-col shrink-0 shadow-xl lg:shadow-none overflow-hidden`}
+        className={`fixed lg:relative z-[101] h-screen bg-white border-r border-black/[0.05] flex flex-col shrink-0 shadow-2xl lg:shadow-none overflow-hidden`}
       >
         <div className="h-20 flex items-center justify-between px-6 border-b border-black/[0.05] shrink-0">
           <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
-            <div className="w-12 h-12 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 flex items-center justify-center shrink-0">
                <img src="/favicon.webp" alt="Toyovo Logo" className="w-full h-full object-contain" />
             </div>
-            <span className="font-grandstander font-bold text-[26px] text-[#6651A4] tracking-tight -ml-1">Toyovo<span className="text-[#F1641E]">Admin</span></span>
+            <span className="font-grandstander font-bold text-[22px] md:text-[26px] text-[#6651A4] tracking-tight -ml-1">Toyovo<span className="text-[#F1641E]">Admin</span></span>
           </div>
-          <button className="lg:hidden p-2 text-gray-400 hover:text-[#E8312A] transition-colors" onClick={() => setMobileMenuOpen(false)}>
+          <button className="lg:hidden p-2.5 bg-gray-50 text-gray-400 hover:text-[#E8312A] rounded-xl transition-colors" onClick={() => setSidebarOpen(false)}>
             <X size={20} />
           </button>
         </div>
@@ -96,6 +117,9 @@ export function AdminLayout() {
               <NavLink
                 key={item.path}
                 to={item.path}
+                onClick={() => {
+                  if (isMobile) setSidebarOpen(false)
+                }}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-[16px] transition-all group relative overflow-hidden ${
                   isActive ? 'bg-[#6651A4] text-white shadow-md' : 'text-gray-500 hover:bg-[#FAEAD3]/50 hover:text-[#222222]'
                 }`}
@@ -114,7 +138,7 @@ export function AdminLayout() {
           })}
         </div>
 
-        <div className="p-4 border-t border-black/[0.05] shrink-0">
+        <div className="p-4 border-t border-black/[0.05] shrink-0 bg-gray-50/50">
           <button className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-gray-500 hover:bg-red-50 hover:text-[#E8312A] transition-all group overflow-hidden">
             <LogOut size={20} className="text-gray-400 group-hover:text-[#E8312A] shrink-0" />
             <span className="font-bold text-[13px] tracking-wide whitespace-nowrap">Logout</span>
@@ -123,12 +147,12 @@ export function AdminLayout() {
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden min-w-0 w-full">
         {/* Top Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-black/[0.05] flex items-center justify-between px-4 md:px-8 shrink-0 z-50 sticky top-0">
+        <header className="h-20 bg-white/90 backdrop-blur-md border-b border-black/[0.05] flex items-center justify-between px-4 md:px-8 shrink-0 z-50 sticky top-0">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => setMobileMenuOpen(true)}
+              onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2.5 bg-[#FAEAD3]/50 rounded-xl text-gray-600 hover:bg-[#FAEAD3] transition-colors"
             >
               <Menu size={20} />
@@ -140,18 +164,18 @@ export function AdminLayout() {
               <Menu size={20} />
             </button>
             
-            {/* Global Search */}
-            <div className="hidden md:flex items-center bg-[#FDF4E6] rounded-full px-4 py-2.5 w-64 lg:w-96 border border-transparent focus-within:border-[#6651A4]/30 focus-within:bg-white transition-all shadow-sm">
-              <Search size={18} className="text-gray-400" />
+            {/* Global Search - Hidden on small mobile */}
+            <div className="hidden sm:flex items-center bg-[#FDF4E6] rounded-full px-4 py-2.5 w-48 md:w-64 lg:w-96 border border-transparent focus-within:border-[#6651A4]/30 focus-within:bg-white transition-all shadow-sm">
+              <Search size={16} className="text-gray-400" />
               <input 
                 type="text" 
-                placeholder="Search orders, users, toys..." 
-                className="bg-transparent border-none outline-none ml-3 w-full text-[13px] font-medium text-gray-700 placeholder:text-gray-400"
+                placeholder="Search anything..." 
+                className="bg-transparent border-none outline-none ml-2 w-full text-[12px] font-medium text-gray-700 placeholder:text-gray-400"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3 md:gap-5">
+          <div className="flex items-center gap-2 md:gap-5">
             <button 
               onClick={() => navigate('/admin/notifications')}
               className="relative p-2.5 text-gray-400 hover:text-[#6651A4] transition-colors bg-[#FAEAD3]/30 hover:bg-[#FAEAD3] rounded-full"
@@ -159,26 +183,30 @@ export function AdminLayout() {
               <Bell size={20} />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#E8312A] rounded-full animate-pulse" />
             </button>
-            <div className="h-8 w-[1px] bg-gray-200 hidden md:block" />
+            
+            <div className="h-8 w-[1px] bg-gray-200 hidden sm:block" />
+            
             <div 
               onClick={() => navigate('/admin/settings')}
               className="flex items-center gap-3 cursor-pointer group"
             >
               <div className="text-right hidden md:block">
-                <p className="text-[13px] font-bold text-gray-800 leading-tight">Admin User</p>
-                <p className="text-[10px] font-bold text-[#F1641E] uppercase tracking-widest">Super Admin</p>
+                <p className="text-[12px] font-bold text-gray-800 leading-tight">Admin User</p>
+                <p className="text-[9px] font-bold text-[#F1641E] uppercase tracking-widest">Super Admin</p>
               </div>
-              <div className="w-10 h-10 bg-[#FAEAD3] rounded-full flex items-center justify-center text-[#6651A4] border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
-                <CircleUser size={24} />
+              <div className="w-9 h-9 md:w-10 md:h-10 bg-[#FAEAD3] rounded-full flex items-center justify-center text-[#6651A4] border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+                <CircleUser size={22} />
               </div>
             </div>
           </div>
         </header>
 
         {/* Page Content Viewport with Internal Suspense */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 relative w-full overflow-x-hidden">
           <Suspense fallback={<AdminContentSkeleton />}>
-            <Outlet />
+            <div className="max-w-[1600px] mx-auto w-full">
+              <Outlet />
+            </div>
           </Suspense>
         </div>
       </main>

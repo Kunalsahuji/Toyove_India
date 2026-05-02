@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, ShoppingBag, Eye, Calendar, MapPin, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function AdminOrders() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -59,8 +61,8 @@ export function AdminOrders() {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96">
+      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
             type="text" placeholder="Search by Order ID or Customer..." 
@@ -69,21 +71,19 @@ export function AdminOrders() {
           />
         </div>
         
-        <div className="flex gap-3 w-full md:w-auto overflow-x-auto custom-scrollbar pb-2 md:pb-0">
-          <div className="relative shrink-0">
-            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select 
-              value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[12px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Processing">Processing</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
+        <div className="relative shrink-0 w-full md:w-60">
+          <Filter size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <select 
+            value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full h-12 pl-10 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[10px] md:text-[11px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
         </div>
       </div>
 
@@ -123,6 +123,7 @@ export function AdminOrders() {
                   <motion.tr 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                     key={order.id} 
+                    onClick={() => navigate(`/admin/orders/${order.id.replace('#', '')}`)}
                     className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors group cursor-pointer"
                   >
                     <td className="py-4 px-6">

@@ -125,57 +125,74 @@ export function AdminDashboard() {
           </div>
         </motion.div>
 
-        {/* Category Distribution Chart */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-          className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]"
-        >
-          <h2 className="text-xl font-grandstander font-bold text-gray-800 mb-8">Toy Categories</h2>
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="relative w-48 h-48 flex items-center justify-center">
-              <svg className="w-full h-full -rotate-90">
-                <circle cx="96" cy="96" r="80" fill="transparent" stroke="#f3f4f6" strokeWidth="24" />
-                <motion.circle 
-                  cx="96" cy="96" r="80" fill="transparent" stroke="#6651A4" strokeWidth="24" 
-                  strokeDasharray="502" initial={{ strokeDashoffset: 502 }} animate={{ strokeDashoffset: 502 * 0.4 }} transition={{ duration: 1.5, ease: "easeInOut" }}
-                  strokeLinecap="round"
-                />
-                <motion.circle 
-                  cx="96" cy="96" r="80" fill="transparent" stroke="#F1641E" strokeWidth="24" 
-                  strokeDasharray="502" initial={{ strokeDashoffset: 502 }} animate={{ strokeDashoffset: 502 * 0.7 }} transition={{ duration: 1.5, delay: 0.3, ease: "easeInOut" }}
-                  strokeLinecap="round"
-                  className="opacity-80"
-                />
-              </svg>
-              <div className="absolute text-center">
-                <p className="text-3xl font-grandstander font-bold text-gray-800">184</p>
-                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Toys</p>
+        {/* Inventory Mix + Wishlist Trends */}
+        <div className="space-y-6 md:space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+            className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-8 shadow-sm border border-black/[0.03]"
+          >
+            <h2 className="text-lg md:text-xl font-grandstander font-bold text-gray-800 mb-6 md:mb-8">Toy Categories</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-12">
+              <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 flex items-center justify-center shrink-0 mx-auto">
+                <svg className="w-full h-full -rotate-90">
+                  <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="#f3f4f6" strokeWidth="12" />
+                  <motion.circle 
+                    cx="50%" cy="50%" r="40%" fill="transparent" stroke="#6651A4" strokeWidth="12" 
+                    strokeDasharray="251" initial={{ strokeDashoffset: 251 }} animate={{ strokeDashoffset: 251 * 0.4 }} transition={{ duration: 1.5, ease: "easeInOut" }}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute text-center">
+                  <p className="text-xl md:text-3xl font-grandstander font-bold text-gray-800">184</p>
+                  <p className="text-[7px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Toys</p>
+                </div>
+              </div>
+              
+              <div className="flex-1 space-y-4 w-full">
+                {[
+                  { label: 'Wooden', value: '45%', color: 'bg-[#6651A4]' },
+                  { label: 'Educational', value: '30%', color: 'bg-[#F1641E]' },
+                  { label: 'Vehicles', value: '15%', color: 'bg-[#E8312A]' },
+                ].map((item, i) => (
+                  <div key={i} className="space-y-1.5">
+                    <div className="flex justify-between text-[9px] md:text-[10px] font-bold uppercase tracking-widest">
+                      <span className="text-gray-500">{item.label}</span>
+                      <span className="text-gray-800">{item.value}</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden">
+                      <motion.div initial={{ width: 0 }} animate={{ width: item.value }} className={`h-full ${item.color} rounded-full`} />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            
-            <div className="flex-1 space-y-4 w-full">
-              {[
-                { label: 'Wooden Toys', value: '45%', color: 'bg-[#6651A4]' },
-                { label: 'Educational', value: '30%', color: 'bg-[#F1641E]' },
-                { label: 'Cars & Vehicles', value: '15%', color: 'bg-[#E8312A]' },
-                { label: 'Others', value: '10%', color: 'bg-gray-200' },
-              ].map((item, i) => (
-                <div key={i} className="space-y-1.5">
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                    <span className="text-gray-500">{item.label}</span>
-                    <span className="text-gray-800">{item.value}</span>
-                  </div>
-                  <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }} animate={{ width: item.value }} transition={{ duration: 1, delay: i * 0.1 }}
-                      className={`h-full ${item.color} rounded-full`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+
+          {/* Wishlist Trends */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
+            className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-8 shadow-sm border border-black/[0.03]"
+          >
+             <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg md:text-xl font-grandstander font-bold text-gray-800">Wishlist Trends</h3>
+                <span className="px-2 py-0.5 bg-purple-50 text-[#6651A4] rounded-full text-[8px] md:text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">Top Favorites</span>
+             </div>
+             <div className="space-y-3">
+                {[
+                  { name: 'Wooden Train', count: 245, trend: '+12%' },
+                  { name: 'Coding Robot', count: 189, trend: '+5%' }
+                ].map((item, i) => (
+                   <div key={i} className="flex items-center justify-between p-3 md:p-4 bg-[#FDF4E6]/30 rounded-xl md:rounded-2xl border border-black/[0.01]">
+                      <div className="min-w-0 flex-1">
+                         <p className="text-[12px] md:text-[13px] font-bold text-gray-800 truncate">{item.name}</p>
+                         <p className="text-[9px] md:text-[10px] text-gray-400 font-medium truncate">{item.count} saved</p>
+                      </div>
+                      <span className="text-[10px] md:text-[11px] font-bold text-green-500 shrink-0 ml-2">{item.trend}</span>
+                   </div>
+                ))}
+             </div>
+          </motion.div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -183,33 +200,31 @@ export function AdminDashboard() {
         {/* Recent Orders Table */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-          className="lg:col-span-2 bg-white rounded-[32px] p-6 shadow-sm border border-black/[0.03]"
+          className="lg:col-span-2 bg-white rounded-[24px] md:rounded-[32px] p-5 md:p-8 shadow-sm border border-black/[0.03] overflow-hidden"
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-grandstander font-bold text-gray-800">Recent Transactions</h2>
-            <button onClick={() => navigate('/admin/transactions')} className="text-[11px] font-bold text-[#F1641E] uppercase tracking-widest hover:underline">View All</button>
+            <h2 className="text-lg md:text-xl font-grandstander font-bold text-gray-800">Recent Ledger</h2>
+            <button onClick={() => navigate('/admin/transactions')} className="text-[9px] md:text-[11px] font-bold text-[#F1641E] uppercase tracking-widest hover:underline whitespace-nowrap">View All</button>
           </div>
           
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto custom-scrollbar -mx-2 px-2">
+            <table className="w-full text-left border-collapse min-w-[500px]">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="py-4 px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order ID</th>
-                  <th className="py-4 px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Explorer</th>
-                  <th className="py-4 px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</th>
-                  <th className="py-4 px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Amount</th>
-                  <th className="py-4 px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">Status</th>
+                  <th className="py-3 px-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">ID</th>
+                  <th className="py-3 px-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">Explorer</th>
+                  <th className="py-3 px-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest text-right">Amount</th>
+                  <th className="py-3 px-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   [...Array(4)].map((_, i) => (
                     <tr key={i} className="animate-pulse border-b border-gray-50 last:border-0">
-                      <td className="py-4 px-4"><div className="h-4 w-20 bg-gray-100 rounded"></div></td>
-                      <td className="py-4 px-4"><div className="h-4 w-32 bg-gray-100 rounded"></div></td>
-                      <td className="py-4 px-4"><div className="h-4 w-24 bg-gray-100 rounded"></div></td>
-                      <td className="py-4 px-4"><div className="h-4 w-16 bg-gray-100 rounded ml-auto"></div></td>
-                      <td className="py-4 px-4"><div className="h-6 w-20 bg-gray-100 rounded-full mx-auto"></div></td>
+                      <td className="py-3 px-2"><div className="h-3 w-12 bg-gray-100 rounded"></div></td>
+                      <td className="py-3 px-2"><div className="h-3 w-24 bg-gray-100 rounded"></div></td>
+                      <td className="py-3 px-2"><div className="h-3 w-16 bg-gray-100 rounded ml-auto"></div></td>
+                      <td className="py-3 px-2"><div className="h-5 w-16 bg-gray-100 rounded-full mx-auto"></div></td>
                     </tr>
                   ))
                 ) : (
@@ -217,14 +232,13 @@ export function AdminDashboard() {
                     <tr 
                       key={i} 
                       onClick={() => navigate(`/admin/transactions/${order.id.replace('#', '')}`)}
-                      className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors cursor-pointer"
+                      className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors cursor-pointer group"
                     >
-                      <td className="py-4 px-4 font-mono text-[13px] font-bold text-[#6651A4]">{order.id}</td>
-                      <td className="py-4 px-4 text-[13px] font-bold text-gray-700">{order.user}</td>
-                      <td className="py-4 px-4 text-[12px] text-gray-500 font-medium">{order.date}</td>
-                      <td className="py-4 px-4 text-[14px] font-bold font-grandstander text-gray-800 text-right">{order.amount}</td>
-                      <td className="py-4 px-4 text-center">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest
+                      <td className="py-4 px-2 font-mono text-[11px] md:text-[13px] font-bold text-[#6651A4]">{order.id}</td>
+                      <td className="py-4 px-2 text-[11px] md:text-[13px] font-bold text-gray-700">{order.user}</td>
+                      <td className="py-4 px-2 text-[12px] md:text-[14px] font-bold font-grandstander text-gray-800 text-right">{order.amount}</td>
+                      <td className="py-4 px-2 text-center">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-bold uppercase tracking-widest
                           ${order.status === 'Pending' ? 'bg-yellow-50 text-yellow-600' : 
                             order.status === 'Shipped' ? 'bg-blue-50 text-blue-600' : 
                             order.status === 'Delivered' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}

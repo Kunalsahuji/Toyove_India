@@ -61,22 +61,22 @@ export function AdminUsers() {
 
   return (
     <div className="shell space-y-6 pb-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-grandstander font-bold text-gray-800">Explorer Directory</h1>
-          <p className="text-gray-500 font-medium text-sm mt-1">Manage user identities and access levels.</p>
+          <h1 className="text-2xl md:text-4xl font-grandstander font-bold text-gray-800">Explorer Directory</h1>
+          <p className="text-gray-500 font-medium text-[12px] md:text-sm mt-1">Manage user identities and access levels.</p>
         </div>
         <button 
-          onClick={() => navigate('/admin/users/USR-001')}
-          className="h-11 px-6 bg-[#E8312A] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-red-700 hover:-translate-y-0.5 transition-all w-max"
+          onClick={() => navigate('/admin/users/new')}
+          className="h-11 px-6 bg-[#E8312A] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-[11px] shadow-lg hover:bg-red-700 transition-all w-full md:w-max"
         >
           + Add Explorer
         </button>
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96">
+      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] space-y-4">
+        <div className="relative w-full">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
             type="text" placeholder="Search by name or email..." 
@@ -85,12 +85,12 @@ export function AdminUsers() {
           />
         </div>
         
-        <div className="flex gap-3 w-full md:w-auto overflow-x-auto custom-scrollbar pb-2 md:pb-0">
-          <div className="relative shrink-0">
-            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
+          <div className="relative shrink-0 min-w-[120px]">
+            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <select 
               value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[12px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
+              className="w-full h-11 pl-9 pr-6 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[10px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
             >
               <option value="All">All Status</option>
               <option value="Active">Active</option>
@@ -98,16 +98,16 @@ export function AdminUsers() {
               <option value="Banned">Banned</option>
             </select>
           </div>
-          
-          <div className="relative shrink-0">
-            <ArrowUpDown size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+          <div className="relative shrink-0 min-w-[140px]">
+            <ArrowUpDown size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <select 
               value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[12px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
+              className="w-full h-11 pl-9 pr-6 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[10px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
             >
-              <option value="recent">Newest First</option>
-              <option value="spentDesc">Highest Spent</option>
-              <option value="name">Alphabetical</option>
+              <option value="recent">Recently Joined</option>
+              <option value="spentDesc">Highest Spenders</option>
+              <option value="name">Name (A-Z)</option>
             </select>
           </div>
         </div>

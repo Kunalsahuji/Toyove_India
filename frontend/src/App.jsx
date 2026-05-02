@@ -47,6 +47,7 @@ const AdminUserDetail = React.lazy(() => import('./admin/pages/AdminUserDetail')
 const AdminProducts = React.lazy(() => import('./admin/pages/AdminProducts').then(m => ({ default: m.AdminProducts })))
 const AdminProductDetail = React.lazy(() => import('./admin/pages/AdminProductDetail').then(m => ({ default: m.AdminProductDetail })))
 const AdminOrders = React.lazy(() => import('./admin/pages/AdminOrders').then(m => ({ default: m.AdminOrders })))
+const AdminOrderDetail = React.lazy(() => import('./admin/pages/AdminOrderDetail').then(m => ({ default: m.AdminOrderDetail })))
 const AdminTransactions = React.lazy(() => import('./admin/pages/AdminTransactions').then(m => ({ default: m.AdminTransactions })))
 const AdminFinance = React.lazy(() => import('./admin/pages/AdminFinance').then(m => ({ default: m.AdminFinance })))
 const AdminSettings = React.lazy(() => import('./admin/pages/AdminSettings').then(m => ({ default: m.AdminSettings })))
@@ -97,6 +98,7 @@ function AppContent() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="products/:id" element={<AdminProductDetail />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/:id" element={<AdminOrderDetail />} />
             <Route path="finance" element={<AdminFinance />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="notifications" element={<AdminNotifications />} />

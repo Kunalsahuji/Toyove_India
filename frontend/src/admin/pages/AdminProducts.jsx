@@ -41,22 +41,22 @@ export function AdminProducts() {
 
   return (
     <div className="shell space-y-6 pb-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-grandstander font-bold text-gray-800">Toy Catalog</h1>
-          <p className="text-gray-500 font-medium text-sm mt-1">Manage inventory, prices, and visibility.</p>
+          <h1 className="text-2xl md:text-4xl font-grandstander font-bold text-gray-800">Toy Catalog</h1>
+          <p className="text-gray-500 font-medium text-[12px] md:text-sm mt-1">Manage inventory, prices, and visibility.</p>
         </div>
         <button 
           onClick={() => navigate('/admin/products/new')}
-          className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-[#5a4892] hover:-translate-y-0.5 transition-all w-max flex items-center gap-2"
+          className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-[11px] shadow-lg hover:bg-[#5a4892] transition-all w-full md:w-max flex items-center justify-center gap-2"
         >
           <Plus size={16} /> Add New Toy
         </button>
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96">
+      <div className="bg-white p-4 rounded-[24px] shadow-sm border border-black/[0.03] space-y-4">
+        <div className="relative w-full">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
             type="text" placeholder="Search toys..." 
@@ -65,12 +65,12 @@ export function AdminProducts() {
           />
         </div>
         
-        <div className="flex gap-3 w-full md:w-auto overflow-x-auto custom-scrollbar pb-2 md:pb-0">
-          <div className="relative shrink-0">
-            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
+          <div className="relative shrink-0 min-w-[140px]">
+            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <select 
               value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
-              className="h-12 pl-9 pr-8 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#F1641E]/30 text-[12px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
+              className="w-full h-11 pl-9 pr-6 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#F1641E]/30 text-[10px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
             >
               <option value="All">All Categories</option>
               <option value="Wooden Toys">Wooden Toys</option>

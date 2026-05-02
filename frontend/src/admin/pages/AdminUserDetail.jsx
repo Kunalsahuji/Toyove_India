@@ -187,6 +187,32 @@ export function AdminUserDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]">
               <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-grandstander font-bold text-gray-800">Saved Bases</h3>
+                <MapPin size={18} className="text-gray-300" />
+              </div>
+              <div className="space-y-4">
+                {[
+                  { id: 1, type: 'Home', address: '7th Floor, Unit 703, Mayagarden, Zirakpur, Punjab - 140603', primary: true },
+                  { id: 2, type: 'Office', address: 'Sector 62, Noida, Uttar Pradesh - 201301', primary: false }
+                ].map(base => (
+                  <div 
+                    key={base.id} 
+                    className={`p-4 rounded-2xl border transition-all ${base.primary ? 'bg-[#FAEAD3]/40 border-[#6651A4]/20' : 'bg-white border-black/[0.03] hover:bg-gray-50'}`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest ${base.primary ? 'bg-[#6651A4] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {base.type} {base.primary && '• Primary'}
+                      </span>
+                      <button className="text-gray-400 hover:text-[#6651A4]"><Edit2 size={12}/></button>
+                    </div>
+                    <p className="text-[12px] text-gray-600 leading-relaxed">{base.address}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]">
+              <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-grandstander font-bold text-gray-800">Recent Hauls</h3>
                 <ShoppingBag size={18} className="text-gray-300" />
               </div>
@@ -210,12 +236,12 @@ export function AdminUserDetail() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03] md:col-span-2">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-grandstander font-bold text-gray-800">Funds History</h3>
                 <RefreshCcw size={18} className="text-gray-300" />
               </div>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {user.recentTransactions.map(txn => (
                   <div 
                     key={txn.id} 

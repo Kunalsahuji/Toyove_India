@@ -26,21 +26,21 @@ export function AdminFinance() {
 
   return (
     <div className="shell space-y-8 pb-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-grandstander font-bold text-gray-800">Financial Hub</h1>
-          <p className="text-gray-500 font-medium text-sm mt-1">Centralized command for Toyovo India's economy.</p>
+          <h1 className="text-2xl md:text-4xl font-grandstander font-bold text-gray-800">Financial Hub</h1>
+          <p className="text-gray-500 font-medium text-[12px] md:text-sm mt-1">Centralized command for Toyovo India's economy.</p>
         </div>
-        <div className="flex gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-black/[0.03]">
+        <div className="flex gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-black/[0.03] overflow-x-auto custom-scrollbar">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
                 activeTab === tab.id ? 'bg-[#6651A4] text-white shadow-md' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
               }`}
             >
-              {tab.icon} {tab.label}
+              <span className="shrink-0">{tab.icon}</span> {tab.label}
             </button>
           ))}
         </div>

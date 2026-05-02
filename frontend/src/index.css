@@ -54,8 +54,8 @@ h1, h2, h3, h4, h5, h6 {
 .shell {
   width: 100%;
   margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 14px;
+  padding-right: 14px;
 }
 
 @media (min-width: 768px) {
@@ -64,6 +64,25 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (min-width: 1024px) {
   .shell { padding-left: 40px; padding-right: 40px; }
+}
+
+/* Custom Scrollbar for Horizontal Filters */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #FAEAD3;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #F1641E;
 }
 
 /* hdr-inner matches shell but for header specific usage */
