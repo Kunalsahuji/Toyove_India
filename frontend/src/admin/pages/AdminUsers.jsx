@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, Shield, UserX, Mail, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -46,6 +46,15 @@ export function AdminUsers() {
     return () => clearTimeout(timer)
   }, [search, statusFilter, sortBy])
 
+  const [menuOpenUserId, setMenuOpenUserId] = useState(null)
+
+  // Close menu on click outside
+  useEffect(() => {
+    const handleClick = () => setMenuOpenUserId(null)
+    window.addEventListener('click', handleClick)
+    return () => window.removeEventListener('click', handleClick)
+  }, [])
+
   // Pagination logic
   const totalPages = Math.ceil(users.length / itemsPerPage)
   const currentUsers = users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -58,7 +67,7 @@ export function AdminUsers() {
           <p className="text-gray-500 font-medium text-sm mt-1">Manage user identities and access levels.</p>
         </div>
         <button 
-          onClick={() => navigate('/admin/users/new')}
+          onClick={() => navigate('/admin/users/USR-001')}
           className="h-11 px-6 bg-[#E8312A] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-red-700 hover:-translate-y-0.5 transition-all w-max"
         >
           + Add Explorer
@@ -105,9 +114,9 @@ export function AdminUsers() {
       </div>
 
       {/* Data Table */}
-      <motion.div layout className="bg-white rounded-[32px] shadow-sm border border-black/[0.03] overflow-hidden">
+      <motion.div layout className="bg-white rounded-[32px] shadow-sm border border-black/[0.03] overflow-hidden min-h-[400px]">
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-[#FAEAD3]/30 border-b border-black/[0.03]">
                 <th className="py-5 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Explorer</th>
@@ -140,11 +149,10 @@ export function AdminUsers() {
                   <motion.tr 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                     key={user.id} 
-                    onClick={() => navigate(`/admin/users/${user.id}`)}
-                    className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors group cursor-pointer"
+                    className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors group relative"
                   >
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-4">
+                    <td className="py-4 px-6" onClick={() => navigate(`/admin/users/${user.id}`)}>
+                      <div className="flex items-center gap-4 cursor-pointer">
                         <div className="w-10 h-10 bg-[#6651A4]/10 text-[#6651A4] rounded-full flex items-center justify-center font-grandstander font-bold text-lg group-hover:scale-110 transition-transform border border-[#6651A4]/20">
                           {user.name.charAt(0)}
                         </div>
@@ -167,10 +175,52 @@ export function AdminUsers() {
                     <td className="py-4 px-6 text-right">
                       <p className="text-[15px] font-bold font-grandstander text-gray-800">{user.spent}</p>
                     </td>
-                    <td className="py-4 px-6 text-right">
-                      <button className="p-2 text-gray-400 hover:text-[#6651A4] hover:bg-[#FAEAD3] rounded-lg transition-all ml-auto block">
+                    <td 
+                      className="py-4 px-6 text-right relative"
+                      onMouseEnter={() => setMenuOpenUserId(user.id)}
+                      onMouseLeave={() => setMenuOpenUserId(null)}
+                    >
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setMenuOpenUserId(menuOpenUserId === user.id ? null : user.id)
+                        }}
+                        className={`p-2 rounded-lg transition-all ml-auto block ${menuOpenUserId === user.id ? 'bg-[#6651A4] text-white shadow-md' : 'text-gray-400 hover:text-[#6651A4] hover:bg-[#FAEAD3]'}`}
+                      >
                         <MoreVertical size={16} />
                       </button>
+
+                      {/* Action Dropdown */}
+                      <AnimatePresence>
+                        {menuOpenUserId === user.id && (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            className="absolute right-6 top-[60%] z-[200] w-48 bg-white rounded-2xl shadow-xl border border-black/[0.05] py-2 overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button 
+                              onClick={() => navigate(`/admin/users/${user.id}`)}
+                              className="w-full px-5 py-3 text-left text-[12px] font-bold text-gray-600 hover:bg-[#FDF4E6]/50 hover:text-[#6651A4] flex items-center gap-3 transition-colors"
+                            >
+                              <Shield size={14} className="text-[#6651A4]" /> View Profile
+                            </button>
+                            <button 
+                              onClick={() => navigate(`/admin/users/${user.id}`)}
+                              className="w-full px-5 py-3 text-left text-[12px] font-bold text-gray-600 hover:bg-[#FDF4E6]/50 hover:text-[#6651A4] flex items-center gap-3 transition-colors"
+                            >
+                              <Mail size={14} /> Send Message
+                            </button>
+                            <div className="h-[1px] bg-gray-100 my-1" />
+                            <button 
+                              className="w-full px-5 py-3 text-left text-[12px] font-bold text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                            >
+                              <UserX size={14} /> Suspend User
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </td>
                   </motion.tr>
                 ))

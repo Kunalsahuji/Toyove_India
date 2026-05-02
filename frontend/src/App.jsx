@@ -90,11 +90,7 @@ function AppContent() {
       <>
         <ScrollToTop />
         <Routes>
-          <Route path="/admin" element={
-            <Suspense fallback={<AdminFallback />}>
-              <AdminLayout />
-            </Suspense>
-          }>
+          <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="users/:id" element={<AdminUserDetail />} />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -6,6 +6,30 @@ import {
   Settings, LogOut, Menu, X, Bell, Search, 
   ChevronRight, CircleUser, Wallet, PackageOpen
 } from 'lucide-react'
+
+// --- Skeleton Component for Seamless Loading ---
+function AdminContentSkeleton() {
+  return (
+    <div className="shell space-y-8 animate-pulse">
+      <div className="flex justify-between items-end">
+        <div className="space-y-3">
+          <div className="h-10 w-64 bg-gray-200 rounded-2xl" />
+          <div className="h-4 w-48 bg-gray-100 rounded-xl" />
+        </div>
+        <div className="h-12 w-40 bg-gray-200 rounded-2xl" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="h-32 bg-white rounded-[24px] border border-black/[0.03]" />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 h-96 bg-white rounded-[32px] border border-black/[0.03]" />
+        <div className="lg:col-span-1 h-96 bg-white rounded-[32px] border border-black/[0.03]" />
+      </div>
+    </div>
+  )
+}
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -43,23 +67,28 @@ export function AdminLayout() {
 
       {/* Sidebar */}
       <motion.aside
-        animate={{ width: sidebarOpen ? 280 : 80, x: mobileMenuOpen ? 0 : (sidebarOpen ? 0 : -300) }}
-        className={`fixed lg:relative z-[101] h-screen bg-white border-r border-black/[0.05] flex flex-col shrink-0 shadow-xl lg:shadow-none transition-transform duration-300 lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        initial={false}
+        animate={{ 
+          width: sidebarOpen ? 280 : (mobileMenuOpen ? 280 : 0),
+          x: mobileMenuOpen ? 0 : (sidebarOpen ? 0 : (window.innerWidth < 1024 ? -280 : 0))
+        }}
+        transition={{ type: 'spring', stiffness: 400, damping: 40 }}
+        className={`fixed lg:relative z-[101] h-screen bg-white border-r border-black/[0.05] flex flex-col shrink-0 shadow-xl lg:shadow-none overflow-hidden`}
       >
-        <div className="h-20 flex items-center justify-between px-6 border-b border-black/[0.05]">
+        <div className="h-20 flex items-center justify-between px-6 border-b border-black/[0.05] shrink-0">
           <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
             <div className="w-12 h-12 flex items-center justify-center shrink-0">
                <img src="/favicon.webp" alt="Toyovo Logo" className="w-full h-full object-contain" />
             </div>
-            {sidebarOpen && <span className="font-grandstander font-bold text-[26px] text-[#6651A4] tracking-tight -ml-1">Toyovo<span className="text-[#F1641E]">Admin</span></span>}
+            <span className="font-grandstander font-bold text-[26px] text-[#6651A4] tracking-tight -ml-1">Toyovo<span className="text-[#F1641E]">Admin</span></span>
           </div>
           <button className="lg:hidden p-2 text-gray-400 hover:text-[#E8312A] transition-colors" onClick={() => setMobileMenuOpen(false)}>
             <X size={20} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar py-6 px-4 space-y-2">
-          {sidebarOpen && <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-4">Core Modules</p>}
+        <div className="flex-1 overflow-y-auto custom-scrollbar py-6 px-4 space-y-2 overflow-x-hidden">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-4 whitespace-nowrap">Core Modules</p>
           
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
@@ -70,34 +99,31 @@ export function AdminLayout() {
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-[16px] transition-all group relative overflow-hidden ${
                   isActive ? 'bg-[#6651A4] text-white shadow-md' : 'text-gray-500 hover:bg-[#FAEAD3]/50 hover:text-[#222222]'
                 }`}
-                title={!sidebarOpen ? item.label : ''}
               >
-                {isActive && sidebarOpen && (
+                {isActive && (
                   <motion.div layoutId="activeNav" className="absolute left-0 top-0 bottom-0 w-1 bg-[#F1641E]" />
                 )}
                 <span className={`shrink-0 ${isActive ? 'text-[#F1641E]' : 'text-gray-400 group-hover:text-[#6651A4]'}`}>
                   {item.icon}
                 </span>
-                {sidebarOpen && (
-                  <span className="font-bold text-[13px] tracking-wide whitespace-nowrap">
-                    {item.label}
-                  </span>
-                )}
+                <span className="font-bold text-[13px] tracking-wide whitespace-nowrap">
+                  {item.label}
+                </span>
               </NavLink>
             )
           })}
         </div>
 
-        <div className="p-4 border-t border-black/[0.05]">
-          <button className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-gray-500 hover:bg-red-50 hover:text-[#E8312A] transition-all group ${!sidebarOpen && 'justify-center'}`}>
-            <LogOut size={20} className="text-gray-400 group-hover:text-[#E8312A]" />
-            {sidebarOpen && <span className="font-bold text-[13px] tracking-wide whitespace-nowrap">Logout</span>}
+        <div className="p-4 border-t border-black/[0.05] shrink-0">
+          <button className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-gray-500 hover:bg-red-50 hover:text-[#E8312A] transition-all group overflow-hidden">
+            <LogOut size={20} className="text-gray-400 group-hover:text-[#E8312A] shrink-0" />
+            <span className="font-bold text-[13px] tracking-wide whitespace-nowrap">Logout</span>
           </button>
         </div>
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
         {/* Top Header */}
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-black/[0.05] flex items-center justify-between px-4 md:px-8 shrink-0 z-50 sticky top-0">
           <div className="flex items-center gap-4">
@@ -149,9 +175,11 @@ export function AdminLayout() {
           </div>
         </header>
 
-        {/* Page Content Viewport */}
+        {/* Page Content Viewport with Internal Suspense */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
-          <Outlet />
+          <Suspense fallback={<AdminContentSkeleton />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>

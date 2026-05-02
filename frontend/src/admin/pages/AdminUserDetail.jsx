@@ -125,18 +125,26 @@ export function AdminUserDetail() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[#6651A4] rounded-[32px] p-8 text-white relative overflow-hidden shadow-xl">
-            <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
+              <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
             <div className="relative z-10">
-              <div className="flex items-center gap-2 text-white/60 text-[10px] font-bold uppercase tracking-widest mb-2">
-                <Wallet size={14} /> Wallet Balance
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2 text-white/60 text-[10px] font-bold uppercase tracking-widest">
+                  <Wallet size={14} /> Wallet Balance
+                </div>
+                <button 
+                  onClick={() => navigate('/admin/finance')}
+                  className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all"
+                >
+                  + Top Up
+                </button>
               </div>
               <h3 className="text-4xl font-grandstander font-bold mb-6">{user.walletBalance}</h3>
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
-                <div>
+                <div className="cursor-pointer" onClick={() => navigate('/admin/finance')}>
                   <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Total Spent</p>
                   <p className="text-lg font-bold font-grandstander">{user.totalSpent}</p>
                 </div>
-                <div>
+                <div className="cursor-pointer" onClick={() => navigate('/admin/orders')}>
                   <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Orders</p>
                   <p className="text-lg font-bold font-grandstander">{user.totalOrders}</p>
                 </div>
@@ -184,7 +192,11 @@ export function AdminUserDetail() {
               </div>
               <div className="space-y-4">
                 {user.recentOrders.map(order => (
-                  <div key={order.id} className="flex justify-between items-center p-4 bg-[#FDF4E6]/30 rounded-2xl border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-all cursor-pointer">
+                  <div 
+                    key={order.id} 
+                    onClick={() => navigate('/admin/orders')}
+                    className="flex justify-between items-center p-4 bg-[#FDF4E6]/30 rounded-2xl border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-all cursor-pointer"
+                  >
                     <div>
                       <p className="text-[12px] font-bold text-[#6651A4]">{order.id}</p>
                       <p className="text-[10px] text-gray-400">{order.date}</p>
@@ -205,7 +217,11 @@ export function AdminUserDetail() {
               </div>
               <div className="space-y-4">
                 {user.recentTransactions.map(txn => (
-                  <div key={txn.id} className="flex justify-between items-center p-4 bg-[#FDF4E6]/30 rounded-2xl border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-all cursor-pointer">
+                  <div 
+                    key={txn.id} 
+                    onClick={() => navigate(`/admin/transactions/${txn.id}`)}
+                    className="flex justify-between items-center p-4 bg-[#FDF4E6]/30 rounded-2xl border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-all cursor-pointer"
+                  >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs ${txn.type === 'Credit' ? 'bg-green-400' : 'bg-[#E8312A]'}`}>
                         {txn.type === 'Credit' ? '+' : '-'}

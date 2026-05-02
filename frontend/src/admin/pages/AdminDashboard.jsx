@@ -87,11 +87,102 @@ export function AdminDashboard() {
         ))}
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Revenue Performance Chart */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]"
+        >
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h2 className="text-xl font-grandstander font-bold text-gray-800">Revenue Flow</h2>
+              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1">Growth over the last 7 days</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#6651A4]" />
+              <span className="text-[10px] font-bold text-gray-500 uppercase">Sales</span>
+            </div>
+          </div>
+          
+          <div className="h-64 relative flex items-end justify-between gap-2 px-2">
+            {[45, 60, 40, 85, 55, 95, 75].map((val, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
+                <div className="relative w-full flex items-end justify-center h-full">
+                  <motion.div 
+                    initial={{ height: 0 }}
+                    animate={{ height: `${val}%` }}
+                    transition={{ duration: 1, delay: 0.5 + (i * 0.1), ease: "circOut" }}
+                    className="w-full max-w-[40px] bg-[#FAEAD3] rounded-t-2xl group-hover:bg-[#6651A4] transition-colors relative"
+                  >
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      ${val * 10}
+                    </div>
+                  </motion.div>
+                </div>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Day {i + 1}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Category Distribution Chart */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]"
+        >
+          <h2 className="text-xl font-grandstander font-bold text-gray-800 mb-8">Toy Categories</h2>
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="relative w-48 h-48 flex items-center justify-center">
+              <svg className="w-full h-full -rotate-90">
+                <circle cx="96" cy="96" r="80" fill="transparent" stroke="#f3f4f6" strokeWidth="24" />
+                <motion.circle 
+                  cx="96" cy="96" r="80" fill="transparent" stroke="#6651A4" strokeWidth="24" 
+                  strokeDasharray="502" initial={{ strokeDashoffset: 502 }} animate={{ strokeDashoffset: 502 * 0.4 }} transition={{ duration: 1.5, ease: "easeInOut" }}
+                  strokeLinecap="round"
+                />
+                <motion.circle 
+                  cx="96" cy="96" r="80" fill="transparent" stroke="#F1641E" strokeWidth="24" 
+                  strokeDasharray="502" initial={{ strokeDashoffset: 502 }} animate={{ strokeDashoffset: 502 * 0.7 }} transition={{ duration: 1.5, delay: 0.3, ease: "easeInOut" }}
+                  strokeLinecap="round"
+                  className="opacity-80"
+                />
+              </svg>
+              <div className="absolute text-center">
+                <p className="text-3xl font-grandstander font-bold text-gray-800">184</p>
+                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Toys</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 space-y-4 w-full">
+              {[
+                { label: 'Wooden Toys', value: '45%', color: 'bg-[#6651A4]' },
+                { label: 'Educational', value: '30%', color: 'bg-[#F1641E]' },
+                { label: 'Cars & Vehicles', value: '15%', color: 'bg-[#E8312A]' },
+                { label: 'Others', value: '10%', color: 'bg-gray-200' },
+              ].map((item, i) => (
+                <div key={i} className="space-y-1.5">
+                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
+                    <span className="text-gray-500">{item.label}</span>
+                    <span className="text-gray-800">{item.value}</span>
+                  </div>
+                  <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }} animate={{ width: item.value }} transition={{ duration: 1, delay: i * 0.1 }}
+                      className={`h-full ${item.color} rounded-full`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Recent Orders Table */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
           className="lg:col-span-2 bg-white rounded-[32px] p-6 shadow-sm border border-black/[0.03]"
         >
           <div className="flex justify-between items-center mb-6">
@@ -151,7 +242,7 @@ export function AdminDashboard() {
 
         {/* Quick Actions / System Health */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
           className="bg-[#6651A4] rounded-[32px] p-8 text-white relative overflow-hidden shadow-xl"
         >
           {/* Decorations */}
