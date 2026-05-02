@@ -139,7 +139,14 @@ export function AdminLayout() {
         </div>
 
         <div className="p-4 border-t border-black/[0.05] shrink-0 bg-gray-50/50">
-          <button className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-gray-500 hover:bg-red-50 hover:text-[#E8312A] transition-all group overflow-hidden">
+          <button 
+            onClick={() => {
+              if (window.confirm('Are you sure you want to log out?')) {
+                navigate('/login')
+              }
+            }}
+            className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-gray-500 hover:bg-red-50 hover:text-[#E8312A] transition-all group overflow-hidden"
+          >
             <LogOut size={20} className="text-gray-400 group-hover:text-[#E8312A] shrink-0" />
             <span className="font-bold text-[13px] tracking-wide whitespace-nowrap">Logout</span>
           </button>
@@ -204,7 +211,7 @@ export function AdminLayout() {
         {/* Page Content Viewport with Internal Suspense */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 relative w-full overflow-x-hidden">
           <Suspense fallback={<AdminContentSkeleton />}>
-            <div className="max-w-[1600px] mx-auto w-full">
+            <div className="w-full h-full">
               <Outlet />
             </div>
           </Suspense>

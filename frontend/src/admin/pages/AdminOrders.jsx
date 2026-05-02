@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, ShoppingBag, Eye, Calendar, MapPin, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
 
 export function AdminOrders() {
   const navigate = useNavigate()
+  const { success } = useToast()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -142,9 +144,11 @@ export function AdminOrders() {
                       <select 
                         value={order.status}
                         onChange={(e) => {
+                          const newStatus = e.target.value;
                           const newOrders = [...orders];
-                          newOrders[i].status = e.target.value;
+                          newOrders[i].status = newStatus;
                           setOrders(newOrders);
+                          success(`Order ${order.id} status updated to ${newStatus}`);
                         }}
                         onClick={(e) => e.stopPropagation()}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border appearance-none outline-none cursor-pointer hover:shadow-md transition-all ${getStatusColor(order.status)}`}
@@ -158,10 +162,22 @@ export function AdminOrders() {
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex justify-end gap-2">
-                        <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#6651A4] bg-white border border-gray-100 hover:border-[#6651A4]/30 hover:bg-[#FAEAD3] rounded-lg transition-all shadow-sm">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/orders/${order.id.replace('#', '')}`);
+                          }}
+                          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#6651A4] bg-white border border-gray-100 hover:border-[#6651A4]/30 hover:bg-[#FAEAD3] rounded-lg transition-all shadow-sm"
+                        >
                           <Eye size={14} />
                         </button>
-                        <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#6651A4] bg-white border border-gray-100 hover:border-[#6651A4]/30 hover:bg-[#FAEAD3] rounded-lg transition-all shadow-sm">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/orders/${order.id.replace('#', '')}`);
+                          }}
+                          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#6651A4] bg-white border border-gray-100 hover:border-[#6651A4]/30 hover:bg-[#FAEAD3] rounded-lg transition-all shadow-sm"
+                        >
                           <MoreVertical size={14} />
                         </button>
                       </div>

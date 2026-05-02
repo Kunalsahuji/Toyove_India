@@ -6,8 +6,10 @@ import {
   Settings as SettingsIcon, ShieldCheck, User,
   ChevronRight, Download, Plus, Minus
 } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
 
 export function AdminFinance() {
+  const { success } = useToast()
   const [activeTab, setActiveTab] = useState('overview')
   const [loading, setLoading] = useState(true)
 
@@ -146,11 +148,17 @@ function FinanceOverview() {
 
 function FinanceLedger() {
   const [search, setSearch] = useState('')
-  const txns = [
+  const initialTxns = [
     { id: 'TXN-9021', explorer: 'Emma Watson', type: 'Credit', amount: '+$500.00', method: 'UPI', status: 'Success' },
     { id: 'TXN-9022', explorer: 'Liam Smith', type: 'Debit', amount: '-$89.50', method: 'Wallet', status: 'Success' },
     { id: 'TXN-9023', explorer: 'Olivia Brown', type: 'Credit', amount: '+$45.00', method: 'Card', status: 'Processing' },
+    { id: 'TXN-9024', explorer: 'Emma Watson', type: 'Debit', amount: '-$120.00', method: 'UPI', status: 'Failed' },
   ]
+
+  const filteredTxns = initialTxns.filter(t => 
+    t.id.toLowerCase().includes(search.toLowerCase()) || 
+    t.explorer.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <div className="bg-white rounded-[32px] border border-black/[0.03] shadow-sm overflow-hidden">
@@ -158,7 +166,10 @@ function FinanceLedger() {
         <div className="relative w-full md:w-80">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
-            type="text" placeholder="Search ID or Explorer..." 
+            type="text" 
+            placeholder="Search ID or Explorer..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full h-11 pl-11 pr-4 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[13px] font-medium"
           />
         </div>
@@ -178,17 +189,21 @@ function FinanceLedger() {
             </tr>
           </thead>
           <tbody>
-            {txns.map(t => (
+            {filteredTxns.length > 0 ? filteredTxns.map(t => (
               <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                 <td className="py-4 px-6 text-[13px] font-bold text-[#6651A4] font-mono">{t.id}</td>
                 <td className="py-4 px-6 text-[13px] font-bold text-gray-700">{t.explorer}</td>
                 <td className={`py-4 px-6 text-[14px] font-bold font-grandstander ${t.type === 'Credit' ? 'text-green-500' : 'text-gray-800'}`}>{t.amount}</td>
                 <td className="py-4 px-6 text-[12px] text-gray-400 font-medium">{t.method}</td>
                 <td className="py-4 px-6 text-center">
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${t.status === 'Success' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600'}`}>{t.status}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${t.status === 'Success' ? 'bg-green-50 text-green-600' : t.status === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-yellow-50 text-yellow-600'}`}>{t.status}</span>
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan="5" className="py-10 text-center text-gray-400 font-medium text-sm italic">No entries found for "{search}"</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -209,18 +224,31 @@ function WalletManagement() {
               { name: 'Olivia Brown', balance: '$210.00', id: 'USR-003' },
             ].map(user => (
               <div key={user.id} className="flex items-center justify-between p-4 bg-[#FDF4E6]/50 rounded-2xl border border-black/[0.01]">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-[#6651A4] shadow-sm">{user.name.charAt(0)}</div>
+                <div 
+                  className="flex items-center gap-4 cursor-pointer group"
+                  onClick={() => navigate(`/admin/users/${user.id}`)}
+                >
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-[#6651A4] shadow-sm group-hover:bg-[#6651A4] group-hover:text-white transition-all">{user.name.charAt(0)}</div>
                   <div>
-                    <p className="text-[13px] font-bold text-gray-800">{user.name}</p>
+                    <p className="text-[13px] font-bold text-gray-800 group-hover:text-[#6651A4] transition-colors">{user.name}</p>
                     <p className="text-[10px] text-gray-400 font-mono">{user.id}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
                    <p className="text-[16px] font-grandstander font-bold text-[#6651A4]">{user.balance}</p>
                    <div className="flex gap-2">
-                      <button className="w-8 h-8 bg-green-50 text-green-500 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all"><Plus size={16}/></button>
-                      <button className="w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><Minus size={16}/></button>
+                      <button 
+                        onClick={() => success(`Manual deposit initiated for ${user.name}`)}
+                        className="w-8 h-8 bg-green-50 text-green-500 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all"
+                      >
+                        <Plus size={16}/>
+                      </button>
+                      <button 
+                        onClick={() => success(`Manual withdrawal initiated for ${user.name}`)}
+                        className="w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                      >
+                        <Minus size={16}/>
+                      </button>
                    </div>
                 </div>
               </div>

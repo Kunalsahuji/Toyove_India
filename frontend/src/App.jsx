@@ -38,6 +38,7 @@ function ScrollToTop() {
 
 import { CartProvider } from './context/CartContext'
 import { PaymentProvider } from './context/PaymentContext'
+import { ToastProvider } from './context/ToastContext'
 
 // Lazy load admin module
 const AdminLayout = React.lazy(() => import('./admin/AdminLayout').then(m => ({ default: m.AdminLayout })))
@@ -55,6 +56,7 @@ const AdminNotifications = React.lazy(() => import('./admin/pages/AdminNotificat
 const AdminTransactionDetail = React.lazy(() => import('./admin/pages/AdminTransactionDetail').then(m => ({ default: m.AdminTransactionDetail })))
 const AdminReports = React.lazy(() => import('./admin/pages/AdminReports').then(m => ({ default: m.AdminReports })))
 const AdminSystemLogs = React.lazy(() => import('./admin/pages/AdminSystemLogs').then(m => ({ default: m.AdminSystemLogs })))
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })))
 
 const AdminFallback = () => (
   <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#FDF4E6]">
@@ -69,7 +71,9 @@ export default function App() {
       <CartProvider>
         <PaymentProvider>
           <Router>
-            <AppContent />
+            <ToastProvider>
+              <AppContent />
+            </ToastProvider>
           </Router>
         </PaymentProvider>
       </CartProvider>
@@ -90,24 +94,27 @@ function AppContent() {
     return (
       <>
         <ScrollToTop />
-        <Routes>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="users/:id" element={<AdminUserDetail />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="products/:id" element={<AdminProductDetail />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="orders/:id" element={<AdminOrderDetail />} />
-            <Route path="finance" element={<AdminFinance />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="notifications" element={<AdminNotifications />} />
-            <Route path="transactions" element={<AdminTransactions />} />
-            <Route path="transactions/:id" element={<AdminTransactionDetail />} />
-            <Route path="reports" element={<AdminReports />} />
-            <Route path="system-logs" element={<AdminSystemLogs />} />
-          </Route>
-        </Routes>
+        <Suspense fallback={<AdminFallback />}>
+          <Routes>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="users/:id" element={<AdminUserDetail />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="products/:id" element={<AdminProductDetail />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:id" element={<AdminOrderDetail />} />
+              <Route path="finance" element={<AdminFinance />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="notifications" element={<AdminNotifications />} />
+              <Route path="transactions" element={<AdminTransactions />} />
+              <Route path="transactions/:id" element={<AdminTransactionDetail />} />
+              <Route path="reports" element={<AdminReports />} />
+              <Route path="system-logs" element={<AdminSystemLogs />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </>
     )
   }
@@ -148,8 +155,8 @@ function AppContent() {
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/all-categories" element={<AllCategoriesPage />} />
 
-            {/* Fallback to home */}
-            <Route path="*" element={<HomePage />} />
+            {/* Fallback to 404 */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
         {!hideLayouts && <Footer />}

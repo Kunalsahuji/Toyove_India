@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, PackageOpen, Plus, Tag, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
 
 export function AdminProducts() {
   const navigate = useNavigate()
+  const { success } = useToast()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
@@ -124,8 +126,26 @@ export function AdminProducts() {
 
                 {/* Hover Actions */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[2px]">
-                  <button className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#6651A4] hover:bg-[#6651A4] hover:text-white transition-all shadow-lg active:scale-95"><Edit2 size={18} /></button>
-                  <button className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#E8312A] hover:bg-[#E8312A] hover:text-white transition-all shadow-lg active:scale-95"><Trash2 size={18} /></button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/admin/products/${product.id}`);
+                    }}
+                    className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#6651A4] hover:bg-[#6651A4] hover:text-white transition-all shadow-lg active:scale-95"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm(`Are you sure you want to delete ${product.title}?`)) {
+                        success(`${product.title} removed from catalog.`);
+                      }
+                    }}
+                    className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#E8312A] hover:bg-[#E8312A] hover:text-white transition-all shadow-lg active:scale-95"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
 

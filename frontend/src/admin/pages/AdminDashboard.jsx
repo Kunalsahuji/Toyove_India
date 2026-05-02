@@ -104,7 +104,7 @@ export function AdminDashboard() {
             </div>
           </div>
           
-          <div className="h-64 relative flex items-end justify-between gap-2 px-2">
+          <div className="h-64 relative flex items-end justify-between gap-3 px-2">
             {[45, 60, 40, 85, 55, 95, 75].map((val, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
                 <div className="relative w-full flex items-end justify-center h-full">
@@ -112,14 +112,14 @@ export function AdminDashboard() {
                     initial={{ height: 0 }}
                     animate={{ height: `${val}%` }}
                     transition={{ duration: 1, delay: 0.5 + (i * 0.1), ease: "circOut" }}
-                    className="w-full max-w-[40px] bg-[#FAEAD3] rounded-t-2xl group-hover:bg-[#6651A4] transition-colors relative"
+                    className="w-full max-w-[48px] bg-[#6651A4] rounded-t-2xl group-hover:bg-[#F1641E] transition-colors relative shadow-sm"
                   >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap shadow-xl z-20">
                       ${val * 10}
                     </div>
                   </motion.div>
                 </div>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Day {i + 1}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Day {i + 1}</span>
               </div>
             ))}
           </div>
