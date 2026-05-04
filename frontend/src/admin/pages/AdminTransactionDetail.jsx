@@ -21,7 +21,7 @@ export function AdminTransactionDetail() {
       setTxn({
         id: id || 'TXN-0000',
         type: isCredit ? 'Credit' : 'Debit',
-        category: isCredit ? 'Wallet Top-up' : 'Order Payment',
+        category: isCredit ? 'Bank Deposit' : 'Order Payment',
         amount: isCredit ? '$145.00' : '$45.00',
         method: isCredit ? 'UPI (GPay)' : 'Credit Card (**** 4242)',
         status: id.includes('7826') ? 'Failed' : 'Success',
@@ -35,7 +35,7 @@ export function AdminTransactionDetail() {
         timeline: [
           { time: '10:30 AM', desc: 'Transaction initiated by user.', status: 'pending' },
           { time: '10:31 AM', desc: 'Payment gateway processing.', status: 'processing' },
-          { time: '10:31 AM', desc: id.includes('7826') ? 'Payment declined by bank.' : 'Payment successful. Joy credited to wallet.', status: id.includes('7826') ? 'failed' : 'success' }
+          { time: '10:31 AM', desc: id.includes('7826') ? 'Payment declined by bank.' : 'Payment successful. Funds verified & processed.', status: id.includes('7826') ? 'failed' : 'success' }
         ]
       })
       setLoading(false)

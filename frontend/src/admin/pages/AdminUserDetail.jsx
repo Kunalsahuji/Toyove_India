@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { 
   ChevronLeft, User, Mail, Shield, ShieldAlert, 
   MapPin, ShoppingBag, Wallet, Clock, Edit2, 
-  Trash2, Ban, CheckCircle, Save, X, RefreshCcw
+  Trash2, Ban, CheckCircle, Save, X, RefreshCcw, Landmark
 } from 'lucide-react'
 
 export function AdminUserDetail() {
@@ -26,7 +26,7 @@ export function AdminUserDetail() {
         phone: '+91 98765 43210',
         status: 'Active',
         joinedDate: '2026-04-10',
-        walletBalance: '$1,245.00',
+        linkedAccounts: '4 Methods',
         totalSpent: '$4,562.00',
         totalOrders: 12,
         address: '7th Floor, Unit 703, Mayagarden, Zirakpur, Punjab - 140603',
@@ -129,16 +129,16 @@ export function AdminUserDetail() {
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2 text-white/60 text-[10px] font-bold uppercase tracking-widest">
-                  <Wallet size={14} /> Wallet Balance
+                  <Landmark size={14} /> Linked Accounts
                 </div>
                 <button 
                   onClick={() => navigate('/admin/finance')}
                   className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all"
                 >
-                  + Top Up
+                  View Details
                 </button>
               </div>
-              <h3 className="text-4xl font-grandstander font-bold mb-6">{user.walletBalance}</h3>
+              <h3 className="text-4xl font-grandstander font-bold mb-6">{user.linkedAccounts}</h3>
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
                 <div className="cursor-pointer" onClick={() => navigate('/admin/finance')}>
                   <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Total Spent</p>

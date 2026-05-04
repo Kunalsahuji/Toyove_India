@@ -16,15 +16,15 @@ export function AdminTransactions() {
   const itemsPerPage = 8
 
   const initialTxns = [
-    { id: 'TXN-9021', user: 'Emma Watson', type: 'Credit', category: 'Wallet Top-up', amount: '$500.00', method: 'UPI (GPay)', status: 'Success', date: '2026-04-24 14:30' },
-    { id: 'TXN-9022', user: 'Liam Smith', type: 'Debit', category: 'Order Payment', amount: '$89.50', method: 'Wallet Balance', status: 'Success', date: '2026-04-24 12:15' },
+    { id: 'TXN-9021', user: 'Emma Watson', type: 'Credit', category: 'Product Purchase', amount: '$500.00', method: 'UPI (GPay)', status: 'Success', date: '2026-04-24 14:30' },
+    { id: 'TXN-9022', user: 'Liam Smith', type: 'Debit', category: 'Order Payment', amount: '$89.50', method: 'Bank Transfer', status: 'Success', date: '2026-04-24 12:15' },
     { id: 'TXN-9023', user: 'Olivia Brown', type: 'Credit', category: 'Refund', amount: '$45.00', method: 'Credit Card', status: 'Processing', date: '2026-04-23 09:10' },
     { id: 'TXN-9024', user: 'Noah Jones', type: 'Debit', category: 'Order Payment', amount: '$210.00', method: 'NetBanking (HDFC)', status: 'Failed', date: '2026-04-22 18:45' },
-    { id: 'TXN-9025', user: 'Ava Garcia', type: 'Credit', category: 'Wallet Top-up', amount: '$100.00', method: 'Card (Visa)', status: 'Success', date: '2026-04-21 11:20' },
+    { id: 'TXN-9025', user: 'Ava Garcia', type: 'Credit', category: 'Product Purchase', amount: '$100.00', method: 'Card (Visa)', status: 'Success', date: '2026-04-21 11:20' },
     { id: 'TXN-9026', user: 'William Miller', type: 'Debit', category: 'Order Payment', amount: '$65.00', method: 'UPI (PhonePe)', status: 'Success', date: '2026-04-20 16:05' },
-    { id: 'TXN-9027', user: 'Sophia Davis', type: 'Credit', category: 'Refund', amount: '$15.00', method: 'Wallet Balance', status: 'Success', date: '2026-04-19 10:00' },
+    { id: 'TXN-9027', user: 'Sophia Davis', type: 'Credit', category: 'Refund', amount: '$15.00', method: 'Bank (Axis)', status: 'Success', date: '2026-04-19 10:00' },
     { id: 'TXN-9028', user: 'James Wilson', type: 'Debit', category: 'Order Payment', amount: '$320.00', method: 'Card (Mastercard)', status: 'Success', date: '2026-04-18 14:55' },
-    { id: 'TXN-9029', user: 'Isabella Moore', type: 'Credit', category: 'Wallet Top-up', amount: '$50.00', method: 'UPI (Paytm)', status: 'Success', date: '2026-04-17 08:30' },
+    { id: 'TXN-9029', user: 'Isabella Moore', type: 'Credit', category: 'Product Purchase', amount: '$50.00', method: 'UPI (Paytm)', status: 'Success', date: '2026-04-17 08:30' },
   ]
 
   const [transactions, setTransactions] = useState([])
@@ -74,7 +74,7 @@ export function AdminTransactions() {
         <div className="bg-[#6651A4] p-6 rounded-[24px] shadow-md flex items-center gap-4 relative overflow-hidden">
           <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"/>
           <div className="w-12 h-12 bg-white/20 text-white rounded-2xl flex items-center justify-center backdrop-blur-sm relative z-10"><RefreshCw size={24}/></div>
-          <div className="relative z-10"><p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Wallet Liability</p><p className="text-2xl font-grandstander font-bold text-white">$8,945.50</p></div>
+          <div className="relative z-10"><p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Active Accounts</p><p className="text-2xl font-grandstander font-bold text-white">1,842 Vaults</p></div>
         </div>
       </div>
 
@@ -92,10 +92,10 @@ export function AdminTransactions() {
         <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
           {[
             { id: 'cat', icon: <Tag size={14} />, value: categoryFilter, setter: setCategoryFilter, options: [
-              { v: 'All', l: 'All Categories' }, { v: 'Wallet Top-up', l: 'Top-ups' }, { v: 'Order Payment', l: 'Payments' }, { v: 'Refund', l: 'Refunds' }
+              { v: 'All', l: 'All Categories' }, { v: 'Product Purchase', l: 'Purchases' }, { v: 'Order Payment', l: 'Payments' }, { v: 'Refund', l: 'Refunds' }
             ]},
             { id: 'meth', icon: <CreditCard size={14} />, value: methodFilter, setter: setMethodFilter, options: [
-              { v: 'All', l: 'All Methods' }, { v: 'UPI', l: 'UPI' }, { v: 'Card', l: 'Cards' }, { v: 'Wallet', l: 'Wallet' }
+              { v: 'All', l: 'All Methods' }, { v: 'UPI', l: 'UPI' }, { v: 'Card', l: 'Cards' }, { v: 'Bank', l: 'Banking' }
             ]},
             { id: 'stat', icon: <Activity size={14} />, value: statusFilter, setter: setStatusFilter, options: [
               { v: 'All', l: 'All Status' }, { v: 'Success', l: 'Success' }, { v: 'Processing', l: 'Process' }, { v: 'Failed', l: 'Failed' }
