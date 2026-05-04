@@ -8,7 +8,7 @@ import {
   User, Package, MapPin, LogOut, ChevronRight, Wallet, History, CreditCard, 
   Plus, ArrowUpRight, ArrowDownLeft, Check, Smartphone, Landmark, Truck, 
   AlertCircle, X, Search, Lock, Loader2, ShieldCheck, Home, Edit2, Save, 
-  Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink, Building, Map
+  Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink, Building, Map, ChevronDown
 } from 'lucide-react'
 import { indianStates, commonCities, addressTypes } from '../utils/indiaData'
 
@@ -46,112 +46,135 @@ const citiesByState = {
   "Gujarat": ["Ahmedabad", "Surat", "Vadodara"]
 };
 
-// Enhanced Gateway with Simulation Step
-const TopUpGateway = ({ isOpen, method, amount, onComplete, onCancel }) => {
-  const [step, setStep] = useState(1);
-  const [selectedSub, setSelectedSub] = useState('');
-  const [vpa, setVpa] = useState('');
-  const [cardDetails, setCardDetails] = useState({ no: '', exp: '', cvv: '', type: 'Credit Card' });
+// Indian Banks List
+const indianBanks = [
+  "HDFC Bank", "State Bank of India (SBI)", "ICICI Bank", "Axis Bank", "Kotak Mahindra Bank",
+  "Punjab National Bank (PNB)", "Bank of Baroda", "Canara Bank", "Union Bank of India",
+  "IndusInd Bank", "Yes Bank", "IDFC First Bank", "Standard Chartered", "Federal Bank"
+];
 
-  useEffect(() => { if (!isOpen) { setStep(1); setVpa(''); setSelectedSub(''); } }, [isOpen]);
+// Enhanced Payment Method Modal
+const AddPaymentMethodModal = ({ isOpen, type, onComplete, onCancel }) => {
+  const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => { 
+    if (!isOpen) {
+      setFormData({});
+      setErrors({});
+    } 
+  }, [isOpen]);
+
+  const handleNumericChange = (e, field, length) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (length && value.length > length) return;
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (type === 'bankAccounts' && (!formData.bankName || !formData.accNo || !formData.ifsc)) {
+      setErrors({ msg: 'All bank fields are required' });
+      return;
+    }
+    if (type === 'upiIds' && (!formData.upiId || !formData.upiId.includes('@'))) {
+      setErrors({ msg: 'Please enter a valid UPI ID (e.g. user@upi)' });
+      return;
+    }
+    if (type === 'cards' && (!formData.cardNo || formData.cardNo.length < 16 || !formData.exp || !formData.cvv)) {
+      setErrors({ msg: 'Please enter valid card details' });
+      return;
+    }
+    onComplete(formData);
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300000] flex items-center justify-center p-4 bg-[#333]/40 backdrop-blur-md">
-       <motion.div initial={{scale: 0.95, opacity:0}} animate={{scale: 1, opacity:1}} className="bg-[#FDF4E6] w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl border border-white/50">
-          <div className="bg-[#6651A4] p-5 text-white flex justify-between items-center">
-             <div className="flex items-center gap-2"><Lock size={14}/><h3 className="font-grandstander text-xs font-bold uppercase tracking-widest">Secure Gateway</h3></div>
-             <button onClick={onCancel} className="p-1.5 hover:bg-white/10 rounded-full transition-all"><X size={16}/></button>
+    <div className="fixed inset-0 z-[300000] flex items-center justify-center p-4 bg-[#333]/60 backdrop-blur-md font-roboto">
+       <motion.div initial={{scale: 0.95, opacity:0}} animate={{scale: 1, opacity:1}} className="bg-[#FAEAD3] w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/40">
+          <div className="bg-[#E84949] p-6 text-white flex justify-between items-center shadow-lg">
+             <div className="flex items-center gap-3">
+               <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm"><Plus size={18}/></div>
+               <div>
+                 <h3 className="font-grandstander text-lg font-bold leading-tight">Secure Addition</h3>
+                 <p className="text-[10px] uppercase tracking-widest font-bold opacity-60">Registering {type === 'bankAccounts' ? 'Bank' : type === 'upiIds' ? 'UPI' : 'Card'}</p>
+               </div>
+             </div>
+             <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20}/></button>
           </div>
 
-          <div className="p-8 space-y-6">
-             <div className="text-center">
-                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Payable</p>
-                <h4 className="text-3xl font-bold font-grandstander text-gray-700">${parseFloat(amount).toFixed(2)}</h4>
-             </div>
-
-             <div className="space-y-4">
-                {method === 'upi' && (
-                  <div className="space-y-4">
-                    {step === 1 ? (
-                      <div className="grid grid-cols-3 gap-2">
-                         {['Google Pay', 'PhonePe', 'Paytm'].map(app => (
-                           <button key={app} onClick={() => { setSelectedSub(app); setStep(2); }} className="p-3 bg-white hover:bg-[#FAEAD3]/50 rounded-xl border border-gray-100 transition-all flex flex-col items-center gap-2">
-                              <div className="h-6 flex items-center">{upiLogos[app]}</div>
-                              <span className="text-[7px] font-bold uppercase tracking-widest text-gray-400 mt-1">{app}</span>
-                           </button>
-                         ))}
-                      </div>
-                    ) : step === 2 ? (
-                      <div className="space-y-4">
-                         <div className="flex items-center gap-2 p-3 bg-white rounded-xl border border-gray-100">
-                            {upiLogos[selectedSub]}
-                            <span className="text-[10px] font-bold text-gray-500 uppercase">{selectedSub}</span>
-                         </div>
-                         <input type="text" placeholder="enter your vpa (e.g. user@upi)" value={vpa} onChange={e=>setVpa(e.target.value)} className="w-full h-11 px-4 bg-white border border-gray-100 rounded-xl outline-none focus:border-[#6651A4] text-center font-bold text-gray-600 text-sm" />
-                         <button onClick={() => setStep(3)} disabled={!vpa} className="w-full h-11 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] active:scale-95 transition-all">Verify & Pay</button>
-                      </div>
-                    ) : (
-                      <div className="text-center space-y-4">
-                         <div className="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto"><Check size={24}/></div>
-                         <div>
-                            <h5 className="font-bold text-gray-700">Approve Request</h5>
-                            <p className="text-[11px] text-gray-500 font-medium px-4 mt-1">Please open your <b>{selectedSub}</b> app and approve the payment of ${amount}</p>
-                         </div>
-                         <button onClick={() => onComplete(`UPI (${selectedSub})`)} className="w-full h-11 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#5a4892]">Simulate App Approval</button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {method === 'card' && (
-                  <div className="space-y-4">
-                    {step === 1 ? (
-                      <div className="space-y-3">
-                         <select value={cardDetails.type} onChange={e=>setCardDetails({...cardDetails, type: e.target.value})} className="w-full h-11 px-4 bg-white border border-gray-100 rounded-xl text-[11px] font-bold outline-none">
-                            <option>Credit Card</option><option>Debit Card</option>
-                         </select>
-                         <div className="relative">
-                            <input type="text" placeholder="Card Number" maxLength="16" value={cardDetails.no} onChange={e=>setCardDetails({...cardDetails, no: e.target.value})} className="w-full h-11 px-4 bg-white border border-gray-100 rounded-xl outline-none font-mono text-[13px]" />
-                            <CreditCard className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300" size={16}/>
-                         </div>
-                         <div className="grid grid-cols-2 gap-2">
-                            <input placeholder="MM/YY" className="h-11 px-4 bg-white border border-gray-100 rounded-xl outline-none text-[11px]" />
-                            <input placeholder="CVV" maxLength="3" type="password" className="h-11 px-4 bg-white border border-gray-100 rounded-xl outline-none text-[11px]" />
-                         </div>
-                         <button onClick={() => setStep(2)} className="w-full h-11 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] active:scale-95 transition-all">Continue</button>
-                      </div>
-                    ) : (
-                      <div className="text-center space-y-4">
-                         <div className="p-5 bg-white rounded-2xl border border-dashed border-gray-200">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Transaction Authorization</p>
-                            <p className="text-sm font-bold text-gray-600 mt-2 font-mono">**** **** **** {cardDetails.no.slice(-4) || '0000'}</p>
-                            <div className="mt-4 space-y-2">
-                               <p className="text-[10px] font-bold text-gray-300">Enter OTP sent to your phone</p>
-                               <div className="flex justify-center gap-2"><div className="w-8 h-8 bg-gray-50 border border-gray-100 rounded-md"/><div className="w-8 h-8 bg-gray-50 border border-gray-100 rounded-md"/><div className="w-8 h-8 bg-gray-50 border border-gray-100 rounded-md"/><div className="w-8 h-8 bg-gray-50 border border-gray-100 rounded-md"/></div>
-                            </div>
-                         </div>
-                         <button onClick={() => onComplete(cardDetails.type)} className="w-full h-11 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#5a4892]">Verify OTP & Pay</button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {method === 'netbanking' && (
-                   <div className="space-y-4 text-center">
-                      <div className="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto custom-scrollbar p-1">
-                         {['HDFC Bank', 'SBI Bank', 'ICICI Bank', 'Axis Bank', 'Kotak Mahindra', 'PNB Bank', 'BOI', 'Canara Bank'].map(bank => (
-                           <button key={bank} onClick={() => setSelectedSub(bank)} className={`p-3 rounded-xl border text-[9px] font-bold uppercase transition-all flex items-center justify-center gap-2 ${selectedSub === bank ? 'bg-[#6651A4] text-white border-[#6651A4]' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'}`}>
-                              <Landmark size={12}/> {bank}
-                           </button>
-                         ))}
-                      </div>
-                      <button disabled={!selectedSub} onClick={() => onComplete(`Bank (${selectedSub})`)} className="w-full h-11 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] disabled:opacity-30 active:scale-95 transition-all">Login to {selectedSub || 'Bank'}</button>
+          <form onSubmit={handleSubmit} className="p-10 space-y-6">
+             {type === 'bankAccounts' && (
+               <>
+                 <div className="space-y-1.5">
+                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Select Bank</label>
+                   <div className="relative group">
+                     <select value={formData.bankName || ''} onChange={e=>setFormData({...formData, bankName: e.target.value})} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold appearance-none transition-all cursor-pointer">
+                        <option value="">Choose your bank</option>
+                        {indianBanks.map(bank => <option key={bank} value={bank}>{bank}</option>)}
+                     </select>
+                     <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
                    </div>
-                )}
+                 </div>
+                 <div className="space-y-1.5">
+                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Account Number</label>
+                   <input type="text" placeholder="XXXX XXXX XXXX" value={formData.accNo || ''} onChange={e=>handleNumericChange(e, 'accNo', 18)} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold tracking-widest" />
+                 </div>
+                 <div className="space-y-1.5">
+                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">IFSC Code</label>
+                   <input type="text" placeholder="HDFC0001234" maxLength="11" value={formData.ifsc || ''} onChange={e=>setFormData({...formData, ifsc: e.target.value.toUpperCase()})} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold uppercase tracking-widest" />
+                 </div>
+               </>
+             )}
+
+             {type === 'upiIds' && (
+               <div className="space-y-1.5">
+                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">UPI ID (VPA)</label>
+                 <input type="text" placeholder="username@upi" value={formData.upiId || ''} onChange={e=>setFormData({...formData, upiId: e.target.value})} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold lowercase" />
+                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-2 ml-1 flex items-center gap-1"><ShieldCheck size={10}/> Verified VPA only</p>
+               </div>
+             )}
+
+             {type === 'cards' && (
+               <>
+                 <div className="space-y-1.5">
+                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Card Number</label>
+                   <div className="relative">
+                     <input type="text" placeholder="XXXX XXXX XXXX XXXX" value={formData.cardNo || ''} onChange={e=>handleNumericChange(e, 'cardNo', 16)} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold font-mono tracking-widest" />
+                     <CreditCard className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300" size={20}/>
+                   </div>
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-1.5">
+                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Expiry Date</label>
+                     <input type="text" placeholder="MM/YY" maxLength="5" value={formData.exp || ''} onChange={e=>{
+                       let v = e.target.value.replace(/\D/g, '');
+                       if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2,4);
+                       setFormData({...formData, exp: v});
+                     }} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold text-center" />
+                   </div>
+                   <div className="space-y-1.5">
+                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">CVV</label>
+                     <input type="password" placeholder="***" value={formData.cvv || ''} onChange={e=>handleNumericChange(e, 'cvv', 3)} className="w-full h-14 px-5 bg-[#FDF4E6] border-2 border-transparent focus:border-[#E84949] rounded-2xl outline-none text-sm font-bold text-center" />
+                   </div>
+                 </div>
+               </>
+             )}
+
+             {errors.msg && (
+               <motion.div initial={{opacity:0, y:-5}} animate={{opacity:1, y:0}} className="p-3 bg-red-50 rounded-xl border border-red-100 flex items-center gap-2">
+                 <AlertCircle className="text-red-500" size={14}/>
+                 <p className="text-[10px] text-red-600 font-bold uppercase tracking-widest">{errors.msg}</p>
+               </motion.div>
+             )}
+
+             <div className="pt-4">
+                <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[11px] shadow-xl hover:bg-[#E84949] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                   <ShieldCheck size={16}/> Securely Save Details
+                </button>
              </div>
-          </div>
+          </form>
        </motion.div>
     </div>
   )
@@ -159,7 +182,7 @@ const TopUpGateway = ({ isOpen, method, amount, onComplete, onCancel }) => {
 
 export function AccountPage() {
   const { user, logout, updateUser, addresses, addAddress, deleteAddress, updateAddress, setAsDefaultAddress } = useAuth()
-  const { walletBalance, transactions, topUpWallet, orders, cancelOrder } = usePayment()
+  const { paymentHistory, savedMethods, addSavedMethod, deleteSavedMethod, orders, cancelOrder } = usePayment()
   const { wishlist } = useCart()
   const navigate = useNavigate()
   const location = useLocation()
@@ -173,9 +196,8 @@ export function AccountPage() {
   const [editingAddressId, setEditingAddressId] = useState(null)
   const [addressForm, setAddressForm] = useState({ type: 'Home', firstName: '', lastName: '', address: '', apartment: '', city: '', state: '', postalCode: '', phone: '', district: '' })
 
-  const [topUpAmount, setTopUpAmount] = useState('')
-  const [topUpMethod, setTopUpMethod] = useState('upi')
-  const [showTopUpGateway, setShowTopUpGateway] = useState(false)
+  const [showAddPayment, setShowAddPayment] = useState(false)
+  const [paymentTypeToAdd, setPaymentTypeToAdd] = useState('bankAccounts')
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Corporate Info based on Image
@@ -214,7 +236,7 @@ export function AccountPage() {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <Star size={16}/>, color: 'text-yellow-500/60' },
     { id: 'orders', label: 'Order History', icon: <Box size={16}/>, color: 'text-[#6651A4]/60' },
-    { id: 'wallet', label: 'Wallet & Bank', icon: <Wallet size={16}/>, color: 'text-[#E84949]/60' },
+    { id: 'payments', label: 'Bank & Cards', icon: <CreditCard size={16}/>, color: 'text-[#E84949]/60' },
     { id: 'addresses', label: 'Saved Bases', icon: <MapPin size={16}/>, color: 'text-green-500/60' },
     { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={16}/>, color: 'text-pink-500/60', isLink: true, path: '/wishlist' },
     { id: 'profile', label: 'Settings', icon: <User size={16}/>, color: 'text-blue-500/60' },
@@ -231,8 +253,20 @@ export function AccountPage() {
   return (
     <div className="fixed inset-0 z-[200000] bg-[#FDF4E6] flex flex-col lg:flex-row overflow-hidden text-gray-600 font-roboto">
       
-      {/* Simulation OK Gateway */}
-      <TopUpGateway isOpen={showTopUpGateway} method={topUpMethod} amount={topUpAmount} onCancel={() => setShowTopUpGateway(false)} onComplete={(m) => { setShowTopUpGateway(false); setIsProcessing(true); setTimeout(() => { topUpWallet(topUpAmount,m); setTopUpAmount(''); setIsProcessing(false); }, 1500); }} />
+      {/* Add Payment Method Modal */}
+      <AddPaymentMethodModal 
+        isOpen={showAddPayment} 
+        type={paymentTypeToAdd} 
+        onCancel={() => setShowAddPayment(false)} 
+        onComplete={(data) => { 
+          setShowAddPayment(false); 
+          setIsProcessing(true); 
+          setTimeout(() => { 
+            addSavedMethod(paymentTypeToAdd, data); 
+            setIsProcessing(false); 
+          }, 1000); 
+        }} 
+      />
 
       {isProcessing && (
         <div className="fixed inset-0 z-[1000000] bg-[#FDF4E6]/95 backdrop-blur-md flex flex-col items-center justify-center">
@@ -368,9 +402,9 @@ export function AccountPage() {
                           <div><p className="text-3xl font-bold font-grandstander text-gray-700">{wishlist.length}</p><p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Saved Joy</p></div>
                        </div>
                        <div className="p-8 bg-[#FAEAD3] rounded-3xl space-y-4 hover:shadow-md transition-all group relative">
-                          <button onClick={() => handleTabChange('wallet')} className="absolute top-4 right-4 p-2 bg-white rounded-xl text-gray-400 hover:text-[#6651A4] shadow-sm transition-all"><ExternalLink size={14}/></button>
-                          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-green-500 group-hover:scale-110 transition-all"><Wallet size={20}/></div>
-                          <div><p className="text-3xl font-bold font-grandstander text-gray-700">${walletBalance.toFixed(2)}</p><p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Available Funds</p></div>
+                          <button onClick={() => handleTabChange('payments')} className="absolute top-4 right-4 p-2 bg-white rounded-xl text-gray-400 hover:text-[#6651A4] shadow-sm transition-all"><ExternalLink size={14}/></button>
+                          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-green-500 group-hover:scale-110 transition-all"><Landmark size={20}/></div>
+                          <div><p className="text-3xl font-bold font-grandstander text-gray-700">{savedMethods.bankAccounts.length + savedMethods.upiIds.length + savedMethods.cards.length}</p><p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Accounts</p></div>
                        </div>
                     </div>
                  </motion.div>
@@ -444,29 +478,74 @@ export function AccountPage() {
                  </motion.div>
                )}
 
-               {activeTab === 'wallet' && (
-                 <motion.div key="wallet" initial={{opacity:0}} animate={{opacity:1}} className="space-y-12">
-                    <div className="text-center space-y-8">
-                       <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Toy Treasury</p><h2 className="text-7xl font-bold font-grandstander text-gray-700 tracking-tight leading-none">${walletBalance.toFixed(2)}</h2></div>
-                       <div className="max-w-xs mx-auto space-y-6">
-                          <input type="number" placeholder="Add Joy ($)" value={topUpAmount} onChange={(e)=>setTopUpAmount(e.target.value)} className="w-full h-11 px-6 bg-transparent border-b border-gray-200 focus:border-[#6651A4] font-grandstander font-bold text-2xl text-center outline-none transition-all" />
-                          <div className="flex justify-center gap-2">
-                             {['upi', 'card', 'netbanking'].map(m => <button key={m} onClick={()=>setTopUpMethod(m)} className={`px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all ${topUpMethod===m?'bg-[#333] text-white border-[#333]':'text-gray-400 border-gray-200'}`}>{m}</button>)}
-                          </div>
-                          <button onClick={() => setShowTopUpGateway(true)} className="w-full h-12 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-[#E84949] transition-all shadow-lg active:scale-95">Proceed to Recharge</button>
-                       </div>
+               {activeTab === 'payments' && (
+                 <motion.div key="payments" initial={{opacity:0}} animate={{opacity:1}} className="space-y-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                       {[
+                         { id: 'bankAccounts', label: 'Linked Banks', icon: <Landmark size={24}/>, items: savedMethods.bankAccounts, theme: 'bg-[#FAEAD3]' },
+                         { id: 'upiIds', label: 'UPI Addresses', icon: <Smartphone size={24}/>, items: savedMethods.upiIds, theme: 'bg-[#FAEAD3]' },
+                         { id: 'cards', label: 'Vaulted Cards', icon: <CreditCard size={24}/>, items: savedMethods.cards, theme: 'bg-[#FAEAD3]' }
+                       ].map(section => (
+                         <div key={section.id} className={`p-6 md:p-10 ${section.theme} border border-white/20 rounded-[50px] space-y-6 md:space-y-8 shadow-sm hover:shadow-xl transition-all duration-500 group/card relative overflow-hidden`}>
+                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#E84949]/5 rounded-full blur-3xl group-hover/card:bg-[#E84949]/10 transition-colors" />
+                            
+                            <div className="flex justify-between items-start">
+                               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#E84949] shadow-inner group-hover/card:scale-110 transition-all duration-500">{section.icon}</div>
+                               <button onClick={() => { setPaymentTypeToAdd(section.id); setShowAddPayment(true); }} className="relative z-20 w-10 h-10 bg-[#333] text-white rounded-xl flex items-center justify-center hover:bg-[#E84949] transition-all shadow-lg active:scale-90"><Plus size={20}/></button>
+                            </div>
+                            
+                            <div>
+                               <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#333] mb-1 font-grandstander">{section.label}</h4>
+                               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em]">{section.items.length} Active Records</p>
+                            </div>
+
+                            <div className="space-y-4">
+                               {section.items.map(item => (
+                                 <motion.div initial={{opacity:0, x:-10}} animate={{opacity:1, x:0}} key={item.id} className="p-4 bg-white/40 backdrop-blur-md border border-white/50 rounded-[24px] flex justify-between items-center group/item hover:bg-white/60 transition-all cursor-default">
+                                    <div className="truncate pr-4">
+                                       <p className="text-[12px] font-bold text-gray-700 truncate font-grandstander">{item.bankName || item.upiId || `Card • ${item.cardNo.slice(-4)}`}</p>
+                                       <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">{item.accNo ? `A/C: ${item.accNo.slice(-4)}` : item.exp ? `Exp: ${item.exp}` : 'Primary VPA'}</p>
+                                    </div>
+                                    <button onClick={() => deleteSavedMethod(section.id, item.id)} className="w-8 h-8 rounded-xl bg-red-50 text-[#E84949] flex items-center justify-center opacity-0 group-hover/item:opacity-100 hover:bg-[#E84949] hover:text-white transition-all transform hover:rotate-12"><Trash2 size={14}/></button>
+                                 </motion.div>
+                               ))}
+                               {section.items.length === 0 && (
+                                 <button 
+                                   onClick={() => { setPaymentTypeToAdd(section.id); setShowAddPayment(true); }}
+                                   className="w-full py-12 flex flex-col items-center gap-3 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all group/empty"
+                                 >
+                                    <div className="w-12 h-12 border-2 border-dashed border-[#E84949] rounded-2xl flex items-center justify-center group-hover/empty:scale-110 transition-all"><Plus size={16} className="text-[#E84949]"/></div>
+                                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Safe & Encrypted</p>
+                                 </button>
+                               )}
+                            </div>
+                         </div>
+                       ))}
                     </div>
 
-                    <div className="space-y-4">
-                       <h4 className="text-[12px] font-bold uppercase tracking-widest px-4 text-gray-400">Activity Logs</h4>
-                       <div className="space-y-0.5">
-                          {transactions.map(txn => (
-                             <div key={txn.id} className="p-4 flex items-center justify-between border-b border-black/[0.02] hover:bg-[#FAEAD3]/30 transition-all">
-                                <div className="flex items-center gap-4">
-                                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white ${txn.type==='Credit'?'bg-green-400/60':'bg-[#E84949]/60'}`}>{txn.type==='Credit'?<ArrowDownLeft size={16}/>:<ArrowUpRight size={16}/>}</div>
-                                   <div><p className="text-[13px] font-bold text-gray-700">{txn.method}</p><p className="text-[10px] text-gray-400 font-medium">{txn.date}</p></div>
+                    <div className="space-y-8">
+                       <div className="flex items-center justify-between px-6">
+                          <h4 className="text-[13px] font-bold uppercase tracking-[0.3em] text-gray-400 font-grandstander">Ledger Records</h4>
+                          <History size={16} className="text-gray-300"/>
+                       </div>
+                       <div className="bg-[#FAEAD3]/30 rounded-[40px] border border-white/20 overflow-hidden">
+                          {paymentHistory.length === 0 ? (
+                            <div className="py-24 text-center">
+                               <p className="text-gray-300 font-bold uppercase tracking-widest text-[10px]">No transaction trail found</p>
+                            </div>
+                          ) : paymentHistory.map((txn, idx) => (
+                             <div key={txn.id} className={`p-6 flex items-center justify-between hover:bg-white/40 transition-all border-b border-white/20 last:border-0 ${idx % 2 === 0 ? 'bg-white/10' : ''}`}>
+                                <div className="flex items-center gap-6">
+                                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${txn.type==='Refund'?'bg-emerald-400':'bg-[#333]'}`}>{txn.type==='Refund'?<ArrowDownLeft size={20}/>:<ArrowUpRight size={20}/>}</div>
+                                   <div>
+                                      <p className="text-[14px] font-bold text-gray-700 font-grandstander uppercase tracking-wider">{txn.method}</p>
+                                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">{txn.date} • {txn.id}</p>
+                                   </div>
                                 </div>
-                                <p className={`text-xl font-bold font-grandstander ${txn.type==='Credit'?'text-green-500':'text-gray-700'}`}>{txn.type==='Credit'?'+':'-'}${txn.amount.toFixed(2)}</p>
+                                <div className="text-right">
+                                   <p className={`text-2xl font-bold font-grandstander ${txn.type==='Refund'?'text-emerald-500':'text-[#E84949]'}`}>{txn.type==='Refund'?'+':'-'}₹{txn.amount.toFixed(2)}</p>
+                                   <p className="text-[8px] font-bold text-gray-300 uppercase tracking-[0.2em] mt-1">Authorized</p>
+                                </div>
                              </div>
                           ))}
                        </div>
@@ -501,58 +580,66 @@ export function AccountPage() {
                                setShowAddAddress(false); 
                                setEditingAddressId(null);
                             }} 
-                            className="p-8 bg-[#FAEAD3]/50 rounded-[40px] space-y-5 overflow-hidden border border-black/[0.02]"
+                            className="p-10 bg-[#FAEAD3] rounded-[50px] space-y-6 overflow-hidden border border-white/40 shadow-xl"
                           >
-                             <div className="flex gap-2 mb-2">
+                             <div className="flex gap-3 mb-4">
                                 {addressTypes.map(t => (
-                                   <button key={t} type="button" onClick={() => setAddressForm({...addressForm, type: t})} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all ${addressForm.type === t ? 'bg-[#333] text-white border-[#333]' : 'bg-white border-gray-100 text-gray-400'}`}>
+                                   <button key={t} type="button" onClick={() => setAddressForm({...addressForm, type: t})} className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest border-2 transition-all ${addressForm.type === t ? 'bg-[#333] text-white border-[#333]' : 'bg-[#FDF4E6] border-transparent text-gray-400 hover:border-gray-200'}`}>
                                       {t}
                                    </button>
                                 ))}
                              </div>
                              <div className="grid grid-cols-2 gap-4">
-                                <input required placeholder="First Name" value={addressForm.firstName} onChange={e=>setAddressForm({...addressForm, firstName: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none border border-transparent focus:border-[#6651A4]" />
-                                <input required placeholder="Last Name" value={addressForm.lastName} onChange={e=>setAddressForm({...addressForm, lastName: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none border border-transparent focus:border-[#6651A4]" />
+                                <input required placeholder="First Name" value={addressForm.firstName} onChange={e=>setAddressForm({...addressForm, firstName: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
+                                <input required placeholder="Last Name" value={addressForm.lastName} onChange={e=>setAddressForm({...addressForm, lastName: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                              </div>
-                             <input required placeholder="Street Address" value={addressForm.address} onChange={e=>setAddressForm({...addressForm, address: e.target.value})} className="w-full h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
+                             <input required placeholder="Street Address" value={addressForm.address} onChange={e=>setAddressForm({...addressForm, address: e.target.value})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                              <div className="grid grid-cols-2 gap-4">
-                                <input placeholder="Apartment, Suite (Optional)" value={addressForm.apartment} onChange={e=>setAddressForm({...addressForm, apartment: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
-                                <select required value={addressForm.state} onChange={e=>setAddressForm({...addressForm, state: e.target.value, city: ''})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none">
-                                   <option value="">Select State</option>
-                                   {indianStates.map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
+                                <input placeholder="Apartment, Suite (Optional)" value={addressForm.apartment} onChange={e=>setAddressForm({...addressForm, apartment: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
+                                <div className="relative">
+                                  <select required value={addressForm.state} onChange={e=>setAddressForm({...addressForm, state: e.target.value, city: ''})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] appearance-none cursor-pointer">
+                                     <option value="">Select State</option>
+                                     {indianStates.map(s => <option key={s} value={s}>{s}</option>)}
+                                  </select>
+                                  <ChevronDown size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"/>
+                                </div>
                              </div>
                              <div className="grid grid-cols-2 gap-4">
-                                <select required value={addressForm.city} onChange={e=>setAddressForm({...addressForm, city: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none">
-                                   <option value="">Select City</option>
-                                   {(commonCities[addressForm.state] || []).map(c => <option key={c} value={c}>{c}</option>)}
-                                   <option value="Other">Other (Manual Entry)</option>
-                                </select>
+                                <div className="relative">
+                                  <select required value={addressForm.city} onChange={e=>setAddressForm({...addressForm, city: e.target.value})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] appearance-none cursor-pointer">
+                                     <option value="">Select City</option>
+                                     {(commonCities[addressForm.state] || []).map(c => <option key={c} value={c}>{c}</option>)}
+                                     <option value="Other">Other (Manual Entry)</option>
+                                  </select>
+                                  <ChevronDown size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"/>
+                                </div>
                                 {addressForm.city === 'Other' && (
-                                   <input required placeholder="Enter City/District" value={addressForm.district} onChange={e=>setAddressForm({...addressForm, district: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none border border-[#6651A4]" />
+                                   <input required placeholder="Enter City/District" value={addressForm.district} onChange={e=>setAddressForm({...addressForm, district: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-[#E84949]" />
                                 )}
-                                <input required placeholder="ZIP Code" value={addressForm.postalCode} onChange={e=>setAddressForm({...addressForm, postalCode: e.target.value})} className="h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
+                                <input required placeholder="ZIP Code" value={addressForm.postalCode} onChange={e=>setAddressForm({...addressForm, postalCode: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                              </div>
-                             <input required placeholder="Phone Number" value={addressForm.phone} onChange={e=>setAddressForm({...addressForm, phone: e.target.value})} className="w-full h-12 px-5 bg-white rounded-2xl text-[13px] outline-none" />
+                             <input required placeholder="Phone Number" value={addressForm.phone} onChange={e=>setAddressForm({...addressForm, phone: e.target.value})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                              
-                             <button type="submit" className="w-full h-12 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-[#E84949] transition-all shadow-lg active:scale-95">
-                                {editingAddressId ? 'Update Shipping Base' : 'Secure This Base'}
+                             <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-[#E84949] transition-all shadow-xl active:scale-[0.98] mt-4 flex items-center justify-center gap-3">
+                                <ShieldCheck size={18}/> {editingAddressId ? 'Apply Base Modifications' : 'Encrypt & Save This Base'}
                              </button>
                           </motion.form>
                         )}
                      </AnimatePresence>
 
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
                         {addresses.map(addr => (
-                           <div key={addr.id} className={`p-6 rounded-[32px] border transition-all relative group ${addr.isDefault ? 'bg-white border-[#6651A4]/30 shadow-md' : 'bg-[#FAEAD3]/30 border-black/[0.03] hover:bg-white hover:shadow-md'}`}>
-                              <div className="flex justify-between items-start mb-4">
-                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-[#FAEAD3] rounded-xl flex items-center justify-center text-gray-400 group-hover:text-[#6651A4] transition-all">
-                                       {addr.type === 'Home' ? <Home size={18}/> : addr.type === 'Office' ? <Building size={18}/> : <MapPin size={18}/>}
+                           <div key={addr.id} className={`p-8 rounded-[40px] border transition-all relative group overflow-hidden ${addr.isDefault ? 'bg-[#FAEAD3] border-[#E84949]/30 shadow-lg' : 'bg-[#FDF4E6] border-white/40 hover:bg-[#FAEAD3] hover:shadow-xl'}`}>
+                              <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#E84949]/5 rounded-full blur-3xl group-hover:bg-[#E84949]/10 transition-colors" />
+                              
+                              <div className="flex justify-between items-start mb-6 relative z-10">
+                                 <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-[#E84949] transition-all shadow-inner group-hover:scale-110 duration-500">
+                                       {addr.type === 'Home' ? <Home size={24}/> : addr.type === 'Office' ? <Building size={24}/> : <MapPin size={24}/>}
                                     </div>
                                     <div>
-                                       <p className="text-[13px] font-bold text-gray-700">{addr.firstName} {addr.lastName}</p>
-                                       <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400">{addr.type} Base</p>
+                                       <p className="text-[14px] font-bold text-gray-700 font-grandstander">{addr.firstName} {addr.lastName}</p>
+                                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">{addr.type} Station</p>
                                     </div>
                                  </div>
                                  <div className="flex gap-2">
@@ -561,23 +648,25 @@ export function AccountPage() {
                                        setAddressForm(addr); 
                                        setShowAddAddress(true); 
                                        window.scrollTo({top: 0, behavior: 'smooth'}); 
-                                    }} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-300 hover:text-[#6651A4] hover:bg-[#6651A4]/5 transition-all"><Edit2 size={14}/></button>
+                                    }} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#6651A4] hover:bg-white transition-all shadow-sm"><Edit2 size={16}/></button>
                                     {!addr.isDefault && (
-                                       <button onClick={() => deleteAddress(addr.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-300 hover:text-[#E84949] hover:bg-red-50 transition-all"><Trash2 size={14}/></button>
+                                       <button onClick={() => deleteAddress(addr.id)} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#E84949] hover:bg-white transition-all shadow-sm"><Trash2 size={16}/></button>
                                     )}
                                  </div>
                               </div>
-                              <div className="space-y-1 text-[13px] text-gray-500 mb-6 pl-1">
-                                 <p>{addr.address}</p>
+                              <div className="space-y-1.5 text-[14px] font-medium text-gray-500 mb-8 pl-1 relative z-10 leading-relaxed">
+                                 <p className="text-[#333] font-bold">{addr.address}</p>
                                  {addr.apartment && <p>{addr.apartment}</p>}
                                  <p>{addr.city === 'Other' ? addr.district : addr.city}, {addr.state} {addr.postalCode}</p>
-                                 <p className="text-[11px] font-medium text-gray-400">T: {addr.phone}</p>
+                                 <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 mt-4 uppercase tracking-widest">
+                                    <Smartphone size={12}/> {addr.phone}
+                                 </div>
                               </div>
-                              <div className="flex items-center justify-between mt-auto">
+                              <div className="flex items-center justify-between mt-auto relative z-10 pt-4 border-t border-black/[0.03]">
                                  {!addr.isDefault ? (
-                                    <button onClick={() => setAsDefaultAddress(addr.id)} className="text-[9px] font-bold uppercase tracking-widest text-[#6651A4] hover:underline transition-all">Set as Primary</button>
+                                    <button onClick={() => setAsDefaultAddress(addr.id)} className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6651A4] hover:text-[#E84949] transition-all">Set as Primary Base</button>
                                  ) : (
-                                    <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5"><Check size={10}/> Primary Base</span>
+                                    <span className="px-4 py-1.5 bg-[#E84949] text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#E84949]/20"><Check size={12}/> Established Primary</span>
                                  )}
                               </div>
                            </div>

@@ -3,16 +3,18 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const PaymentContext = createContext();
 
 export function PaymentProvider({ children }) {
-  const [walletBalance, setWalletBalance] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_wallet_balance');
-    return saved ? parseFloat(saved) : 500.00; 
+  const [paymentHistory, setPaymentHistory] = useState(() => {
+    const saved = localStorage.getItem('TOYOVOINDIA_payment_history');
+    return saved ? JSON.parse(saved) : [];
   });
 
-  const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_transactions');
-    return saved ? JSON.parse(saved) : [
-      { id: 'TXN-9901', type: 'Credit', amount: 500.00, method: 'Welcome Bonus', date: new Date().toLocaleDateString(), status: 'Completed' }
-    ];
+  const [savedMethods, setSavedMethods] = useState(() => {
+    const saved = localStorage.getItem('TOYOVOINDIA_saved_methods');
+    return saved ? JSON.parse(saved) : {
+      bankAccounts: [],
+      upiIds: [],
+      cards: []
+    };
   });
 
   const [orders, setOrders] = useState(() => {
@@ -21,43 +23,41 @@ export function PaymentProvider({ children }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_wallet_balance', walletBalance.toString());
-  }, [walletBalance]);
+    localStorage.setItem('TOYOVOINDIA_payment_history', JSON.stringify(paymentHistory));
+  }, [paymentHistory]);
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_transactions', JSON.stringify(transactions));
-  }, [transactions]);
+    localStorage.setItem('TOYOVOINDIA_saved_methods', JSON.stringify(savedMethods));
+  }, [savedMethods]);
 
   useEffect(() => {
     localStorage.setItem('TOYOVOINDIA_orders', JSON.stringify(orders));
   }, [orders]);
 
-  const addTransaction = (txn) => {
-    setTransactions(prev => [
+  const addPaymentLog = (log) => {
+    setPaymentHistory(prev => [
       { 
-        id: `TXN-${Math.floor(1000 + Math.random() * 9000)}`, 
+        id: `PAY-${Math.floor(1000 + Math.random() * 9000)}`, 
         date: new Date().toLocaleDateString(), 
         status: 'Completed',
-        ...txn 
+        ...log 
       }, 
       ...prev
     ]);
   };
 
-  const topUpWallet = (amount, method = 'Wallet Top-up') => {
-    const numAmt = parseFloat(amount);
-    if (isNaN(numAmt)) return;
-    setWalletBalance(prev => prev + numAmt);
-    addTransaction({ type: 'Credit', amount: numAmt, method });
+  const addSavedMethod = (type, data) => {
+    setSavedMethods(prev => ({
+      ...prev,
+      [type]: [{ id: Date.now(), ...data }, ...prev[type]]
+    }));
   };
 
-  const payWithWallet = (amount) => {
-    if (walletBalance >= amount) {
-      setWalletBalance(prev => prev + (amount * -1));
-      addTransaction({ type: 'Debit', amount, method: 'Order Payment' });
-      return true;
-    }
-    return false;
+  const deleteSavedMethod = (type, id) => {
+    setSavedMethods(prev => ({
+      ...prev,
+      [type]: prev[type].filter(m => m.id !== id)
+    }));
   };
 
   const addOrder = (orderData) => {
@@ -76,18 +76,16 @@ export function PaymentProvider({ children }) {
     setOrders(prev => prev.map(order => 
       order.id === orderId ? { ...order, status: 'Cancelled' } : order
     ));
-    // Refund to wallet? Let's be professional and refund.
     const order = orders.find(o => o.id === orderId);
     if (order && order.status !== 'Cancelled') {
-      setWalletBalance(prev => prev + order.total);
-      addTransaction({ type: 'Credit', amount: order.total, method: `REFUND (${orderId})` });
+      addPaymentLog({ type: 'Refund', amount: order.total, method: `REFUND (${orderId})` });
     }
   };
 
   const simulatePayment = async (amount, method) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        addTransaction({ type: 'Debit', amount, method: method.toUpperCase() });
+        addPaymentLog({ type: 'Debit', amount, method: method.toUpperCase() });
         resolve(true);
       }, 3000);
     });
@@ -95,13 +93,13 @@ export function PaymentProvider({ children }) {
 
   return (
     <PaymentContext.Provider value={{ 
-      walletBalance, 
-      transactions, 
+      paymentHistory, 
+      savedMethods,
       orders,
-      topUpWallet, 
-      payWithWallet,
+      addSavedMethod,
+      deleteSavedMethod,
       simulatePayment,
-      addTransaction,
+      addPaymentLog,
       addOrder,
       cancelOrder
     }}>

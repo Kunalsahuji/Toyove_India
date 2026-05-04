@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck, ShoppingCart, Smartphone, Wallet, Check, ChevronDown, ChevronUp, Tag, AlertCircle, X, Lock, Loader2 } from 'lucide-react'
+import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck, ShoppingCart, Smartphone, Check, ChevronDown, ChevronUp, Tag, AlertCircle, X, Lock, Loader2, Landmark } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
@@ -139,21 +139,21 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
                </div>
              )}
 
-             {method === 'wallet' && (
-               <div className="space-y-6 text-center">
-                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
-                     <Wallet className="text-green-600" size={32}/>
-                  </div>
-                  <div>
-                     <h5 className="font-bold text-[#333] mb-1">Confirm Wallet Payment</h5>
-                     <p className="text-[13px] text-gray-500 leading-relaxed px-6">You are about to pay using your TOYOVOINDIA Wallet balance. This is instant and secure.</p>
-                  </div>
-                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 divide-y divide-gray-200">
-                     <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Order Amount</span><span className="font-bold text-[#333]">₹{amount.toFixed(2)}</span></div>
-                     <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Wallet Balance</span><span className="font-bold text-green-600">-₹{amount.toFixed(2)}</span></div>
-                  </div>
-                  <button onClick={onComplete} className="w-full h-14 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-widest text-[12px] hover:bg-green-600 transition-all">Complete Purchase</button>
-               </div>
+             {method === 'netbanking' && (
+                <div className="space-y-6">
+                   <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto">
+                      <Landmark className="text-blue-600" size={32}/>
+                   </div>
+                   <div>
+                      <h5 className="font-bold text-[#333] mb-1">Net Banking Login</h5>
+                      <p className="text-[13px] text-gray-500 leading-relaxed px-6">You will be redirected to your bank's secure login page to authorize this payment.</p>
+                   </div>
+                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center gap-3">
+                      <Lock size={14} className="text-gray-400"/>
+                      <span className="text-[12px] font-bold text-gray-600 uppercase">Redirecting to Secure Server</span>
+                   </div>
+                   <button onClick={onComplete} className="w-full h-14 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-widest text-[12px] hover:bg-blue-600 transition-all">Authorize with Bank</button>
+                </div>
              )}
 
              <div className="flex items-center justify-center gap-2 pt-4">
@@ -168,7 +168,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
 
 export function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useCart()
-  const { walletBalance, payWithWallet, simulatePayment, topUpWallet, addOrder } = usePayment()
+  const { simulatePayment, addOrder } = usePayment()
   const { user, addresses } = useAuth()
   const navigate = useNavigate()
   
@@ -206,9 +206,6 @@ export function CheckoutPage() {
   const shippingCharge = shippingRates[shippingMethod]
   const discountAmount = isDiscountApplied ? subtotal * 0.1 : 0
   const total = subtotal + shippingCharge - discountAmount
-  
-  const isInsufficient = paymentMethod === 'wallet' && walletBalance < total
-  const topUpRequired = isInsufficient ? total - walletBalance : 0
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -237,12 +234,7 @@ export function CheckoutPage() {
     setIsProcessing(true);
     
     // Final logic execution
-    let success = false;
-    if (paymentMethod === 'wallet') {
-      success = payWithWallet(total);
-    } else {
-      success = await simulatePayment(total, paymentMethod === 'upi' ? `UPI (${selectedUpi})` : 'CARD');
-    }
+    const success = await simulatePayment(total, paymentMethod === 'upi' ? `UPI (${selectedUpi})` : paymentMethod === 'netbanking' ? 'NET BANKING' : 'CARD');
 
     if (success) {
       const order = addOrder({
@@ -391,7 +383,7 @@ export function CheckoutPage() {
                                     district: addr.district
                                  }));
                               }}
-                              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer relative ${selectedAddressId === addr.id ? 'border-[#E84949] bg-[#FDF4E6]' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+                              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer relative ${selectedAddressId === addr.id ? 'border-[#E84949] bg-[#FAEAD3]' : 'border-gray-100 bg-[#FAEAD3] hover:border-gray-200'}`}
                            >
                               <div className="flex justify-between items-start mb-2">
                                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#E84949] bg-red-50 px-2 py-0.5 rounded">{addr.type}</span>
@@ -462,35 +454,12 @@ export function CheckoutPage() {
                 <h2 className="text-xl font-bold text-[#333] font-grandstander">Payment</h2>
                 <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
                    
-                   {/* Wallet Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'wallet' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
-                      <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('wallet')}>
-                         <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'wallet'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
-                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Wallet size={16}/> TOYOVOINDIA Wallet</span>
-                         </div>
-                         <span className="text-[12px] font-bold text-gray-500">BALANCE: ₹{walletBalance.toFixed(2)}</span>
-                      </div>
-                      {paymentMethod === 'wallet' && (
-                        <motion.div initial={{height:0}} animate={{height:'auto'}} className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-                           {isInsufficient ? (
-                             <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex flex-col gap-3">
-                                <p className="text-[12px] text-red-600 font-bold flex items-center gap-2"><AlertCircle size={14}/> Insufficient Balance! Need ${topUpRequired.toFixed(2)} more.</p>
-                                <button onClick={() => topUpWallet(topUpRequired + 10)} className="w-full py-3 bg-[#E84949] text-white rounded-lg text-[12px] font-bold uppercase tracking-widest hover:opacity-90">Top up & Pay Now</button>
-                             </div>
-                           ) : (
-                             <p className="text-[12px] text-gray-600 font-medium italic">Your current balance is enough for this order.</p>
-                           )}
-                        </motion.div>
-                      )}
-                   </div>
-
                    {/* Card Option */}
                    <div className={`p-5 transition-all ${paymentMethod === 'card' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
                       <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('card')}>
                          <div className="flex items-center gap-4">
                             <input type="radio" checked={paymentMethod === 'card'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
-                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><CreditCard size={16}/> Credit Card</span>
+                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><CreditCard size={16}/> Credit/Debit Card</span>
                          </div>
                       </div>
                       {paymentMethod === 'card' && (
@@ -520,11 +489,26 @@ export function CheckoutPage() {
                         </motion.div>
                       )}
                    </div>
+
+                   {/* Net Banking Option */}
+                   <div className={`p-5 transition-all ${paymentMethod === 'netbanking' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
+                      <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('netbanking')}>
+                         <div className="flex items-center gap-4">
+                            <input type="radio" checked={paymentMethod === 'netbanking'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
+                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Landmark size={16}/> Net Banking</span>
+                         </div>
+                      </div>
+                      {paymentMethod === 'netbanking' && (
+                        <motion.div initial={{height:0}} animate={{height:'auto'}} className="mt-4 pt-4 border-t border-gray-200">
+                           <FloatingSelect label="Select Bank" name="bank" options={["", "HDFC Bank", "SBI Bank", "ICICI Bank", "Axis Bank", "Kotak Mahindra"]} />
+                        </motion.div>
+                      )}
+                   </div>
                 </div>
              </section>
 
              <div className="flex flex-col gap-4">
-                <button onClick={startPayment} disabled={isProcessing || (paymentMethod === 'wallet' && isInsufficient)} className="w-full h-16 bg-[#333] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
+                <button onClick={startPayment} disabled={isProcessing} className="w-full h-16 bg-[#333] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
                    Secure Payment — ₹{total.toFixed(2)}
                 </button>
                 <button onClick={() => setStep(1)} className="text-[12px] font-bold text-gray-400 hover:text-[#333] uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"><ChevronLeft size={16} /> Return to information</button>
