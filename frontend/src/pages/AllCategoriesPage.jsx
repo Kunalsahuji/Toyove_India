@@ -271,6 +271,57 @@ export function AllCategoriesPage() {
           </aside>
 
           <main className="flex-1 w-full min-h-[600px] overflow-hidden">
+            {/* Refined Toolbar - Matched with CollectionPage */}
+            <div className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[25px] p-3 md:p-4 flex items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setIsFilterOpen(true)} className="lg:hidden p-2.5 rounded-xl bg-[#FDF4E6] border border-dashed border-black/5 shadow-sm transition-all active:scale-95"><SlidersHorizontal size={16} className="text-[#444]"/></button>
+                
+                {/* Desktop Grid Toggles - Softened Style */}
+                <div className="hidden lg:flex items-center gap-2">
+                  <button onClick={() => setGridCols(3)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 3 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
+                    <div className="flex gap-[2px]">
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                    </div>
+                  </button>
+                  <button onClick={() => setGridCols(2)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 2 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
+                    <div className="flex gap-[2px]">
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                      <div className="w-[3px] h-4 bg-current rounded-full"/>
+                    </div>
+                  </button>
+                  <button onClick={() => setGridCols(1)} className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${gridCols === 1 ? 'bg-[#E84949] text-white shadow-lg' : 'bg-[#333] text-white/30 hover:text-white hover:bg-[#222]'}`}>
+                    <div className="flex flex-col gap-[3px]">
+                      <div className="w-4 h-[2px] bg-current rounded-full"/>
+                      <div className="w-4 h-[2px] bg-current rounded-full"/>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Centered Sort By */}
+              <div className="flex-1 flex justify-center">
+                <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 flex items-center gap-2 md:gap-3 shadow-sm">
+                   <span className="hidden sm:inline text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-[#444]/60">Sort:</span>
+                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent text-[11px] md:text-[12px] font-black outline-none cursor-pointer text-[#444] min-w-[100px] md:min-w-[140px]">
+                      <option value="relevance">Featured</option>
+                      <option value="best-selling">Best selling</option>
+                      <option value="alpha-asc">A-Z</option>
+                      <option value="alpha-desc">Z-A</option>
+                      <option value="price-asc">Low to high</option>
+                      <option value="price-desc">High to low</option>
+                      <option value="newest">Newest</option>
+                   </select>
+                </div>
+              </div>
+
+              {/* Right Aligned Count */}
+              <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 text-[10px] md:text-[12px] font-black text-[#444] whitespace-nowrap shadow-sm">
+                {processedProducts.length} <span className="hidden sm:inline">products</span><span className="sm:hidden">pcs</span>
+              </div>
+            </div>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCategory.id}
@@ -278,54 +329,34 @@ export function AllCategoriesPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -15 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="bg-[#F9EAD3] border-[1.5px] border-dashed border-black/10 rounded-[45px] p-8 md:p-12 shadow-sm"
               >
-                {categoryData[activeCategory.name] ? (
-                  <div className="flex flex-col md:flex-row gap-12">
-                    <div className="flex-1 space-y-10">
-                      <div className="border-b border-black/5 pb-6">
-                        <h3 className="text-[#E84949] font-black text-[13px] tracking-[0.4em] uppercase mb-2">Shop by Type</h3>
-                        <div className="w-14 h-[2px] bg-[#E84949] rounded-full"></div>
-                      </div>
+                <div className={`grid gap-6 md:gap-8 ${
+                  gridCols === 3 ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 
+                  gridCols === 2 ? 'grid-cols-2' : 
+                  'grid-cols-1'
+                }`}>
+                  {paginatedProducts.map((p, i) => (
+                    <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                      <ProductCard p={p} i={i} isGridOne={gridCols === 1} />
+                    </motion.div>
+                  ))}
+                </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-5">
-                        {categoryData[activeCategory.name].content[0].items.map((item, idx) => (
-                          <Link
-                            key={idx}
-                            to={`/collections/${activeCategory.name.toLowerCase().replaceAll(' ', '-')}/${item.toLowerCase().replaceAll(' ', '-')}`}
-                            className="group flex items-center gap-4 text-[14px] font-bold text-[#444] hover:text-[#E84949] transition-all uppercase tracking-widest"
-                          >
-                            <div className="w-2 h-2 bg-[#E84949]/10 rounded-full group-hover:bg-[#E84949] group-hover:w-4 transition-all duration-300"></div>
-                            <span className="relative">
-                              {item}
-                              <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[#E84949] transition-all duration-300 group-hover:w-full"></span>
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-3 pt-12">
+                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="w-12 h-12 rounded-2xl border-2 border-dashed border-black/10 flex items-center justify-center text-[#444] disabled:opacity-10 hover:border-[#E84949] transition-all">
+                      <ChevronLeft size={20} />
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {getVisiblePages().map(page => (
+                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 rounded-2xl font-black text-[14px] transition-all ${currentPage === page ? 'bg-[#E84949] text-white shadow-lg scale-110' : 'bg-transparent border-2 border-dashed border-black/10 text-[#444] hover:border-[#E84949]'}`}>
+                          {page}
+                        </button>
+                      ))}
                     </div>
-
-                    {categoryData[activeCategory.name].banner && (
-                      <div className="w-full md:w-80 shrink-0">
-                        <div className="rounded-[50px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-[6px] border-white/60 w-full transform hover:scale-[1.02] transition-all duration-700">
-                          <img 
-                            src={categoryData[activeCategory.name].banner} 
-                            alt={activeCategory.name} 
-                            className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" 
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-10 flex flex-col justify-end">
-                            <span className="text-[#E84949] text-[10px] uppercase font-black tracking-[0.4em] mb-2">Featured</span>
-                            <h5 className="text-white font-grandstander text-[20px] font-black uppercase leading-tight tracking-tighter">Collection<br/>2026</h5>
-                            <div className="mt-4 w-12 h-[3px] bg-[#E84949] rounded-full transform origin-left group-hover/banner:scale-x-150 transition-transform duration-500"></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-24 text-[#444]/20 space-y-4">
-                    <Search size={64} strokeWidth={1.5} />
-                    <p className="font-black uppercase tracking-[0.3em] text-[14px]">Explore {activeCategory.name}</p>
+                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="w-12 h-12 rounded-2xl border-2 border-dashed border-black/10 flex items-center justify-center text-[#444] disabled:opacity-10 hover:border-[#E84949] transition-all">
+                      <ChevronRight size={20} />
+                    </button>
                   </div>
                 )}
               </motion.div>
