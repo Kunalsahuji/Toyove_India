@@ -156,7 +156,7 @@ export function ProductDetailPage() {
               <img src={productImages[1]} alt="" className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="text-[11px] text-[#666666]">Jacklin Purchased ! - From USA</p>
+              <p className="text-[11px] text-[#666666]">Ishaan Purchased ! - From Bangalore</p>
               <h4 className="text-[13px] font-bold text-[#333333] my-0.5 font-grandstander tracking-tight">KidsKraze Creations</h4>
               <div className="flex items-center gap-1.5 text-[10px]">
                 <span className="text-gray-400">5 minute ago</span>
@@ -184,8 +184,8 @@ export function ProductDetailPage() {
                 <div>
                   <h4 className="text-[14px] font-bold text-[#333333] hidden lg:block font-grandstander tracking-tight">{product.title}</h4>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#E84949] font-bold text-[18px]">${product.price.toFixed(2)}</span>
-                    <span className="text-[12px] text-gray-400 line-through font-bold">${product.oldPrice.toFixed(2)}</span>
+                    <span className="text-[#E84949] font-bold text-[18px]">₹{product.price.toFixed(2)}</span>
+                    <span className="text-[12px] text-gray-400 line-through font-bold">₹{product.oldPrice.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -310,8 +310,8 @@ export function ProductDetailPage() {
 
                 <div className="flex items-center gap-4 pt-2">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-2xl md:text-3xl font-black text-[#E84949] tracking-tight">${product.price.toFixed(2)}</span>
-                    <span className="text-lg text-gray-400 line-through font-bold tracking-tight">${product.oldPrice.toFixed(2)}</span>
+                    <span className="text-2xl md:text-3xl font-black text-[#E84949] tracking-tight">₹{product.price.toFixed(2)}</span>
+                    <span className="text-lg text-gray-400 line-through font-bold tracking-tight">₹{product.oldPrice.toFixed(2)}</span>
                   </div>
                   <span className="bg-[#E84949] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-widest">Sale</span>
                 </div>

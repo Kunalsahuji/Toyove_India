@@ -68,8 +68,8 @@ export function ComparePage() {
               </div>
 
               <div className="p-4 text-center border-b border-black/10 bg-transparent flex items-center justify-center gap-3">
-                 <span className="text-[12px] text-gray-400 line-through font-medium">${(item.price + 20).toFixed(2)} USD</span>
-                 <span className="text-[16px] font-bold text-[#333]">${item.price.toFixed(2)} USD</span>
+                 <span className="text-[12px] text-gray-400 line-through font-medium">₹{(item.price + 200).toFixed(2)} INR</span>
+                 <span className="text-[16px] font-bold text-[#333]">₹{item.price.toFixed(2)} INR</span>
               </div>
 
               <div className="p-4 text-center border-b border-black/10 bg-transparent text-[13px] flex items-center justify-center gap-2">

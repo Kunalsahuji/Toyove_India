@@ -6,24 +6,31 @@ import { products } from '../../utils/ProductData'
 const mockPurchases = [
   {
     id: 1,
-    name: 'Jacklin',
-    location: 'USA',
+    name: 'Aanya',
+    location: 'Mumbai',
     productId: 1,
     time: '5 minute ago'
   },
   {
     id: 2,
-    name: 'Sarah',
-    location: 'India',
+    name: 'Ishaan',
+    location: 'Bangalore',
     productId: 3,
     time: '2 minute ago'
   },
   {
     id: 3,
-    name: 'Emily',
-    location: 'London',
+    name: 'Diya',
+    location: 'Delhi',
     productId: 5,
     time: '12 minute ago'
+  },
+  {
+    id: 4,
+    name: 'Arjun',
+    location: 'Pune',
+    productId: 7,
+    time: '15 minute ago'
   }
 ]
 
@@ -37,7 +44,7 @@ export function PurchaseNotification() {
 
     const initialTimeout = setTimeout(() => {
       setIsVisible(true)
-    }, 5000)
+    }, 60000)
 
     return () => clearTimeout(initialTimeout)
   }, [hasBeenClosed])
@@ -51,10 +58,10 @@ export function PurchaseNotification() {
       const nextTimeout = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % mockPurchases.length)
         setIsVisible(true)
-      }, 10000)
+      }, 120000)
 
       return () => clearTimeout(nextTimeout)
-    }, 7000)
+    }, 10000)
 
     return () => clearTimeout(hideTimeout)
   }, [isVisible, hasBeenClosed])

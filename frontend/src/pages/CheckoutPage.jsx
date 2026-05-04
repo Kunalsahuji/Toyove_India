@@ -102,7 +102,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
           <div className="p-10 space-y-8">
              <div className="text-center">
                 <p className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Total Payable</p>
-                <h4 className="text-5xl font-bold font-grandstander text-[#333]">${amount.toFixed(2)}</h4>
+                <h4 className="text-5xl font-bold font-grandstander text-[#333]">₹{amount.toFixed(2)}</h4>
              </div>
 
              {method === 'upi' && (
@@ -112,7 +112,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
                   </div>
                   <div>
                      <h5 className="font-bold text-[#333] mb-1 capitalize">Pay using {upiApp}</h5>
-                     <p className="text-[13px] text-gray-500 leading-relaxed px-10">Please open your {upiApp} app and approve the payment request of <b>${amount.toFixed(2)}</b></p>
+                     <p className="text-[13px] text-gray-500 leading-relaxed px-10">Please open your {upiApp} app and approve the payment request of <b>₹{amount.toFixed(2)}</b></p>
                   </div>
                   <div className="flex flex-col items-center gap-3">
                      <div className="w-12 h-12 rounded-full border-4 border-gray-100 border-t-[#E84949] animate-spin" />
@@ -149,8 +149,8 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
                      <p className="text-[13px] text-gray-500 leading-relaxed px-6">You are about to pay using your TOYOVOINDIA Wallet balance. This is instant and secure.</p>
                   </div>
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 divide-y divide-gray-200">
-                     <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Order Amount</span><span className="font-bold text-[#333]">${amount.toFixed(2)}</span></div>
-                     <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Wallet Balance</span><span className="font-bold text-green-600">-${amount.toFixed(2)}</span></div>
+                     <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Order Amount</span><span className="font-bold text-[#333]">₹{amount.toFixed(2)}</span></div>
+                     <div className="flex justify-between py-2 text-[13px]"><span className="text-gray-500">Wallet Balance</span><span className="font-bold text-green-600">-₹{amount.toFixed(2)}</span></div>
                   </div>
                   <button onClick={onComplete} className="w-full h-14 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-widest text-[12px] hover:bg-green-600 transition-all">Complete Purchase</button>
                </div>
@@ -304,7 +304,7 @@ export function CheckoutPage() {
            <Link to="/" className="text-2xl font-grandstander font-bold text-[#333] tracking-tighter">TOYOVOINDIA</Link>
            <button onClick={() => setShowSummary(!showSummary)} className="flex items-center gap-2 text-[13px] font-bold text-[#E84949] uppercase tracking-wider">
              {showSummary ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
-             Summary <span className="ml-2 text-[#333]">${total.toFixed(2)}</span>
+             Summary <span className="ml-2 text-[#333]">₹{total.toFixed(2)}</span>
            </button>
         </div>
         <AnimatePresence>
@@ -323,9 +323,9 @@ export function CheckoutPage() {
                   ))}
                </div>
                <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
-                  <div className="flex justify-between text-[14px]"><span className="text-gray-500">Subtotal</span><span className="font-bold">${subtotal.toFixed(2)}</span></div>
-                  {isDiscountApplied && <div className="flex justify-between text-[14px] text-green-600"><span>Discount (10%)</span><span>-${discountAmount.toFixed(2)}</span></div>}
-                  <div className="flex justify-between text-[18px] font-bold pt-4"><span>Total</span><span className="text-[#E84949]">${total.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-[14px]"><span className="text-gray-500">Subtotal</span><span className="font-bold">₹{subtotal.toFixed(2)}</span></div>
+                  {isDiscountApplied && <div className="flex justify-between text-[14px] text-green-600"><span>Discount (10%)</span><span>-₹{discountAmount.toFixed(2)}</span></div>}
+                  <div className="flex justify-between text-[18px] font-bold pt-4"><span>Total</span><span className="text-[#E84949]">₹{total.toFixed(2)}</span></div>
                </div>
             </motion.div>
           )}
@@ -436,14 +436,14 @@ export function CheckoutPage() {
                         <input type="radio" checked={shippingMethod === 'standard'} onChange={() => setShippingMethod('standard')} className="w-4 h-4 accent-[#E84949]" />
                         <span className="text-[14px] font-medium text-[#333]">Standard Shipping (3-5 days)</span>
                      </div>
-                     <span className="font-bold text-[14px]">$15.00</span>
+                     <span className="font-bold text-[14px]">₹15.00</span>
                   </label>
                   <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'express' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
                      <div className="flex items-center gap-4">
                         <input type="radio" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} className="w-4 h-4 accent-[#E84949]" />
                         <span className="text-[14px] font-medium text-[#333]">Express Delivery (1-2 days)</span>
                      </div>
-                     <span className="font-bold text-[14px]">$45.00</span>
+                     <span className="font-bold text-[14px]">₹45.00</span>
                   </label>
                </div>
             </section>
@@ -455,7 +455,7 @@ export function CheckoutPage() {
              <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100 text-[13px] bg-gray-50/50">
                 <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Contact</span><span className="grow font-medium">{formData.email}</span><button onClick={() => setStep(1)} className="text-[#E84949] font-bold">Change</button></div>
                 <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Ship to</span><span className="grow font-medium">{formData.address}, {formData.city}, {formData.state}</span><button onClick={() => setStep(1)} className="text-[#E84949] font-bold">Change</button></div>
-                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Method</span><span className="grow font-medium text-capitalize">{shippingMethod} Shipping · ${shippingCharge.toFixed(2)}</span></div>
+                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Method</span><span className="grow font-medium text-capitalize">{shippingMethod} Shipping · ₹{shippingCharge.toFixed(2)}</span></div>
              </div>
 
              <section className="space-y-6">
@@ -469,7 +469,7 @@ export function CheckoutPage() {
                             <input type="radio" checked={paymentMethod === 'wallet'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
                             <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Wallet size={16}/> TOYOVOINDIA Wallet</span>
                          </div>
-                         <span className="text-[12px] font-bold text-gray-500">BALANCE: ${walletBalance.toFixed(2)}</span>
+                         <span className="text-[12px] font-bold text-gray-500">BALANCE: ₹{walletBalance.toFixed(2)}</span>
                       </div>
                       {paymentMethod === 'wallet' && (
                         <motion.div initial={{height:0}} animate={{height:'auto'}} className="mt-4 pt-4 border-t border-gray-200 space-y-4">
@@ -525,7 +525,7 @@ export function CheckoutPage() {
 
              <div className="flex flex-col gap-4">
                 <button onClick={startPayment} disabled={isProcessing || (paymentMethod === 'wallet' && isInsufficient)} className="w-full h-16 bg-[#333] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
-                   Secure Payment — ${total.toFixed(2)}
+                   Secure Payment — ₹{total.toFixed(2)}
                 </button>
                 <button onClick={() => setStep(1)} className="text-[12px] font-bold text-gray-400 hover:text-[#333] uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"><ChevronLeft size={16} /> Return to information</button>
              </div>
@@ -544,7 +544,7 @@ export function CheckoutPage() {
                   <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm z-10">{item.qty}</span>
                 </div>
                 <div className="grow"><h4 className="text-[13px] font-bold text-[#333] font-grandstander">{item.title}</h4><p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">SKU: {item.sku || 'TOY-001'}</p></div>
-                <span className="text-[15px] font-bold text-[#333] tracking-tighter">${(item.price * item.qty).toFixed(2)}</span>
+                <span className="text-[15px] font-bold text-[#333] tracking-tighter">₹{(item.price * item.qty).toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -558,14 +558,14 @@ export function CheckoutPage() {
           </div>
 
           <div className="mt-10 pt-10 border-t border-gray-200 space-y-4 text-[14px]">
-             <div className="flex justify-between"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold tracking-tighter text-[#333]">${subtotal.toFixed(2)}</span></div>
-             <div className="flex justify-between"><span className="text-gray-500 font-medium">Shipping</span><span className="font-bold tracking-tighter text-[#333]">${shippingCharge.toFixed(2)}</span></div>
-             {isDiscountApplied && <div className="flex justify-between text-green-600 font-bold"><span>Discount (TOYOVOINDIA10)</span><span className="tracking-tighter">-${discountAmount.toFixed(2)}</span></div>}
+             <div className="flex justify-between"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold tracking-tighter text-[#333]">₹{subtotal.toFixed(2)}</span></div>
+             <div className="flex justify-between"><span className="text-gray-500 font-medium">Shipping</span><span className="font-bold tracking-tighter text-[#333]">₹{shippingCharge.toFixed(2)}</span></div>
+             {isDiscountApplied && <div className="flex justify-between text-green-600 font-bold"><span>Discount (TOYOVOINDIA10)</span><span className="tracking-tighter">-₹{discountAmount.toFixed(2)}</span></div>}
              <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
                <span className="text-[20px] font-bold font-grandstander text-[#333]">Total</span>
                <div className="flex items-baseline gap-2">
-                  <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">USD</span>
-                  <span className="text-4xl font-bold font-grandstander text-[#E84949] tracking-tighter">${total.toFixed(2)}</span>
+                  <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">INR</span>
+                  <span className="text-4xl font-bold font-grandstander text-[#E84949] tracking-tighter">₹{total.toFixed(2)}</span>
                </div>
              </div>
           </div>

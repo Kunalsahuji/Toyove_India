@@ -43,13 +43,12 @@ export function VisionHeader() {
   const [isPastHero, setIsPastHero] = useState(false)
   const [activeMobileSub, setActiveMobileSub] = useState(null)
   
-  const [activeMasterCat, setActiveMasterCat] = useState('BOY FASHION')
+  const [activeMasterCat, setActiveMasterCat] = useState('Musical Toys')
   const [activeMenu, setActiveMenu] = useState(null)
   const [profileDropdown, setProfileDropdown] = useState(false)
-  const [cartOpen, setCartOpen] = useState(false)
-  const [countryDropdown, setCountryDropdown] = useState(false)
   const [langDropdown, setLangDropdown] = useState(false)
-  const [selectedCountry, setSelectedCountry] = useState(countries[0])
+  const [cartOpen, setCartOpen] = useState(false)
+  const [selectedCountry, setSelectedCountry] = useState({ name: 'India', code: 'IN', currency: 'INR' })
   const [selectedLang, setSelectedLang] = useState(languages[0])
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
@@ -87,7 +86,6 @@ export function VisionHeader() {
     setSearchOpen(false)
     setActiveMenu(null)
     setProfileDropdown(false)
-    setCountryDropdown(false)
     setLangDropdown(false)
     setSearchTerm('')
     setSuggestions([])
@@ -173,22 +171,10 @@ export function VisionHeader() {
           </div>
 
           <div className="flex items-center gap-6 justify-end">
-            <div className="relative" onMouseEnter={()=>setCountryDropdown(true)} onMouseLeave={()=>setCountryDropdown(false)}>
-                <button className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20 transition-all cursor-pointer">
-                    <span className="flex items-center justify-center w-4 h-3 bg-white/20 rounded-sm text-[8px] font-bold">{selectedCountry.code}</span>
-                    <span>{selectedCountry.name}</span> <ChevronDown size={10} />
-                </button>
-                <AnimatePresence>
-                    {countryDropdown && (
-                        <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute top-full right-0 mt-1 w-48 bg-[#FDF3E7] shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
-                            {countries.map(c => (
-                                <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[11px] font-bold hover:bg-white flex items-center justify-between whitespace-nowrap ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
-                                    {c.name} <span className="text-[10px] opacity-40 ml-2">{c.currency}</span>
-                                </button>
-                            ))}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+            <div className="flex items-center gap-1.5 px-0 py-1 bg-transparent cursor-default">
+                <span className="flex items-center justify-center w-5 h-4 bg-[#FF4E50]/10 rounded-sm text-[9px] font-black text-[#FF4E50]">IN</span>
+                <span className="text-[11px] font-black uppercase tracking-widest text-white">India</span>
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse ml-0.5"></div>
             </div>
             <div className="relative" onMouseEnter={()=>setLangDropdown(true)} onMouseLeave={()=>setLangDropdown(false)}>
                 <button className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white hover:opacity-80 transition-all cursor-pointer">
@@ -238,7 +224,7 @@ export function VisionHeader() {
            </div>
            <div className="flex-1 flex items-center gap-4 text-white justify-end">
                 <Globe size={14}/>
-                <span className="text-[11px] font-bold uppercase">{selectedCountry.code} | {selectedLang.substring(0,3)}</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest">IN | {selectedLang.substring(0,3)}</span>
            </div>
         </div>
 
@@ -294,9 +280,9 @@ export function VisionHeader() {
           {/* Desktop Navigation: Only visible on 1024px+, strictly follows Logo */}
           <nav className="hidden lg:flex items-center justify-center gap-0 xl:gap-0 2xl:gap-0.5 flex-grow h-full px-1 xl:px-1.5">
             {mainNavLinks.filter(l => !l.hideOnDesktop).map(link => (
-              <div key={link.name} className={`group/nav py-6 ${link.dropdown ? 'relative' : ''}`} onMouseEnter={() => setActiveMenu(link.name)} onMouseLeave={() => setActiveMenu(null)}>
-                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-0.5 xl:px-0.5 2xl:px-2 text-[8.5px] xl:text-[9px] 2xl:text-[10.5px] font-bold tracking-widest transition-all uppercase whitespace-nowrap font-grandstander ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
-                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={6} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
+              <div key={link.name} className={`group/nav py-6 ${link.dropdown ? 'relative' : ''}`} onMouseEnter={() => { setActiveMenu(link.name); if(link.name === 'ALL CATEGORIES') setActiveMasterCat('Musical Toys'); }} onMouseLeave={() => setActiveMenu(null)}>
+                <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-0.5 xl:px-1 2xl:px-1.5 text-[10px] xl:text-[11px] 2xl:text-[12.5px] font-bold tracking-widest transition-all uppercase whitespace-nowrap font-grandstander ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
+                  {link.name} {(link.mega || link.dropdown) && <ChevronDown size={7} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
                 </Link>
                 <AnimatePresence>
                   {activeMenu === link.name && link.mega && (
@@ -672,26 +658,12 @@ export function VisionHeader() {
                       <span>{user ? 'My Account' : 'Log in'}</span>
                     </Link>
                   </div>
-
                   <div className="px-6 py-5 border-b border-[#333]/5 flex items-center justify-between gap-2 overflow-hidden">
-                    <div className="relative">
-                      <button onClick={() => setCountryDropdown(!countryDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider">
-                        <span className="flex items-center justify-center w-5 h-4 bg-[#333]/10 rounded-sm text-[8px]">{selectedCountry.code}</span>
-                        <span className="whitespace-nowrap truncate max-w-[80px]">{selectedCountry.name}</span>
-                        <ChevronDown size={12} className="opacity-40" />
-                      </button>
-                      <AnimatePresence>
-                          {countryDropdown && (
-                              <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute bottom-full left-0 mb-2 w-48 bg-white shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
-                                  {countries.map(c => (
-                                      <button key={c.code} onClick={()=>{setSelectedCountry(c); setCountryDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-[#FDF4E6] flex items-center justify-between ${selectedCountry.code === c.code ? 'text-[#E84949]' : 'text-gray-700'}`}>
-                                          {c.name}
-                                      </button>
-                                  ))}
-                              </motion.div>
-                          )}
-                      </AnimatePresence>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#333]/5 rounded-lg border border-[#333]/10">
+                      <span className="flex items-center justify-center w-5 h-4 bg-[#FF4E50]/10 rounded-sm text-[9px] font-black text-[#FF4E50]">IN</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-[#333]">India</span>
                     </div>
+
                     
                     <div className="relative">
                       <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider">

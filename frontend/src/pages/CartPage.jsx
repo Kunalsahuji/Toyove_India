@@ -71,7 +71,7 @@ export function CartPage() {
                        <td className="p-6 border-r border-dashed border-[#333]/20">
                           <div className="space-y-1">
                              <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[18px] tracking-tight">{item.title}</Link>
-                             <p className="text-[16px] font-bold text-[#E84949]">${item.price.toFixed(2)}</p>
+                             <p className="text-[16px] font-bold text-[#E84949]">₹{item.price.toFixed(2)}</p>
                              <p className="text-[12px] text-gray-400 font-bold uppercase tracking-widest">SKU: {item.sku || 'N/A'}</p>
                           </div>
                        </td>
@@ -83,7 +83,7 @@ export function CartPage() {
                           </div>
                        </td>
                        <td className="p-6 text-right">
-                          <span className="font-grandstander font-bold text-[20px] text-[#333] tracking-tighter">${(item.price * item.qty).toFixed(2)}</span>
+                          <span className="font-grandstander font-bold text-[20px] text-[#333] tracking-tighter">₹{(item.price * item.qty).toFixed(2)}</span>
                        </td>
                     </tr>
                  ))}
@@ -106,7 +106,7 @@ export function CartPage() {
               <div className="text-right space-y-2">
                  <div className="flex items-center justify-end gap-6">
                     <span className="text-[16px] font-bold text-[#333]/60 uppercase tracking-widest">Estimated total:</span>
-                    <span className="text-3xl font-grandstander font-bold text-[#333] tracking-tighter">${subtotal.toFixed(2)} USD</span>
+                    <span className="text-3xl font-grandstander font-bold text-[#333] tracking-tighter">₹{subtotal.toFixed(2)} INR</span>
                  </div>
                  <p className="text-[12px] text-gray-400 font-medium italic">Taxes, discounts and shipping calculated at checkout</p>
               </div>

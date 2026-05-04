@@ -168,7 +168,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
                       className="whitespace-nowrap inline-block text-[11px] font-bold text-[#333]/40 uppercase tracking-[1.5px] py-1"
                     >
-                      All charges are applied in current currency United States (USD $) &nbsp; &bull; &nbsp; Global Express Delivery &nbsp; &bull; &nbsp; All charges are applied in current currency United States (USD $) &nbsp; &bull; &nbsp; Fast Worldwide Shipping
+                      All charges are applied in Indian Rupees (INR ₹) &nbsp; &bull; &nbsp; Pan India Express Delivery &nbsp; &bull; &nbsp; All charges are applied in Indian Rupees (INR ₹) &nbsp; &bull; &nbsp; Fast Pan India Shipping
                     </motion.div>
                   </div>
 
