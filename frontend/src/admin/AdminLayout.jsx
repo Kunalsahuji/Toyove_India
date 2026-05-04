@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, Users, Package, ShoppingCart, 
   Settings, LogOut, Menu, X, Bell, Search, 
-  ChevronRight, CircleUser, Wallet, PackageOpen
+  ChevronRight, CircleUser, Wallet, Tags, Percent, Megaphone, MessageSquare, Truck, Activity
 } from 'lucide-react'
 
 // --- Skeleton Component for Seamless Loading ---
@@ -63,8 +63,14 @@ export function AdminLayout() {
     { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/admin/users', label: 'Users Hub', icon: <Users size={20} /> },
     { path: '/admin/products', label: 'Toy Catalog', icon: <Package size={20} /> },
+    { path: '/admin/categories', label: 'Categories', icon: <Tags size={20} /> },
+    { path: '/admin/coupons', label: 'Coupons', icon: <Percent size={20} /> },
     { path: '/admin/orders', label: 'Order Command', icon: <ShoppingCart size={20} /> },
     { path: '/admin/finance', label: 'Financial Hub', icon: <Wallet size={20} /> },
+    { path: '/admin/content', label: 'Storefront', icon: <Megaphone size={20} /> },
+    { path: '/admin/public-activity', label: 'Live Popups', icon: <Activity size={20} /> },
+    { path: '/admin/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
+    { path: '/admin/shipping', label: 'Shipping', icon: <Truck size={20} /> },
     { path: '/admin/settings', label: 'Settings', icon: <Settings size={20} /> },
   ]
 

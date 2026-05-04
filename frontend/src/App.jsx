@@ -47,12 +47,18 @@ const AdminUsers = React.lazy(() => import('./admin/pages/AdminUsers').then(m =>
 const AdminUserDetail = React.lazy(() => import('./admin/pages/AdminUserDetail').then(m => ({ default: m.AdminUserDetail })))
 const AdminProducts = React.lazy(() => import('./admin/pages/AdminProducts').then(m => ({ default: m.AdminProducts })))
 const AdminProductDetail = React.lazy(() => import('./admin/pages/AdminProductDetail').then(m => ({ default: m.AdminProductDetail })))
+const AdminCategories = React.lazy(() => import('./admin/pages/AdminCategories').then(m => ({ default: m.AdminCategories })))
+const AdminCoupons = React.lazy(() => import('./admin/pages/AdminCoupons').then(m => ({ default: m.AdminCoupons })))
+const AdminContent = React.lazy(() => import('./admin/pages/AdminContent').then(m => ({ default: m.AdminContent })))
 const AdminOrders = React.lazy(() => import('./admin/pages/AdminOrders').then(m => ({ default: m.AdminOrders })))
 const AdminOrderDetail = React.lazy(() => import('./admin/pages/AdminOrderDetail').then(m => ({ default: m.AdminOrderDetail })))
 const AdminTransactions = React.lazy(() => import('./admin/pages/AdminTransactions').then(m => ({ default: m.AdminTransactions })))
 const AdminFinance = React.lazy(() => import('./admin/pages/AdminFinance').then(m => ({ default: m.AdminFinance })))
 const AdminSettings = React.lazy(() => import('./admin/pages/AdminSettings').then(m => ({ default: m.AdminSettings })))
 const AdminNotifications = React.lazy(() => import('./admin/pages/AdminNotifications').then(m => ({ default: m.AdminNotifications })))
+const AdminPublicActivity = React.lazy(() => import('./admin/pages/AdminPublicActivity').then(m => ({ default: m.AdminPublicActivity })))
+const AdminMessages = React.lazy(() => import('./admin/pages/AdminMessages').then(m => ({ default: m.AdminMessages })))
+const AdminShipping = React.lazy(() => import('./admin/pages/AdminShipping').then(m => ({ default: m.AdminShipping })))
 const AdminTransactionDetail = React.lazy(() => import('./admin/pages/AdminTransactionDetail').then(m => ({ default: m.AdminTransactionDetail })))
 const AdminReports = React.lazy(() => import('./admin/pages/AdminReports').then(m => ({ default: m.AdminReports })))
 const AdminSystemLogs = React.lazy(() => import('./admin/pages/AdminSystemLogs').then(m => ({ default: m.AdminSystemLogs })))
@@ -102,11 +108,17 @@ function AppContent() {
               <Route path="users/:id" element={<AdminUserDetail />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="products/:id" element={<AdminProductDetail />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="coupons" element={<AdminCoupons />} />
+              <Route path="content" element={<AdminContent />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
               <Route path="finance" element={<AdminFinance />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="notifications" element={<AdminNotifications />} />
+              <Route path="public-activity" element={<AdminPublicActivity />} />
+              <Route path="messages" element={<AdminMessages />} />
+              <Route path="shipping" element={<AdminShipping />} />
               <Route path="transactions" element={<AdminTransactions />} />
               <Route path="transactions/:id" element={<AdminTransactionDetail />} />
               <Route path="reports" element={<AdminReports />} />
