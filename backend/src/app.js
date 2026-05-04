@@ -38,8 +38,16 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-// Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+// Data sanitization against NoSQL query injection.
+// express-mongo-sanitize assigns req.query, which is read-only in Express 5.
+app.use((req, res, next) => {
+  ['body', 'params', 'query'].forEach((key) => {
+    if (req[key] && typeof req[key] === 'object') {
+      mongoSanitize.sanitize(req[key]);
+    }
+  });
+  next();
+});
 
 // Logging
 if (env.NODE_ENV === 'development') {
