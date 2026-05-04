@@ -2,25 +2,70 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import mongoSanitize from 'express-mongo-sanitize';
+
+import env from './config/env.js';
+import { requestId } from './middlewares/requestId.js';
+import { apiLimiter } from './middlewares/rateLimiter.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFound } from './middlewares/notFound.js';
+import apiRoutes from './routes/index.js';
 
 const app = express();
 
-// Security Middlewares
+// Global Middlewares
+app.use(requestId);
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin in development/test for tools like curl/Postman
+    if (!origin && ['development', 'test'].includes(env.NODE_ENV)) {
+      return callback(null, true);
+    }
+    
+    if (env.ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 
-// Body parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body parsing
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
 
 // Logging
-if (process.env.NODE_ENV === 'development') {
+if (env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Basic Route
+// API Routes with Rate Limiting
+app.use('/api', apiLimiter, apiRoutes);
+
+// Root route for API metadata
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.status(200).json({
+    success: true,
+    message: 'Toyovo India API',
+    requestId: req.id,
+    meta: {
+      version: '1.0.0',
+      status: 'active',
+      apiBase: '/api',
+      health: '/api/health'
+    }
+  });
 });
+
+// Error Handling
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
