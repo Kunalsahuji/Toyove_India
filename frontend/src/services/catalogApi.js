@@ -16,6 +16,7 @@ export const normalizeProduct = (product) => ({
   name: product.name || product.title,
   img: getImage(product),
   hoverImg: product.images?.[1]?.url || getImage(product),
+  categoryId: product.category?._id || product.categoryId || '',
   category: product.category?.slug || product.category || '',
   categoryName: product.category?.name || '',
   rating: product.ratingAverage || product.rating || 0,

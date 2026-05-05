@@ -1,45 +1,97 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Search, Filter, MoreVertical, PackageOpen, Plus, Tag, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react'
+import { Search, Filter, PackageOpen, Plus, Tag, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
+import { deleteAdminProduct, getAdminCategories, getAdminProducts } from '../../services/adminCatalogApi'
 
 export function AdminProducts() {
   const navigate = useNavigate()
-  const { success } = useToast()
+  const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('All')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [categories, setCategories] = useState([])
+  const [meta, setMeta] = useState({ totalPages: 1, total: 0 })
+  const [error, setError] = useState('')
   
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 4
-
-  const initialProducts = [
-    { id: 'PRD-101', title: 'Playbox The Builder Wooden Toys', price: '$45.00', stock: 120, category: 'Wooden Toys', status: 'Active', img: 'https://placehold.co/100x100/FDF4E6/6651A4?text=Toy+1' },
-    { id: 'PRD-102', title: 'Shop & Glow Toy Cart Orange Car', price: '$89.00', stock: 15, category: 'Cars', status: 'Low Stock', img: 'https://placehold.co/100x100/FDF4E6/F1641E?text=Toy+2' },
-    { id: 'PRD-103', title: 'Fun And Educational Toy For Babies', price: '$35.50', stock: 0, category: 'Educational', status: 'Out of Stock', img: 'https://placehold.co/100x100/FDF4E6/E8312A?text=Toy+3' },
-    { id: 'PRD-104', title: 'Plan Toys Pull-Along Musical Bear', price: '$55.00', stock: 85, category: 'Musical', status: 'Active', img: 'https://placehold.co/100x100/FDF4E6/6651A4?text=Toy+4' },
-    { id: 'PRD-105', title: 'Classic Rainbow Stacker', price: '$25.00', stock: 200, category: 'Educational', status: 'Active', img: 'https://placehold.co/100x100/FDF4E6/F1641E?text=Toy+5' },
-  ]
+  const itemsPerPage = 8
 
   const [products, setProducts] = useState([])
 
   useEffect(() => {
+    let isMounted = true
+    const loadCategories = async () => {
+      try {
+        const data = await getAdminCategories()
+        if (isMounted) setCategories(data.filter(category => category.isActive && !category.parentCategory))
+      } catch (err) {
+        console.warn('Admin categories unavailable:', err.message)
+      }
+    }
+    loadCategories()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
     setLoading(true)
-    const timer = setTimeout(() => {
-      let filtered = initialProducts.filter(p => 
-        (categoryFilter === 'All' || p.category === categoryFilter) &&
-        p.title.toLowerCase().includes(search.toLowerCase())
-      )
-      setProducts(filtered)
-      setCurrentPage(1)
-      setLoading(false)
-    }, 800)
-    return () => clearTimeout(timer)
+    setError('')
+    const timer = setTimeout(async () => {
+      try {
+        const payload = await getAdminProducts({
+          page: currentPage,
+          limit: itemsPerPage,
+          search: search.trim(),
+          category: categoryFilter,
+        })
+        if (!isMounted) return
+        setProducts(payload.products)
+        setMeta(payload.meta)
+      } catch (err) {
+        if (!isMounted) return
+        setProducts([])
+        setMeta({ totalPages: 1, total: 0 })
+        setError(err.message || 'Products could not be loaded')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }, 250)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [search, categoryFilter, currentPage])
+
+  useEffect(() => {
+    setCurrentPage(1)
   }, [search, categoryFilter])
 
-  const totalPages = Math.ceil(products.length / itemsPerPage)
-  const currentProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = meta.totalPages || 1
+  const currentProducts = products
+
+  const getProductStatus = (product) => {
+    if (product.status !== 'active') return product.status || 'draft'
+    if (product.stock <= 0) return 'out of stock'
+    if (product.stock <= (product.lowStockThreshold || 10)) return 'low stock'
+    return 'active'
+  }
+
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Are you sure you want to archive ${product.name}?`)) return
+
+    try {
+      await deleteAdminProduct(product._id)
+      setProducts(prev => prev.filter(item => item._id !== product._id))
+      success(`${product.name} archived.`)
+    } catch (err) {
+      showError(err.message || 'Product archive failed')
+    }
+  }
 
   return (
     <div className="shell space-y-6 pb-10">
@@ -74,11 +126,10 @@ export function AdminProducts() {
               value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full h-11 pl-9 pr-6 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#F1641E]/30 text-[10px] font-bold text-gray-600 uppercase tracking-widest appearance-none cursor-pointer transition-all"
             >
-              <option value="All">All Categories</option>
-              <option value="Wooden Toys">Wooden Toys</option>
-              <option value="Cars">Cars</option>
-              <option value="Educational">Educational</option>
-              <option value="Musical">Musical</option>
+              <option value="">All Categories</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.slug}>{category.name}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -99,6 +150,11 @@ export function AdminProducts() {
             </div>
           ))}
         </div>
+      ) : error ? (
+        <div className="bg-white rounded-[32px] py-20 text-center border border-black/[0.03]">
+          <PackageOpen size={48} className="mx-auto text-gray-200 mb-4" />
+          <p className="text-[#E8312A] font-bold text-sm">{error}</p>
+        </div>
       ) : currentProducts.length === 0 ? (
         <div className="bg-white rounded-[32px] py-32 text-center border border-black/[0.03]">
           <PackageOpen size={48} className="mx-auto text-gray-200 mb-4" />
@@ -109,19 +165,19 @@ export function AdminProducts() {
           {currentProducts.map((product, i) => (
             <motion.div 
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              key={product.id} 
-              onClick={() => navigate(`/admin/products/${product.id}`)}
+              key={product._id || product.id} 
+              onClick={() => navigate(`/admin/products/${product._id}`)}
               className="bg-white p-4 rounded-[32px] border border-black/[0.03] shadow-sm hover:shadow-xl transition-all group cursor-pointer"
             >
               <div className="relative w-full aspect-square bg-[#FDF4E6] rounded-[24px] mb-4 overflow-hidden">
-                <img src={product.img} alt={product.title} className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                <img src={product.img} alt={product.name} className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
                 
                 <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-600 shadow-sm flex items-center gap-1">
-                  <Tag size={10} /> {product.category}
+                  <Tag size={10} /> {product.categoryName || product.category}
                 </div>
 
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-mono font-bold text-gray-500 shadow-sm">
-                  {product.id}
+                  {(product._id || product.id || '').slice(-6).toUpperCase()}
                 </div>
 
                 {/* Hover Actions */}
@@ -129,7 +185,7 @@ export function AdminProducts() {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/admin/products/${product.id}`);
+                      navigate(`/admin/products/${product._id}`);
                     }}
                     className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#6651A4] hover:bg-[#6651A4] hover:text-white transition-all shadow-lg active:scale-95"
                   >
@@ -138,9 +194,7 @@ export function AdminProducts() {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (window.confirm(`Are you sure you want to delete ${product.title}?`)) {
-                        success(`${product.title} removed from catalog.`);
-                      }
+                      handleDelete(product);
                     }}
                     className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#E8312A] hover:bg-[#E8312A] hover:text-white transition-all shadow-lg active:scale-95"
                   >
@@ -150,16 +204,16 @@ export function AdminProducts() {
               </div>
 
               <div className="px-2">
-                <h3 className="text-[14px] font-bold text-gray-800 line-clamp-1 mb-1">{product.title}</h3>
-                <p className="text-2xl font-grandstander font-bold text-[#F1641E] mb-4">{product.price}</p>
+                <h3 className="text-[14px] font-bold text-gray-800 line-clamp-1 mb-1">{product.name}</h3>
+                <p className="text-2xl font-grandstander font-bold text-[#F1641E] mb-4">₹{Number(product.price || 0).toFixed(0)}</p>
                 
                 <div className="flex justify-between items-center border-t border-gray-100 pt-4">
                   <span className="text-[11px] font-bold text-gray-500">Stock: {product.stock}</span>
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest
-                    ${product.status === 'Active' ? 'bg-green-50 text-green-600' : 
-                      product.status === 'Low Stock' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'}`}
+                    ${getProductStatus(product) === 'active' ? 'bg-green-50 text-green-600' : 
+                      getProductStatus(product) === 'low stock' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'}`}
                   >
-                    {product.status}
+                    {getProductStatus(product)}
                   </span>
                 </div>
               </div>
@@ -169,7 +223,7 @@ export function AdminProducts() {
       )}
 
       {/* Pagination */}
-      {!loading && products.length > 0 && (
+      {!loading && !error && products.length > 0 && (
         <div className="flex items-center justify-center gap-4 mt-8">
           <button 
             disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}
