@@ -2,21 +2,45 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, Heart, Repeat, LayoutGrid } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { products } from '../utils/ProductData'
+import { getProducts } from '../services/catalogApi'
 
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
   const [searchTerm, setSearchTerm] = useState(query)
-  
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(query.toLowerCase()) || 
-    p.category.toLowerCase().includes(query.toLowerCase())
-  )
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     window.scrollTo(0, 0)
     setSearchTerm(query)
+
+    let isMounted = true
+    const loadResults = async () => {
+      if (!query) {
+        setFilteredProducts([])
+        return
+      }
+
+      setIsLoading(true)
+      setError('')
+      try {
+        const payload = await getProducts({ search: query, limit: 24, sort: 'relevance' })
+        if (isMounted) setFilteredProducts(payload.products)
+      } catch (err) {
+        if (!isMounted) return
+        setFilteredProducts([])
+        setError(err.message || 'Search failed')
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    loadResults()
+    return () => {
+      isMounted = false
+    }
   }, [query])
 
   const handleSearch = (e) => {
@@ -47,7 +71,17 @@ export function SearchPage() {
           </form>
         </div>
 
-        {query && filteredProducts.length > 0 ? (
+        {query && isLoading ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="aspect-square rounded-[24px] bg-[#F9EAD3] border-[1.6px] border-dashed border-[#333]/10 animate-pulse" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="rounded-[32px] border-[1.6px] border-dashed border-[#E84949]/30 bg-[#F9EAD3] p-10 text-center text-[#E84949] font-bold">
+            {error}
+          </div>
+        ) : query && filteredProducts.length > 0 ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
             {filteredProducts.map((p, i) => (
               <motion.div
@@ -57,7 +91,7 @@ export function SearchPage() {
                 transition={{ delay: i * 0.1 }}
                 className="group relative flex flex-col"
               >
-                <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} className="dashed-card relative overflow-hidden flex items-center justify-center bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-2 aspect-square mb-4">
+                <Link to={`/product/${p.id}`} className="dashed-card relative overflow-hidden flex items-center justify-center bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-2 aspect-square mb-4">
                   <div className="absolute top-3 -right-12 z-40 flex flex-col gap-2 group-hover:right-3 transition-all duration-500 ease-out opacity-0 group-hover:opacity-100">
                     <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><ShoppingCart size={15} /></button>
                     <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><Heart size={15} /></button>
@@ -67,7 +101,7 @@ export function SearchPage() {
                 </Link>
 
                 <div className="text-center">
-                  <Link to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`}>
+                  <Link to={`/product/${p.id}`}>
                     <h3 className="font-grandstander text-[14px] md:text-[17px] font-bold text-[#333] group-hover:text-[#E84949] transition-colors leading-tight tracking-tight capitalize">{p.name}</h3>
                   </Link>
                   <div className="flex items-center justify-center gap-3 mt-1">

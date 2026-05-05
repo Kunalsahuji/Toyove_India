@@ -1,12 +1,33 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+const normalizeOrigin = (url) => url.trim().replace(/\/+$/, '');
+
+const defaultDevOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://127.0.0.1:3000',
+];
+
+const configuredOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
 const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: process.env.PORT || 5000,
   MONGO_URI: process.env.MONGO_URI,
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
-  ALLOWED_ORIGINS: (process.env.CLIENT_URL || 'http://localhost:5173').split(',').map(url => url.trim()),
+  ALLOWED_ORIGINS: [
+    ...new Set([
+      ...configuredOrigins,
+      ...((process.env.NODE_ENV || 'development') === 'development' ? defaultDevOrigins : []),
+    ]),
+  ],
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || '15m',

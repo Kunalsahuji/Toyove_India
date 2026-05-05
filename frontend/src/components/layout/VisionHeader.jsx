@@ -31,6 +31,7 @@ const PtIcon = () => (
 )
 
 import { countries, languages, promoMessages, mainNavLinks, categoryData } from '../../data/navigationData'
+import { getCategoryTree, getNavbarCategories } from '../../services/catalogApi'
 
 const C = '#FF4E50'  
 import logo from '../../assets/toyovo.webp'
@@ -45,6 +46,8 @@ export function VisionHeader() {
   
   const [activeMasterCat, setActiveMasterCat] = useState('Musical Toys')
   const [activeMenu, setActiveMenu] = useState(null)
+  const [navLinks, setNavLinks] = useState(mainNavLinks)
+  const [megaCategoryData, setMegaCategoryData] = useState(categoryData)
   const [profileDropdown, setProfileDropdown] = useState(false)
   const [langDropdown, setLangDropdown] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
@@ -57,6 +60,62 @@ export function VisionHeader() {
   const location = useLocation()
   const navigate = useNavigate()
   const searchRef = useRef(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const buildDynamicNav = async () => {
+      try {
+        const [navbarPayload, tree] = await Promise.all([
+          getNavbarCategories(),
+          getCategoryTree(),
+        ])
+
+        if (!isMounted) return
+
+        const treeData = {}
+        tree.forEach(category => {
+          treeData[category.name] = {
+            content: [{
+              title: 'SHOP BY TYPE',
+              items: category.children?.length ? category.children.map(child => child.name) : [category.name],
+            }],
+            banner: category.bannerImage?.url,
+          }
+        })
+
+        const navbarCategories = (navbarPayload.categories || []).slice(0, 7)
+        const dynamicLinks = [
+          { name: 'Home', href: '/', hideOnDesktop: true },
+          {
+            name: 'ALL CATEGORIES',
+            href: '/all-categories',
+            mega: {
+              type: 'master',
+              sidebar: tree.map(category => ({ name: category.name, id: category.slug })),
+            },
+          },
+          ...navbarCategories.map(category => ({
+            name: category.name.toUpperCase(),
+            href: `/collections/${category.slug}`,
+            mega: treeData[category.name] || { content: [{ title: 'SHOP BY TYPE', items: [category.name] }] },
+          })),
+          { name: 'Contact', href: '/contact', hideOnDesktop: true },
+        ]
+
+        setMegaCategoryData({ ...categoryData, ...treeData })
+        setNavLinks(dynamicLinks)
+        if (tree[0]?.name) setActiveMasterCat(tree[0].name)
+      } catch (error) {
+        console.warn('Falling back to static navigation data:', error.message)
+      }
+    }
+
+    buildDynamicNav()
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setIsPastHero(window.scrollY > 100)
@@ -279,7 +338,7 @@ export function VisionHeader() {
 
           {/* Desktop Navigation: Only visible on 1024px+, strictly follows Logo */}
           <nav className="hidden lg:flex items-center justify-center gap-0 xl:gap-0 2xl:gap-0.5 flex-grow h-full px-1 xl:px-1.5">
-            {mainNavLinks.filter(l => !l.hideOnDesktop).map(link => (
+            {navLinks.filter(l => !l.hideOnDesktop).map(link => (
               <div key={link.name} className={`group/nav py-6 ${link.dropdown ? 'relative' : ''}`} onMouseEnter={() => { setActiveMenu(link.name); if(link.name === 'ALL CATEGORIES') setActiveMasterCat('Musical Toys'); }} onMouseLeave={() => setActiveMenu(null)}>
                 <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-0.5 xl:px-1 2xl:px-1.5 text-[10px] xl:text-[11px] 2xl:text-[12.5px] font-bold tracking-widest transition-all uppercase whitespace-nowrap font-grandstander ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
                   {link.name} {(link.mega || link.dropdown) && <ChevronDown size={7} className={`${activeMenu === link.name ? 'rotate-180' : ''} transition-transform`} />}
@@ -329,7 +388,7 @@ export function VisionHeader() {
 
                             <div className="flex-1 p-8 xl:p-10 grid grid-cols-4 gap-8 overflow-y-auto custom-scrollbar">
                               <div className="col-span-3 grid grid-cols-3 gap-8 h-max">
-                                {(link.mega.type === 'master' ? (categoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => {
+                                {(link.mega.type === 'master' ? (megaCategoryData[activeMasterCat]?.content || []) : (Array.isArray(link.mega) ? link.mega : link.mega.content)).map((col, idx) => {
                                   let parentSlug = '';
                                   if (link.name === 'ALL CATEGORIES') {
                                     parentSlug = activeMasterCat?.toLowerCase().replaceAll(' ', '-');
@@ -403,10 +462,10 @@ export function VisionHeader() {
                               </div>
 
                               {/* Visual Banner (Optional) */}
-                              {(link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner) && (
+                              {(link.mega.type === 'master' ? megaCategoryData[activeMasterCat]?.banner : link.mega.banner) && (
                                 <div className="col-span-1 flex flex-col items-center justify-start pt-2">
                                   <div className="rounded-[35px] overflow-hidden aspect-[4/5] relative group/banner cursor-pointer shadow-2xl border-4 border-[#F9EAD3] transform hover:-translate-y-2 transition-all duration-700 w-full">
-                                      <img src={link.mega.type === 'master' ? categoryData[activeMasterCat]?.banner : link.mega.banner} alt={link.name} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" />
+                                      <img src={link.mega.type === 'master' ? megaCategoryData[activeMasterCat]?.banner : link.mega.banner} alt={link.name} className="w-full h-full object-cover group-hover/banner:scale-110 transition-transform duration-1000" />
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-6 flex flex-col justify-end">
                                         <span className="text-[#E84949] text-[9px] uppercase font-black tracking-[0.3em] mb-1">Featured</span>
                                         <h5 className="text-white font-grandstander text-[15px] font-black uppercase">Collection 2026</h5>
@@ -581,7 +640,7 @@ export function VisionHeader() {
                       </div>
                   )}
                   
-                  {mainNavLinks.map(link => (
+                  {navLinks.map(link => (
                     <div key={link.name}>
                       <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]/5">
                         <Link to={link.href} onClick={handleLinkClick} className={`text-[13px] font-bold tracking-widest uppercase transition-colors ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333]'}`}>{link.name}</Link>
@@ -599,7 +658,7 @@ export function VisionHeader() {
                                 {link.mega.sidebar.map(item => (
                                   <Link 
                                     key={item.id} 
-                                    to={`/collections/${item.name.toLowerCase().replaceAll(' ', '-')}`} 
+                                    to={`/collections/${item.id || item.name.toLowerCase().replaceAll(' ', '-')}`} 
                                     onClick={handleLinkClick} 
                                     className="flex items-center justify-between text-[13px] text-[#333] font-bold hover:text-[#E84949] transition-colors py-1"
                                   >

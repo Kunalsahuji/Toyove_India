@@ -1,35 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronDown, Check, X, ChevronRight } from 'lucide-react'
+import { Search, SlidersHorizontal, ChevronLeft, ChevronDown, Check, X, ChevronRight } from 'lucide-react'
 import { ProductCard } from '../components/ui/ProductCard'
-import { categoryData } from '../data/navigationData'
+import { getCategoryTree, getProducts, getTrendingProducts } from '../services/catalogApi'
 
-const categories = [
-  { id: 'musical', name: 'Musical Toys' },
-  { id: 'educational', name: 'Learning & Educational Toys' },
-  { id: 'soft', name: 'Soft Toys' },
-  { id: 'indoor', name: 'Indoor & Outdoor Play' },
-  { id: 'playgyms', name: 'Play Gyms & Playmats' },
-  { id: 'sports', name: 'Sports & Games' },
-  { id: 'role', name: 'Role & Pretend Play Toys' },
-  { id: 'blocks', name: 'Blocks & Construction Sets' },
-  { id: 'stacking', name: 'Stacking Toys' },
-  { id: 'puzzles', name: 'Kids Puzzles' },
-  { id: 'rattles', name: 'Baby Rattles' },
-  { id: 'vehicles', name: 'Toys Cars Trains & Vehicles' },
-  { id: 'dolls', name: 'Dolls & Dollhouses' },
-  { id: 'pushpull', name: 'Push & Pull Along Toys' },
-  { id: 'art', name: 'Art Crafts & Hobby Kits' },
-  { id: 'boardlinks', name: 'Board Games' },
-  { id: 'figures', name: 'Action Figures & Collectibles' },
-  { id: 'rc', name: 'Radio & Remote Control Toys' },
-  { id: 'bath', name: 'Bath Toys' },
-  { id: 'guns', name: 'Toys Guns & Weapons' },
-  { id: 'rideons', name: 'RIDE-ONS & SCOOTERS' },
-  { id: 'boardgames', name: 'BOARD GAMES' },
-  { id: 'homeplay', name: 'HOME PLAY ACTIVITIES' },
-]
+const fallbackCategories = [{ id: 'musical-toys', slug: 'musical-toys', name: 'Musical Toys' }]
 
 const SkeletonCard = () => (
   <div className="bg-transparent rounded-[30px] p-2 animate-pulse">
@@ -92,7 +68,7 @@ const FilterSection = ({ title, children, defaultOpen = true }) => {
   )
 }
 
-const FilterContent = ({ activeCategory, setActiveCategory, setIsFilterOpen, filters, toggleFilter, setFilters }) => (
+const FilterContent = ({ categories, activeCategory, setActiveCategory, setIsFilterOpen, filters, toggleFilter, setFilters }) => (
   <div className="space-y-1">
     <FilterSection title="Categories">
       <div className="space-y-1">
@@ -145,7 +121,13 @@ const FilterContent = ({ activeCategory, setActiveCategory, setIsFilterOpen, fil
 )
 
 export function AllCategoriesPage() {
-  const [activeCategory, setActiveCategory] = useState(categories[0])
+  const [categories, setCategories] = useState(fallbackCategories)
+  const [activeCategory, setActiveCategory] = useState(fallbackCategories[0])
+  const [products, setProducts] = useState([])
+  const [trendingProducts, setTrendingProducts] = useState([])
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1 })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
   const [innerSearch, setInnerSearch] = useState('')
   const [sortBy, setSortBy] = useState('relevance')
   const [currentPage, setCurrentPage] = useState(1)
@@ -166,30 +148,89 @@ export function AllCategoriesPage() {
     type: []
   })
 
-  const allProducts = useMemo(() => generateMockProducts(activeCategory.id, 150), [activeCategory.id])
+  const processedProducts = products
+  const totalPages = meta.totalPages || 1
+  const paginatedProducts = products
 
-  const processedProducts = useMemo(() => {
-    return allProducts.filter(p => {
-      const matchSearch = p.name.toLowerCase().includes(innerSearch.toLowerCase())
-      const matchAvailability = filters.availability.length === 0 || filters.availability.includes(p.availability)
-      const matchBrand = filters.brand.length === 0 || filters.brand.includes(p.brand)
-      const matchAge = filters.age.length === 0 || filters.age.includes(p.age)
-      const matchGender = filters.gender.length === 0 || filters.gender.includes(p.gender)
-      return matchSearch && matchAvailability && matchBrand && matchAge && matchGender
-    }).sort((a, b) => {
-      if (sortBy === 'price-asc') return a.price - b.price
-      if (sortBy === 'price-desc') return b.price - a.price
-      if (sortBy === 'alpha-asc') return a.name.localeCompare(b.name)
-      if (sortBy === 'alpha-desc') return b.name.localeCompare(a.name)
-      if (sortBy === 'newest') return new Date(b.date) - new Date(a.date)
-      if (sortBy === 'oldest') return new Date(a.date) - new Date(b.date)
-      if (sortBy === 'best-selling') return b.rating - a.rating
-      return 0
-    })
-  }, [allProducts, innerSearch, sortBy, filters])
+  useEffect(() => {
+    let isMounted = true
 
-  const totalPages = Math.ceil(processedProducts.length / itemsPerPage)
-  const paginatedProducts = processedProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    const loadCategories = async () => {
+      try {
+        const tree = await getCategoryTree()
+        const flattened = tree.flatMap(category => [
+          { id: category.slug, slug: category.slug, name: category.name },
+          ...(category.children || []).map(child => ({
+            id: child.slug,
+            slug: child.slug,
+            name: child.name,
+            parentSlug: category.slug,
+          })),
+        ])
+
+        if (!isMounted || flattened.length === 0) return
+        setCategories(flattened)
+        setActiveCategory(flattened[0])
+      } catch (err) {
+        console.warn('Category tree fallback used:', err.message)
+      }
+    }
+
+    const loadTrending = async () => {
+      try {
+        const data = await getTrendingProducts()
+        if (isMounted) setTrendingProducts(data)
+      } catch (err) {
+        console.warn('Trending products unavailable:', err.message)
+      }
+    }
+
+    loadCategories()
+    loadTrending()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+    const loadProducts = async () => {
+      setIsLoading(true)
+      setError('')
+      try {
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+          sort: sortBy,
+          search: innerSearch.trim(),
+          brand: filters.brand[0],
+          gender: filters.gender[0],
+          ageGroup: filters.age[0],
+          material: filters.material[0],
+        }
+        if (activeCategory?.parentSlug) params.subcategory = activeCategory.slug
+        else params.category = activeCategory?.slug
+
+        const payload = await getProducts(params)
+        if (!isMounted) return
+        setProducts(payload.products)
+        setMeta(payload.meta)
+      } catch (err) {
+        if (!isMounted) return
+        setProducts([])
+        setMeta({ total: 0, totalPages: 1 })
+        setError(err.message || 'Products could not be loaded')
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    const timer = setTimeout(loadProducts, 250)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [activeCategory, currentPage, filters.age, filters.brand, filters.gender, filters.material, innerSearch, sortBy])
 
   useEffect(() => {
     if (isFilterOpen) {
@@ -208,7 +249,7 @@ export function AllCategoriesPage() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [activeCategory])
+  }, [activeCategory, innerSearch, sortBy, filters])
 
   const toggleFilter = (key, value) => {
     setFilters(prev => ({
@@ -261,6 +302,7 @@ export function AllCategoriesPage() {
               </h3>
               <FilterContent 
                 activeCategory={activeCategory}
+                categories={categories}
                 setActiveCategory={setActiveCategory}
                 setIsFilterOpen={setIsFilterOpen}
                 filters={filters}
@@ -318,7 +360,7 @@ export function AllCategoriesPage() {
 
               {/* Right Aligned Count */}
               <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 text-[10px] md:text-[12px] font-black text-[#444] whitespace-nowrap shadow-sm">
-                {processedProducts.length} <span className="hidden sm:inline">products</span><span className="sm:hidden">pcs</span>
+                {meta.total || processedProducts.length} <span className="hidden sm:inline">products</span><span className="sm:hidden">pcs</span>
               </div>
             </div>
 
@@ -330,19 +372,36 @@ export function AllCategoriesPage() {
                 exit={{ opacity: 0, x: -15 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                <div className={`grid gap-6 md:gap-8 ${
-                  gridCols === 3 ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 
-                  gridCols === 2 ? 'grid-cols-2' : 
-                  'grid-cols-1'
-                }`}>
-                  {paginatedProducts.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                      <ProductCard p={p} i={i} isGridOne={gridCols === 1} />
-                    </motion.div>
-                  ))}
-                </div>
+                {error && (
+                  <div className="rounded-[24px] border-[1.5px] border-dashed border-[#E84949]/30 bg-[#F9EAD3] p-8 text-center text-[13px] font-bold text-[#E84949]">
+                    {error}
+                  </div>
+                )}
 
-                {totalPages > 1 && (
+                {!error && (
+                  <div className={`grid gap-6 md:gap-8 ${
+                    gridCols === 3 ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 
+                    gridCols === 2 ? 'grid-cols-2' : 
+                    'grid-cols-1'
+                  }`}>
+                    {isLoading ? (
+                      Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                    ) : paginatedProducts.length > 0 ? (
+                      paginatedProducts.map((p, i) => (
+                        <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                          <ProductCard p={p} i={i} isGridOne={gridCols === 1} />
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="col-span-full rounded-[30px] border-[1.5px] border-dashed border-black/10 bg-[#F9EAD3] p-12 text-center">
+                        <h3 className="text-2xl font-black uppercase text-[#444]">No products found</h3>
+                        <p className="mt-3 text-[13px] font-bold text-[#444]/60">Try another category or search term.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {!isLoading && totalPages > 1 && (
                   <div className="flex items-center justify-center gap-3 pt-12">
                     <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="w-12 h-12 rounded-2xl border-2 border-dashed border-black/10 flex items-center justify-center text-[#444] disabled:opacity-10 hover:border-[#E84949] transition-all">
                       <ChevronLeft size={20} />
@@ -370,7 +429,7 @@ export function AllCategoriesPage() {
               </div>
 
               <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar scroll-smooth">
-                {allProducts.slice(0, 10).map((p, i) => (
+                {trendingProducts.slice(0, 10).map((p, i) => (
                   <div
                     key={`trend-${p.id}`}
                     className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] xl:w-[calc(25%-18px)] snap-start shrink-0"
@@ -397,6 +456,7 @@ export function AllCategoriesPage() {
               <div className="flex-1">
                 <FilterContent 
                   activeCategory={activeCategory}
+                  categories={categories}
                   setActiveCategory={setActiveCategory}
                   setIsFilterOpen={setIsFilterOpen}
                   filters={filters}

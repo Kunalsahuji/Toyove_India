@@ -24,7 +24,8 @@ app.use(cors({
       return callback(null, true);
     }
     
-    if (env.ALLOWED_ORIGINS.includes(origin)) {
+    const normalizedOrigin = origin?.replace(/\/+$/, '');
+    if (env.ALLOWED_ORIGINS.includes(normalizedOrigin)) {
       return callback(null, true);
     }
     

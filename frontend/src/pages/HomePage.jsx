@@ -8,7 +8,6 @@ import { PromoBanners }       from '../components/sections/PromoBanners'
 import { SpecialProducts }    from '../components/sections/SpecialProducts'
 import { BlogSection }        from '../components/sections/BlogSection'
 import { BrandLogos }         from '../components/sections/BrandLogos'
-import { PurchaseNotification } from '../components/ui/PurchaseNotification'
 
 export function HomePage() {
   return (
@@ -23,8 +22,6 @@ export function HomePage() {
       <SpecialProducts />
       <BlogSection />
       <BrandLogos />
-      <PurchaseNotification />
     </div>
   )
 }
-

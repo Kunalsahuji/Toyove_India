@@ -16,6 +16,7 @@ const productImages = [
 ]
 
 import { ProductCard } from '../components/ui/ProductCard'
+import { getProductBySlug, getProducts } from '../services/catalogApi'
 
 const FAQItem = ({ question, answer, isOpen, onToggle }) => (
   <div className="border-b border-[#E5E5E5] py-6">
@@ -48,27 +49,66 @@ export function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState('Small')
   const [selectedColor, setSelectedColor] = useState('Red')
   const [isZoomed, setIsZoomed] = useState(false)
+  const [productState, setProductState] = useState(null)
+  const [relatedProducts, setRelatedProducts] = useState([])
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true)
+  const [productError, setProductError] = useState('')
 
   useEffect(() => {
+    let isMounted = true
     window.scrollTo(0, 0)
-    const timer = setTimeout(() => setShowToast(true), 3000)
+    setShowToast(false)
+    setIsLoadingProduct(true)
+    setProductError('')
+    setSelectedImg(0)
+
+    const loadProduct = async () => {
+      try {
+        const data = await getProductBySlug(title)
+        if (!isMounted) return
+        setProductState(data)
+
+        const relatedPayload = await getProducts({
+          category: data.category,
+          limit: 8,
+          sort: 'best-selling',
+        })
+        if (isMounted) {
+          setRelatedProducts(relatedPayload.products.filter(item => item.id !== data.id))
+        }
+      } catch (err) {
+        if (!isMounted) return
+        setProductState(null)
+        setRelatedProducts([])
+        setProductError(err.message || 'Product could not be loaded')
+      } finally {
+        if (isMounted) setIsLoadingProduct(false)
+      }
+    }
+
+    loadProduct()
     const handleScroll = () => setShowSticky(window.scrollY > 600)
     window.addEventListener('scroll', handleScroll)
     return () => {
-      clearTimeout(timer)
+      isMounted = false
       window.removeEventListener('scroll', handleScroll)
     }
   }, [title])
 
-  const product = {
+  const fallbackProduct = {
     id: title?.toLowerCase() || 'product-08',
     title: title?.replaceAll('-', ' ') || "KidsKraze Creations",
+    name: title?.replaceAll('-', ' ') || "KidsKraze Creations",
     price: 89.00,
     oldPrice: 129.00,
     img: productImages[0],
     sku: "Product-08",
     category: "Toys"
   }
+  const product = productState || fallbackProduct
+  const galleryImages = productState?.images?.length
+    ? productState.images.map(image => image.url).filter(Boolean)
+    : productImages
 
   const isWishlisted = wishlist.some(item => item.id === product.id)
 
@@ -104,24 +144,57 @@ export function ProductDetailPage() {
     navigate('/compare')
   }
 
-  const related = [
+  const fallbackRelated = [
     { id: 1, name: 'Planet Toy Explorer', price: 126, img: productImages[2], hoverImg: productImages[3] },
     { id: 2, name: 'WildHarvests Maker Toy', price: 150, img: productImages[4], hoverImg: productImages[5] },
-    { id: 3, name: 'Rainbow Stacker Set', price: 85, img: productImages[6], hoverImg: productImages[7] },
+    { id: 3, name: 'Rainbow Stacker Set', price: 85, img: productImages[6], hoverImg: productImages[0] },
     { id: 4, name: 'JoyfulJamboree Juniors', price: 89, img: productImages[1], hoverImg: productImages[0] },
     { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[1] },
     { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[4], hoverImg: productImages[3] },
     { id: 7, name: 'WildHarvests Maker', price: 110, img: productImages[5], hoverImg: productImages[6] },
-    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[7], hoverImg: productImages[0] }
+    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[6], hoverImg: productImages[0] }
   ]
+  const related = relatedProducts.length ? relatedProducts : fallbackRelated
 
   const recentlyViewed = [
     { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[1] },
     { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[4], hoverImg: productImages[3] },
     { id: 7, name: 'WildHarvests Maker', price: 110, img: productImages[5], hoverImg: productImages[6] },
-    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[7], hoverImg: productImages[0] },
+    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[6], hoverImg: productImages[0] },
     { id: 9, name: 'Joyful Juniors', price: 75, img: productImages[2], hoverImg: productImages[3] }
   ]
+
+  if (isLoadingProduct && !productState) {
+    return (
+      <div className="bg-[#FDF4E6] min-h-screen flex items-center justify-center px-6">
+        <div className="w-full max-w-4xl rounded-[36px] border-[1.5px] border-dashed border-black/10 bg-[#F9EAD3] p-8 md:p-12 animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="aspect-square rounded-[28px] bg-black/5" />
+            <div className="space-y-5">
+              <div className="h-5 rounded bg-black/5 w-1/3" />
+              <div className="h-12 rounded bg-black/5 w-3/4" />
+              <div className="h-8 rounded bg-black/5 w-1/2" />
+              <div className="h-28 rounded bg-black/5 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (productError && !productState) {
+    return (
+      <div className="bg-[#FDF4E6] min-h-screen flex items-center justify-center px-6 text-center">
+        <div className="max-w-xl rounded-[36px] border-[1.5px] border-dashed border-[#E84949]/30 bg-[#F9EAD3] p-10">
+          <h1 className="text-3xl font-black uppercase text-[#444]">Product not found</h1>
+          <p className="mt-4 text-[14px] font-bold text-[#444]/60">{productError}</p>
+          <Link to="/all-categories" className="mt-8 inline-flex h-12 items-center rounded-xl bg-[#E84949] px-8 text-[12px] font-black uppercase tracking-widest text-white">
+            Browse Products
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-[#FDF4E6] pb-8 overflow-x-hidden">
@@ -137,7 +210,7 @@ export function ProductDetailPage() {
             <button onClick={() => setIsZoomed(false)} className="absolute top-6 left-6 text-white p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors z-10 shadow-lg">
               <X size={24} />
             </button>
-            <img src={productImages[selectedImg]} alt="Zoomed" className="w-full h-auto max-h-[95vh] object-contain" />
+            <img src={galleryImages[selectedImg]} alt="Zoomed" className="w-full h-auto max-h-[95vh] object-contain" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -153,7 +226,7 @@ export function ProductDetailPage() {
           >
             <button onClick={() => setShowToast(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"><X size={14} /></button>
             <div className="w-14 h-14 rounded-xl overflow-hidden bg-white shrink-0 border-[1.2px] border-dashed border-[#333]/30">
-              <img src={productImages[1]} alt="" className="w-full h-full object-cover" />
+              <img src={galleryImages[1] || galleryImages[0]} alt="" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="text-[11px] text-[#666666]">Ishaan Purchased ! - From Bangalore</p>
@@ -217,7 +290,7 @@ export function ProductDetailPage() {
               {/* Desktop/Tablet 2-Column Grid */}
               <div className="hidden md:block absolute inset-0 overflow-y-auto [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full pr-3 pb-4">
                 <div className="grid grid-cols-2 gap-4">
-                  {productImages.map((img, i) => (
+                  {galleryImages.map((img, i) => (
                     <div key={i} className="aspect-square rounded-2xl overflow-hidden bg-[#FDF4E6] relative group">
                       <img src={img} alt="" className="w-full h-full object-cover" />
                       <button 
@@ -242,7 +315,7 @@ export function ProductDetailPage() {
                   }}
                   style={{ scrollBehavior: 'smooth' }}
                 >
-                  {productImages.map((img, i) => (
+                  {galleryImages.map((img, i) => (
                     <div key={i} className="w-full shrink-0 snap-center relative aspect-square rounded-2xl overflow-hidden bg-[#FDF4E6]">
                        <img src={img} alt="" className="w-full h-full object-cover" />
                        <button onClick={() => setIsZoomed(true)} className="absolute top-4 left-4 w-8 h-8  rounded-full flex items-center justify-center shadow-sm">
@@ -267,7 +340,7 @@ export function ProductDetailPage() {
                   </button>
                   
                   <div className="flex gap-2 overflow-x-auto scrollbar-hide px-6">
-                    {productImages.map((img, i) => (
+                    {galleryImages.map((img, i) => (
                       <button
                         key={i}
                         onClick={() => {
@@ -283,14 +356,14 @@ export function ProductDetailPage() {
                   </div>
 
                   <button 
-                    disabled={selectedImg === productImages.length - 1}
+                    disabled={selectedImg === galleryImages.length - 1}
                     onClick={() => {
-                      const newIdx = Math.min(productImages.length - 1, selectedImg + 1);
+                      const newIdx = Math.min(galleryImages.length - 1, selectedImg + 1);
                       setSelectedImg(newIdx);
                       const topGallery = document.getElementById('mobile-gallery-top');
                       if(topGallery) topGallery.scrollLeft = topGallery.offsetWidth * newIdx;
                     }} 
-                    className={`absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-sm z-10 shadow-sm transition-colors ${selectedImg === productImages.length - 1 ? 'bg-[#E5E5E5] text-white' : 'bg-[#E84949] text-white'}`}
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-sm z-10 shadow-sm transition-colors ${selectedImg === galleryImages.length - 1 ? 'bg-[#E5E5E5] text-white' : 'bg-[#E84949] text-white'}`}
                   >
                     <ChevronRight size={14} />
                   </button>

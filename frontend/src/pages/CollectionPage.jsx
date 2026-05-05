@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronDown, Check, X, ChevronRight } from 'lucide-react'
+import { Search, SlidersHorizontal, ChevronLeft, ChevronDown, Check, X, ChevronRight } from 'lucide-react'
 import { categoryData } from '../data/navigationData'
 import { ProductCard } from '../components/ui/ProductCard'
+import { getCategoryTree, getProducts } from '../services/catalogApi'
 
 const SkeletonCard = () => (
   <div className="bg-transparent rounded-[30px] p-2 animate-pulse">
@@ -69,6 +70,10 @@ export function CollectionPage() {
   const { category, subcategory } = useParams()
   const [innerSearch, setInnerSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [products, setProducts] = useState([])
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1 })
+  const [categoryMeta, setCategoryMeta] = useState(null)
+  const [error, setError] = useState('')
   const [sortBy, setSortBy] = useState('relevance')
   const [currentPage, setCurrentPage] = useState(1)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -90,31 +95,72 @@ export function CollectionPage() {
 
   const catKey = category?.toUpperCase().replaceAll('-', ' ')
   const currentCatData = categoryData[catKey] || categoryData['BOY FASHION']
-  const displayTitle = (subcategory || category || 'Collection').replaceAll('-', ' ')
-  const bannerImg = currentCatData?.banner
+  const displayTitle = categoryMeta?.name || (subcategory || category || 'Collection').replaceAll('-', ' ')
+  const bannerImg = categoryMeta?.bannerImage?.url || currentCatData?.banner || 'https://toykio.myshopify.com/cdn/shop/files/collection-01.jpg?v=1710995380&width=1600'
+  const processedProducts = products
+  const totalPages = meta.totalPages || 1
+  const paginatedProducts = products
 
-  const allProducts = useMemo(() => generateMockProducts(category, subcategory, 150), [category, subcategory])
+  useEffect(() => {
+    let isMounted = true
 
-  const processedProducts = useMemo(() => {
-    return allProducts.filter(p => {
-      const matchSearch = p.name.toLowerCase().includes(innerSearch.toLowerCase())
-      const matchAvailability = filters.availability.length === 0 || filters.availability.includes(p.availability)
-      const matchBrand = filters.brand.length === 0 || filters.brand.includes(p.brand)
-      return matchSearch && matchAvailability && matchBrand
-    }).sort((a, b) => {
-      if (sortBy === 'price-asc') return a.price - b.price
-      if (sortBy === 'price-desc') return b.price - a.price
-      if (sortBy === 'alpha-asc') return a.name.localeCompare(b.name)
-      if (sortBy === 'alpha-desc') return b.name.localeCompare(a.name)
-      if (sortBy === 'newest') return new Date(b.date) - new Date(a.date)
-      if (sortBy === 'oldest') return new Date(a.date) - new Date(b.date)
-      if (sortBy === 'best-selling') return b.rating - a.rating
-      return 0
-    })
-  }, [allProducts, innerSearch, sortBy, filters])
+    const loadCategoryMeta = async () => {
+      try {
+        const tree = await getCategoryTree()
+        const allCategories = tree.flatMap(item => [item, ...(item.children || [])])
+        const activeSlug = subcategory || category
+        const matched = allCategories.find(item => item.slug === activeSlug)
+        if (isMounted) setCategoryMeta(matched || null)
+      } catch (err) {
+        if (isMounted) setCategoryMeta(null)
+      }
+    }
 
-  const totalPages = Math.ceil(processedProducts.length / itemsPerPage)
-  const paginatedProducts = processedProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    loadCategoryMeta()
+    return () => {
+      isMounted = false
+    }
+  }, [category, subcategory])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadProducts = async () => {
+      setIsLoading(true)
+      setError('')
+      try {
+        const payload = await getProducts({
+          category,
+          subcategory,
+          page: currentPage,
+          limit: itemsPerPage,
+          sort: sortBy,
+          search: innerSearch.trim(),
+          brand: filters.brand[0],
+          gender: filters.gender[0],
+          ageGroup: filters.age[0],
+          material: filters.material[0],
+        })
+
+        if (!isMounted) return
+        setProducts(payload.products)
+        setMeta(payload.meta)
+      } catch (err) {
+        if (!isMounted) return
+        setProducts([])
+        setMeta({ total: 0, totalPages: 1 })
+        setError(err.message || 'Products could not be loaded')
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    const timer = setTimeout(loadProducts, 250)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [category, subcategory, currentPage, sortBy, innerSearch, filters.age, filters.brand, filters.gender, filters.material])
 
   useEffect(() => {
     if (isFilterOpen) {
@@ -133,11 +179,9 @@ export function CollectionPage() {
 
   useEffect(() => {
     setIsLoading(true)
-    const timer = setTimeout(() => setIsLoading(false), 800)
     window.scrollTo({ top: 0, behavior: 'smooth' })
     setCurrentPage(1)
-    return () => clearTimeout(timer)
-  }, [category, subcategory])
+  }, [category, subcategory, innerSearch, sortBy, filters])
 
   const toggleFilter = (key, value) => {
     setFilters(prev => ({
@@ -295,26 +339,39 @@ export function CollectionPage() {
 
               {/* Right Aligned Count - More compact on mobile */}
               <div className="bg-[#FDF4E6] px-3 md:px-6 py-2 md:py-3 rounded-xl border border-dashed border-black/5 text-[10px] md:text-[12px] font-black text-[#444] whitespace-nowrap shadow-sm">
-                {processedProducts.length} <span className="hidden sm:inline">products</span><span className="sm:hidden">pcs</span>
+                {meta.total || processedProducts.length} <span className="hidden sm:inline">products</span><span className="sm:hidden">pcs</span>
               </div>
             </div>
 
             {/* Product Grid */}
-            <div className={`grid gap-6 md:gap-8 ${
-              gridCols === 3 ? 'grid-cols-2 xl:grid-cols-3' : 
-              gridCols === 2 ? 'grid-cols-2' : 
-              'grid-cols-1'
-            }`}>
-              <AnimatePresence mode="popLayout">
-                {isLoading ? (
-                  Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                ) : (
-                  paginatedProducts.map((p, i) => (
-                    <ProductCard key={p.id} p={p} i={i} isGridOne={gridCols === 1} />
-                  ))
-                )}
-              </AnimatePresence>
-            </div>
+            {error && (
+              <div className="rounded-[24px] border-[1.5px] border-dashed border-[#E84949]/30 bg-[#F9EAD3] p-8 text-center text-[13px] font-bold text-[#E84949]">
+                {error}
+              </div>
+            )}
+
+            {!error && (
+              <div className={`grid gap-6 md:gap-8 ${
+                gridCols === 3 ? 'grid-cols-2 xl:grid-cols-3' : 
+                gridCols === 2 ? 'grid-cols-2' : 
+                'grid-cols-1'
+              }`}>
+                <AnimatePresence mode="popLayout">
+                  {isLoading ? (
+                    Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                  ) : paginatedProducts.length > 0 ? (
+                    paginatedProducts.map((p, i) => (
+                      <ProductCard key={p.id} p={p} i={i} isGridOne={gridCols === 1} />
+                    ))
+                  ) : (
+                    <div className="col-span-full rounded-[30px] border-[1.5px] border-dashed border-black/10 bg-[#F9EAD3] p-12 text-center">
+                      <h3 className="text-2xl font-black uppercase text-[#444]">No products found</h3>
+                      <p className="mt-3 text-[13px] font-bold text-[#444]/60">Try changing filters or search terms.</p>
+                    </div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
             {/* Pagination (Refined Responsive) */}
             {!isLoading && totalPages > 1 && (
