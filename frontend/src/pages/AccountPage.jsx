@@ -11,6 +11,7 @@ import {
   Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink, Building, Map, ChevronDown
 } from 'lucide-react'
 import { indianStates, commonCities, addressTypes } from '../utils/indiaData'
+import { getMyOrders } from '../services/orderApi'
 
 const upiLogos = {
   'Google Pay': (
@@ -182,7 +183,7 @@ const AddPaymentMethodModal = ({ isOpen, type, onComplete, onCancel }) => {
 
 export function AccountPage() {
   const { user, authLoading, logout, updateUser, addresses, addAddress, deleteAddress, updateAddress, setAsDefaultAddress } = useAuth()
-  const { paymentHistory, savedMethods, addSavedMethod, deleteSavedMethod, orders, cancelOrder } = usePayment()
+  const { paymentHistory, savedMethods, addSavedMethod, deleteSavedMethod } = usePayment()
   const { wishlist } = useCart()
   const navigate = useNavigate()
   const location = useLocation()
@@ -199,6 +200,8 @@ export function AccountPage() {
   const [showAddPayment, setShowAddPayment] = useState(false)
   const [paymentTypeToAdd, setPaymentTypeToAdd] = useState('bankAccounts')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [orders, setOrders] = useState([])
+  const [ordersLoading, setOrdersLoading] = useState(true)
 
   // Corporate Info based on Image
   const corporateInfo = {
@@ -226,6 +229,28 @@ export function AccountPage() {
     window.scrollTo(0, 0)
     if (!authLoading && !user) navigate('/login')
   }, [authLoading, user, navigate])
+
+  useEffect(() => {
+    if (!user) return
+
+    let isMounted = true
+    const loadOrders = async () => {
+      setOrdersLoading(true)
+      try {
+        const { orders: data } = await getMyOrders({ limit: 50 })
+        if (isMounted) setOrders(data)
+      } catch {
+        if (isMounted) setOrders([])
+      } finally {
+        if (isMounted) setOrdersLoading(false)
+      }
+    }
+
+    loadOrders()
+    return () => {
+      isMounted = false
+    }
+  }, [user])
 
   if (authLoading) return null
   if (!user) return null
@@ -285,7 +310,7 @@ export function AccountPage() {
                    <div className="flex justify-between items-start">
                       <div className="flex items-center gap-4">
                          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-[#6651A4] shadow-sm"><Box size={24}/></div>
-                         <div><h3 className="text-lg font-grandstander font-bold">Order #{selectedOrder.id}</h3><p className="text-[10px] text-gray-400 font-bold uppercase">{selectedOrder.date}</p></div>
+                         <div><h3 className="text-lg font-grandstander font-bold">Order #{selectedOrder.orderNumber}</h3><p className="text-[10px] text-gray-400 font-bold uppercase">{selectedOrder.date}</p></div>
                       </div>
                       <button onClick={()=>setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full"><X size={20}/></button>
                    </div>
@@ -293,13 +318,13 @@ export function AccountPage() {
                       {selectedOrder.items.map((item, i) => (
                         <div key={i} className="flex gap-4 p-3 bg-white/50 rounded-2xl border border-black/[0.03]">
                            <img src={item.img} className="w-14 h-14 rounded-xl object-cover shadow-sm" />
-                           <div><h4 className="text-[12px] font-bold line-clamp-1">{item.title}</h4><p className="text-[10px] text-gray-400 mt-1">${item.price} · Qty {item.qty}</p></div>
+                           <div><h4 className="text-[12px] font-bold line-clamp-1">{item.title}</h4><p className="text-[10px] text-gray-400 mt-1">₹{item.price.toFixed(2)} · Qty {item.qty}</p></div>
                         </div>
                       ))}
                    </div>
                    <div className="flex justify-between items-center p-5 bg-[#FAEAD3] rounded-2xl">
-                      <div><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Value</p><p className="text-2xl font-bold font-grandstander text-gray-700">${selectedOrder.total.toFixed(2)}</p></div>
-                      <div className="text-right"><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p><p className="text-[12px] font-bold text-green-500 uppercase tracking-widest">{selectedOrder.status}</p></div>
+                      <div><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Value</p><p className="text-2xl font-bold font-grandstander text-gray-700">₹{selectedOrder.total.toFixed(2)}</p></div>
+                      <div className="text-right"><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p><p className="text-[12px] font-bold text-green-500 uppercase tracking-widest">{selectedOrder.statusLabel}</p></div>
                    </div>
                 </div>
              </motion.div>
@@ -456,7 +481,9 @@ export function AccountPage() {
                {/* Other Tabs (Wallet, Orders, Profile, etc.) continue below */}
                {activeTab === 'orders' && (
                  <motion.div key="orders" initial={{opacity:0}} animate={{opacity:1}} className="space-y-0.5">
-                    {orders.length === 0 ? (
+                    {ordersLoading ? (
+                       <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">Loading Orders...</div>
+                    ) : orders.length === 0 ? (
                        <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">Empty Haul History</div>
                     ) : orders.map(order => (
                        <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-4 md:p-5 hover:bg-[#FAEAD3]/40 border-b border-black/[0.02] flex items-center justify-between cursor-pointer group transition-all">
@@ -468,10 +495,10 @@ export function AccountPage() {
                                    <Box size={20} className="text-[#6651A4] opacity-20"/>
                                 )}
                              </div>
-                             <div><p className="text-[13px] font-bold text-gray-700">Order #{order.id}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items</p></div>
+                             <div><p className="text-[13px] font-bold text-gray-700">Order #{order.orderNumber}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items</p></div>
                           </div>
                           <div className="text-right flex items-center gap-4 md:gap-6">
-                             <div><p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">${order.total.toFixed(2)}</p><p className={`text-[9px] font-bold uppercase ${order.status==='Cancelled'?'text-red-400':'text-green-500'}`}>{order.status}</p></div>
+                             <div><p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">₹{order.total.toFixed(2)}</p><p className={`text-[9px] font-bold uppercase ${order.status==='cancelled'?'text-red-400':'text-green-500'}`}>{order.statusLabel}</p></div>
                              <ChevronRight size={18} className="text-[#333]/40 group-hover:text-[#333] translate-x-0 group-hover:translate-x-1 transition-all"/>
                           </div>
                        </div>

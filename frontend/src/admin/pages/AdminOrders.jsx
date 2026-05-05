@@ -3,52 +3,62 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Search, Filter, MoreVertical, ShoppingBag, Eye, Calendar, MapPin, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
+import { getAdminOrders, updateAdminOrderStatus } from '../../services/orderApi'
 
 export function AdminOrders() {
   const navigate = useNavigate()
-  const { success } = useToast()
+  const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
-  
+  const [orders, setOrders] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 5
-
-  const initialOrders = [
-    { id: '#ORD-8001', customer: 'Emma Watson', date: 'Oct 24, 2026', total: '$145.00', items: 3, payment: 'Paid (UPI)', status: 'Pending', dest: 'Mumbai, MH' },
-    { id: '#ORD-8002', customer: 'Liam Smith', date: 'Oct 23, 2026', total: '$89.50', items: 1, payment: 'Paid (Card)', status: 'Processing', dest: 'Delhi, DL' },
-    { id: '#ORD-8003', customer: 'Olivia Brown', date: 'Oct 21, 2026', total: '$210.00', items: 5, payment: 'Paid (Wallet)', status: 'Shipped', dest: 'Bangalore, KA' },
-    { id: '#ORD-8004', customer: 'Noah Jones', date: 'Oct 20, 2026', total: '$45.00', items: 1, payment: 'Refunded', status: 'Cancelled', dest: 'Pune, MH' },
-    { id: '#ORD-8005', customer: 'Ava Garcia', date: 'Oct 18, 2026', total: '$320.00', items: 4, payment: 'Paid (NetBanking)', status: 'Delivered', dest: 'Chennai, TN' },
-    { id: '#ORD-8006', customer: 'William Miller', date: 'Oct 15, 2026', total: '$65.00', items: 2, payment: 'Paid (UPI)', status: 'Delivered', dest: 'Kolkata, WB' },
-  ]
-
-  const [orders, setOrders] = useState([])
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1 })
 
   useEffect(() => {
-    setLoading(true)
-    const timer = setTimeout(() => {
-      let filtered = initialOrders.filter(o => 
-        (statusFilter === 'All' || o.status === statusFilter) &&
-        (o.id.toLowerCase().includes(search.toLowerCase()) || o.customer.toLowerCase().includes(search.toLowerCase()))
-      )
-      setOrders(filtered)
-      setCurrentPage(1)
-      setLoading(false)
-    }, 800)
-    return () => clearTimeout(timer)
+    let isMounted = true
+    const loadOrders = async () => {
+      setLoading(true)
+      try {
+        const { orders: data, meta: responseMeta } = await getAdminOrders({
+          page: currentPage,
+          limit: itemsPerPage,
+          search,
+          status: statusFilter === 'All' ? '' : statusFilter.toLowerCase(),
+        })
+        if (!isMounted) return
+        setOrders(data)
+        setMeta(responseMeta)
+      } catch (err) {
+        if (isMounted) {
+          setOrders([])
+          showError(err.message || 'Orders could not be loaded')
+        }
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    loadOrders()
+    return () => {
+      isMounted = false
+    }
+  }, [currentPage, itemsPerPage, search, showError, statusFilter])
+
+  useEffect(() => {
+    setCurrentPage(1)
   }, [search, statusFilter])
 
-  const totalPages = Math.ceil(orders.length / itemsPerPage)
-  const currentOrders = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = meta.totalPages || 1
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'Pending': return 'bg-yellow-50 text-yellow-600 border-yellow-100'
-      case 'Processing': return 'bg-blue-50 text-blue-600 border-blue-100'
-      case 'Shipped': return 'bg-purple-50 text-[#6651A4] border-purple-100'
-      case 'Delivered': return 'bg-green-50 text-green-600 border-green-100'
-      case 'Cancelled': return 'bg-red-50 text-red-600 border-red-100'
+      case 'pending': return 'bg-yellow-50 text-yellow-600 border-yellow-100'
+      case 'processing': return 'bg-blue-50 text-blue-600 border-blue-100'
+      case 'shipped': return 'bg-purple-50 text-[#6651A4] border-purple-100'
+      case 'delivered': return 'bg-green-50 text-green-600 border-green-100'
+      case 'cancelled': return 'bg-red-50 text-red-600 border-red-100'
       default: return 'bg-gray-50 text-gray-600 border-gray-100'
     }
   }
@@ -113,7 +123,7 @@ export function AdminOrders() {
                     <td className="py-4 px-6"><div className="h-8 w-8 bg-gray-100 rounded-lg ml-auto animate-pulse"/></td>
                   </tr>
                 ))
-              ) : currentOrders.length === 0 ? (
+              ) : orders.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="py-20 text-center">
                     <ShoppingBag size={48} className="mx-auto text-gray-200 mb-4" />
@@ -121,43 +131,46 @@ export function AdminOrders() {
                   </td>
                 </tr>
               ) : (
-                currentOrders.map((order, i) => (
+                orders.map((order, i) => (
                   <motion.tr 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                     key={order.id} 
-                    onClick={() => navigate(`/admin/orders/${order.id.replace('#', '')}`)}
+                    onClick={() => navigate(`/admin/orders/${order.id}`)}
                     className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors group cursor-pointer"
                   >
                     <td className="py-4 px-6">
-                      <p className="text-[14px] font-bold text-[#6651A4] font-mono">{order.id}</p>
+                      <p className="text-[14px] font-bold text-[#6651A4] font-mono">#{order.orderNumber}</p>
                       <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1 mt-1"><Calendar size={10}/> {order.date}</p>
                     </td>
                     <td className="py-4 px-6">
-                      <p className="text-[13px] font-bold text-gray-800">{order.customer}</p>
-                      <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1 mt-1"><MapPin size={10}/> {order.dest}</p>
+                      <p className="text-[13px] font-bold text-gray-800">{order.customerName}</p>
+                      <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1 mt-1"><MapPin size={10}/> {order.destination}</p>
                     </td>
                     <td className="py-4 px-6">
-                      <p className="text-[15px] font-bold font-grandstander text-gray-800">{order.total} <span className="text-[10px] text-gray-400 font-sans ml-1">({order.items} items)</span></p>
-                      <p className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${order.payment.includes('Refunded') ? 'text-red-500' : 'text-green-500'}`}><CreditCard size={10}/> {order.payment}</p>
+                      <p className="text-[15px] font-bold font-grandstander text-gray-800">₹{order.total.toFixed(2)} <span className="text-[10px] text-gray-400 font-sans ml-1">({order.itemsCount} items)</span></p>
+                      <p className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${order.paymentStatus === 'refunded' ? 'text-red-500' : 'text-green-500'}`}><CreditCard size={10}/> {order.paymentStatusLabel} ({order.paymentMethodLabel})</p>
                     </td>
                     <td className="py-4 px-6 text-center">
                       <select 
                         value={order.status}
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const newStatus = e.target.value;
-                          const newOrders = [...orders];
-                          newOrders[i].status = newStatus;
-                          setOrders(newOrders);
-                          success(`Order ${order.id} status updated to ${newStatus}`);
+                          try {
+                            const updatedOrder = await updateAdminOrderStatus(order.id, { status: newStatus })
+                            setOrders((prev) => prev.map((item) => item.id === order.id ? { ...item, ...updatedOrder } : item))
+                            success(`Order ${order.orderNumber} moved to ${updatedOrder.statusLabel}.`);
+                          } catch (err) {
+                            showError(err.message || 'Order status update failed')
+                          }
                         }}
                         onClick={(e) => e.stopPropagation()}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border appearance-none outline-none cursor-pointer hover:shadow-md transition-all ${getStatusColor(order.status)}`}
                       >
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
                       </select>
                     </td>
                     <td className="py-4 px-6 text-right">
@@ -165,7 +178,7 @@ export function AdminOrders() {
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/admin/orders/${order.id.replace('#', '')}`);
+                            navigate(`/admin/orders/${order.id}`);
                           }}
                           className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#6651A4] bg-white border border-gray-100 hover:border-[#6651A4]/30 hover:bg-[#FAEAD3] rounded-lg transition-all shadow-sm"
                         >
@@ -174,7 +187,7 @@ export function AdminOrders() {
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/admin/orders/${order.id.replace('#', '')}`);
+                            navigate(`/admin/orders/${order.id}`);
                           }}
                           className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#6651A4] bg-white border border-gray-100 hover:border-[#6651A4]/30 hover:bg-[#FAEAD3] rounded-lg transition-all shadow-sm"
                         >
@@ -193,7 +206,7 @@ export function AdminOrders() {
         {!loading && orders.length > 0 && (
           <div className="p-4 border-t border-black/[0.03] flex items-center justify-between bg-[#FAEAD3]/10">
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-              Showing {(currentPage-1)*itemsPerPage + 1} to {Math.min(currentPage*itemsPerPage, orders.length)} of {orders.length}
+              Showing {(currentPage-1)*itemsPerPage + 1} to {Math.min(currentPage*itemsPerPage, meta.total || orders.length)} of {meta.total || orders.length}
             </p>
             <div className="flex gap-2">
               <button 

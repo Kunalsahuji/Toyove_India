@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext'
 import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
 import { validateCouponCode } from '../services/couponApi'
+import { createOrder } from '../services/orderApi'
 
 const countries = ["India"]
 import { indianStates, commonCities } from '../utils/indiaData'
@@ -169,7 +170,7 @@ const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }
 
 export function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useCart()
-  const { simulatePayment, addOrder } = usePayment()
+  const { simulatePayment } = usePayment()
   const { user, addresses } = useAuth()
   const navigate = useNavigate()
   
@@ -259,20 +260,48 @@ export function CheckoutPage() {
     const success = await simulatePayment(total, paymentMethod === 'upi' ? `UPI (${selectedUpi})` : paymentMethod === 'netbanking' ? 'NET BANKING' : 'CARD');
 
     if (success) {
-      const order = addOrder({
-        items: [...cartItems],
-        subtotal,
-        shipping: shippingCharge,
-        discount: discountAmount,
-        total,
-        paymentMethod: paymentMethod.toUpperCase(),
-        shippingAddress: { ...formData },
-        customerEmail: formData.email
-      });
-      
-      clearCart();
-      setIsProcessing(false);
-      navigate('/order-success', { state: { order } });
+      try {
+        const order = await createOrder({
+          customer: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+          },
+          shippingAddress: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            address: formData.address,
+            apartment: formData.apartment,
+            city: formData.city,
+            district: formData.district,
+            state: formData.state,
+            country: formData.country,
+            postalCode: formData.postalCode,
+            phone: formData.phone,
+          },
+          items: cartItems.map((item) => ({
+            productId: item._id || undefined,
+            slug: item.slug || item.id,
+            quantity: item.qty,
+          })),
+          shippingMethod,
+          paymentMethod,
+          couponCode: couponState?.coupon?.code || '',
+        })
+
+        sessionStorage.setItem('TOYOVOINDIA_last_order', JSON.stringify({
+          orderNumber: order.orderNumber,
+          email: order.customerEmail,
+        }))
+
+        clearCart();
+        setIsProcessing(false);
+        navigate('/order-success', { state: { order } });
+      } catch (error) {
+        setIsProcessing(false);
+        alert(error.message || 'Order could not be placed');
+      }
     } else {
       setIsProcessing(false);
       alert('Payment Failed');

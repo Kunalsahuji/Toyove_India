@@ -6,46 +6,67 @@ import {
   User, Mail, Phone, MapPin, Calendar, 
   ExternalLink, Printer, CheckCircle, Clock
 } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
+import { getAdminOrder, updateAdminOrderStatus } from '../../services/orderApi'
 
 export function AdminOrderDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { success, error: showError } = useToast()
   const [loading, setLoading] = useState(true)
-
-  // Mock data for the specific order
   const [order, setOrder] = useState(null)
+  const [status, setStatus] = useState('processing')
+  const [trackingNumber, setTrackingNumber] = useState('')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setOrder({
-        id: id || 'ORD-8001',
-        date: '2026-04-24 14:30',
-        status: 'Shipped',
-        total: '$145.00',
-        paymentMethod: 'Credit Card (Ending 4242)',
-        paymentStatus: 'Paid',
-        customer: {
-          name: 'Emma Watson',
-          email: 'emma@example.com',
-          phone: '+91 98765 43210',
-          address: '7th Floor, Unit 703, Mayagarden, Zirakpur, Punjab - 140603'
-        },
-        items: [
-          { id: 101, name: 'Eco-Friendly Wooden Train', price: '$45.00', qty: 2, total: '$90.00', img: '🚂' },
-          { id: 102, name: 'Smart Coding Robot', price: '$55.00', qty: 1, total: '$55.00', img: '🤖' }
-        ],
-        timeline: [
-          { status: 'Order Placed', time: '24 Apr, 14:30', desc: 'Order received by the system', done: true },
-          { status: 'Payment Verified', time: '24 Apr, 14:35', desc: 'Transaction TXN-9021 confirmed', done: true },
-          { status: 'Processing', time: '24 Apr, 16:20', desc: 'Items being packed at warehouse', done: true },
-          { status: 'Shipped', time: '25 Apr, 09:15', desc: 'Carrier: BlueDart - AWB: 88291022', done: true },
-          { status: 'Out for Delivery', time: 'Pending', desc: 'Package reaching local hub', done: false },
-        ]
-      })
-      setLoading(false)
-    }, 800)
+    let isMounted = true
+    const loadOrder = async () => {
+      setLoading(true)
+      try {
+        const data = await getAdminOrder(id)
+        if (!isMounted) return
+        setOrder(data)
+        setStatus(data.status)
+        setTrackingNumber(data.trackingNumber || '')
+      } catch (err) {
+        if (isMounted) {
+          showError(err.message || 'Order could not be loaded')
+          navigate('/admin/orders')
+        }
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    loadOrder()
+    return () => {
+      isMounted = false
+    }
   }, [id])
+
+  const timeline = order?.statusHistory?.map((entry) => ({
+    status: entry.status,
+    time: new Date(entry.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+    desc: entry.note || 'Status updated',
+    done: true,
+  })) || []
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const updatedOrder = await updateAdminOrderStatus(order.id, {
+        status,
+        trackingNumber,
+      })
+      setOrder(updatedOrder)
+      success(`Order ${updatedOrder.orderNumber} updated.`)
+    } catch (err) {
+      showError(err.message || 'Order update failed')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -68,9 +89,9 @@ export function AdminOrderDetail() {
           </button>
           <div>
             <h1 className="text-2xl md:text-3xl font-grandstander font-bold text-gray-800 flex flex-wrap items-center gap-3">
-              Order {order.id}
+              Order #{order.orderNumber}
               <span className={`px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-600`}>
-                {order.status}
+                {order.statusLabel}
               </span>
             </h1>
             <p className="text-gray-500 font-medium text-[12px] md:text-sm flex items-center gap-2 mt-1">
@@ -83,8 +104,8 @@ export function AdminOrderDetail() {
           <button className="h-10 md:h-12 px-5 bg-white border border-black/[0.05] text-gray-600 rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] shadow-sm hover:bg-gray-50 flex items-center gap-2 transition-all whitespace-nowrap">
             <Printer size={16} /> Print Invoice
           </button>
-          <button className="h-10 md:h-12 px-6 bg-[#6651A4] text-white rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] shadow-lg hover:bg-[#5a4892] flex items-center gap-2 transition-all whitespace-nowrap">
-            Update Status
+          <button onClick={handleSave} disabled={saving} className="h-10 md:h-12 px-6 bg-[#6651A4] text-white rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] shadow-lg hover:bg-[#5a4892] flex items-center gap-2 transition-all whitespace-nowrap disabled:opacity-60">
+            {saving ? 'Saving...' : 'Update Status'}
           </button>
         </div>
       </div>
@@ -101,16 +122,16 @@ export function AdminOrderDetail() {
               {order.items.map(item => (
                 <div key={item.id} className="flex items-center justify-between p-4 bg-[#FDF4E6]/30 rounded-[24px] border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-colors group">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm group-hover:scale-105 transition-transform">
-                      {item.img}
+                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                      {item.img ? <img src={item.img} alt={item.title} className="w-full h-full object-cover" /> : <Package size={20} className="text-[#6651A4]" />}
                     </div>
                     <div>
-                      <p className="text-[14px] md:text-[15px] font-bold text-gray-800">{item.name}</p>
-                      <p className="text-[11px] text-gray-400 font-medium">QTY: {item.qty} × {item.price}</p>
+                      <p className="text-[14px] md:text-[15px] font-bold text-gray-800">{item.title}</p>
+                      <p className="text-[11px] text-gray-400 font-medium">QTY: {item.qty} × ₹{item.price.toFixed(2)}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[15px] md:text-[16px] font-bold font-grandstander text-[#6651A4]">{item.total}</p>
+                    <p className="text-[15px] md:text-[16px] font-bold font-grandstander text-[#6651A4]">₹{item.total.toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -119,15 +140,21 @@ export function AdminOrderDetail() {
             <div className="mt-8 pt-8 border-t border-dashed border-gray-200 space-y-4">
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Subtotal</span>
-                <span className="font-bold text-gray-800">$145.00</span>
+                <span className="font-bold text-gray-800">₹{order.subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Shipping Fee</span>
-                <span className="font-bold text-green-500">FREE</span>
+                <span className="font-bold text-gray-800">₹{order.shipping.toFixed(2)}</span>
               </div>
+              {order.discount > 0 && (
+                <div className="flex justify-between text-sm text-[#E84949]">
+                  <span>Discount</span>
+                  <span className="font-bold">-₹{order.discount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-xl md:text-2xl font-grandstander font-bold text-gray-800 pt-2">
                 <span>Total Amount</span>
-                <span className="text-[#F1641E]">{order.total}</span>
+                <span className="text-[#F1641E]">₹{order.total.toFixed(2)}</span>
               </div>
             </div>
           </motion.div>
@@ -138,7 +165,7 @@ export function AdminOrderDetail() {
               <Truck size={20} className="text-[#6651A4]" /> Journey Tracker
             </h3>
             <div className="space-y-8 relative before:absolute before:left-4 md:before:left-5 before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
-              {order.timeline.map((step, i) => (
+              {timeline.map((step, i) => (
                 <div key={i} className="relative pl-12 md:pl-16">
                   <div className={`absolute left-0 top-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 ${step.done ? 'bg-[#6651A4] text-white' : 'bg-gray-100 text-gray-400'}`}>
                     {step.done ? <CheckCircle size={16} /> : <Clock size={16} />}
@@ -162,29 +189,29 @@ export function AdminOrderDetail() {
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-[32px] p-6 md:p-8 shadow-sm border border-black/[0.03]">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-grandstander font-bold text-gray-800">Explorer Info</h3>
-              <button onClick={() => navigate('/admin/users/USR-001')} className="text-[#F1641E] hover:scale-110 transition-transform"><ExternalLink size={18} /></button>
+              {order.user?._id && <button onClick={() => navigate(`/admin/users/${order.user._id}`)} className="text-[#F1641E] hover:scale-110 transition-transform"><ExternalLink size={18} /></button>}
             </div>
             <div className="flex items-center gap-4 mb-6 p-4 bg-[#FDF4E6]/50 rounded-[24px]">
               <div className="w-12 h-12 bg-[#FAEAD3] rounded-full flex items-center justify-center text-xl font-bold font-grandstander text-[#6651A4]">
-                {order.customer.name.charAt(0)}
+                {order.customerName.charAt(0)}
               </div>
               <div>
-                <p className="text-[15px] font-bold text-gray-800">{order.customer.name}</p>
+                <p className="text-[15px] font-bold text-gray-800">{order.customerName}</p>
                 <p className="text-[11px] text-gray-400 font-medium">Joined 2 months ago</p>
               </div>
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-[13px] text-gray-600">
                 <Mail size={16} className="text-gray-400 shrink-0" />
-                <span className="truncate">{order.customer.email}</span>
+                <span className="truncate">{order.customerEmail}</span>
               </div>
               <div className="flex items-center gap-3 text-[13px] text-gray-600">
                 <Phone size={16} className="text-gray-400 shrink-0" />
-                <span>{order.customer.phone}</span>
+                <span>{order.shippingAddress.phone}</span>
               </div>
               <div className="flex items-start gap-3 text-[13px] text-gray-600 border-t border-black/[0.03] pt-4">
                 <MapPin size={16} className="text-gray-400 shrink-0 mt-1" />
-                <span className="leading-relaxed">{order.customer.address}</span>
+                <span className="leading-relaxed">{order.shippingAddress.address}, {order.shippingAddress.city === 'Other' ? order.shippingAddress.district : order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}</span>
               </div>
             </div>
           </motion.div>
@@ -199,17 +226,27 @@ export function AdminOrderDetail() {
               <div className="space-y-6">
                 <div>
                   <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Payment Method</p>
-                  <p className="text-[14px] font-bold">{order.paymentMethod}</p>
+                  <p className="text-[14px] font-bold">{order.paymentMethodLabel}</p>
                 </div>
                 <div className="flex justify-between items-end">
                   <div>
                     <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Status</p>
-                    <span className="px-2 py-0.5 bg-green-400 text-[#222222] rounded-md text-[9px] font-bold uppercase tracking-widest">{order.paymentStatus}</span>
+                    <span className="px-2 py-0.5 bg-green-400 text-[#222222] rounded-md text-[9px] font-bold uppercase tracking-widest">{order.paymentStatusLabel}</span>
                   </div>
                   <div className="text-right">
                     <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Paid Amount</p>
-                    <p className="text-xl font-bold font-grandstander">{order.total}</p>
+                    <p className="text-xl font-bold font-grandstander">₹{order.total.toFixed(2)}</p>
                   </div>
+                </div>
+                <div className="space-y-3 pt-2">
+                  <select value={status} onChange={(event) => setStatus(event.target.value)} className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none">
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                  <input value={trackingNumber} onChange={(event) => setTrackingNumber(event.target.value)} placeholder="Tracking Number" className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-white/40" />
                 </div>
                 <button className="w-full h-11 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all mt-2 flex items-center justify-center gap-2">
                    View Receipt <ExternalLink size={14} />

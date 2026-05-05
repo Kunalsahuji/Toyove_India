@@ -2,28 +2,7 @@ import Coupon from '../models/Coupon.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
-
-const mapCoupon = (coupon) => ({
-  ...coupon.toObject(),
-  code: coupon.code.toUpperCase(),
-}); 
-
-const checkCouponAvailability = (coupon) => {
-  const now = new Date();
-
-  if (coupon.status !== 'active') {
-    throw new AppError('This coupon is currently paused', 400);
-  }
-  if (coupon.startsAt && coupon.startsAt > now) {
-    throw new AppError('This coupon is not active yet', 400);
-  }
-  if (coupon.expiresAt && coupon.expiresAt < now) {
-    throw new AppError('This coupon has expired', 400);
-  }
-  if (coupon.usageLimit !== undefined && coupon.usedCount >= coupon.usageLimit) {
-    throw new AppError('This coupon usage limit has been reached', 400);
-  }
-};
+import { getValidatedCouponResult, mapCouponForApi } from '../services/coupon.service.js';
 
 export const adminListCoupons = asyncHandler(async (req, res) => {
   const page = Number(req.query.page || 1);
@@ -52,7 +31,7 @@ export const adminListCoupons = asyncHandler(async (req, res) => {
     res,
     200,
     'Coupons fetched successfully',
-    coupons.map(mapCoupon),
+    coupons.map(mapCouponForApi),
     { page, limit, total, totalPages: Math.ceil(total / limit) }
   );
 });
@@ -66,7 +45,7 @@ export const adminCreateCoupon = asyncHandler(async (req, res) => {
   });
 
   const populatedCoupon = await Coupon.findById(coupon._id).populate('applicableCategories', 'name slug');
-  return successResponse(res, 201, 'Coupon created successfully', mapCoupon(populatedCoupon));
+  return successResponse(res, 201, 'Coupon created successfully', mapCouponForApi(populatedCoupon));
 });
 
 export const adminUpdateCoupon = asyncHandler(async (req, res, next) => {
@@ -85,7 +64,7 @@ export const adminUpdateCoupon = asyncHandler(async (req, res, next) => {
     return next(new AppError('Coupon not found', 404));
   }
 
-  return successResponse(res, 200, 'Coupon updated successfully', mapCoupon(coupon));
+  return successResponse(res, 200, 'Coupon updated successfully', mapCouponForApi(coupon));
 });
 
 export const adminUpdateCouponStatus = asyncHandler(async (req, res, next) => {
@@ -99,46 +78,20 @@ export const adminUpdateCouponStatus = asyncHandler(async (req, res, next) => {
     return next(new AppError('Coupon not found', 404));
   }
 
-  return successResponse(res, 200, 'Coupon status updated successfully', mapCoupon(coupon));
+  return successResponse(res, 200, 'Coupon status updated successfully', mapCouponForApi(coupon));
 });
 
-export const validateCoupon = asyncHandler(async (req, res, next) => {
-  const coupon = await Coupon.findOne({ code: req.body.code.toUpperCase() }).populate('applicableCategories', 'slug');
-  if (!coupon) {
-    return next(new AppError('Coupon code not found', 404));
-  }
-
-  checkCouponAvailability(coupon);
-
-  if (req.body.subtotal < coupon.minOrderValue) {
-    return next(new AppError(`Minimum order value for this coupon is Rs ${coupon.minOrderValue}`, 400));
-  }
-
-  if (coupon.scope === 'category' && coupon.applicableCategories.length > 0) {
-    const allowedSlugs = coupon.applicableCategories.map((category) => category.slug);
-    const hasMatch = (req.body.categorySlugs || []).some((slug) => allowedSlugs.includes(slug));
-    if (!hasMatch) {
-      return next(new AppError('This coupon is not valid for items in your cart', 400));
-    }
-  }
-
-  const shippingAmount = Number(req.body.shippingAmount || 0);
-  let discountAmount = 0;
-
-  if (coupon.type === 'shipping') {
-    discountAmount = shippingAmount;
-  } else if (coupon.type === 'percentage') {
-    discountAmount = (req.body.subtotal * coupon.value) / 100;
-    if (coupon.maxDiscountAmount) {
-      discountAmount = Math.min(discountAmount, coupon.maxDiscountAmount);
-    }
-  } else {
-    discountAmount = Math.min(coupon.value, req.body.subtotal);
-  }
+export const validateCoupon = asyncHandler(async (req, res) => {
+  const result = await getValidatedCouponResult({
+    code: req.body.code,
+    subtotal: req.body.subtotal,
+    shippingAmount: Number(req.body.shippingAmount || 0),
+    categorySlugs: req.body.categorySlugs || [],
+  });
 
   return successResponse(res, 200, 'Coupon is valid', {
-    coupon: mapCoupon(coupon),
-    discountAmount: Number(discountAmount.toFixed(2)),
-    finalSubtotal: Number((req.body.subtotal - discountAmount).toFixed(2)),
+    coupon: mapCouponForApi(result.coupon),
+    discountAmount: result.discountAmount,
+    finalSubtotal: result.finalSubtotal,
   });
 });

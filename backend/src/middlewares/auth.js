@@ -48,6 +48,39 @@ export const protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
+export const optionalAuth = asyncHandler(async (req, res, next) => {
+  let token;
+
+  if (req.cookies && req.cookies.accessToken) {
+    token = req.cookies.accessToken;
+  } else if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+
+  try {
+    const decoded = verifyAccessToken(token);
+    const currentUser = await User.findById(decoded.userId);
+
+    if (currentUser && currentUser.status === 'Active') {
+      req.user = currentUser;
+    } else {
+      req.user = null;
+    }
+  } catch {
+    req.user = null;
+  }
+
+  next();
+});
+
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

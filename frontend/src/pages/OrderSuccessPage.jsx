@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Package, Truck, ShoppingBag, ArrowRight, ChevronRight, MapPin, ExternalLink, Calendar, Heart } from 'lucide-react'
+import { getOrderSummary } from '../services/orderApi'
 
 const TrackingStep = ({ icon: Icon, label, status, active }) => (
   <div className="flex flex-col items-center gap-2 relative z-10">
@@ -18,15 +19,47 @@ const TrackingStep = ({ icon: Icon, label, status, active }) => (
 export function OrderSuccessPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const order = location.state?.order
+  const [order, setOrder] = useState(location.state?.order || null)
+  const [loading, setLoading] = useState(!location.state?.order)
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    if (!order) {
-      navigate('/')
-    }
-  }, [order, navigate])
 
+    if (location.state?.order) {
+      sessionStorage.setItem('TOYOVOINDIA_last_order', JSON.stringify({
+        orderNumber: location.state.order.orderNumber,
+        email: location.state.order.customerEmail,
+      }))
+      return
+    }
+
+    const lastOrder = sessionStorage.getItem('TOYOVOINDIA_last_order')
+    if (!lastOrder) {
+      navigate('/')
+      return
+    }
+
+    let isMounted = true
+    const restoreOrder = async () => {
+      setLoading(true)
+      try {
+        const { orderNumber, email } = JSON.parse(lastOrder)
+        const data = await getOrderSummary(orderNumber, email)
+        if (isMounted) setOrder(data)
+      } catch {
+        if (isMounted) navigate('/')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    restoreOrder()
+    return () => {
+      isMounted = false
+    }
+  }, [location.state, navigate])
+
+  if (loading) return null
   if (!order) return null
 
   return (
@@ -124,7 +157,7 @@ export function OrderSuccessPage() {
              >
                 <div className="flex items-center justify-between border-b border-[#333]/10 pb-6 mb-8">
                    <h3 className="text-xl font-bold text-[#333] font-grandstander">Order Bill</h3>
-                   <span className="px-3 py-1.5 bg-white text-[#333] text-[9px] font-bold rounded-lg uppercase tracking-widest border border-[#333]/5 shadow-sm">ID: #{order.id}</span>
+                   <span className="px-3 py-1.5 bg-white text-[#333] text-[9px] font-bold rounded-lg uppercase tracking-widest border border-[#333]/5 shadow-sm">ID: #{order.orderNumber}</span>
                 </div>
 
                 <div className="space-y-6 max-h-[340px] overflow-y-auto px-2 py-4 custom-scrollbar">
@@ -136,9 +169,9 @@ export function OrderSuccessPage() {
                         </div>
                         <div className="grow">
                            <h4 className="text-[13px] font-bold text-[#333] font-grandstander line-clamp-1">{item.title}</h4>
-                           <p className="text-[10px] text-[#333]/40 font-bold uppercase tracking-widest">Qty: {item.qty} · ${item.price}</p>
+                           <p className="text-[10px] text-[#333]/40 font-bold uppercase tracking-widest">Qty: {item.qty} · ₹{item.price.toFixed(2)}</p>
                         </div>
-                        <span className="text-[14px] font-bold text-[#333] tracking-tighter">${(item.price * item.qty).toFixed(2)}</span>
+                        <span className="text-[14px] font-bold text-[#333] tracking-tighter">₹{(item.price * item.qty).toFixed(2)}</span>
                      </div>
                    ))}
                 </div>
@@ -146,23 +179,23 @@ export function OrderSuccessPage() {
                 <div className="mt-10 pt-8 border-t border-[#333]/10 space-y-4">
                    <div className="flex justify-between text-[13px] font-bold text-[#333]/60 uppercase tracking-widest">
                       <span>Subtotal</span>
-                      <span className="text-[#333]">${order.subtotal.toFixed(2)}</span>
+                      <span className="text-[#333]">₹{order.subtotal.toFixed(2)}</span>
                    </div>
                    <div className="flex justify-between text-[13px] font-bold text-[#333]/60 uppercase tracking-widest">
                       <span>Shipping</span>
-                      <span className="text-[#333]">${order.shipping.toFixed(2)}</span>
+                      <span className="text-[#333]">₹{order.shipping.toFixed(2)}</span>
                    </div>
                    {order.discount > 0 && (
                      <div className="flex justify-between text-[13px] font-bold text-[#E84949] uppercase tracking-widest">
                         <span>Discount Applied</span>
-                        <span className="tracking-tighter">-${order.discount.toFixed(2)}</span>
+                        <span className="tracking-tighter">-₹{order.discount.toFixed(2)}</span>
                      </div>
                    )}
                    <div className="flex justify-between items-center pt-8 mt-6 border-t border-[#333]/10">
                       <span className="text-[20px] font-bold font-grandstander text-[#333]">Total Paid</span>
                       <div className="text-right">
-                         <span className="text-[9px] font-bold text-[#333]/30 uppercase tracking-[0.2em] block mb-2">{order.paymentMethod}</span>
-                         <span className="text-4xl font-bold font-grandstander text-[#E84949] tracking-tighter leading-tight">${order.total.toFixed(2)}</span>
+                         <span className="text-[9px] font-bold text-[#333]/30 uppercase tracking-[0.2em] block mb-2">{order.paymentMethodLabel}</span>
+                         <span className="text-4xl font-bold font-grandstander text-[#E84949] tracking-tighter leading-tight">₹{order.total.toFixed(2)}</span>
                       </div>
                    </div>
                 </div>
