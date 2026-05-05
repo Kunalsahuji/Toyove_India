@@ -181,7 +181,7 @@ const AddPaymentMethodModal = ({ isOpen, type, onComplete, onCancel }) => {
 }
 
 export function AccountPage() {
-  const { user, logout, updateUser, addresses, addAddress, deleteAddress, updateAddress, setAsDefaultAddress } = useAuth()
+  const { user, authLoading, logout, updateUser, addresses, addAddress, deleteAddress, updateAddress, setAsDefaultAddress } = useAuth()
   const { paymentHistory, savedMethods, addSavedMethod, deleteSavedMethod, orders, cancelOrder } = usePayment()
   const { wishlist } = useCart()
   const navigate = useNavigate()
@@ -224,9 +224,10 @@ export function AccountPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (!authLoading && !user) navigate('/login')
+  }, [authLoading, user, navigate])
 
+  if (authLoading) return null
   if (!user) return null
 
   const handleTabChange = (id) => {

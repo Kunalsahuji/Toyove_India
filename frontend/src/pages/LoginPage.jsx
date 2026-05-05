@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import loginImage from '../assets/TOYOVOINIDIA_auth_banner.webp'
@@ -8,25 +8,32 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  const handleSubmit = (e) => {
+  const nextPath = new URLSearchParams(location.search).get('next')
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setIsSubmitting(true)
     
     if (email && password) {
-      const res = login(email, password)
+      const res = await login(email, password)
       if (res.success) {
-        navigate('/')
+        const fallbackPath = ['admin', 'super_admin'].includes(res.user?.role) ? '/admin' : '/'
+        navigate(nextPath || fallbackPath, { replace: true })
       } else {
         setError(res.message)
       }
     }
+    setIsSubmitting(false)
   }
 
   return (
@@ -83,9 +90,10 @@ export function LoginPage() {
               <div className="space-y-4 pt-4">
                 <button 
                   type="submit" 
+                  disabled={isSubmitting}
                   className="w-full h-14 bg-[#E84949] text-white font-bold text-[13px] tracking-[0.2em] uppercase rounded-xl hover:bg-[#333] transition-all shadow-md active:scale-95"
                 >
-                  SIGN IN
+                  {isSubmitting ? 'SIGNING IN...' : 'SIGN IN'}
                 </button>
                 <Link 
                   to="/register"

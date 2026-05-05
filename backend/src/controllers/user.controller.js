@@ -59,3 +59,114 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
 
   return successResponse(res, 200, 'Password updated successfully');
 });
+
+const adminSortMap = {
+  recent: { createdAt: -1 },
+  oldest: { createdAt: 1 },
+  name: { firstName: 1, lastName: 1 },
+  email: { email: 1 },
+};
+
+export const adminListUsers = asyncHandler(async (req, res) => {
+  const page = Number(req.query.page || 1);
+  const limit = Math.min(Number(req.query.limit || 10), 100);
+  const skip = (page - 1) * limit;
+  const filter = {};
+
+  if (req.query.status) filter.status = req.query.status;
+  if (req.query.role) filter.role = req.query.role;
+  if (req.query.search) {
+    filter.$or = [
+      { firstName: new RegExp(req.query.search, 'i') },
+      { lastName: new RegExp(req.query.search, 'i') },
+      { email: new RegExp(req.query.search, 'i') },
+      { phone: new RegExp(req.query.search, 'i') },
+    ];
+  }
+
+  const [users, total] = await Promise.all([
+    User.find(filter)
+      .sort(adminSortMap[req.query.sort || 'recent'] || adminSortMap.recent)
+      .skip(skip)
+      .limit(limit),
+    User.countDocuments(filter),
+  ]);
+
+  return successResponse(res, 200, 'Admin users fetched successfully', users, {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  });
+});
+
+export const adminGetUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  return successResponse(res, 200, 'Admin user details', user);
+});
+
+export const adminCreateUser = asyncHandler(async (req, res, next) => {
+  const existingUser = await User.findOne({ email: req.body.email });
+  if (existingUser) {
+    return next(new AppError('Email is already registered', 400));
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const passwordHash = await bcrypt.hash(req.body.password, salt);
+
+  const user = await User.create({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    passwordHash,
+    phone: req.body.phone || '',
+    role: req.body.role || 'customer',
+    status: req.body.status || 'Active',
+    emailVerified: true,
+  });
+
+  return successResponse(res, 201, 'User created successfully', user);
+});
+
+export const adminUpdateUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  if (req.body.email && req.body.email !== user.email) {
+    const existingUser = await User.findOne({ email: req.body.email, _id: { $ne: req.params.id } });
+    if (existingUser) {
+      return next(new AppError('Email is already registered', 400));
+    }
+  }
+
+  Object.assign(user, {
+    ...(req.body.firstName !== undefined && { firstName: req.body.firstName }),
+    ...(req.body.lastName !== undefined && { lastName: req.body.lastName }),
+    ...(req.body.email !== undefined && { email: req.body.email }),
+    ...(req.body.phone !== undefined && { phone: req.body.phone }),
+    ...(req.body.role !== undefined && { role: req.body.role }),
+    ...(req.body.status !== undefined && { status: req.body.status }),
+  });
+
+  await user.save();
+
+  return successResponse(res, 200, 'User updated successfully', user);
+});
+
+export const adminUpdateUserStatus = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  user.status = req.body.status;
+  await user.save();
+
+  return successResponse(res, 200, 'User status updated successfully', user);
+});

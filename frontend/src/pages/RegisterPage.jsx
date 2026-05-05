@@ -12,6 +12,7 @@ export function RegisterPage() {
     password: ''
   })
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
 
@@ -19,22 +20,21 @@ export function RegisterPage() {
     window.scrollTo(0, 0)
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setIsSubmitting(true)
     
     if (formData.email && formData.password) {
-      const res = register({
-        ...formData,
-        username: formData.firstName.toLowerCase()
-      })
+      const res = await register(formData)
       
       if (res.success) {
-        navigate('/login')
+        navigate('/', { replace: true })
       } else {
         setError(res.message)
       }
     }
+    setIsSubmitting(false)
   }
 
   return (
@@ -101,9 +101,10 @@ export function RegisterPage() {
               <div className="space-y-6 pt-4 text-center">
                 <button 
                   type="submit" 
+                  disabled={isSubmitting}
                   className="w-full h-15 bg-[#E84949] text-white font-bold text-[13px] tracking-[0.2em] uppercase rounded-xl hover:bg-[#333] transition-all shadow-md active:scale-95"
                 >
-                  CREATE
+                  {isSubmitting ? 'CREATING...' : 'CREATE'}
                 </button>
                 <div className="flex flex-col gap-2">
                     <p className="text-[14px] text-[#666]">Already have an account?</p>

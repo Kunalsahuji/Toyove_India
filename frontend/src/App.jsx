@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom'
 import React, { useEffect, Suspense } from 'react'
 import { VisionHeader } from './components/layout/VisionHeader'
 import { Footer }       from './components/layout/Footer'
@@ -26,6 +26,7 @@ import { AuthProvider } from './context/AuthContext'
 import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
 import { PurchaseNotification } from './components/ui/PurchaseNotification'
+import { useAuth } from './context/AuthContext'
 
 // Helper component to scroll to top on route change
 function ScrollToTop() {
@@ -71,6 +72,43 @@ const AdminFallback = () => (
   </div>
 )
 
+const AdminAccessDenied = () => (
+  <div className="min-h-screen bg-[#FDF4E6] flex items-center justify-center px-6">
+    <div className="max-w-lg w-full bg-white rounded-[32px] p-10 shadow-sm border border-black/[0.03] text-center">
+      <h1 className="text-3xl font-grandstander font-bold text-gray-800">Admin access required</h1>
+      <p className="mt-3 text-sm font-medium text-gray-500">This workspace is reserved for admin and super admin accounts.</p>
+      <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <Link to="/" className="h-12 px-6 rounded-xl bg-[#333] text-white text-[11px] font-bold uppercase tracking-widest flex items-center justify-center">
+          Back to Store
+        </Link>
+        <Link to="/account" className="h-12 px-6 rounded-xl bg-[#6651A4] text-white text-[11px] font-bold uppercase tracking-widest flex items-center justify-center">
+          Go to Account
+        </Link>
+      </div>
+    </div>
+  </div>
+)
+
+function AdminRouteGate({ children }) {
+  const location = useLocation()
+  const { user, authLoading, isAdmin } = useAuth()
+
+  if (authLoading) {
+    return <AdminFallback />
+  }
+
+  if (!user) {
+    const next = `${location.pathname}${location.search}`
+    return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />
+  }
+
+  if (!isAdmin) {
+    return <AdminAccessDenied />
+  }
+
+  return children
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -101,31 +139,33 @@ function AppContent() {
       <>
         <ScrollToTop />
         <Suspense fallback={<AdminFallback />}>
-          <Routes>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="users/:id" element={<AdminUserDetail />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="products/:id" element={<AdminProductDetail />} />
-              <Route path="categories" element={<AdminCategories />} />
-              <Route path="coupons" element={<AdminCoupons />} />
-              <Route path="content" element={<AdminContent />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="orders/:id" element={<AdminOrderDetail />} />
-              <Route path="finance" element={<AdminFinance />} />
-              <Route path="settings" element={<AdminSettings />} />
-              <Route path="notifications" element={<AdminNotifications />} />
-              <Route path="public-activity" element={<AdminPublicActivity />} />
-              <Route path="messages" element={<AdminMessages />} />
-              <Route path="shipping" element={<AdminShipping />} />
-              <Route path="transactions" element={<AdminTransactions />} />
-              <Route path="transactions/:id" element={<AdminTransactionDetail />} />
-              <Route path="reports" element={<AdminReports />} />
-              <Route path="system-logs" element={<AdminSystemLogs />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
+          <AdminRouteGate>
+            <Routes>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="users/:id" element={<AdminUserDetail />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="products/:id" element={<AdminProductDetail />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="coupons" element={<AdminCoupons />} />
+                <Route path="content" element={<AdminContent />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="orders/:id" element={<AdminOrderDetail />} />
+                <Route path="finance" element={<AdminFinance />} />
+                <Route path="settings" element={<AdminSettings />} />
+                <Route path="notifications" element={<AdminNotifications />} />
+                <Route path="public-activity" element={<AdminPublicActivity />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="shipping" element={<AdminShipping />} />
+                <Route path="transactions" element={<AdminTransactions />} />
+                <Route path="transactions/:id" element={<AdminTransactionDetail />} />
+                <Route path="reports" element={<AdminReports />} />
+                <Route path="system-logs" element={<AdminSystemLogs />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Route>
+            </Routes>
+          </AdminRouteGate>
         </Suspense>
       </>
     )

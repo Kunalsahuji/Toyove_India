@@ -1,51 +1,118 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { 
-  ChevronLeft, User, Mail, Shield, ShieldAlert, 
-  MapPin, ShoppingBag, Wallet, Clock, Edit2, 
-  Trash2, Ban, CheckCircle, Save, X, RefreshCcw, Landmark
+import {
+  ChevronLeft, Mail, Shield,
+  MapPin, ShoppingBag, Clock, Edit2,
+  Ban, Save, X, RefreshCcw, Landmark
 } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
+import { createAdminUser, getAdminUser, updateAdminUser, updateAdminUserStatus } from '../../services/adminUserApi'
+
+const emptyUser = {
+  id: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  role: 'customer',
+  status: 'Active',
+  password: '',
+  joinedDate: '',
+}
 
 export function AdminUserDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
-
-  // Mock data for the specific user
-  const [user, setUser] = useState(null)
+  const { success, error: showError } = useToast()
+  const isNew = id === 'new'
+  const [loading, setLoading] = useState(!isNew)
+  const [isEditing, setIsEditing] = useState(isNew)
+  const [saving, setSaving] = useState(false)
+  const [user, setUser] = useState(emptyUser)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setUser({
-        id: id || 'USR-001',
-        name: 'Emma Watson',
-        email: 'emma@example.com',
-        phone: '+91 98765 43210',
-        status: 'Active',
-        joinedDate: '2026-04-10',
-        linkedAccounts: '4 Methods',
-        totalSpent: '$4,562.00',
-        totalOrders: 12,
-        address: '7th Floor, Unit 703, Mayagarden, Zirakpur, Punjab - 140603',
-        recentOrders: [
-          { id: '#ORD-8001', date: '2026-04-24', total: '$145.00', status: 'Delivered' },
-          { id: '#ORD-7952', date: '2026-04-15', total: '$210.00', status: 'Delivered' },
-        ],
-        recentTransactions: [
-          { id: 'TXN-9021', type: 'Credit', amount: '$500.00', date: '2026-04-24' },
-          { id: 'TXN-8845', type: 'Debit', amount: '$145.00', date: '2026-04-24' },
-        ]
-      })
+    if (isNew) {
+      setUser(emptyUser)
       setLoading(false)
-    }, 800)
-  }, [id])
+      return
+    }
 
-  const handleSave = () => {
-    setIsEditing(false)
-    // Add toast notification logic here if needed
+    let isMounted = true
+    const loadUser = async () => {
+      setLoading(true)
+      setLoadError('')
+      try {
+        const data = await getAdminUser(id)
+        if (!isMounted) return
+        setUser({
+          ...data,
+          password: '',
+        })
+      } catch (err) {
+        if (isMounted) setLoadError(err.message || 'User could not be loaded')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    loadUser()
+    return () => {
+      isMounted = false
+    }
+  }, [id, isNew])
+
+  const handleSave = async () => {
+    if (!user.firstName.trim() || !user.lastName.trim() || !user.email.trim()) {
+      showError('First name, last name, and email are required.')
+      return
+    }
+
+    if (isNew && user.password.length < 8) {
+      showError('Password must be at least 8 characters long.')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const payload = {
+        firstName: user.firstName.trim(),
+        lastName: user.lastName.trim(),
+        email: user.email.trim(),
+        phone: user.phone?.trim() || '',
+        role: user.role,
+        status: user.status,
+        ...(isNew && { password: user.password }),
+      }
+
+      const savedUser = isNew
+        ? await createAdminUser(payload)
+        : await updateAdminUser(id, payload)
+
+      success(isNew ? 'Explorer created successfully.' : 'Explorer updated successfully.')
+      setUser((prev) => ({ ...prev, ...savedUser, password: '' }))
+      setIsEditing(false)
+
+      if (isNew) {
+        navigate(`/admin/users/${savedUser.id}`, { replace: true })
+      }
+    } catch (err) {
+      showError(err.message || 'Save failed')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSuspend = async () => {
+    const nextStatus = user.status === 'Banned' ? 'Active' : 'Banned'
+    try {
+      const updatedUser = await updateAdminUserStatus(user.id, nextStatus)
+      setUser((prev) => ({ ...prev, ...updatedUser }))
+      success(`${updatedUser.name} marked as ${nextStatus}.`)
+    } catch (err) {
+      showError(err.message || 'Status update failed')
+    }
   }
 
   if (loading) {
@@ -59,9 +126,23 @@ export function AdminUserDetail() {
     )
   }
 
+  if (loadError) {
+    return (
+      <div className="shell flex items-center justify-center h-[60vh]">
+        <div className="bg-white rounded-[32px] p-10 text-center border border-black/[0.03] shadow-sm">
+          <p className="text-[#E8312A] font-bold text-sm">{loadError}</p>
+          <button onClick={() => navigate('/admin/users')} className="mt-5 h-10 px-6 bg-[#6651A4] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest">
+            Back to Users
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
+
   return (
     <div className="shell space-y-6 pb-10">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.05] pb-6">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 hover:text-[#6651A4] hover:bg-[#FAEAD3] shadow-sm transition-all">
@@ -69,23 +150,27 @@ export function AdminUserDetail() {
           </button>
           <div>
             <h1 className="text-2xl md:text-3xl font-grandstander font-bold text-gray-800 flex items-center gap-3">
-              Explorer Profile
-              <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${user.status === 'Active' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                {user.status}
-              </span>
+              {isNew ? 'New Explorer' : 'Explorer Profile'}
+              {!isNew && (
+                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${user.status === 'Active' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                  {user.status}
+                </span>
+              )}
             </h1>
-            <p className="text-gray-500 font-medium text-sm font-mono mt-1">{user.id}</p>
+            <p className="text-gray-500 font-medium text-sm font-mono mt-1">{isNew ? 'Pending Record' : user.id}</p>
           </div>
         </div>
-        
+
         <div className="flex gap-3">
           {isEditing ? (
             <>
-              <button onClick={() => setIsEditing(false)} className="h-10 px-4 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-gray-50 flex items-center gap-2 transition-all">
-                <X size={14} /> Cancel
-              </button>
-              <button onClick={handleSave} className="h-10 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#5a4892] flex items-center gap-2 transition-all">
-                <Save size={14} /> Save Changes
+              {!isNew && (
+                <button onClick={() => setIsEditing(false)} className="h-10 px-4 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-gray-50 flex items-center gap-2 transition-all">
+                  <X size={14} /> Cancel
+                </button>
+              )}
+              <button onClick={handleSave} disabled={saving} className="h-10 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#5a4892] flex items-center gap-2 transition-all disabled:opacity-60">
+                <Save size={14} /> {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </>
           ) : (
@@ -93,8 +178,8 @@ export function AdminUserDetail() {
               <button onClick={() => setIsEditing(true)} className="h-10 px-6 bg-white border border-[#6651A4]/20 text-[#6651A4] rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-[#FAEAD3] flex items-center gap-2 transition-all">
                 <Edit2 size={14} /> Edit Identity
               </button>
-              <button className="h-10 px-4 bg-red-50 text-[#E8312A] rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-[#E8312A] hover:text-white transition-all flex items-center gap-2">
-                <Ban size={14} /> Suspend
+              <button onClick={handleSuspend} className="h-10 px-4 bg-red-50 text-[#E8312A] rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-[#E8312A] hover:text-white transition-all flex items-center gap-2">
+                <Ban size={14} /> {user.status === 'Banned' ? 'Restore' : 'Suspend'}
               </button>
             </>
           )}
@@ -102,84 +187,137 @@ export function AdminUserDetail() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Identity & Wallet */}
         <div className="lg:col-span-1 space-y-8">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03] text-center">
             <div className="w-24 h-24 bg-[#FAEAD3] rounded-full flex items-center justify-center border-4 border-white shadow-md text-4xl font-bold font-grandstander text-[#6651A4] mx-auto mb-4">
-              {user.name.charAt(0)}
+              {(fullName || 'U').charAt(0)}
             </div>
-            {isEditing ? (
-              <input 
-                type="text" 
-                value={user.name} 
-                onChange={(e) => setUser({...user, name: e.target.value})}
-                className="w-full text-center text-xl font-bold font-grandstander text-gray-800 bg-[#FDF4E6]/50 rounded-lg p-1 border-b-2 border-[#6651A4] outline-none"
-              />
-            ) : (
-              <h2 className="text-2xl font-grandstander font-bold text-gray-800">{user.name}</h2>
-            )}
-            <p className="text-gray-400 font-medium text-sm mt-1">{user.email}</p>
+            <h2 className="text-2xl font-grandstander font-bold text-gray-800">{fullName || 'New Explorer'}</h2>
+            <p className="text-gray-400 font-medium text-sm mt-1">{user.email || 'No email yet'}</p>
             <div className="mt-6 flex justify-center gap-2">
-              <span className="px-3 py-1 bg-[#6651A4]/5 text-[#6651A4] rounded-full text-[9px] font-bold uppercase tracking-widest border border-[#6651A4]/10">Loyal Explorer</span>
+              <span className="px-3 py-1 bg-[#6651A4]/5 text-[#6651A4] rounded-full text-[9px] font-bold uppercase tracking-widest border border-[#6651A4]/10">{user.role}</span>
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[#6651A4] rounded-[32px] p-8 text-white relative overflow-hidden shadow-xl">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
+            <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
             <div className="relative z-10">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2 text-white/60 text-[10px] font-bold uppercase tracking-widest">
-                  <Landmark size={14} /> Linked Accounts
-                </div>
-                <button 
-                  onClick={() => navigate('/admin/finance')}
-                  className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all"
-                >
-                  View Details
-                </button>
+              <div className="flex items-center gap-2 text-white/60 text-[10px] font-bold uppercase tracking-widest mb-2">
+                <Landmark size={14} /> Account Access
               </div>
-              <h3 className="text-4xl font-grandstander font-bold mb-6">{user.linkedAccounts}</h3>
+              <h3 className="text-4xl font-grandstander font-bold mb-6">{user.role}</h3>
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
-                <div className="cursor-pointer" onClick={() => navigate('/admin/finance')}>
-                  <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Total Spent</p>
-                  <p className="text-lg font-bold font-grandstander">{user.totalSpent}</p>
+                <div>
+                  <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Status</p>
+                  <p className="text-lg font-bold font-grandstander">{user.status}</p>
                 </div>
-                <div className="cursor-pointer" onClick={() => navigate('/admin/orders')}>
-                  <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Orders</p>
-                  <p className="text-lg font-bold font-grandstander">{user.totalOrders}</p>
+                <div>
+                  <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest">Joined</p>
+                  <p className="text-lg font-bold font-grandstander">{user.joinedDate || '-'}</p>
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Right Column - Details & Activity */}
         <div className="lg:col-span-2 space-y-8">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]">
-            <h3 className="text-xl font-grandstander font-bold text-gray-800 mb-6">Contact & Shipping</h3>
+            <h3 className="text-xl font-grandstander font-bold text-gray-800 mb-6">Identity & Contact</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div>
-                  <p className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2"><Mail size={14}/> Explorer Email</p>
+                  <p className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2"><Mail size={14} /> Explorer Email</p>
                   {isEditing ? (
-                    <input 
-                      type="email" 
-                      value={user.email} 
-                      onChange={(e) => setUser({...user, email: e.target.value})}
-                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-2 outline-none"
+                    <input
+                      type="email"
+                      value={user.email}
+                      onChange={(event) => setUser({ ...user, email: event.target.value })}
+                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30"
                     />
                   ) : (
                     <p className="text-[14px] font-bold text-gray-700">{user.email}</p>
                   )}
                 </div>
                 <div>
-                  <p className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2"><Clock size={14}/> Explorer Since</p>
-                  <p className="text-[14px] font-bold text-gray-700">{user.joinedDate}</p>
+                  <p className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2"><Clock size={14} /> Explorer Since</p>
+                  <p className="text-[14px] font-bold text-gray-700">{user.joinedDate || '-'}</p>
                 </div>
+                {isNew && (
+                  <div>
+                    <p className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Temporary Password</p>
+                    <input
+                      type="password"
+                      value={user.password}
+                      onChange={(event) => setUser({ ...user, password: event.target.value })}
+                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30"
+                    />
+                  </div>
+                )}
               </div>
-              <div>
-                <p className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2"><MapPin size={14}/> Primary Base</p>
-                <p className="text-[14px] font-medium text-gray-600 leading-relaxed">{user.address}</p>
+
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">First Name</p>
+                    <input
+                      disabled={!isEditing}
+                      type="text"
+                      value={user.firstName}
+                      onChange={(event) => setUser({ ...user, firstName: event.target.value })}
+                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30 disabled:opacity-70"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Last Name</p>
+                    <input
+                      disabled={!isEditing}
+                      type="text"
+                      value={user.lastName}
+                      onChange={(event) => setUser({ ...user, lastName: event.target.value })}
+                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30 disabled:opacity-70"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Phone</p>
+                  <input
+                    disabled={!isEditing}
+                    type="text"
+                    value={user.phone || ''}
+                    onChange={(event) => setUser({ ...user, phone: event.target.value })}
+                    className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30 disabled:opacity-70"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Role</p>
+                    <select
+                      disabled={!isEditing}
+                      value={user.role}
+                      onChange={(event) => setUser({ ...user, role: event.target.value })}
+                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30 disabled:opacity-70"
+                    >
+                      <option value="customer">customer</option>
+                      <option value="admin">admin</option>
+                      <option value="super_admin">super_admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Status</p>
+                    <select
+                      disabled={!isEditing}
+                      value={user.status}
+                      onChange={(event) => setUser({ ...user, status: event.target.value })}
+                      className="w-full text-sm font-bold text-gray-700 bg-[#FDF4E6]/50 rounded-lg p-3 outline-none border border-transparent focus:border-[#6651A4]/30 disabled:opacity-70"
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                      <option value="Banned">Banned</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -190,24 +328,8 @@ export function AdminUserDetail() {
                 <h3 className="text-lg font-grandstander font-bold text-gray-800">Saved Bases</h3>
                 <MapPin size={18} className="text-gray-300" />
               </div>
-              <div className="space-y-4">
-                {[
-                  { id: 1, type: 'Home', address: '7th Floor, Unit 703, Mayagarden, Zirakpur, Punjab - 140603', primary: true },
-                  { id: 2, type: 'Office', address: 'Sector 62, Noida, Uttar Pradesh - 201301', primary: false }
-                ].map(base => (
-                  <div 
-                    key={base.id} 
-                    className={`p-4 rounded-2xl border transition-all ${base.primary ? 'bg-[#FAEAD3]/40 border-[#6651A4]/20' : 'bg-white border-black/[0.03] hover:bg-gray-50'}`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest ${base.primary ? 'bg-[#6651A4] text-white' : 'bg-gray-100 text-gray-500'}`}>
-                        {base.type} {base.primary && '• Primary'}
-                      </span>
-                      <button className="text-gray-400 hover:text-[#6651A4]"><Edit2 size={12}/></button>
-                    </div>
-                    <p className="text-[12px] text-gray-600 leading-relaxed">{base.address}</p>
-                  </div>
-                ))}
+              <div className="p-6 rounded-2xl border border-dashed border-black/[0.05] bg-[#FDF4E6]/30 text-center">
+                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Address records will connect in user profile phase.</p>
               </div>
             </motion.div>
 
@@ -216,23 +338,8 @@ export function AdminUserDetail() {
                 <h3 className="text-lg font-grandstander font-bold text-gray-800">Recent Hauls</h3>
                 <ShoppingBag size={18} className="text-gray-300" />
               </div>
-              <div className="space-y-4">
-                {user.recentOrders.map(order => (
-                  <div 
-                    key={order.id} 
-                    onClick={() => navigate('/admin/orders')}
-                    className="flex justify-between items-center p-4 bg-[#FDF4E6]/30 rounded-2xl border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-all cursor-pointer"
-                  >
-                    <div>
-                      <p className="text-[12px] font-bold text-[#6651A4]">{order.id}</p>
-                      <p className="text-[10px] text-gray-400">{order.date}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[14px] font-bold font-grandstander text-gray-700">{order.total}</p>
-                      <p className="text-[9px] font-bold text-green-500 uppercase tracking-widest">{order.status}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="p-6 rounded-2xl border border-dashed border-black/[0.05] bg-[#FDF4E6]/30 text-center">
+                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Order history will connect in orders phase.</p>
               </div>
             </motion.div>
 
@@ -241,25 +348,8 @@ export function AdminUserDetail() {
                 <h3 className="text-lg font-grandstander font-bold text-gray-800">Funds History</h3>
                 <RefreshCcw size={18} className="text-gray-300" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {user.recentTransactions.map(txn => (
-                  <div 
-                    key={txn.id} 
-                    onClick={() => navigate(`/admin/transactions/${txn.id}`)}
-                    className="flex justify-between items-center p-4 bg-[#FDF4E6]/30 rounded-2xl border border-black/[0.02] hover:bg-[#FAEAD3]/50 transition-all cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs ${txn.type === 'Credit' ? 'bg-green-400' : 'bg-[#E8312A]'}`}>
-                        {txn.type === 'Credit' ? '+' : '-'}
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-bold text-gray-700">{txn.id}</p>
-                        <p className="text-[10px] text-gray-400">{txn.date}</p>
-                      </div>
-                    </div>
-                    <p className={`text-[14px] font-bold font-grandstander ${txn.type === 'Credit' ? 'text-green-500' : 'text-gray-700'}`}>{txn.amount}</p>
-                  </div>
-                ))}
+              <div className="p-6 rounded-2xl border border-dashed border-black/[0.05] bg-[#FDF4E6]/30 text-center">
+                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Payment timeline will connect in finance phase.</p>
               </div>
             </motion.div>
           </div>
