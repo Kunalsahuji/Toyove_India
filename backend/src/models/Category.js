@@ -75,21 +75,19 @@ const categorySchema = new mongoose.Schema({
   timestamps: true,
 });
 
-categorySchema.pre('validate', function(next) {
+categorySchema.pre('validate', function() {
   if (!this.slug && this.name) {
     this.slug = createSlug(this.name);
   }
-  next();
 });
 
-categorySchema.pre('save', async function(next) {
+categorySchema.pre('save', async function() {
   if (this.parentCategory) {
     const parent = await this.constructor.findById(this.parentCategory).select('level');
     this.level = parent ? parent.level + 1 : 0;
   } else {
     this.level = 0;
   }
-  next();
 });
 
 categorySchema.index({ name: 'text', description: 'text' });

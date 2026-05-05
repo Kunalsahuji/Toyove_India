@@ -5,6 +5,7 @@ import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck,
 import { useCart } from '../context/CartContext'
 import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
+import { validateCouponCode } from '../services/couponApi'
 
 const countries = ["India"]
 import { indianStates, commonCities } from '../utils/indiaData'
@@ -180,6 +181,9 @@ export function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
+  const [couponState, setCouponState] = useState(null)
+  const [couponError, setCouponError] = useState('')
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
   const [shippingMethod, setShippingMethod] = useState('standard')
   
   // Address Management
@@ -204,7 +208,7 @@ export function CheckoutPage() {
 
   const shippingRates = { standard: 15.00, express: 45.00 }
   const shippingCharge = shippingRates[shippingMethod]
-  const discountAmount = isDiscountApplied ? subtotal * 0.1 : 0
+  const discountAmount = couponState?.discountAmount || 0
   const total = subtotal + shippingCharge - discountAmount
 
   useEffect(() => {
@@ -216,12 +220,30 @@ export function CheckoutPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const applyDiscount = () => {
-    if (discountCode.toLowerCase() === 'TOYOVOINDIA10') {
+  useEffect(() => {
+    setIsDiscountApplied(false)
+    setCouponState(null)
+    setCouponError('')
+  }, [shippingMethod, subtotal, cartItems])
+
+  const applyDiscount = async () => {
+    setCouponError('')
+    setIsApplyingCoupon(true)
+    try {
+      const result = await validateCouponCode({
+        code: discountCode.trim(),
+        subtotal,
+        shippingAmount: shippingCharge,
+        categorySlugs: [...new Set(cartItems.map((item) => item.category).filter(Boolean))],
+      })
+      setCouponState(result)
       setIsDiscountApplied(true)
-      alert('Discount applied successfully!')
-    } else {
-      alert('Invalid discount code')
+    } catch (error) {
+      setCouponState(null)
+      setIsDiscountApplied(false)
+      setCouponError(error.message || 'Invalid discount code')
+    } finally {
+      setIsApplyingCoupon(false)
     }
   }
 
@@ -316,7 +338,7 @@ export function CheckoutPage() {
                </div>
                <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
                   <div className="flex justify-between text-[14px]"><span className="text-gray-500">Subtotal</span><span className="font-bold">₹{subtotal.toFixed(2)}</span></div>
-                  {isDiscountApplied && <div className="flex justify-between text-[14px] text-green-600"><span>Discount (10%)</span><span>-₹{discountAmount.toFixed(2)}</span></div>}
+                  {isDiscountApplied && <div className="flex justify-between text-[14px] text-green-600"><span>Discount ({couponState?.coupon?.code})</span><span>-₹{discountAmount.toFixed(2)}</span></div>}
                   <div className="flex justify-between text-[18px] font-bold pt-4"><span>Total</span><span className="text-[#E84949]">₹{total.toFixed(2)}</span></div>
                </div>
             </motion.div>
@@ -535,16 +557,20 @@ export function CheckoutPage() {
 
           <div className="mt-10 flex gap-4">
              <div className="relative grow">
-                <input type="text" placeholder="Discount code" value={discountCode} onChange={(e) => setDiscountCode(e.target.value)} className="w-full h-12 px-4 bg-white border border-gray-300 rounded-xl outline-none focus:border-[#E84949] font-bold text-[13px]" />
+                <input type="text" placeholder="Discount code" value={discountCode} onChange={(e) => setDiscountCode(e.target.value.toUpperCase())} className="w-full h-12 px-4 bg-white border border-gray-300 rounded-xl outline-none focus:border-[#E84949] font-bold text-[13px]" />
                 <Tag size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
              </div>
-             <button onClick={applyDiscount} className="h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors">Apply</button>
+             <button onClick={applyDiscount} disabled={isApplyingCoupon || !discountCode.trim()} className="h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors disabled:opacity-50">
+               {isApplyingCoupon ? 'Applying...' : 'Apply'}
+             </button>
           </div>
+          {couponError && <p className="mt-3 text-[12px] font-bold text-[#E84949]">{couponError}</p>}
+          {isDiscountApplied && <p className="mt-3 text-[12px] font-bold text-green-600">{couponState?.coupon?.code} applied successfully.</p>}
 
           <div className="mt-10 pt-10 border-t border-gray-200 space-y-4 text-[14px]">
              <div className="flex justify-between"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold tracking-tighter text-[#333]">₹{subtotal.toFixed(2)}</span></div>
              <div className="flex justify-between"><span className="text-gray-500 font-medium">Shipping</span><span className="font-bold tracking-tighter text-[#333]">₹{shippingCharge.toFixed(2)}</span></div>
-             {isDiscountApplied && <div className="flex justify-between text-green-600 font-bold"><span>Discount (TOYOVOINDIA10)</span><span className="tracking-tighter">-₹{discountAmount.toFixed(2)}</span></div>}
+             {isDiscountApplied && <div className="flex justify-between text-green-600 font-bold"><span>Discount ({couponState?.coupon?.code})</span><span className="tracking-tighter">-₹{discountAmount.toFixed(2)}</span></div>}
              <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
                <span className="text-[20px] font-bold font-grandstander text-[#333]">Total</span>
                <div className="flex items-baseline gap-2">

@@ -172,7 +172,7 @@ const productSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-productSchema.pre('validate', function(next) {
+productSchema.pre('validate', function() {
   if (!this.slug && this.name) {
     this.slug = createSlug(this.name);
   }
@@ -183,7 +183,6 @@ productSchema.pre('validate', function(next) {
       alt: this.images[0].alt || this.name,
     };
   }
-  next();
 });
 
 productSchema.index({ name: 'text', description: 'text', tags: 'text', brand: 'text' });
