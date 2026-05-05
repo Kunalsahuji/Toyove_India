@@ -35,7 +35,14 @@ app.use(cors({
 }));
 
 // Body parsing
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({
+  limit: '10kb',
+  verify: (req, res, buffer) => {
+    if (req.originalUrl?.includes('/api/payments/razorpay/webhook')) {
+      req.rawBody = buffer.toString();
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 

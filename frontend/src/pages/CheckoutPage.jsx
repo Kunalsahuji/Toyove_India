@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck, ShoppingCart, Smartphone, Check, ChevronDown, ChevronUp, Tag, AlertCircle, X, Lock, Loader2, Landmark } from 'lucide-react'
+import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck, ShoppingCart, Smartphone, Check, ChevronDown, ChevronUp, Tag, AlertCircle, X, Landmark } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
 import { validateCouponCode } from '../services/couponApi'
-import { createOrder } from '../services/orderApi'
+import { createRazorpayPaymentOrder, verifyRazorpayPayment } from '../services/orderApi'
 
 const countries = ["India"]
 import { indianStates, commonCities } from '../utils/indiaData'
@@ -77,100 +77,22 @@ const UPIIcon = ({ type, selected }) => {
   )
 }
 
-const GatewayOverlay = ({ isOpen, method, amount, upiApp, onComplete, onCancel }) => {
-  const [step, setStep] = useState(1); // 1: Initial, 2: Processing, 3: Success
-  const [countdown, setCountdown] = useState(30);
+const loadRazorpayScript = () => new Promise((resolve) => {
+  if (window.Razorpay) {
+    resolve(true)
+    return
+  }
 
-  useEffect(() => {
-    if (isOpen && method === 'upi') {
-      const timer = setInterval(() => setCountdown(c => c > 0 ? c - 1 : 0), 1000);
-      return () => clearInterval(timer);
-    }
-  }, [isOpen, method]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-       <motion.div initial={{scale:0.9, opacity:0}} animate={{scale:1, opacity:1}} className="bg-white w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/20">
-          <div className="bg-[#6651A4] p-8 text-white flex justify-between items-center">
-             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Lock size={18}/></div>
-                <div><h3 className="font-bold text-lg leading-none">TOYOVOINDIA Secure Pay</h3><p className="text-[10px] opacity-60 uppercase tracking-widest font-bold mt-1">Order #TP-{Math.floor(Math.random()*9000)}</p></div>
-             </div>
-             <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20}/></button>
-          </div>
-
-          <div className="p-10 space-y-8">
-             <div className="text-center">
-                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Total Payable</p>
-                <h4 className="text-5xl font-bold font-grandstander text-[#333]">₹{amount.toFixed(2)}</h4>
-             </div>
-
-             {method === 'upi' && (
-               <div className="space-y-6 text-center">
-                  <div className="w-16 h-16 bg-[#FDF4E6] rounded-full flex items-center justify-center mx-auto animate-pulse">
-                     <Smartphone className="text-[#E84949]" size={32}/>
-                  </div>
-                  <div>
-                     <h5 className="font-bold text-[#333] mb-1 capitalize">Pay using {upiApp}</h5>
-                     <p className="text-[13px] text-gray-500 leading-relaxed px-10">Please open your {upiApp} app and approve the payment request of <b>₹{amount.toFixed(2)}</b></p>
-                  </div>
-                  <div className="flex flex-col items-center gap-3">
-                     <div className="w-12 h-12 rounded-full border-4 border-gray-100 border-t-[#E84949] animate-spin" />
-                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Time Remaining: {countdown}s</p>
-                  </div>
-                  <button onClick={onComplete} className="w-full h-14 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-widest text-[12px] hover:bg-[#E84949] transition-all">Simulate Approval</button>
-               </div>
-             )}
-
-             {method === 'card' && (
-               <div className="space-y-6">
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                     <CreditCard className="text-gray-400" />
-                     <span className="font-mono text-gray-600">XXXX XXXX XXXX 9901</span>
-                  </div>
-                  <div className="space-y-3">
-                     <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Enter OTP sent to your mobile</p>
-                     <div className="flex justify-between gap-3">
-                        {[1,2,3,4,5,6].map(i => <input key={i} type="text" maxLength="1" className="w-full h-14 bg-white border border-gray-200 rounded-xl text-center font-bold text-xl outline-none focus:border-[#E84949]" />)}
-                     </div>
-                  </div>
-                  <button onClick={onComplete} className="w-full h-14 bg-[#E84949] text-white rounded-2xl font-bold uppercase tracking-widest text-[12px] hover:bg-[#333] transition-all shadow-lg shadow-[#E84949]/20">Confirm & Pay</button>
-                  <p className="text-[11px] text-center text-gray-400 font-bold uppercase tracking-widest">Resend OTP in 54s</p>
-               </div>
-             )}
-
-             {method === 'netbanking' && (
-                <div className="space-y-6">
-                   <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto">
-                      <Landmark className="text-blue-600" size={32}/>
-                   </div>
-                   <div>
-                      <h5 className="font-bold text-[#333] mb-1">Net Banking Login</h5>
-                      <p className="text-[13px] text-gray-500 leading-relaxed px-6">You will be redirected to your bank's secure login page to authorize this payment.</p>
-                   </div>
-                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center gap-3">
-                      <Lock size={14} className="text-gray-400"/>
-                      <span className="text-[12px] font-bold text-gray-600 uppercase">Redirecting to Secure Server</span>
-                   </div>
-                   <button onClick={onComplete} className="w-full h-14 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-widest text-[12px] hover:bg-blue-600 transition-all">Authorize with Bank</button>
-                </div>
-             )}
-
-             <div className="flex items-center justify-center gap-2 pt-4">
-                <ShieldCheck size={14} className="text-gray-400"/>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">PCI-DSS Compliant Gateway</span>
-             </div>
-          </div>
-       </motion.div>
-    </div>
-  )
-}
+  const script = document.createElement('script')
+  script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+  script.onload = () => resolve(true)
+  script.onerror = () => resolve(false)
+  document.body.appendChild(script)
+})
 
 export function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useCart()
-  const { simulatePayment } = usePayment()
+  const { addPaymentLog } = usePayment()
   const { user, addresses } = useAuth()
   const navigate = useNavigate()
   
@@ -178,7 +100,6 @@ export function CheckoutPage() {
   const [showSummary, setShowSummary] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [selectedUpi, setSelectedUpi] = useState('gpay')
-  const [showGateway, setShowGateway] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
@@ -248,63 +169,165 @@ export function CheckoutPage() {
     }
   }
 
-  const startPayment = () => {
-    setShowGateway(true);
+  const CouponSection = ({ compact = false }) => (
+    <div className={compact ? 'mt-5 pt-5 border-t border-gray-200' : 'mt-10'}>
+      <div className={compact ? '' : 'flex gap-4'}>
+        <div className={`relative ${compact ? '' : 'grow'}`}>
+          <input
+            type="text"
+            placeholder="Discount code"
+            value={discountCode}
+            onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+            className="w-full h-12 px-4 pr-10 bg-white border border-gray-300 rounded-xl outline-none focus:border-[#E84949] font-bold text-[13px]"
+          />
+          <Tag size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+        </div>
+        {compact ? null : (
+          <button onClick={applyDiscount} disabled={isApplyingCoupon || !discountCode.trim()} className="h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors disabled:opacity-50">
+            {isApplyingCoupon ? 'Applying...' : 'Apply'}
+          </button>
+        )}
+      </div>
+      {compact && (
+        <button onClick={applyDiscount} disabled={isApplyingCoupon || !discountCode.trim()} className="mt-3 w-full h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors disabled:opacity-50">
+          {isApplyingCoupon ? 'Applying...' : 'Apply Coupon'}
+        </button>
+      )}
+      {couponError && <p className="mt-3 text-[12px] font-bold text-[#E84949]">{couponError}</p>}
+      {isDiscountApplied && <p className="mt-3 text-[12px] font-bold text-green-600">{couponState?.coupon?.code} applied successfully.</p>}
+    </div>
+  )
+
+  const checkoutData = {
+    customer: {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+    },
+    shippingAddress: {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      address: formData.address,
+      apartment: formData.apartment,
+      city: formData.city,
+      district: formData.district,
+      state: formData.state,
+      country: formData.country,
+      postalCode: formData.postalCode,
+      phone: formData.phone,
+    },
+    items: cartItems.map((item) => ({
+      productId: item._id || undefined,
+      slug: item.slug || item.id,
+      quantity: item.qty,
+    })),
+    shippingMethod,
+    paymentMethod: 'razorpay',
+    couponCode: couponState?.coupon?.code || '',
   }
 
-  const completeOrder = async () => {
-    setShowGateway(false);
-    setIsProcessing(true);
-    
-    // Final logic execution
-    const success = await simulatePayment(total, paymentMethod === 'upi' ? `UPI (${selectedUpi})` : paymentMethod === 'netbanking' ? 'NET BANKING' : 'CARD');
+  const getPaymentMethodLabel = () => {
+    if (paymentMethod === 'upi') {
+      return `UPI (${selectedUpi.toUpperCase()})`
+    }
+    if (paymentMethod === 'netbanking') {
+      return 'NET BANKING'
+    }
+    return 'CARD'
+  }
 
-    if (success) {
-      try {
-        const order = await createOrder({
-          customer: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-          },
-          shippingAddress: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            address: formData.address,
-            apartment: formData.apartment,
-            city: formData.city,
-            district: formData.district,
-            state: formData.state,
-            country: formData.country,
-            postalCode: formData.postalCode,
-            phone: formData.phone,
-          },
-          items: cartItems.map((item) => ({
-            productId: item._id || undefined,
-            slug: item.slug || item.id,
-            quantity: item.qty,
-          })),
-          shippingMethod,
-          paymentMethod,
-          couponCode: couponState?.coupon?.code || '',
-        })
-
-        sessionStorage.setItem('TOYOVOINDIA_last_order', JSON.stringify({
-          orderNumber: order.orderNumber,
-          email: order.customerEmail,
-        }))
-
-        clearCart();
-        setIsProcessing(false);
-        navigate('/order-success', { state: { order } });
-      } catch (error) {
-        setIsProcessing(false);
-        alert(error.message || 'Order could not be placed');
+  const startPayment = async () => {
+    setIsProcessing(true)
+    try {
+      const scriptLoaded = await loadRazorpayScript()
+      if (!scriptLoaded || !window.Razorpay) {
+        throw new Error('Razorpay checkout could not be loaded. Check your internet connection and try again.')
       }
-    } else {
-      setIsProcessing(false);
-      alert('Payment Failed');
+
+      const razorpayOrder = await createRazorpayPaymentOrder(checkoutData)
+
+      const options = {
+        key: razorpayOrder.keyId,
+        amount: razorpayOrder.amountInPaise,
+        currency: razorpayOrder.currency,
+        name: 'TOYOVOINDIA',
+        description: 'Toyovo India Checkout',
+        order_id: razorpayOrder.razorpayOrderId,
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
+          email: formData.email,
+          contact: formData.phone,
+        },
+        notes: {
+          shipping_method: shippingMethod,
+          preferred_method: paymentMethod,
+        },
+        theme: {
+          color: '#6651A4',
+        },
+        handler: async (response) => {
+          setIsProcessing(true)
+          try {
+            const order = await verifyRazorpayPayment({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              checkoutData,
+              paymentMethodLabel: getPaymentMethodLabel(),
+            })
+
+            addPaymentLog({
+              type: 'Debit',
+              amount: order.total,
+              method: getPaymentMethodLabel(),
+            })
+
+            sessionStorage.setItem('TOYOVOINDIA_last_order', JSON.stringify({
+              orderNumber: order.orderNumber,
+              email: order.customerEmail,
+            }))
+
+            clearCart()
+            navigate('/order-success', { state: { order } })
+          } catch (error) {
+            alert(error.message || 'Payment verification failed')
+          } finally {
+            setIsProcessing(false)
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false)
+          },
+        },
+      }
+
+      if (paymentMethod === 'upi') {
+        options.config = {
+          display: {
+            blocks: {
+              preferred: {
+                name: 'Pay using UPI',
+                instruments: [{ method: 'upi' }],
+              },
+            },
+            sequence: ['block.preferred'],
+            preferences: { show_default_blocks: true },
+          },
+        }
+      }
+
+      const razorpay = new window.Razorpay(options)
+      razorpay.on('payment.failed', (response) => {
+        setIsProcessing(false)
+        alert(response.error?.description || 'Payment failed')
+      })
+      setIsProcessing(false)
+      razorpay.open()
+    } catch (error) {
+      setIsProcessing(false)
+      alert(error.message || 'Unable to start payment')
     }
   }
 
@@ -320,15 +343,6 @@ export function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-white font-roboto flex flex-col lg:flex-row">
-      <GatewayOverlay 
-        isOpen={showGateway} 
-        method={paymentMethod} 
-        amount={total} 
-        upiApp={selectedUpi} 
-        onCancel={() => setShowGateway(false)} 
-        onComplete={completeOrder}
-      />
-
       {/* Loading Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 z-[2000] bg-white/90 backdrop-blur-md flex flex-col items-center justify-center text-center p-10">
@@ -361,12 +375,14 @@ export function CheckoutPage() {
                         <span className="absolute -top-2 -right-2 w-5.5 h-5.5 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">{item.qty}</span>
                       </div>
                       <div className="grow"><h4 className="text-[13px] font-bold">{item.title}</h4></div>
-                      <span className="text-[14px] font-bold">${(item.price * item.qty).toFixed(2)}</span>
+                      <span className="text-[14px] font-bold">₹{(item.price * item.qty).toFixed(2)}</span>
                     </div>
                   ))}
                </div>
                <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
+                  <CouponSection compact />
                   <div className="flex justify-between text-[14px]"><span className="text-gray-500">Subtotal</span><span className="font-bold">₹{subtotal.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-[14px]"><span className="text-gray-500">Shipping</span><span className="font-bold">₹{shippingCharge.toFixed(2)}</span></div>
                   {isDiscountApplied && <div className="flex justify-between text-[14px] text-green-600"><span>Discount ({couponState?.coupon?.code})</span><span>-₹{discountAmount.toFixed(2)}</span></div>}
                   <div className="flex justify-between text-[18px] font-bold pt-4"><span>Total</span><span className="text-[#E84949]">₹{total.toFixed(2)}</span></div>
                </div>
@@ -584,17 +600,7 @@ export function CheckoutPage() {
             ))}
           </div>
 
-          <div className="mt-10 flex gap-4">
-             <div className="relative grow">
-                <input type="text" placeholder="Discount code" value={discountCode} onChange={(e) => setDiscountCode(e.target.value.toUpperCase())} className="w-full h-12 px-4 bg-white border border-gray-300 rounded-xl outline-none focus:border-[#E84949] font-bold text-[13px]" />
-                <Tag size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
-             </div>
-             <button onClick={applyDiscount} disabled={isApplyingCoupon || !discountCode.trim()} className="h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors disabled:opacity-50">
-               {isApplyingCoupon ? 'Applying...' : 'Apply'}
-             </button>
-          </div>
-          {couponError && <p className="mt-3 text-[12px] font-bold text-[#E84949]">{couponError}</p>}
-          {isDiscountApplied && <p className="mt-3 text-[12px] font-bold text-green-600">{couponState?.coupon?.code} applied successfully.</p>}
+          <CouponSection />
 
           <div className="mt-10 pt-10 border-t border-gray-200 space-y-4 text-[14px]">
              <div className="flex justify-between"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold tracking-tighter text-[#333]">₹{subtotal.toFixed(2)}</span></div>

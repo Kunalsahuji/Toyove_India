@@ -66,6 +66,22 @@ export const createOrder = async (data) => {
   return normalizeOrder(payload.data)
 }
 
+export const createRazorpayPaymentOrder = async (data) => {
+  const payload = await apiRequest('/payments/razorpay/order', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return payload.data
+}
+
+export const verifyRazorpayPayment = async (data) => {
+  const payload = await apiRequest('/payments/razorpay/verify', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return normalizeOrder(payload.data)
+}
+
 export const getOrderSummary = async (orderNumber, email) => {
   const query = new URLSearchParams()
   if (email) {

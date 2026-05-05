@@ -1,15 +1,8 @@
-import Coupon from '../models/Coupon.js';
 import Order from '../models/Order.js';
-import Product from '../models/Product.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
-import { getValidatedCouponResult, mapCouponForApi } from '../services/coupon.service.js';
-
-const SHIPPING_RATES = {
-  standard: 15,
-  express: 45,
-};
+import { applyFulfilledOrderSideEffects, buildOrderDraftFromCheckout } from '../services/order.service.js';
 
 const STATUS_LABELS = {
   pending: 'Pending',
@@ -65,7 +58,7 @@ const mapOrder = (order) => ({
   date: formatOrderDate(order.createdAt),
   statusLabel: STATUS_LABELS[order.status] || order.status,
   paymentStatusLabel: PAYMENT_STATUS_LABELS[order.paymentStatus] || order.paymentStatus,
-  paymentMethodLabel: PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod,
+  paymentMethodLabel: order.paymentGateway?.paymentMethodLabel || PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod,
   deliveryDate: getDeliveryDate(order.createdAt, order.shippingMethod),
   subtotal: order.subtotal,
   shipping: order.shippingAmount,
@@ -87,7 +80,7 @@ const mapOrderSummary = (order) => ({
   itemsCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
   paymentStatus: order.paymentStatus,
   paymentStatusLabel: PAYMENT_STATUS_LABELS[order.paymentStatus] || order.paymentStatus,
-  paymentMethodLabel: PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod,
+  paymentMethodLabel: order.paymentGateway?.paymentMethodLabel || PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod,
   customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim(),
   destination: `${order.shippingAddress.city === 'Other' ? order.shippingAddress.district : order.shippingAddress.city}, ${order.shippingAddress.state}`,
   createdAt: order.createdAt,
@@ -102,64 +95,8 @@ const appendStatusHistory = (order, status, actorRole, note) => {
   });
 };
 
-const resolveOrderProduct = async (item) => {
-  if (item.productId) {
-    return Product.findOne({ _id: item.productId, status: 'active' }).populate('category', 'slug');
-  }
-  return Product.findOne({ slug: item.slug, status: 'active' }).populate('category', 'slug');
-};
-
 export const createOrder = asyncHandler(async (req, res, next) => {
-  const resolvedItems = await Promise.all(req.body.items.map(async (item) => {
-    const product = await resolveOrderProduct(item);
-    if (!product) {
-      throw new AppError('One or more products in your cart are unavailable', 400);
-    }
-    if (product.stock < item.quantity) {
-      throw new AppError(`${product.name} is low on stock. Please reduce quantity and try again.`, 400);
-    }
-
-    return {
-      product,
-      quantity: item.quantity,
-    };
-  }));
-
-  const items = resolvedItems.map(({ product, quantity }) => ({
-    product: product._id,
-    productName: product.name,
-    productSlug: product.slug,
-    sku: product.sku,
-    image: product.thumbnail?.url || product.images?.[0]?.url || '',
-    categorySlug: product.category?.slug || '',
-    quantity,
-    unitPrice: product.price,
-    totalPrice: Number((product.price * quantity).toFixed(2)),
-  }));
-
-  const subtotal = Number(items.reduce((sum, item) => sum + item.totalPrice, 0).toFixed(2));
-  const shippingAmount = SHIPPING_RATES[req.body.shippingMethod] ?? SHIPPING_RATES.standard;
-
-  let discountAmount = 0;
-  let couponData;
-
-  if (req.body.couponCode) {
-    const couponResult = await getValidatedCouponResult({
-      code: req.body.couponCode,
-      subtotal,
-      shippingAmount,
-      categorySlugs: [...new Set(items.map((item) => item.categorySlug).filter(Boolean))],
-    });
-    discountAmount = couponResult.discountAmount;
-    couponData = {
-      code: couponResult.coupon.code,
-      couponId: couponResult.coupon._id,
-      title: couponResult.coupon.title,
-      type: couponResult.coupon.type,
-    };
-  }
-
-  const totalAmount = Number(Math.max(subtotal + shippingAmount - discountAmount, 0).toFixed(2));
+  const draft = await buildOrderDraftFromCheckout(req.body);
 
   const order = await Order.create({
     user: req.user?._id || null,
@@ -168,32 +105,23 @@ export const createOrder = asyncHandler(async (req, res, next) => {
       email: req.body.customer.email.toLowerCase(),
     },
     shippingAddress: req.body.shippingAddress,
-    items,
+    items: draft.items,
     status: 'processing',
     paymentStatus: 'paid',
     paymentMethod: req.body.paymentMethod,
     shippingMethod: req.body.shippingMethod,
-    subtotal,
-    shippingAmount,
-    discountAmount,
-    totalAmount,
-    coupon: couponData,
+    subtotal: draft.subtotal,
+    shippingAmount: draft.shippingAmount,
+    discountAmount: draft.discountAmount,
+    totalAmount: draft.totalAmount,
+    coupon: draft.couponData,
     notes: req.body.notes || undefined,
   });
 
-  await Promise.all(resolvedItems.map(({ product, quantity }) => Product.updateOne(
-    { _id: product._id },
-    {
-      $inc: {
-        stock: -quantity,
-        soldCount: quantity,
-      },
-    }
-  )));
-
-  if (couponData?.couponId) {
-    await Coupon.updateOne({ _id: couponData.couponId }, { $inc: { usedCount: 1 } });
-  }
+  await applyFulfilledOrderSideEffects({
+    resolvedItems: draft.resolvedItems,
+    couponData: draft.couponData,
+  });
 
   return successResponse(res, 201, 'Order placed successfully', mapOrder(order));
 });

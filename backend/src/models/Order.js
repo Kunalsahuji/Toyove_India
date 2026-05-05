@@ -227,6 +227,33 @@ const orderSchema = new mongoose.Schema({
       trim: true,
     },
   },
+  paymentGateway: {
+    provider: {
+      type: String,
+      enum: ['razorpay'],
+    },
+    razorpayOrderId: {
+      type: String,
+      trim: true,
+      index: true,
+      sparse: true,
+    },
+    razorpayPaymentId: {
+      type: String,
+      trim: true,
+      index: true,
+      sparse: true,
+    },
+    razorpaySignature: {
+      type: String,
+      trim: true,
+    },
+    paymentMethodLabel: {
+      type: String,
+      trim: true,
+    },
+    verifiedAt: Date,
+  },
   notes: {
     type: String,
     trim: true,
