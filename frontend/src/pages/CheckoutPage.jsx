@@ -86,9 +86,43 @@ const loadRazorpayScript = () => new Promise((resolve) => {
   const script = document.createElement('script')
   script.src = 'https://checkout.razorpay.com/v1/checkout.js'
   script.onload = () => resolve(true)
-  script.onerror = () => resolve(false)
-  document.body.appendChild(script)
 })
+
+// Stable component outside to prevent focus loss on re-renders
+const CouponSection = ({ 
+  discountCode, 
+  setDiscountCode, 
+  applyDiscount, 
+  isApplyingCoupon, 
+  couponError, 
+  isDiscountApplied, 
+  couponState,
+  compact = false 
+}) => (
+  <div className={compact ? 'mt-5 pt-5 border-t border-gray-100' : 'mt-10'}>
+    <div className="flex gap-3">
+      <div className="relative grow">
+        <input
+          type="text"
+          placeholder="Discount code"
+          value={discountCode}
+          onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+          className="w-full h-12 px-4 pr-10 bg-white border border-gray-300 rounded-xl outline-none focus:border-[#E84949] font-bold text-[13px] shadow-sm transition-all"
+        />
+        <Tag size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+      </div>
+      <button 
+        onClick={applyDiscount} 
+        disabled={isApplyingCoupon || !discountCode.trim()} 
+        className="h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-all disabled:opacity-50 whitespace-nowrap shadow-sm"
+      >
+        {isApplyingCoupon ? '...' : 'Apply'}
+      </button>
+    </div>
+    {couponError && <p className="mt-3 text-[11px] font-bold text-[#E84949] flex items-center gap-1"><AlertCircle size={12}/> {couponError}</p>}
+    {isDiscountApplied && <p className="mt-3 text-[11px] font-bold text-green-600 flex items-center gap-1"><Check size={12}/> {couponState?.coupon?.code} applied successfully.</p>}
+  </div>
+)
 
 export function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useCart()
@@ -149,6 +183,7 @@ export function CheckoutPage() {
   }, [shippingMethod, subtotal, cartItems])
 
   const applyDiscount = async () => {
+    if (!discountCode.trim()) return
     setCouponError('')
     setIsApplyingCoupon(true)
     try {
@@ -169,34 +204,6 @@ export function CheckoutPage() {
     }
   }
 
-  const CouponSection = ({ compact = false }) => (
-    <div className={compact ? 'mt-5 pt-5 border-t border-gray-200' : 'mt-10'}>
-      <div className={compact ? '' : 'flex gap-4'}>
-        <div className={`relative ${compact ? '' : 'grow'}`}>
-          <input
-            type="text"
-            placeholder="Discount code"
-            value={discountCode}
-            onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-            className="w-full h-12 px-4 pr-10 bg-white border border-gray-300 rounded-xl outline-none focus:border-[#E84949] font-bold text-[13px]"
-          />
-          <Tag size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
-        </div>
-        {compact ? null : (
-          <button onClick={applyDiscount} disabled={isApplyingCoupon || !discountCode.trim()} className="h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors disabled:opacity-50">
-            {isApplyingCoupon ? 'Applying...' : 'Apply'}
-          </button>
-        )}
-      </div>
-      {compact && (
-        <button onClick={applyDiscount} disabled={isApplyingCoupon || !discountCode.trim()} className="mt-3 w-full h-12 px-6 bg-[#333] text-white font-bold rounded-xl text-[12px] uppercase tracking-widest hover:bg-[#E84949] transition-colors disabled:opacity-50">
-          {isApplyingCoupon ? 'Applying...' : 'Apply Coupon'}
-        </button>
-      )}
-      {couponError && <p className="mt-3 text-[12px] font-bold text-[#E84949]">{couponError}</p>}
-      {isDiscountApplied && <p className="mt-3 text-[12px] font-bold text-green-600">{couponState?.coupon?.code} applied successfully.</p>}
-    </div>
-  )
 
   const checkoutData = {
     customer: {
@@ -355,40 +362,12 @@ export function CheckoutPage() {
         </div>
       )}
       
-      {/* Mobile/Tablet Header & Summary Bar */}
-      <div className="lg:hidden w-full bg-[#F5F5F5] border-b border-gray-200 sticky top-0 z-[100]">
-        <div className="px-4 py-4 flex items-center justify-between">
-           <Link to="/" className="text-2xl font-grandstander font-bold text-[#333] tracking-tighter">TOYOVOINDIA</Link>
-           <button onClick={() => setShowSummary(!showSummary)} className="flex items-center gap-2 text-[13px] font-bold text-[#E84949] uppercase tracking-wider">
-             {showSummary ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
-             Summary <span className="ml-2 text-[#333]">₹{total.toFixed(2)}</span>
-           </button>
-        </div>
-        <AnimatePresence>
-          {showSummary && (
-            <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="px-4 pb-6 overflow-hidden border-t border-gray-200">
-               <div className="space-y-4 px-2 py-4">
-                  {cartItems.map(item => (
-                    <div key={item.id} className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl border border-gray-200 relative bg-white shadow-sm">
-                        <img src={item.img} className="w-full h-full object-cover rounded-xl" />
-                        <span className="absolute -top-2 -right-2 w-5.5 h-5.5 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">{item.qty}</span>
-                      </div>
-                      <div className="grow"><h4 className="text-[13px] font-bold">{item.title}</h4></div>
-                      <span className="text-[14px] font-bold">₹{(item.price * item.qty).toFixed(2)}</span>
-                    </div>
-                  ))}
-               </div>
-               <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
-                  <CouponSection compact />
-                  <div className="flex justify-between text-[14px]"><span className="text-gray-500">Subtotal</span><span className="font-bold">₹{subtotal.toFixed(2)}</span></div>
-                  <div className="flex justify-between text-[14px]"><span className="text-gray-500">Shipping</span><span className="font-bold">₹{shippingCharge.toFixed(2)}</span></div>
-                  {isDiscountApplied && <div className="flex justify-between text-[14px] text-green-600"><span>Discount ({couponState?.coupon?.code})</span><span>-₹{discountAmount.toFixed(2)}</span></div>}
-                  <div className="flex justify-between text-[18px] font-bold pt-4"><span>Total</span><span className="text-[#E84949]">₹{total.toFixed(2)}</span></div>
-               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Mobile/Tablet Header */}
+      <div className="lg:hidden w-full bg-white border-b border-gray-100 sticky top-0 z-[100] px-4 py-4 flex items-center justify-between">
+         <Link to="/" className="text-2xl font-grandstander font-bold text-[#333] tracking-tighter">TOYOVOINDIA</Link>
+         <Link to="/cart" className="w-10 h-10 bg-[#FDF4E6] rounded-xl flex items-center justify-center text-[#E84949]">
+            <ShoppingCart size={20} />
+         </Link>
       </div>
 
       {/* Left Side: Delivery/Payment Forms */}
@@ -397,13 +376,14 @@ export function CheckoutPage() {
            <Link to="/" className="text-4xl font-grandstander font-bold text-[#333] tracking-tighter">TOYOVOINDIA</Link>
         </header>
 
-        <nav className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-10">
+        <nav className="flex items-center gap-2 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-8">
            <Link to="/cart" className="text-[#E84949]">Cart</Link>
-           <ChevronRight size={14} />
+           <ChevronRight size={14} className="text-gray-300" />
            <span className={step === 1 ? 'text-[#333]' : 'text-gray-400'}>Information</span>
-           <ChevronRight size={14} />
+           <ChevronRight size={14} className="text-gray-300" />
            <span className={step === 2 ? 'text-[#333]' : 'text-gray-400'}>Payment</span>
         </nav>
+
 
         {step === 1 ? (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-10">
@@ -423,7 +403,7 @@ export function CheckoutPage() {
                <div className="flex justify-between items-center">
                   <h2 className="text-xl font-bold text-[#333] font-grandstander">Delivery</h2>
                   {addresses?.length > 0 && (
-                     <button onClick={() => setUseSavedAddress(!useSavedAddress)} className="text-[11px] font-bold text-[#E84949] uppercase underline">
+                     <button onClick={() => setUseSavedAddress(!useSavedAddress)} className="text-[11px] font-bold text-[#005BD1] uppercase underline">
                         {useSavedAddress ? 'Enter New Address' : 'Use Saved Address'}
                      </button>
                   )}
@@ -450,11 +430,11 @@ export function CheckoutPage() {
                                     district: addr.district
                                  }));
                               }}
-                              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer relative ${selectedAddressId === addr.id ? 'border-[#E84949] bg-[#FAEAD3]' : 'border-gray-100 bg-[#FAEAD3] hover:border-gray-200'}`}
+                              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer relative ${selectedAddressId === addr.id ? 'border-[#005BD1] bg-[#F4F4F4]' : 'border-gray-100 bg-[#F4F4F4] hover:border-gray-200'}`}
                            >
                               <div className="flex justify-between items-start mb-2">
-                                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#E84949] bg-red-50 px-2 py-0.5 rounded">{addr.type}</span>
-                                 {selectedAddressId === addr.id && <Check size={16} className="text-[#E84949]"/>}
+                                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#005BD1] bg-blue-50 px-2 py-0.5 rounded">{addr.type}</span>
+                                 {selectedAddressId === addr.id && <Check size={16} className="text-[#005BD1]"/>}
                               </div>
                               <p className="text-[13px] font-bold text-[#333]">{addr.firstName} {addr.lastName}</p>
                               <p className="text-[12px] text-gray-500 line-clamp-2">{addr.address}, {addr.city === 'Other' ? addr.district : addr.city}, {addr.state}</p>
@@ -490,16 +470,16 @@ export function CheckoutPage() {
             <section className="space-y-6">
                <h2 className="text-xl font-bold text-[#333] font-grandstander">Shipping method</h2>
                <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
-                  <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'standard' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
+                  <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'standard' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
                      <div className="flex items-center gap-4">
-                        <input type="radio" checked={shippingMethod === 'standard'} onChange={() => setShippingMethod('standard')} className="w-4 h-4 accent-[#E84949]" />
+                        <input type="radio" checked={shippingMethod === 'standard'} onChange={() => setShippingMethod('standard')} className="w-4 h-4 accent-[#005BD1]" />
                         <span className="text-[14px] font-medium text-[#333]">Standard Shipping (3-5 days)</span>
                      </div>
                      <span className="font-bold text-[14px]">₹15.00</span>
                   </label>
-                  <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'express' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
+                  <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'express' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
                      <div className="flex items-center gap-4">
-                        <input type="radio" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} className="w-4 h-4 accent-[#E84949]" />
+                        <input type="radio" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} className="w-4 h-4 accent-[#005BD1]" />
                         <span className="text-[14px] font-medium text-[#333]">Express Delivery (1-2 days)</span>
                      </div>
                      <span className="font-bold text-[14px]">₹45.00</span>
@@ -507,25 +487,29 @@ export function CheckoutPage() {
                </div>
             </section>
 
-            <button onClick={() => setStep(2)} className="w-full h-16 bg-[#333] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] transition-all shadow-xl active:scale-95">Continue to payment</button>
+            <button onClick={() => setStep(2)} className="w-full h-16 bg-[#005BD1] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all shadow-xl active:scale-95">Continue to payment</button>
           </motion.div>
         ) : (
           <motion.div initial={{opacity:0, x:20}} animate={{opacity:1, x:0}} className="space-y-10">
              <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100 text-[13px] bg-gray-50/50">
-                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Contact</span><span className="grow font-medium">{formData.email}</span><button onClick={() => setStep(1)} className="text-[#E84949] font-bold">Change</button></div>
-                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Ship to</span><span className="grow font-medium">{formData.address}, {formData.city}, {formData.state}</span><button onClick={() => setStep(1)} className="text-[#E84949] font-bold">Change</button></div>
+                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Contact</span><span className="grow font-medium">{formData.email}</span><button onClick={() => setStep(1)} className="text-[#005BD1] font-bold">Change</button></div>
+                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Ship to</span><span className="grow font-medium">{formData.address}, {formData.city}, {formData.state}</span><button onClick={() => setStep(1)} className="text-[#005BD1] font-bold">Change</button></div>
                 <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Method</span><span className="grow font-medium text-capitalize">{shippingMethod} Shipping · ₹{shippingCharge.toFixed(2)}</span></div>
              </div>
 
              <section className="space-y-6">
-                <h2 className="text-xl font-bold text-[#333] font-grandstander">Payment</h2>
+                <div>
+                   <h2 className="text-xl font-bold text-[#333] font-grandstander">Payment</h2>
+                   <p className="text-[12px] text-gray-500 font-medium">All transactions are secure and encrypted.</p>
+                   <p className="text-[11px] text-[#005BD1] font-bold mt-1">✓ Secure Payment Gateway</p>
+                </div>
                 <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
                    
                    {/* Card Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'card' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
+                   <div className={`p-5 transition-all ${paymentMethod === 'card' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
                       <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('card')}>
                          <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'card'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
+                            <input type="radio" checked={paymentMethod === 'card'} onChange={() => {}} className="w-4 h-4 accent-[#005BD1]" />
                             <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><CreditCard size={16}/> Credit/Debit Card</span>
                          </div>
                       </div>
@@ -538,10 +522,10 @@ export function CheckoutPage() {
                    </div>
 
                    {/* UPI Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'upi' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
+                   <div className={`p-5 transition-all ${paymentMethod === 'upi' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
                       <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('upi')}>
                          <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'upi'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
+                            <input type="radio" checked={paymentMethod === 'upi'} onChange={() => {}} className="w-4 h-4 accent-[#005BD1]" />
                             <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Smartphone size={16}/> UPI</span>
                          </div>
                       </div>
@@ -558,10 +542,10 @@ export function CheckoutPage() {
                    </div>
 
                    {/* Net Banking Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'netbanking' ? 'bg-[#FDF4E6]' : 'bg-white'}`}>
+                   <div className={`p-5 transition-all ${paymentMethod === 'netbanking' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
                       <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('netbanking')}>
                          <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'netbanking'} onChange={() => {}} className="w-4 h-4 accent-[#E84949]" />
+                            <input type="radio" checked={paymentMethod === 'netbanking'} onChange={() => {}} className="w-4 h-4 accent-[#005BD1]" />
                             <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Landmark size={16}/> Net Banking</span>
                          </div>
                       </div>
@@ -574,9 +558,105 @@ export function CheckoutPage() {
                 </div>
              </section>
 
+             {/* Mobile/Tablet Reimagined Summary (Screenshot 1 & 2) */}
+             <div className="lg:hidden space-y-6">
+                <button 
+                  onClick={() => setShowSummary(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-[12px] font-bold text-[#333] hover:bg-gray-50 transition-all shadow-sm"
+                >
+                   <Tag size={14} className="text-gray-400" /> Add discount
+                </button>
+
+                <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                   <AnimatePresence mode="wait">
+                      {!showSummary ? (
+                         <motion.button
+                            key="collapsed"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setShowSummary(true)}
+                            className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-all"
+                         >
+                            <div className="flex items-center gap-4">
+                               <div className="w-12 h-12 rounded-lg border border-gray-100 bg-white shadow-sm overflow-hidden p-1">
+                                  <img src={cartItems[0]?.img} className="w-full h-full object-contain" />
+                               </div>
+                               <div className="text-left">
+                                  <span className="block text-[14px] font-bold text-[#333]">Total</span>
+                                  <span className="block text-[11px] text-gray-400 font-medium">{cartItems.reduce((acc, i) => acc + i.qty, 0)} items</span>
+                               </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                               <div className="flex items-baseline gap-1">
+                                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">INR</span>
+                                  <span className="text-[16px] font-bold text-[#333]">₹{total.toFixed(2)}</span>
+                               </div>
+                               <ChevronDown size={16} className="text-gray-400" />
+                            </div>
+                         </motion.button>
+                      ) : (
+                         <motion.div
+                            key="expanded"
+                            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                            className="bg-[#F9F9F9]"
+                         >
+                            <button 
+                               onClick={() => setShowSummary(false)}
+                               className="w-full flex items-center justify-between p-5 border-b border-gray-100 bg-white"
+                            >
+                               <span className="text-[15px] font-bold text-[#005BD1]">Order summary</span>
+                               <ChevronUp size={18} className="text-[#005BD1]" />
+                            </button>
+                            
+                            <div className="p-6 space-y-6">
+                               <div className="space-y-5 max-h-[40vh] overflow-y-auto px-2 pt-2 custom-scrollbar">
+                                  {cartItems.map(item => (
+                                     <div key={item.id} className="flex items-center gap-4 pt-1 pr-1">
+                                        <div className="w-16 h-16 rounded-2xl border border-gray-200 relative bg-white shadow-sm shrink-0">
+                                           <img src={item.img} className="w-full h-full object-cover rounded-2xl" />
+                                           <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm z-10">{item.qty}</span>
+                                        </div>
+                                        <div className="grow min-w-0">
+                                           <h4 className="text-[13px] font-bold text-[#333] truncate leading-tight">{item.title}</h4>
+                                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">SKU: {item.sku || 'TOY-001'}</p>
+                                        </div>
+                                        <span className="text-[15px] font-bold text-[#333] shrink-0">₹{(item.price * item.qty).toFixed(2)}</span>
+                                     </div>
+                                  ))}
+                               </div>
+
+                               <CouponSection 
+                                  discountCode={discountCode}
+                                  setDiscountCode={setDiscountCode}
+                                  applyDiscount={applyDiscount}
+                                  isApplyingCoupon={isApplyingCoupon}
+                                  couponError={couponError}
+                                  isDiscountApplied={isDiscountApplied}
+                                  couponState={couponState}
+                                  compact
+                               />
+
+                               <div className="pt-6 border-t border-gray-200 space-y-3 text-[14px]">
+                                  <div className="flex justify-between items-center"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold text-[#333]">₹{subtotal.toFixed(2)}</span></div>
+                                  <div className="flex justify-between items-center"><span className="text-gray-500 font-medium">Shipping</span><span className="font-bold text-[#333]">₹{shippingCharge.toFixed(2)}</span></div>
+                                  {isDiscountApplied && <div className="flex justify-between items-center text-green-600 font-bold"><span>Discount</span><span>-₹{discountAmount.toFixed(2)}</span></div>}
+                                  <div className="flex justify-between items-center pt-5 mt-2 border-t border-gray-200">
+                                     <span className="text-[18px] font-bold text-[#333]">Total</span>
+                                     <div className="flex items-baseline gap-1.5">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">INR</span>
+                                        <span className="text-[26px] font-bold text-[#333]">₹{total.toFixed(2)}</span>
+                                     </div>
+                                  </div>
+                               </div>
+                            </div>
+                         </motion.div>
+                      )}
+                   </AnimatePresence>
+                </div>
+             </div>
+
              <div className="flex flex-col gap-4">
-                <button onClick={startPayment} disabled={isProcessing} className="w-full h-16 bg-[#333] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#E84949] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
-                   Secure Payment — ₹{total.toFixed(2)}
+                <button onClick={startPayment} disabled={isProcessing} className="w-full h-16 bg-[#005BD1] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
+                   Pay Now — ₹{total.toFixed(2)}
                 </button>
                 <button onClick={() => setStep(1)} className="text-[12px] font-bold text-gray-400 hover:text-[#333] uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"><ChevronLeft size={16} /> Return to information</button>
              </div>
@@ -589,7 +669,7 @@ export function CheckoutPage() {
         <div className="max-w-[420px]">
           <div className="space-y-6 max-h-[50vh] overflow-y-auto px-2 py-4 custom-scrollbar">
             {cartItems.map(item => (
-              <div key={item.id} className="flex items-center gap-4 group">
+              <div key={item.id} className="flex items-center gap-4 group pt-2 pr-2">
                 <div className="w-16 h-16 rounded-xl border border-gray-200 relative bg-white shadow-sm group-hover:shadow-md transition-all">
                   <img src={item.img} className="w-full h-full object-cover rounded-xl" />
                   <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm z-10">{item.qty}</span>
@@ -600,7 +680,15 @@ export function CheckoutPage() {
             ))}
           </div>
 
-          <CouponSection />
+          <CouponSection 
+            discountCode={discountCode}
+            setDiscountCode={setDiscountCode}
+            applyDiscount={applyDiscount}
+            isApplyingCoupon={isApplyingCoupon}
+            couponError={couponError}
+            isDiscountApplied={isDiscountApplied}
+            couponState={couponState}
+          />
 
           <div className="mt-10 pt-10 border-t border-gray-200 space-y-4 text-[14px]">
              <div className="flex justify-between"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold tracking-tighter text-[#333]">₹{subtotal.toFixed(2)}</span></div>
@@ -610,15 +698,11 @@ export function CheckoutPage() {
                <span className="text-[20px] font-bold font-grandstander text-[#333]">Total</span>
                <div className="flex items-baseline gap-2">
                   <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">INR</span>
-                  <span className="text-4xl font-bold font-grandstander text-[#E84949] tracking-tighter">₹{total.toFixed(2)}</span>
+                  <span className="text-4xl font-bold font-grandstander text-[#333] tracking-tighter">₹{total.toFixed(2)}</span>
                </div>
              </div>
           </div>
           
-          <div className="mt-12 p-6 rounded-3xl bg-[#FDF4E6] border border-dashed border-gray-300 flex items-center gap-5">
-             <ShieldCheck className="text-green-600 shrink-0" size={24}/>
-             <p className="text-[11px] text-gray-500 leading-relaxed font-medium uppercase tracking-widest">Secure Checkout Guaranteed</p>
-          </div>
         </div>
       </div>
     </div>
