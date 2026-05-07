@@ -55,4 +55,4 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://toyove-backend.onrender.com/api # Replace with your actual backend URL
+        value: https://toyovoindia.onrender.com/api
