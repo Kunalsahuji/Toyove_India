@@ -1,5 +1,6 @@
 import env from '../config/env.js';
 import { parseDurationToMs } from './duration.js';
+import logger from './logger.js';
 
 const getCookieOptions = (type) => {
   const maxAgeAccess = parseDurationToMs(env.JWT_ACCESS_EXPIRES_IN || '15m');
@@ -15,8 +16,17 @@ const getCookieOptions = (type) => {
 };
 
 export const setAuthCookies = (res, accessToken, refreshToken) => {
-  res.cookie('accessToken', accessToken, getCookieOptions('access'));
-  res.cookie('refreshToken', refreshToken, getCookieOptions('refresh'));
+  const accessOptions = getCookieOptions('access');
+  const refreshOptions = getCookieOptions('refresh');
+  res.cookie('accessToken', accessToken, accessOptions);
+  res.cookie('refreshToken', refreshToken, refreshOptions);
+  logger.info('Auth cookies set', {
+    secure: accessOptions.secure,
+    sameSite: accessOptions.sameSite,
+    hasDomain: Boolean(accessOptions.domain),
+    accessMaxAge: accessOptions.maxAge,
+    refreshMaxAge: refreshOptions.maxAge
+  });
 };
 
 export const clearAuthCookies = (res) => {
@@ -28,4 +38,9 @@ export const clearAuthCookies = (res) => {
   };
   res.clearCookie('accessToken', options);
   res.clearCookie('refreshToken', options);
+  logger.info('Auth cookies cleared', {
+    secure: options.secure,
+    sameSite: options.sameSite,
+    hasDomain: Boolean(options.domain)
+  });
 };
