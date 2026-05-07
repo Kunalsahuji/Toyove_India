@@ -9,7 +9,6 @@ lerna-debug.log*
 
 # Dependencies
 node_modules/
-package-lock.json
 
 # Production Build
 dist/
@@ -22,7 +21,6 @@ dist-ssr/
 .env.development.local
 .env.test.local
 .env.production.local
-.env.example
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
