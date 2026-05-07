@@ -86,6 +86,8 @@ const loadRazorpayScript = () => new Promise((resolve) => {
   const script = document.createElement('script')
   script.src = 'https://checkout.razorpay.com/v1/checkout.js'
   script.onload = () => resolve(true)
+  script.onerror = () => resolve(false)
+  document.body.appendChild(script)
 })
 
 // Stable component outside to prevent focus loss on re-renders
@@ -134,6 +136,7 @@ export function CheckoutPage() {
   const [showSummary, setShowSummary] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [selectedUpi, setSelectedUpi] = useState('gpay')
+  const [isLaunchingPayment, setIsLaunchingPayment] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
@@ -245,7 +248,7 @@ export function CheckoutPage() {
   }
 
   const startPayment = async () => {
-    setIsProcessing(true)
+    setIsLaunchingPayment(true)
     try {
       const scriptLoaded = await loadRazorpayScript()
       if (!scriptLoaded || !window.Razorpay) {
@@ -327,12 +330,14 @@ export function CheckoutPage() {
 
       const razorpay = new window.Razorpay(options)
       razorpay.on('payment.failed', (response) => {
+        setIsLaunchingPayment(false)
         setIsProcessing(false)
         alert(response.error?.description || 'Payment failed')
       })
-      setIsProcessing(false)
+      setIsLaunchingPayment(false)
       razorpay.open()
     } catch (error) {
+      setIsLaunchingPayment(false)
       setIsProcessing(false)
       alert(error.message || 'Unable to start payment')
     }
@@ -359,6 +364,16 @@ export function CheckoutPage() {
            </div>
            <h2 className="text-3xl font-grandstander font-bold text-[#333] mb-4">Confirming Order...</h2>
            <p className="text-gray-500 max-w-sm font-medium">Please do not refresh or close this window. We are finalizing your toy adventure!</p>
+        </div>
+      )}
+
+      {isLaunchingPayment && (
+        <div className="fixed inset-0 z-[1900] bg-white/70 backdrop-blur-sm flex flex-col items-center justify-center text-center p-10">
+           <div className="relative mb-8">
+              <div className="w-20 h-20 border-8 border-gray-100 border-t-[#6651A4] rounded-full animate-spin" />
+           </div>
+           <h2 className="text-2xl font-grandstander font-bold text-[#333] mb-3">Opening Secure Payment...</h2>
+           <p className="text-gray-500 max-w-sm font-medium">We are connecting with Razorpay. Please wait a moment.</p>
         </div>
       )}
       
@@ -655,7 +670,7 @@ export function CheckoutPage() {
              </div>
 
              <div className="flex flex-col gap-4">
-                <button onClick={startPayment} disabled={isProcessing} className="w-full h-16 bg-[#005BD1] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
+                <button onClick={startPayment} disabled={isProcessing || isLaunchingPayment} className="w-full h-16 bg-[#005BD1] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
                    Pay Now — ₹{total.toFixed(2)}
                 </button>
                 <button onClick={() => setStep(1)} className="text-[12px] font-bold text-gray-400 hover:text-[#333] uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"><ChevronLeft size={16} /> Return to information</button>

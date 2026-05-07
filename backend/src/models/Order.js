@@ -253,6 +253,11 @@ const orderSchema = new mongoose.Schema({
       trim: true,
     },
     verifiedAt: Date,
+    lastWebhookEvent: {
+      type: String,
+      trim: true,
+    },
+    lastWebhookAt: Date,
   },
   notes: {
     type: String,

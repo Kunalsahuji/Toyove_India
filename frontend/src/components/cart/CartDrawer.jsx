@@ -14,6 +14,17 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
   // Hard-lock body scroll
   useEffect(() => {
+    const unlockBody = () => {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflowY = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+      }
+    };
+
     if (isOpen) {
       const scrollY = window.pageYOffset;
       document.body.style.position = 'fixed';
@@ -21,15 +32,12 @@ const CartDrawer = ({ isOpen, onClose }) => {
       document.body.style.width = '100%';
       document.body.style.overflowY = 'hidden';
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
+      unlockBody();
     }
+
+    return () => {
+      unlockBody();
+    };
   }, [isOpen]);
 
   const handleLinkClick = (path) => {

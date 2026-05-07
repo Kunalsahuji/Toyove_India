@@ -3,8 +3,10 @@ import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { buildOrderDraftFromCheckout, applyFulfilledOrderSideEffects } from '../services/order.service.js';
+import { sendOrderConfirmationEmail } from '../services/email.service.js';
 import { getRazorpayClient, verifyRazorpayPaymentSignature, verifyRazorpayWebhookSignature } from '../utils/razorpay.js';
 import env from '../config/env.js';
+import logger from '../utils/logger.js';
 
 const toPaise = (value) => Math.round(Number(value) * 100);
 
@@ -89,6 +91,12 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
     couponData: draft.couponData,
   });
 
+  try {
+    await sendOrderConfirmationEmail(order);
+  } catch (error) {
+    logger.warn(`Order confirmation email failed for ${order.orderNumber}: ${error.message}`);
+  }
+
   return successResponse(res, 201, 'Payment verified and order placed successfully', order);
 });
 
@@ -107,6 +115,44 @@ export const handleRazorpayWebhook = asyncHandler(async (req, res, next) => {
 
   if (!isValid) {
     return next(new AppError('Invalid Razorpay webhook signature', 400));
+  }
+
+  const event = req.body.event;
+  const paymentEntity = req.body.payload?.payment?.entity;
+  const refundEntity = req.body.payload?.refund?.entity;
+
+  if (paymentEntity?.id) {
+    const order = await Order.findOne({ 'paymentGateway.razorpayPaymentId': paymentEntity.id });
+    if (order) {
+      order.paymentGateway = {
+        ...order.paymentGateway,
+        lastWebhookEvent: event,
+        lastWebhookAt: new Date(),
+      };
+
+      if (event === 'payment.captured') {
+        order.paymentStatus = 'paid';
+      }
+
+      if (event === 'payment.failed') {
+        order.paymentStatus = 'failed';
+      }
+
+      await order.save();
+    }
+  }
+
+  if (refundEntity?.payment_id) {
+    const order = await Order.findOne({ 'paymentGateway.razorpayPaymentId': refundEntity.payment_id });
+    if (order) {
+      order.paymentStatus = 'refunded';
+      order.paymentGateway = {
+        ...order.paymentGateway,
+        lastWebhookEvent: event,
+        lastWebhookAt: new Date(),
+      };
+      await order.save();
+    }
   }
 
   return successResponse(res, 200, 'Webhook received successfully', { received: true });
