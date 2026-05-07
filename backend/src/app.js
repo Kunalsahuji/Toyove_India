@@ -21,8 +21,8 @@ app.use(requestId);
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin in development/test for tools like curl/Postman
-    if (!origin && ['development', 'test'].includes(env.NODE_ENV)) {
+    // Allow requests with no origin (like direct browser visits or mobile apps)
+    if (!origin) {
       return callback(null, true);
     }
     
@@ -30,11 +30,15 @@ app.use(cors({
     if (env.ALLOWED_ORIGINS.includes(normalizedOrigin)) {
       return callback(null, true);
     }
+    if (env.ALLOWED_ORIGIN_PATTERNS.some((pattern) => pattern.test(normalizedOrigin))) {
+      return callback(null, true);
+    }
 
     logger.warn('CORS blocked request', {
       origin,
       normalizedOrigin,
       allowedOrigins: env.ALLOWED_ORIGINS,
+      allowedOriginPatterns: env.ALLOWED_ORIGIN_PATTERNS.map((pattern) => pattern.toString()),
       method: 'cors-origin-check'
     });
     callback(new Error('Not allowed by CORS'));

@@ -19,6 +19,8 @@ const parseOrigins = (value) => (value || '')
   .map(normalize)
   .filter(Boolean);
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const devOrigins = parseOrigins(process.env.CLIENT_URL);
 const prodOrigins = parseOrigins(process.env.CLIENT_URL_PROD);
 
@@ -40,6 +42,10 @@ const env = {
       ...(!isProduction ? defaultDevOrigins : []),
     ]),
   ],
+  VERCEL_PROJECT_SLUG: process.env.VERCEL_PROJECT_SLUG || 'toyove-india-jhkr',
+  ALLOWED_ORIGIN_PATTERNS: [
+    new RegExp(`^https://${escapeRegex(process.env.VERCEL_PROJECT_SLUG || 'toyove-india-jhkr')}(?:-[a-z0-9-]+)?\\.vercel\\.app$`, 'i'),
+  ],
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
@@ -58,6 +64,12 @@ const env = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 };
+
+if (env.NODE_ENV !== 'test') {
+  console.log(`[ENV] Detected Environment: ${env.NODE_ENV}`);
+  console.log(`[ENV] Primary Client URL: ${env.CLIENT_URL}`);
+  console.log(`[ENV] Allowed Origins:`, env.ALLOWED_ORIGINS);
+}
 
 const validateEnv = () => {
   if (env.NODE_ENV !== 'test') {
