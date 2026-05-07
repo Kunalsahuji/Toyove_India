@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
 const defaultDevOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -12,22 +11,28 @@ const defaultDevOrigins = [
 
 const isProduction = (process.env.NODE_ENV || 'development') === 'production';
 
-// Automatically pick the correct URL based on environment
-const clientUrl = isProduction 
-  ? (process.env.CLIENT_URL_PROD || 'https://toyove-india-jhkr.vercel.app')
-  : (process.env.CLIENT_URL || 'http://localhost:5173');
-
 // Helper to remove trailing slashes which often cause CORS failures
 const normalize = (url) => url?.trim().replace(/\/+$/, '');
+
+// Parse any additional origins from CLIENT_URL environment variable
+const configuredOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map(normalize)
+  .filter(Boolean);
+
+// Automatically pick the primary URL based on environment
+const primaryClientUrl = isProduction 
+  ? (process.env.CLIENT_URL_PROD || 'https://toyove-india-jhkr.vercel.app')
+  : (process.env.CLIENT_URL || 'http://localhost:5173');
 
 const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: process.env.PORT || 5000,
   MONGO_URI: process.env.MONGO_URI,
-  CLIENT_URL: normalize(clientUrl),
+  CLIENT_URL: normalize(primaryClientUrl),
   ALLOWED_ORIGINS: [
     ...new Set([
-      normalize(clientUrl),
+      normalize(primaryClientUrl),
       ...configuredOrigins,
       ...(!isProduction ? defaultDevOrigins : []),
     ]),
