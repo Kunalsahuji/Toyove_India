@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, ChevronRight, ChevronLeft, CreditCard, Truck, ShieldCheck, ShoppingCart, Smartphone, Check, ChevronDown, ChevronUp, Tag, AlertCircle, X, Landmark } from 'lucide-react'
+import { ShoppingBag, ChevronRight, ShoppingCart, Check, ChevronDown, ChevronUp, Tag, AlertCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
@@ -43,39 +43,6 @@ const FloatingSelect = ({ label, name, value, onChange, options }) => (
     <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
   </div>
 )
-
-const UPIIcon = ({ type, selected }) => {
-  const logos = {
-    gpay: (
-      <svg viewBox="0 0 48 48" className="h-6 w-auto">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-      </svg>
-    ),
-    phonepe: (
-      <svg viewBox="0 0 120 120" className="h-6 w-auto">
-        <rect width="120" height="120" rx="20" fill="#5f259f"/>
-        <path d="M40 30h40v60H40z" fill="none" stroke="white" strokeWidth="8"/>
-        <circle cx="60" cy="60" r="15" fill="white"/>
-      </svg>
-    ),
-    paytm: (
-      <svg viewBox="0 0 100 100" className="h-6 w-auto">
-        <rect width="100" height="100" rx="10" fill="#00baf2"/>
-        <text x="50" y="65" fontSize="30" fontWeight="bold" fill="white" textAnchor="middle">Paytm</text>
-      </svg>
-    )
-  }
-
-  return (
-    <div className={`w-full flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${selected ? 'border-[#E84949] bg-[#FDF4E6]' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
-       {logos[type]}
-       <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{type}</span>
-    </div>
-  )
-}
 
 const loadRazorpayScript = () => new Promise((resolve) => {
   if (window.Razorpay) {
@@ -132,10 +99,7 @@ export function CheckoutPage() {
   const { user, addresses } = useAuth()
   const navigate = useNavigate()
   
-  const [step, setStep] = useState(1) 
   const [showSummary, setShowSummary] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState('card')
-  const [selectedUpi, setSelectedUpi] = useState('gpay')
   const [isLaunchingPayment, setIsLaunchingPayment] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
@@ -165,6 +129,22 @@ export function CheckoutPage() {
     district: defaultAddress?.district || ''
   })
 
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      email: user?.email || prev.email,
+      firstName: prev.firstName || defaultAddress?.firstName || user?.firstName || '',
+      lastName: prev.lastName || defaultAddress?.lastName || user?.lastName || '',
+      address: prev.address || defaultAddress?.address || '',
+      apartment: prev.apartment || defaultAddress?.apartment || '',
+      city: prev.city || defaultAddress?.city || '',
+      state: prev.state || defaultAddress?.state || '',
+      postalCode: prev.postalCode || defaultAddress?.postalCode || '',
+      phone: prev.phone || defaultAddress?.phone || '',
+      district: prev.district || defaultAddress?.district || '',
+    }))
+  }, [user, defaultAddress])
+
   const shippingRates = { standard: 15.00, express: 45.00 }
   const shippingCharge = shippingRates[shippingMethod]
   const discountAmount = couponState?.discountAmount || 0
@@ -172,7 +152,23 @@ export function CheckoutPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [step])
+  }, [])
+
+  useEffect(() => {
+    if (!isLaunchingPayment && !isProcessing) {
+      return undefined
+    }
+
+    const originalHtmlOverflow = document.documentElement.style.overflow
+    const originalBodyOverflow = document.body.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.documentElement.style.overflow = originalHtmlOverflow
+      document.body.style.overflow = originalBodyOverflow
+    }
+  }, [isLaunchingPayment, isProcessing])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -237,15 +233,7 @@ export function CheckoutPage() {
     couponCode: couponState?.coupon?.code || '',
   }
 
-  const getPaymentMethodLabel = () => {
-    if (paymentMethod === 'upi') {
-      return `UPI (${selectedUpi.toUpperCase()})`
-    }
-    if (paymentMethod === 'netbanking') {
-      return 'NET BANKING'
-    }
-    return 'CARD'
-  }
+  const getPaymentMethodLabel = () => 'Razorpay'
 
   const startPayment = async () => {
     setIsLaunchingPayment(true)
@@ -271,7 +259,7 @@ export function CheckoutPage() {
         },
         notes: {
           shipping_method: shippingMethod,
-          preferred_method: paymentMethod,
+          preferred_method: 'razorpay',
         },
         theme: {
           color: '#6651A4',
@@ -311,21 +299,6 @@ export function CheckoutPage() {
             setIsProcessing(false)
           },
         },
-      }
-
-      if (paymentMethod === 'upi') {
-        options.config = {
-          display: {
-            blocks: {
-              preferred: {
-                name: 'Pay using UPI',
-                instruments: [{ method: 'upi' }],
-              },
-            },
-            sequence: ['block.preferred'],
-            preferences: { show_default_blocks: true },
-          },
-        }
       }
 
       const razorpay = new window.Razorpay(options)
@@ -394,13 +367,11 @@ export function CheckoutPage() {
         <nav className="flex items-center gap-2 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-8">
            <Link to="/cart" className="text-[#E84949]">Cart</Link>
            <ChevronRight size={14} className="text-gray-300" />
-           <span className={step === 1 ? 'text-[#333]' : 'text-gray-400'}>Information</span>
+           <span className="text-[#333]">Information</span>
            <ChevronRight size={14} className="text-gray-300" />
-           <span className={step === 2 ? 'text-[#333]' : 'text-gray-400'}>Payment</span>
+           <span className="text-[#333]">Payment</span>
         </nav>
 
-
-        {step === 1 ? (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-10">
             <section className="space-y-6">
                <div className="flex justify-between items-center">
@@ -502,76 +473,22 @@ export function CheckoutPage() {
                </div>
             </section>
 
-            <button onClick={() => setStep(2)} className="w-full h-16 bg-[#005BD1] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all shadow-xl active:scale-95">Continue to payment</button>
-          </motion.div>
-        ) : (
-          <motion.div initial={{opacity:0, x:20}} animate={{opacity:1, x:0}} className="space-y-10">
-             <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100 text-[13px] bg-gray-50/50">
-                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Contact</span><span className="grow font-medium">{formData.email}</span><button onClick={() => setStep(1)} className="text-[#005BD1] font-bold">Change</button></div>
-                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Ship to</span><span className="grow font-medium">{formData.address}, {formData.city}, {formData.state}</span><button onClick={() => setStep(1)} className="text-[#005BD1] font-bold">Change</button></div>
-                <div className="p-4 flex gap-4"><span className="text-gray-400 w-20">Method</span><span className="grow font-medium text-capitalize">{shippingMethod} Shipping · ₹{shippingCharge.toFixed(2)}</span></div>
-             </div>
-
-             <section className="space-y-6">
-                <div>
-                   <h2 className="text-xl font-bold text-[#333] font-grandstander">Payment</h2>
-                   <p className="text-[12px] text-gray-500 font-medium">All transactions are secure and encrypted.</p>
-                   <p className="text-[11px] text-[#005BD1] font-bold mt-1">✓ Secure Payment Gateway</p>
-                </div>
-                <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
-                   
-                   {/* Card Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'card' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
-                      <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('card')}>
-                         <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'card'} onChange={() => {}} className="w-4 h-4 accent-[#005BD1]" />
-                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><CreditCard size={16}/> Credit/Debit Card</span>
-                         </div>
-                      </div>
-                      {paymentMethod === 'card' && (
-                        <motion.div initial={{height:0}} animate={{height:'auto'}} className="mt-4 space-y-4 pt-4 border-t border-gray-200">
-                           <FloatingInput label="Card number" name="cardNo" />
-                           <div className="grid grid-cols-2 gap-4"><FloatingInput label="Expiration (MM/YY)" name="exp" /><FloatingInput label="Security code" name="cvv" /></div>
-                        </motion.div>
-                      )}
-                   </div>
-
-                   {/* UPI Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'upi' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
-                      <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('upi')}>
-                         <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'upi'} onChange={() => {}} className="w-4 h-4 accent-[#005BD1]" />
-                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Smartphone size={16}/> UPI</span>
-                         </div>
-                      </div>
-                      {paymentMethod === 'upi' && (
-                        <motion.div initial={{height:0}} animate={{height:'auto'}} className="mt-4 pt-4 border-t border-gray-200 space-y-6">
-                           <div className="grid grid-cols-3 gap-4">
-                              <button onClick={() => setSelectedUpi('gpay')}><UPIIcon type="gpay" selected={selectedUpi === 'gpay'} /></button>
-                              <button onClick={() => setSelectedUpi('phonepe')}><UPIIcon type="phonepe" selected={selectedUpi === 'phonepe'} /></button>
-                              <button onClick={() => setSelectedUpi('paytm')}><UPIIcon type="paytm" selected={selectedUpi === 'paytm'} /></button>
-                           </div>
-                           <FloatingInput label="Enter UPI ID" name="upiId" value={formData.upiId} onChange={handleInputChange} />
-                        </motion.div>
-                      )}
-                   </div>
-
-                   {/* Net Banking Option */}
-                   <div className={`p-5 transition-all ${paymentMethod === 'netbanking' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
-                      <div className="flex items-center justify-between cursor-pointer" onClick={() => setPaymentMethod('netbanking')}>
-                         <div className="flex items-center gap-4">
-                            <input type="radio" checked={paymentMethod === 'netbanking'} onChange={() => {}} className="w-4 h-4 accent-[#005BD1]" />
-                            <span className="font-bold text-[#333] text-[14px] flex items-center gap-2"><Landmark size={16}/> Net Banking</span>
-                         </div>
-                      </div>
-                      {paymentMethod === 'netbanking' && (
-                        <motion.div initial={{height:0}} animate={{height:'auto'}} className="mt-4 pt-4 border-t border-gray-200">
-                           <FloatingSelect label="Select Bank" name="bank" options={["", "HDFC Bank", "SBI Bank", "ICICI Bank", "Axis Bank", "Kotak Mahindra"]} />
-                        </motion.div>
-                      )}
-                   </div>
-                </div>
-             </section>
+            <section className="space-y-4">
+               <div>
+                  <h2 className="text-xl font-bold text-[#333] font-grandstander">Payment</h2>
+                  <p className="text-[12px] text-gray-500 font-medium">All transactions are secure and encrypted.</p>
+                  <p className="text-[11px] text-[#005BD1] font-bold mt-1">Razorpay will show cards, UPI, wallets, and bank options on the next step.</p>
+               </div>
+               <div className="rounded-2xl border border-gray-200 bg-[#F8F8F8] p-5 md:p-6">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                     <div>
+                        <p className="text-[14px] font-bold text-[#333]">Secure Razorpay Checkout</p>
+                        <p className="mt-1 text-[12px] font-medium leading-5 text-gray-500">Your payment method selection happens inside Razorpay's secure checkout window.</p>
+                     </div>
+                     <span className="inline-flex h-8 items-center rounded-full bg-white px-3 text-[10px] font-bold uppercase tracking-widest text-[#005BD1] shadow-sm">Gateway</span>
+                  </div>
+               </div>
+            </section>
 
              {/* Mobile/Tablet Reimagined Summary (Screenshot 1 & 2) */}
              <div className="lg:hidden space-y-6">
@@ -670,13 +587,11 @@ export function CheckoutPage() {
              </div>
 
              <div className="flex flex-col gap-4">
-                <button onClick={startPayment} disabled={isProcessing || isLaunchingPayment} className="w-full h-16 bg-[#005BD1] text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
-                   Pay Now — ₹{total.toFixed(2)}
+                <button onClick={startPayment} disabled={isProcessing || isLaunchingPayment} className="w-full h-16 bg-[#005BD1] px-4 text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl text-center">
+                   Pay Now - ₹{total.toFixed(2)}
                 </button>
-                <button onClick={() => setStep(1)} className="text-[12px] font-bold text-gray-400 hover:text-[#333] uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"><ChevronLeft size={16} /> Return to information</button>
              </div>
           </motion.div>
-        )}
       </div>
 
       {/* Right Side: Order Summary */}

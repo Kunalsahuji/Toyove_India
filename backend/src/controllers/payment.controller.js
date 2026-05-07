@@ -13,6 +13,12 @@ const toPaise = (value) => Math.round(Number(value) * 100);
 export const createRazorpayOrder = asyncHandler(async (req, res) => {
   const draft = await buildOrderDraftFromCheckout(req.body);
   const razorpay = getRazorpayClient();
+  logger.info('Razorpay order creation requested', {
+    email: req.body?.customer?.email,
+    shippingMethod: req.body?.shippingMethod,
+    itemCount: req.body?.items?.length || 0,
+    totalAmount: draft.totalAmount,
+  });
 
   const razorpayOrder = await razorpay.orders.create({
     amount: toPaise(draft.totalAmount),
@@ -41,6 +47,11 @@ export const createRazorpayOrder = asyncHandler(async (req, res) => {
 });
 
 export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
+  logger.info('Razorpay payment verification requested', {
+    razorpayOrderId: req.body.razorpayOrderId,
+    razorpayPaymentId: req.body.razorpayPaymentId,
+    email: req.body?.checkoutData?.customer?.email,
+  });
   const isValidSignature = verifyRazorpayPaymentSignature({
     orderId: req.body.razorpayOrderId,
     paymentId: req.body.razorpayPaymentId,
@@ -48,6 +59,10 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
   });
 
   if (!isValidSignature) {
+    logger.warn('Razorpay payment verification failed: signature mismatch', {
+      razorpayOrderId: req.body.razorpayOrderId,
+      razorpayPaymentId: req.body.razorpayPaymentId,
+    });
     return next(new AppError('Payment verification failed. Signature mismatch.', 400));
   }
 
@@ -57,6 +72,12 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
   }
 
   const draft = await buildOrderDraftFromCheckout(req.body.checkoutData);
+  logger.info('Razorpay payment verification draft prepared', {
+    razorpayOrderId: req.body.razorpayOrderId,
+    razorpayPaymentId: req.body.razorpayPaymentId,
+    totalAmount: draft.totalAmount,
+    itemCount: draft.items.length,
+  });
 
   const order = await Order.create({
     user: req.user?._id || null,
@@ -96,6 +117,12 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
   } catch (error) {
     logger.warn(`Order confirmation email failed for ${order.orderNumber}: ${error.message}`);
   }
+
+  logger.info('Razorpay payment verification success', {
+    orderNumber: order.orderNumber,
+    razorpayOrderId: req.body.razorpayOrderId,
+    razorpayPaymentId: req.body.razorpayPaymentId,
+  });
 
   return successResponse(res, 201, 'Payment verified and order placed successfully', order);
 });

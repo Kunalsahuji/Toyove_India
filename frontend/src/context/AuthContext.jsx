@@ -2,9 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { getCurrentUser, loginUser, logoutUser, registerUser } from '../services/authApi'
 
 const AuthContext = createContext()
+const AUTH_USER_STORAGE_KEY = 'TOYOVOINDIA_auth_user'
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem(AUTH_USER_STORAGE_KEY)
+    return savedUser ? JSON.parse(savedUser) : null
+  })
   const [authLoading, setAuthLoading] = useState(true)
   const [addresses, setAddresses] = useState(() => {
     const saved = localStorage.getItem('TOYOVOINDIA_addresses')
@@ -55,6 +59,14 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('TOYOVOINDIA_addresses', JSON.stringify(addresses))
   }, [addresses])
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(user))
+    } else {
+      localStorage.removeItem(AUTH_USER_STORAGE_KEY)
+    }
+  }, [user])
 
   useEffect(() => {
     localStorage.setItem('TOYOVOINDIA_payment_methods', JSON.stringify(savedMethods))
