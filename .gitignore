@@ -5,6 +5,10 @@ dist/
 build/
 .env
 *.log
+frontend/.env*
+!frontend/.env.example
+backend/.env*
+!backend/.env.example
 
 # IDEs
 .vscode/

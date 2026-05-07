@@ -14,15 +14,17 @@ const isProduction = (process.env.NODE_ENV || 'development') === 'production';
 // Helper to remove trailing slashes which often cause CORS failures
 const normalize = (url) => url?.trim().replace(/\/+$/, '');
 
-// Parse any additional origins from CLIENT_URL environment variable
-const configuredOrigins = (process.env.CLIENT_URL || '')
+const parseOrigins = (value) => (value || '')
   .split(',')
   .map(normalize)
   .filter(Boolean);
 
+const devOrigins = parseOrigins(process.env.CLIENT_URL);
+const prodOrigins = parseOrigins(process.env.CLIENT_URL_PROD);
+
 // Automatically pick the primary URL based on environment
 const primaryClientUrl = isProduction 
-  ? (process.env.CLIENT_URL_PROD || 'https://toyove-india-jhkr.vercel.app')
+  ? (normalize(prodOrigins[0]) || 'https://toyove-india-jhkr.vercel.app')
   : (process.env.CLIENT_URL || 'http://localhost:5173');
 
 const env = {
@@ -33,7 +35,8 @@ const env = {
   ALLOWED_ORIGINS: [
     ...new Set([
       normalize(primaryClientUrl),
-      ...configuredOrigins,
+      ...devOrigins,
+      ...prodOrigins,
       ...(!isProduction ? defaultDevOrigins : []),
     ]),
   ],
