@@ -1,8 +1,9 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import env from '../config/env.js';
 import logger from '../utils/logger.js';
 
 const isProduction = env.NODE_ENV === 'production';
+const buildScopedKey = (req) => `${ipKeyGenerator(req.ip)}:${req.path}`;
 
 export const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -25,7 +26,7 @@ export const authLimiter = rateLimit({
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   skipSuccessfulRequests: true,
-  keyGenerator: (req) => `${req.ip}:${req.path}`,
+  keyGenerator: buildScopedKey,
   handler: (req, res, next, options) => {
     logger.warn(`Auth rate limit hit`, {
       path: req.path,
@@ -52,7 +53,7 @@ export const refreshLimiter = rateLimit({
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   skipSuccessfulRequests: true,
-  keyGenerator: (req) => `${req.ip}:${req.path}`,
+  keyGenerator: buildScopedKey,
   handler: (req, res, next, options) => {
     logger.warn(`Refresh rate limit hit`, {
       path: req.path,

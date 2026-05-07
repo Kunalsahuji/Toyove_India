@@ -11,8 +11,10 @@ import { apiLimiter } from './middlewares/rateLimiter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFound } from './middlewares/notFound.js';
 import apiRoutes from './routes/index.js';
+import logger from './utils/logger.js';
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Global Middlewares
 app.use(requestId);
@@ -28,7 +30,13 @@ app.use(cors({
     if (env.ALLOWED_ORIGINS.includes(normalizedOrigin)) {
       return callback(null, true);
     }
-    
+
+    logger.warn('CORS blocked request', {
+      origin,
+      normalizedOrigin,
+      allowedOrigins: env.ALLOWED_ORIGINS,
+      method: 'cors-origin-check'
+    });
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
