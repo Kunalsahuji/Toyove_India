@@ -22,7 +22,9 @@ const env = {
   PORT: process.env.PORT || 5000,
   MONGO_URI: process.env.MONGO_URI,
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
+  CLIENT_URL_PROD: process.env.CLIENT_URL_PROD || 'https://toyove-india-jhkr.vercel.app',
   ALLOWED_ORIGINS: [
+      `https://${process.env.CLIENT_URL_PROD}`,
     ...new Set([
       ...configuredOrigins,
       ...((process.env.NODE_ENV || 'development') === 'development' ? defaultDevOrigins : []),

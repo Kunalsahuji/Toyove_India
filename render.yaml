@@ -21,7 +21,7 @@ services:
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: CLIENT_URL
-        value: https://toyove-frontend.onrender.com # Update this after frontend is deployed
+        value: https://toyove-india-jhkr.vercel.app
       - key: RAZORPAY_KEY_ID
         sync: false
       - key: RAZORPAY_KEY_SECRET
