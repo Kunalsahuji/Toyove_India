@@ -60,6 +60,14 @@ export const normalizeOrder = (order) => ({
   estimatedDeliveryDate: order.estimatedDeliveryDate || '',
   deliveryDelayReason: order.deliveryDelayReason || '',
   trackingNumber: order.trackingNumber || '',
+  returnRequest: {
+    status: order.returnRequest?.status || 'none',
+    statusLabel: order.returnRequest?.statusLabel || 'No Request',
+    reason: order.returnRequest?.reason || '',
+    adminNote: order.returnRequest?.adminNote || '',
+    requestedAt: order.returnRequest?.requestedAt || null,
+    reviewedAt: order.returnRequest?.reviewedAt || null,
+  },
 })
 
 export const createOrder = async (data) => {
@@ -123,6 +131,14 @@ export const cancelMyOrder = async (id, data = {}) => {
   return normalizeOrder(payload.data)
 }
 
+export const requestMyOrderReturn = async (id, data) => {
+  const payload = await apiRequest(`/orders/my/${id}/return-request`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+  return normalizeOrder(payload.data)
+}
+
 export const getAdminOrders = async (params = {}) => {
   const query = new URLSearchParams()
   Object.entries(params).forEach(([key, value]) => {
@@ -145,6 +161,14 @@ export const getAdminOrder = async (id) => {
 
 export const updateAdminOrderStatus = async (id, data) => {
   const payload = await apiRequest(`/admin/orders/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+  return normalizeOrder(payload.data)
+}
+
+export const updateAdminOrderReturnRequest = async (id, data) => {
+  const payload = await apiRequest(`/admin/orders/${id}/return-request`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   })

@@ -11,7 +11,7 @@ import {
   Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink, Building, Map, ChevronDown
 } from 'lucide-react'
 import { indianStates, commonCities, addressTypes } from '../utils/indiaData'
-import { cancelMyOrder, getMyOrders } from '../services/orderApi'
+import { cancelMyOrder, getMyOrders, requestMyOrderReturn } from '../services/orderApi'
 import { useToast } from '../context/ToastContext'
 
 const upiLogos = {
@@ -204,8 +204,14 @@ export function AccountPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(true)
+  const [returnReason, setReturnReason] = useState('')
 
   const canCancelOrder = (order) => ['pending', 'processing'].includes(order?.status)
+  const canRequestReturn = (order) => (
+    order?.status === 'delivered' &&
+    order?.paymentStatus === 'paid' &&
+    ['none', 'rejected'].includes(order?.returnRequest?.status || 'none')
+  )
 
   const handleCancelOrder = async (orderId) => {
     if (!window.confirm('Cancel this order?')) return
@@ -218,6 +224,26 @@ export function AccountPage() {
       success(`Order ${updatedOrder.orderNumber} cancelled.`)
     } catch (err) {
       showError(err.message || 'Order cancellation failed')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleRequestReturn = async (orderId) => {
+    if (!returnReason.trim()) {
+      showError('Please enter a return or refund reason.')
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      const updatedOrder = await requestMyOrderReturn(orderId, { reason: returnReason.trim() })
+      setOrders((prev) => prev.map((order) => order.id === orderId ? updatedOrder : order))
+      setSelectedOrder((prev) => (prev?.id === orderId ? updatedOrder : prev))
+      setReturnReason('')
+      success(`Return request submitted for order ${updatedOrder.orderNumber}.`)
+    } catch (err) {
+      showError(err.message || 'Return request failed')
     } finally {
       setIsProcessing(false)
     }
@@ -362,6 +388,16 @@ export function AccountPage() {
                        <p className="mt-2 text-[12px] font-medium text-gray-600">{selectedOrder.deliveryDelayReason}</p>
                      </div>
                    )}
+                   <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
+                     <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Return / Refund</p>
+                     <p className="mt-2 text-[13px] font-bold text-gray-700">{selectedOrder.returnRequest?.statusLabel || 'No Request'}</p>
+                     {selectedOrder.returnRequest?.reason && (
+                       <p className="mt-2 text-[12px] text-gray-600"><span className="font-bold">Reason:</span> {selectedOrder.returnRequest.reason}</p>
+                     )}
+                     {selectedOrder.returnRequest?.adminNote && (
+                       <p className="mt-2 text-[12px] text-gray-600"><span className="font-bold">Admin Update:</span> {selectedOrder.returnRequest.adminNote}</p>
+                     )}
+                   </div>
                    {selectedOrder.statusHistory?.length > 0 && (
                      <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4">Order Timeline</p>
@@ -387,6 +423,23 @@ export function AccountPage() {
                      >
                        Cancel Order
                      </button>
+                   )}
+                   {canRequestReturn(selectedOrder) && (
+                     <div className="space-y-3">
+                       <textarea
+                         value={returnReason}
+                         onChange={(event) => setReturnReason(event.target.value)}
+                         placeholder="Reason for return or refund request"
+                         rows={3}
+                         className="w-full px-4 py-3 rounded-2xl bg-white/70 border border-black/[0.03] text-[12px] text-gray-700 outline-none resize-none"
+                       />
+                       <button
+                         onClick={() => handleRequestReturn(selectedOrder.id)}
+                         className="w-full h-12 bg-[#6651A4] text-white rounded-2xl font-bold uppercase tracking-[0.18em] text-[10px] hover:bg-[#333] transition-all"
+                       >
+                         Request Return / Refund
+                       </button>
+                     </div>
                    )}
                 </div>
              </motion.div>
@@ -563,6 +616,9 @@ export function AccountPage() {
                              <div>
                                <p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">₹{order.total.toFixed(2)}</p>
                                <p className={`text-[9px] font-bold uppercase ${order.status==='cancelled'?'text-red-400':'text-green-500'}`}>{order.statusLabel}</p>
+                               {order.returnRequest?.status !== 'none' && (
+                                 <p className="mt-1 text-[9px] font-bold uppercase text-[#6651A4]">{order.returnRequest.statusLabel}</p>
+                               )}
                                {canCancelOrder(order) && (
                                  <button
                                    onClick={(event) => {

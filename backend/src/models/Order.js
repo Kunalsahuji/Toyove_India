@@ -66,6 +66,26 @@ const orderStatusEventSchema = new mongoose.Schema({
   },
 }, { _id: false });
 
+const returnRequestSchema = new mongoose.Schema({
+  status: {
+    type: String,
+    enum: ['none', 'requested', 'approved', 'rejected', 'refunded'],
+    default: 'none',
+  },
+  reason: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Return reason cannot exceed 500 characters'],
+  },
+  adminNote: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Admin note cannot exceed 500 characters'],
+  },
+  requestedAt: Date,
+  reviewedAt: Date,
+}, { _id: false });
+
 const orderSchema = new mongoose.Schema({
   orderNumber: {
     type: String,
@@ -277,6 +297,10 @@ const orderSchema = new mongoose.Schema({
   },
   deliveredAt: Date,
   cancelledAt: Date,
+  returnRequest: {
+    type: returnRequestSchema,
+    default: () => ({ status: 'none' }),
+  },
   statusHistory: {
     type: [orderStatusEventSchema],
     default: [],

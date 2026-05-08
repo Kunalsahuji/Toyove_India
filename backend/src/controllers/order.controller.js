@@ -27,6 +27,14 @@ const PAYMENT_METHOD_LABELS = {
   razorpay: 'Razorpay',
 };
 
+const RETURN_STATUS_LABELS = {
+  none: 'No Request',
+  requested: 'Requested',
+  approved: 'Approved',
+  rejected: 'Rejected',
+  refunded: 'Refunded',
+};
+
 const formatOrderDate = (value) => new Intl.DateTimeFormat('en-IN', {
   day: '2-digit',
   month: 'short',
@@ -71,6 +79,14 @@ const mapOrder = (order) => ({
   total: order.totalAmount,
   customerEmail: order.customer.email,
   trackingNumber: order.trackingNumber || '',
+  returnRequest: {
+    status: order.returnRequest?.status || 'none',
+    statusLabel: RETURN_STATUS_LABELS[order.returnRequest?.status || 'none'],
+    reason: order.returnRequest?.reason || '',
+    adminNote: order.returnRequest?.adminNote || '',
+    requestedAt: order.returnRequest?.requestedAt || null,
+    reviewedAt: order.returnRequest?.reviewedAt || null,
+  },
   items: order.items.map(mapOrderItem),
   customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim(),
   destination: `${order.shippingAddress.city === 'Other' ? order.shippingAddress.district : order.shippingAddress.city}, ${order.shippingAddress.state}`,
@@ -90,6 +106,10 @@ const mapOrderSummary = (order) => ({
   customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim(),
   destination: `${order.shippingAddress.city === 'Other' ? order.shippingAddress.district : order.shippingAddress.city}, ${order.shippingAddress.state}`,
   createdAt: order.createdAt,
+  returnRequest: {
+    status: order.returnRequest?.status || 'none',
+    statusLabel: RETURN_STATUS_LABELS[order.returnRequest?.status || 'none'],
+  },
 });
 
 const appendStatusHistory = (order, status, actorRole, note) => {
@@ -194,6 +214,38 @@ export const cancelMyOrder = asyncHandler(async (req, res, next) => {
   await order.save();
 
   return successResponse(res, 200, 'Order cancelled successfully', mapOrder(order));
+});
+
+export const requestMyOrderReturn = asyncHandler(async (req, res, next) => {
+  const order = await Order.findOne({ _id: req.params.id, user: req.user._id });
+  if (!order) {
+    return next(new AppError('Order not found', 404));
+  }
+
+  if (order.status !== 'delivered') {
+    return next(new AppError('Return requests are allowed only for delivered orders', 400));
+  }
+
+  if (order.paymentStatus !== 'paid') {
+    return next(new AppError('Only paid orders can have a refund request', 400));
+  }
+
+  if (order.returnRequest?.status && order.returnRequest.status !== 'none' && order.returnRequest.status !== 'rejected') {
+    return next(new AppError('A return request already exists for this order', 400));
+  }
+
+  order.returnRequest = {
+    status: 'requested',
+    reason: req.body.reason.trim(),
+    adminNote: '',
+    requestedAt: new Date(),
+    reviewedAt: null,
+  };
+
+  appendStatusHistory(order, order.status, 'customer', `Return requested: ${req.body.reason.trim()}`);
+  await order.save();
+
+  return successResponse(res, 200, 'Return request submitted successfully', mapOrder(order));
 });
 
 export const getOrderSummary = asyncHandler(async (req, res, next) => {
@@ -343,4 +395,34 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
   await order.save();
 
   return successResponse(res, 200, 'Order status updated successfully', mapOrder(order));
+});
+
+export const adminUpdateOrderReturnRequest = asyncHandler(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return next(new AppError('Order not found', 404));
+  }
+
+  if (!order.returnRequest || order.returnRequest.status === 'none') {
+    return next(new AppError('No return request exists for this order', 400));
+  }
+
+  const nextStatus = req.body.status;
+  order.returnRequest.status = nextStatus;
+  order.returnRequest.adminNote = req.body.adminNote?.trim() || '';
+  order.returnRequest.reviewedAt = new Date();
+
+  if (nextStatus === 'refunded') {
+    order.paymentStatus = 'refunded';
+  }
+
+  appendStatusHistory(
+    order,
+    order.status,
+    req.user.role,
+    `Return request marked ${nextStatus}${order.returnRequest.adminNote ? `: ${order.returnRequest.adminNote}` : ''}`
+  );
+
+  await order.save();
+  return successResponse(res, 200, 'Return request updated successfully', mapOrder(order));
 });

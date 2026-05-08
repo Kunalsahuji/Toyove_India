@@ -7,7 +7,7 @@ import {
   ExternalLink, Printer, CheckCircle, Clock
 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
-import { getAdminOrder, updateAdminOrderStatus } from '../../services/orderApi'
+import { getAdminOrder, updateAdminOrderReturnRequest, updateAdminOrderStatus } from '../../services/orderApi'
 
 const getAllowedStatusOptions = (status) => {
   switch (status) {
@@ -42,6 +42,8 @@ export function AdminOrderDetail() {
   const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState('')
   const [deliveryDelayReason, setDeliveryDelayReason] = useState('')
   const [statusNote, setStatusNote] = useState('')
+  const [returnStatus, setReturnStatus] = useState('requested')
+  const [returnAdminNote, setReturnAdminNote] = useState('')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -57,6 +59,8 @@ export function AdminOrderDetail() {
         setEstimatedDeliveryDate(data.estimatedDeliveryDate ? new Date(data.estimatedDeliveryDate).toISOString().split('T')[0] : '')
         setDeliveryDelayReason(data.deliveryDelayReason || '')
         setStatusNote('')
+        setReturnStatus(data.returnRequest?.status === 'none' ? 'requested' : (data.returnRequest?.status || 'requested'))
+        setReturnAdminNote(data.returnRequest?.adminNote || '')
       } catch (err) {
         if (isMounted) {
           showError(err.message || 'Order could not be loaded')
@@ -99,6 +103,24 @@ export function AdminOrderDetail() {
       success(`Order ${updatedOrder.orderNumber} updated.`)
     } catch (err) {
       showError(err.message || 'Order update failed')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleReturnRequestUpdate = async () => {
+    setSaving(true)
+    try {
+      const updatedOrder = await updateAdminOrderReturnRequest(order.id, {
+        status: returnStatus,
+        adminNote: returnAdminNote,
+      })
+      setOrder(updatedOrder)
+      setReturnStatus(updatedOrder.returnRequest?.status || 'requested')
+      setReturnAdminNote(updatedOrder.returnRequest?.adminNote || '')
+      success(`Return request updated for order ${updatedOrder.orderNumber}.`)
+    } catch (err) {
+      showError(err.message || 'Return request update failed')
     } finally {
       setSaving(false)
     }
@@ -329,6 +351,41 @@ export function AdminOrderDetail() {
                    View Receipt <ExternalLink size={14} />
                 </button>
               </div>
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }} className="bg-white rounded-[32px] p-6 md:p-8 shadow-sm border border-black/[0.03]">
+            <h3 className="text-lg font-grandstander font-bold text-gray-800 mb-6">Return / Refund Request</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Current Status</p>
+                <p className="text-[14px] font-bold text-gray-800">{order.returnRequest?.statusLabel || 'No Request'}</p>
+              </div>
+              {order.returnRequest?.reason && (
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Customer Reason</p>
+                  <p className="text-[12px] text-gray-600">{order.returnRequest.reason}</p>
+                </div>
+              )}
+              {order.returnRequest?.status !== 'none' && (
+                <>
+                  <select value={returnStatus} onChange={(event) => setReturnStatus(event.target.value)} className="w-full h-11 px-4 rounded-xl bg-[#FDF4E6] border border-black/[0.05] text-[#333] text-[11px] font-bold uppercase tracking-widest outline-none">
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="refunded">Refunded</option>
+                  </select>
+                  <textarea
+                    value={returnAdminNote}
+                    onChange={(event) => setReturnAdminNote(event.target.value)}
+                    placeholder="Admin note for this return request"
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl bg-[#FDF4E6] border border-black/[0.05] text-[#333] text-[11px] font-medium outline-none placeholder:text-gray-400 resize-none"
+                  />
+                  <button onClick={handleReturnRequestUpdate} disabled={saving} className="w-full h-11 bg-[#333] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest disabled:opacity-60">
+                    {saving ? 'Saving...' : 'Update Return Request'}
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

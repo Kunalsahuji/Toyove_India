@@ -32,7 +32,7 @@ export const createOrderSchema = z.object({
     }),
     shippingAddress: shippingAddressSchema,
     items: z.array(checkoutItemSchema).min(1),
-    shippingMethod: z.enum(['standard', 'express']).default('standard'),
+    shippingMethod: z.string().trim().min(1).max(40).default('standard'),
     paymentMethod: z.enum(['card', 'upi', 'netbanking', 'cod', 'razorpay']).default('card'),
     couponCode: optionalString,
     notes: optionalString,
@@ -58,6 +58,15 @@ export const cancelMyOrderSchema = z.object({
   }),
   body: z.object({
     reason: optionalString,
+  }),
+});
+
+export const requestReturnSchema = z.object({
+  params: z.object({
+    id: objectId,
+  }),
+  body: z.object({
+    reason: z.string().trim().min(5).max(500),
   }),
 });
 
@@ -91,5 +100,15 @@ export const adminUpdateOrderStatusSchema = z.object({
     paymentStatus: z.enum(['pending', 'paid', 'failed', 'refunded']).optional(),
     estimatedDeliveryDate: z.string().datetime().optional().or(z.literal('')),
     deliveryDelayReason: optionalString,
+  }),
+});
+
+export const adminUpdateReturnRequestSchema = z.object({
+  params: z.object({
+    id: objectId,
+  }),
+  body: z.object({
+    status: z.enum(['approved', 'rejected', 'refunded']),
+    adminNote: optionalString,
   }),
 });
