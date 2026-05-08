@@ -56,6 +56,10 @@ export const normalizeOrder = (order) => ({
   customerName: order.customerName || `${order.customer?.firstName || ''} ${order.customer?.lastName || ''}`.trim(),
   customerEmail: order.customerEmail || order.customer?.email || '',
   destination: order.destination || '',
+  deliveryDate: order.deliveryDate || '',
+  estimatedDeliveryDate: order.estimatedDeliveryDate || '',
+  deliveryDelayReason: order.deliveryDelayReason || '',
+  trackingNumber: order.trackingNumber || '',
 })
 
 export const createOrder = async (data) => {

@@ -75,6 +75,8 @@ export const buildOrderDraftFromCheckout = async (checkoutInput) => {
   }
 
   const totalAmount = Number(Math.max(subtotal + shippingAmount - discountAmount, 0).toFixed(2));
+  const estimatedDeliveryDate = new Date();
+  estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + (checkoutInput.shippingMethod === 'express' ? 2 : 5));
 
   return {
     items,
@@ -82,6 +84,7 @@ export const buildOrderDraftFromCheckout = async (checkoutInput) => {
     shippingAmount,
     discountAmount,
     totalAmount,
+    estimatedDeliveryDate,
     couponData,
     resolvedItems,
   };

@@ -33,7 +33,10 @@ const formatOrderDate = (value) => new Intl.DateTimeFormat('en-IN', {
   year: 'numeric',
 }).format(new Date(value));
 
-const getDeliveryDate = (createdAt, shippingMethod) => {
+const getDeliveryDate = (createdAt, shippingMethod, estimatedDeliveryDate) => {
+  if (estimatedDeliveryDate) {
+    return formatOrderDate(estimatedDeliveryDate);
+  }
   const days = shippingMethod === 'express' ? 2 : 5;
   const date = new Date(createdAt);
   date.setDate(date.getDate() + days);
@@ -59,12 +62,15 @@ const mapOrder = (order) => ({
   statusLabel: STATUS_LABELS[order.status] || order.status,
   paymentStatusLabel: PAYMENT_STATUS_LABELS[order.paymentStatus] || order.paymentStatus,
   paymentMethodLabel: order.paymentGateway?.paymentMethodLabel || PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod,
-  deliveryDate: getDeliveryDate(order.createdAt, order.shippingMethod),
+  deliveryDate: getDeliveryDate(order.createdAt, order.shippingMethod, order.estimatedDeliveryDate),
+  estimatedDeliveryDate: order.estimatedDeliveryDate,
+  deliveryDelayReason: order.deliveryDelayReason || '',
   subtotal: order.subtotal,
   shipping: order.shippingAmount,
   discount: order.discountAmount,
   total: order.totalAmount,
   customerEmail: order.customer.email,
+  trackingNumber: order.trackingNumber || '',
   items: order.items.map(mapOrderItem),
   customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim(),
   destination: `${order.shippingAddress.city === 'Other' ? order.shippingAddress.district : order.shippingAddress.city}, ${order.shippingAddress.state}`,
@@ -112,6 +118,7 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     paymentStatus: 'paid',
     paymentMethod: req.body.paymentMethod,
     shippingMethod: req.body.shippingMethod,
+    estimatedDeliveryDate: draft.estimatedDeliveryDate,
     subtotal: draft.subtotal,
     shippingAmount: draft.shippingAmount,
     discountAmount: draft.discountAmount,
@@ -275,6 +282,35 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
   if (req.body.trackingNumber !== undefined) {
     order.trackingNumber = req.body.trackingNumber || undefined;
   }
+  if (req.body.estimatedDeliveryDate !== undefined) {
+    const createdAtStart = new Date(order.createdAt);
+    createdAtStart.setHours(0, 0, 0, 0);
+    const requestedDate = new Date(req.body.estimatedDeliveryDate);
+    requestedDate.setHours(0, 0, 0, 0);
+
+    if (Number.isNaN(requestedDate.getTime())) {
+      return next(new AppError('Estimated delivery date is invalid', 400));
+    }
+
+    if (requestedDate < createdAtStart) {
+      return next(new AppError('Estimated delivery date cannot be earlier than the order date', 400));
+    }
+
+    const currentDate = order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate) : null;
+    if (currentDate) {
+      currentDate.setHours(0, 0, 0, 0);
+    }
+
+    const isDateChanging = !currentDate || currentDate.getTime() !== requestedDate.getTime();
+    if (isDateChanging && !req.body.deliveryDelayReason?.trim()) {
+      return next(new AppError('A reason is required when updating the delivery date', 400));
+    }
+
+    order.estimatedDeliveryDate = requestedDate;
+    order.deliveryDelayReason = req.body.deliveryDelayReason?.trim() || '';
+  } else if (req.body.deliveryDelayReason !== undefined) {
+    order.deliveryDelayReason = req.body.deliveryDelayReason?.trim() || '';
+  }
   if (req.body.status === 'delivered') {
     order.deliveredAt = new Date();
   }
@@ -293,6 +329,14 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
       req.body.status,
       req.user.role,
       req.body.note || `Status updated from ${previousStatus} to ${req.body.status}`
+    );
+  }
+  if (req.body.estimatedDeliveryDate !== undefined && req.body.deliveryDelayReason?.trim()) {
+    appendStatusHistory(
+      order,
+      order.status,
+      req.user.role,
+      `Delivery date updated to ${formatOrderDate(order.estimatedDeliveryDate)}: ${req.body.deliveryDelayReason.trim()}`
     );
   }
 

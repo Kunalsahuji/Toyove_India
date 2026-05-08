@@ -133,6 +133,7 @@ export function OrderSuccessPage() {
                       <div className="p-6 bg-white/50 rounded-xl border border-[#333]/5 flex flex-col justify-center min-h-[120px]">
                          <p className="text-4xl font-bold font-grandstander text-[#333] tracking-tighter">{order.deliveryDate || '28th April'}</p>
                          <p className="text-[10px] text-[#E84949] font-bold uppercase tracking-widest mt-2">Standard Delivery Method</p>
+                         {order.deliveryDelayReason && <p className="text-[11px] text-[#333]/60 mt-3 font-medium">{order.deliveryDelayReason}</p>}
                       </div>
                    </div>
                 </div>

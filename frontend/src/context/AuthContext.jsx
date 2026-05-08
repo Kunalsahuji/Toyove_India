@@ -3,12 +3,17 @@ import { getCurrentUser, loginUser, logoutUser, registerUser } from '../services
 
 const AuthContext = createContext()
 const AUTH_USER_STORAGE_KEY = 'TOYOVOINDIA_auth_user'
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
+const readStoredUser = () => {
+  try {
     const savedUser = localStorage.getItem(AUTH_USER_STORAGE_KEY)
     return savedUser ? JSON.parse(savedUser) : null
-  })
+  } catch {
+    return null
+  }
+}
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(readStoredUser)
   const [authLoading, setAuthLoading] = useState(true)
   const [addresses, setAddresses] = useState(() => {
     const saved = localStorage.getItem('TOYOVOINDIA_addresses')
@@ -30,8 +35,9 @@ export function AuthProvider({ children }) {
       setUser(currentUser)
       return currentUser
     } catch {
-      setUser(null)
-      return null
+      const fallbackUser = readStoredUser()
+      setUser(fallbackUser)
+      return fallbackUser
     }
   }
 
@@ -44,7 +50,7 @@ export function AuthProvider({ children }) {
         const currentUser = await getCurrentUser()
         if (isMounted) setUser(currentUser)
       } catch {
-        if (isMounted) setUser(null)
+        if (isMounted) setUser((previousUser) => previousUser || readStoredUser())
       } finally {
         if (isMounted) setAuthLoading(false)
       }

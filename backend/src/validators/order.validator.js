@@ -89,5 +89,7 @@ export const adminUpdateOrderStatusSchema = z.object({
     note: optionalString,
     trackingNumber: optionalString,
     paymentStatus: z.enum(['pending', 'paid', 'failed', 'refunded']).optional(),
+    estimatedDeliveryDate: z.string().datetime().optional().or(z.literal('')),
+    deliveryDelayReason: optionalString,
   }),
 });

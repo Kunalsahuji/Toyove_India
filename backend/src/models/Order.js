@@ -268,6 +268,12 @@ const orderSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  estimatedDeliveryDate: Date,
+  deliveryDelayReason: {
+    type: String,
+    trim: true,
+    maxlength: [240, 'Delivery delay reason cannot exceed 240 characters'],
+  },
   deliveredAt: Date,
   cancelledAt: Date,
   statusHistory: {
@@ -292,6 +298,13 @@ orderSchema.pre('validate', function() {
       actorRole: 'system',
       createdAt: new Date(),
     }];
+  }
+
+  if (!this.estimatedDeliveryDate) {
+    const baseDate = this.createdAt ? new Date(this.createdAt) : new Date();
+    const days = this.shippingMethod === 'express' ? 2 : 5;
+    baseDate.setDate(baseDate.getDate() + days);
+    this.estimatedDeliveryDate = baseDate;
   }
 });
 

@@ -345,7 +345,23 @@ export function AccountPage() {
                    <div className="flex justify-between items-center p-5 bg-[#FAEAD3] rounded-2xl">
                       <div><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Value</p><p className="text-2xl font-bold font-grandstander text-gray-700">₹{selectedOrder.total.toFixed(2)}</p></div>
                       <div className="text-right"><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p><p className="text-[12px] font-bold text-green-500 uppercase tracking-widest">{selectedOrder.statusLabel}</p></div>
+                    </div>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                     <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
+                       <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Expected Delivery</p>
+                       <p className="mt-2 text-[13px] font-bold text-gray-700">{selectedOrder.deliveryDate || '-'}</p>
+                     </div>
+                     <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
+                       <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Tracking Number</p>
+                       <p className="mt-2 text-[13px] font-bold text-gray-700">{selectedOrder.trackingNumber || '-'}</p>
+                     </div>
                    </div>
+                   {selectedOrder.deliveryDelayReason && (
+                     <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
+                       <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Delivery Update</p>
+                       <p className="mt-2 text-[12px] font-medium text-gray-600">{selectedOrder.deliveryDelayReason}</p>
+                     </div>
+                   )}
                    {canCancelOrder(selectedOrder) && (
                      <button
                        onClick={() => handleCancelOrder(selectedOrder.id)}
@@ -523,7 +539,7 @@ export function AccountPage() {
                                    <Box size={20} className="text-[#6651A4] opacity-20"/>
                                 )}
                              </div>
-                             <div><p className="text-[13px] font-bold text-gray-700">Order #{order.orderNumber}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items</p></div>
+                             <div><p className="text-[13px] font-bold text-gray-700">Order #{order.orderNumber}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items · ETA {order.deliveryDate || '-'}</p></div>
                           </div>
                           <div className="text-right flex items-center gap-4 md:gap-6">
                              <div>

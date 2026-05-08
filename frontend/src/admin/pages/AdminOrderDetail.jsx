@@ -34,6 +34,8 @@ export function AdminOrderDetail() {
   const [order, setOrder] = useState(null)
   const [status, setStatus] = useState('processing')
   const [trackingNumber, setTrackingNumber] = useState('')
+  const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState('')
+  const [deliveryDelayReason, setDeliveryDelayReason] = useState('')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -46,6 +48,8 @@ export function AdminOrderDetail() {
         setOrder(data)
         setStatus(data.status)
         setTrackingNumber(data.trackingNumber || '')
+        setEstimatedDeliveryDate(data.estimatedDeliveryDate ? new Date(data.estimatedDeliveryDate).toISOString().split('T')[0] : '')
+        setDeliveryDelayReason(data.deliveryDelayReason || '')
       } catch (err) {
         if (isMounted) {
           showError(err.message || 'Order could not be loaded')
@@ -75,8 +79,11 @@ export function AdminOrderDetail() {
       const updatedOrder = await updateAdminOrderStatus(order.id, {
         status,
         trackingNumber,
+        estimatedDeliveryDate: estimatedDeliveryDate ? new Date(`${estimatedDeliveryDate}T00:00:00.000Z`).toISOString() : '',
+        deliveryDelayReason,
       })
       setOrder(updatedOrder)
+      setStatus(updatedOrder.status)
       success(`Order ${updatedOrder.orderNumber} updated.`)
     } catch (err) {
       showError(err.message || 'Order update failed')
@@ -162,6 +169,10 @@ export function AdminOrderDetail() {
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Shipping Fee</span>
                 <span className="font-bold text-gray-800">₹{order.shipping.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Expected Delivery</span>
+                <span className="font-bold text-gray-800">{order.deliveryDate || '-'}</span>
               </div>
               {order.discount > 0 && (
                 <div className="flex justify-between text-sm text-[#E84949]">
@@ -256,7 +267,7 @@ export function AdminOrderDetail() {
                   </div>
                 </div>
                 <div className="space-y-3 pt-2">
-                  <select value={status} onChange={(event) => setStatus(event.target.value)} className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none">
+                  <select value={status} onChange={(event) => setStatus(event.target.value)} className="w-full h-11 px-4 rounded-xl bg-[#FDF4E6] border border-white/10 text-[#333] text-[11px] font-bold uppercase tracking-widest outline-none">
                     {getAllowedStatusOptions(order.status).map((value) => (
                       <option key={value} value={value}>
                         {value.charAt(0).toUpperCase() + value.slice(1)}
@@ -268,9 +279,28 @@ export function AdminOrderDetail() {
                     onChange={(event) => setTrackingNumber(event.target.value)}
                     placeholder="Tracking Number"
                     disabled={!['shipped', 'delivered'].includes(status)}
-                    className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-white/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-11 px-4 rounded-xl bg-[#FDF4E6] border border-white/10 text-[#333] text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  <input
+                    type="date"
+                    value={estimatedDeliveryDate}
+                    min={order?.createdAt ? new Date(order.createdAt).toISOString().split('T')[0] : ''}
+                    onChange={(event) => setEstimatedDeliveryDate(event.target.value)}
+                    className="w-full h-11 px-4 rounded-xl bg-[#FDF4E6] border border-white/10 text-[#333] text-[11px] font-bold uppercase tracking-widest outline-none"
+                  />
+                  <textarea
+                    value={deliveryDelayReason}
+                    onChange={(event) => setDeliveryDelayReason(event.target.value)}
+                    placeholder="Reason for delivery date change"
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl bg-[#FDF4E6] border border-white/10 text-[#333] text-[11px] font-medium outline-none placeholder:text-gray-400 resize-none"
                   />
                 </div>
+                {order.trackingNumber && (
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/70">
+                    Tracking Number: {order.trackingNumber}
+                  </p>
+                )}
                 <button className="w-full h-11 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all mt-2 flex items-center justify-center gap-2">
                    View Receipt <ExternalLink size={14} />
                 </button>
