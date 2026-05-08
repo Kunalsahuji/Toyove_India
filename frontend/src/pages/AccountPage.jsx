@@ -362,6 +362,24 @@ export function AccountPage() {
                        <p className="mt-2 text-[12px] font-medium text-gray-600">{selectedOrder.deliveryDelayReason}</p>
                      </div>
                    )}
+                   {selectedOrder.statusHistory?.length > 0 && (
+                     <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
+                       <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4">Order Timeline</p>
+                       <div className="space-y-3 max-h-[180px] overflow-y-auto custom-scrollbar">
+                         {selectedOrder.statusHistory.slice().reverse().map((entry, index) => (
+                           <div key={`${entry.status}-${entry.createdAt}-${index}`} className="flex items-start justify-between gap-4">
+                             <div>
+                               <p className="text-[11px] font-bold text-gray-700 uppercase tracking-widest">{entry.status}</p>
+                               <p className="mt-1 text-[11px] text-gray-500">{entry.note || 'Status updated'}</p>
+                             </div>
+                             <p className="text-[10px] text-gray-400 font-medium shrink-0">
+                               {new Date(entry.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                             </p>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                   )}
                    {canCancelOrder(selectedOrder) && (
                      <button
                        onClick={() => handleCancelOrder(selectedOrder.id)}

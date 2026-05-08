@@ -36,6 +36,7 @@ export function AdminOrderDetail() {
   const [trackingNumber, setTrackingNumber] = useState('')
   const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState('')
   const [deliveryDelayReason, setDeliveryDelayReason] = useState('')
+  const [statusNote, setStatusNote] = useState('')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export function AdminOrderDetail() {
         setTrackingNumber(data.trackingNumber || '')
         setEstimatedDeliveryDate(data.estimatedDeliveryDate ? new Date(data.estimatedDeliveryDate).toISOString().split('T')[0] : '')
         setDeliveryDelayReason(data.deliveryDelayReason || '')
+        setStatusNote('')
       } catch (err) {
         if (isMounted) {
           showError(err.message || 'Order could not be loaded')
@@ -81,9 +83,14 @@ export function AdminOrderDetail() {
         trackingNumber,
         estimatedDeliveryDate: estimatedDeliveryDate ? new Date(`${estimatedDeliveryDate}T00:00:00.000Z`).toISOString() : '',
         deliveryDelayReason,
+        note: statusNote,
       })
       setOrder(updatedOrder)
       setStatus(updatedOrder.status)
+      setTrackingNumber(updatedOrder.trackingNumber || '')
+      setEstimatedDeliveryDate(updatedOrder.estimatedDeliveryDate ? new Date(updatedOrder.estimatedDeliveryDate).toISOString().split('T')[0] : '')
+      setDeliveryDelayReason(updatedOrder.deliveryDelayReason || '')
+      setStatusNote('')
       success(`Order ${updatedOrder.orderNumber} updated.`)
     } catch (err) {
       showError(err.message || 'Order update failed')
@@ -295,12 +302,22 @@ export function AdminOrderDetail() {
                     rows={3}
                     className="w-full px-4 py-3 rounded-xl bg-[#FDF4E6] border border-white/10 text-[#333] text-[11px] font-medium outline-none placeholder:text-gray-400 resize-none"
                   />
+                  <textarea
+                    value={statusNote}
+                    onChange={(event) => setStatusNote(event.target.value)}
+                    placeholder="Status update note for this order"
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl bg-[#FDF4E6] border border-white/10 text-[#333] text-[11px] font-medium outline-none placeholder:text-gray-400 resize-none"
+                  />
                 </div>
                 {order.trackingNumber && (
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/70">
                     Tracking Number: {order.trackingNumber}
                   </p>
                 )}
+                <p className="text-[10px] text-white/70 font-medium leading-relaxed">
+                  Tracking number should be added once the order is shipped so the customer can follow courier movement.
+                </p>
                 <button className="w-full h-11 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all mt-2 flex items-center justify-center gap-2">
                    View Receipt <ExternalLink size={14} />
                 </button>

@@ -158,6 +158,7 @@ export function AdminOrders() {
                     <td className="py-4 px-6">
                       <p className="text-[14px] font-bold text-[#6651A4] font-mono">#{order.orderNumber}</p>
                       <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1 mt-1"><Calendar size={10}/> {order.date}</p>
+                      <p className="text-[10px] text-gray-400 font-medium mt-1">ETA: {order.deliveryDate || '-'}</p>
                     </td>
                     <td className="py-4 px-6">
                       <p className="text-[13px] font-bold text-gray-800">{order.customerName}</p>
@@ -166,6 +167,9 @@ export function AdminOrders() {
                     <td className="py-4 px-6">
                       <p className="text-[15px] font-bold font-grandstander text-gray-800">₹{order.total.toFixed(2)} <span className="text-[10px] text-gray-400 font-sans ml-1">({order.itemsCount} items)</span></p>
                       <p className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${order.paymentStatus === 'refunded' ? 'text-red-500' : 'text-green-500'}`}><CreditCard size={10}/> {order.paymentStatusLabel} ({order.paymentMethodLabel})</p>
+                      {order.trackingNumber && (
+                        <p className="text-[10px] text-gray-400 font-medium mt-1">Tracking: {order.trackingNumber}</p>
+                      )}
                     </td>
                     <td className="py-4 px-6 text-center">
                       <select 
