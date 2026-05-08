@@ -5,6 +5,23 @@ import { Search, Filter, MoreVertical, ShoppingBag, Eye, Calendar, MapPin, Credi
 import { useToast } from '../../context/ToastContext'
 import { getAdminOrders, updateAdminOrderStatus } from '../../services/orderApi'
 
+const getAllowedStatusOptions = (status) => {
+  switch (status) {
+    case 'pending':
+      return ['pending', 'processing', 'shipped', 'cancelled']
+    case 'processing':
+      return ['processing', 'shipped', 'cancelled']
+    case 'shipped':
+      return ['shipped', 'delivered', 'cancelled']
+    case 'delivered':
+      return ['delivered']
+    case 'cancelled':
+      return ['cancelled']
+    default:
+      return ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+  }
+}
+
 export function AdminOrders() {
   const navigate = useNavigate()
   const { success, error: showError } = useToast()
@@ -166,11 +183,11 @@ export function AdminOrders() {
                         onClick={(e) => e.stopPropagation()}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border appearance-none outline-none cursor-pointer hover:shadow-md transition-all ${getStatusColor(order.status)}`}
                       >
-                        <option value="pending">Pending</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
+                        {getAllowedStatusOptions(order.status).map((value) => (
+                          <option key={value} value={value}>
+                            {value.charAt(0).toUpperCase() + value.slice(1)}
+                          </option>
+                        ))}
                       </select>
                     </td>
                     <td className="py-4 px-6 text-right">

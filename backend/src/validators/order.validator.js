@@ -52,6 +52,15 @@ export const orderIdParamSchema = z.object({
   }),
 });
 
+export const cancelMyOrderSchema = z.object({
+  params: z.object({
+    id: objectId,
+  }),
+  body: z.object({
+    reason: optionalString,
+  }),
+});
+
 export const orderSummaryParamSchema = z.object({
   params: z.object({
     orderNumber: z.string().trim().min(8).max(40),

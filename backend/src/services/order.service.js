@@ -102,3 +102,22 @@ export const applyFulfilledOrderSideEffects = async ({ resolvedItems, couponData
     await Coupon.updateOne({ _id: couponData.couponId }, { $inc: { usedCount: 1 } });
   }
 };
+
+export const revertFulfilledOrderSideEffects = async ({ items, couponData }) => {
+  await Promise.all((items || []).map((item) => Product.updateOne(
+    { _id: item.product },
+    {
+      $inc: {
+        stock: item.quantity,
+        soldCount: -item.quantity,
+      },
+    }
+  )));
+
+  if (couponData?.couponId) {
+    await Coupon.updateOne(
+      { _id: couponData.couponId, usedCount: { $gt: 0 } },
+      { $inc: { usedCount: -1 } }
+    );
+  }
+};

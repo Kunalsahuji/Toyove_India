@@ -2,7 +2,7 @@ import Order from '../models/Order.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
-import { applyFulfilledOrderSideEffects, buildOrderDraftFromCheckout } from '../services/order.service.js';
+import { applyFulfilledOrderSideEffects, buildOrderDraftFromCheckout, revertFulfilledOrderSideEffects } from '../services/order.service.js';
 
 const STATUS_LABELS = {
   pending: 'Pending',
@@ -95,6 +95,8 @@ const appendStatusHistory = (order, status, actorRole, note) => {
   });
 };
 
+const CANCELLABLE_STATUSES = new Set(['pending', 'processing']);
+
 export const createOrder = asyncHandler(async (req, res, next) => {
   const draft = await buildOrderDraftFromCheckout(req.body);
 
@@ -154,6 +156,37 @@ export const getMyOrder = asyncHandler(async (req, res, next) => {
   }
 
   return successResponse(res, 200, 'Order details fetched successfully', mapOrder(order));
+});
+
+export const cancelMyOrder = asyncHandler(async (req, res, next) => {
+  const order = await Order.findOne({ _id: req.params.id, user: req.user._id });
+  if (!order) {
+    return next(new AppError('Order not found', 404));
+  }
+
+  if (!CANCELLABLE_STATUSES.has(order.status)) {
+    return next(new AppError('This order can no longer be cancelled', 400));
+  }
+
+  const previousStatus = order.status;
+  order.status = 'cancelled';
+  order.cancelledAt = new Date();
+
+  appendStatusHistory(
+    order,
+    'cancelled',
+    'customer',
+    req.body.reason || `Order cancelled by customer from ${previousStatus}`
+  );
+
+  await revertFulfilledOrderSideEffects({
+    items: order.items,
+    couponData: order.coupon,
+  });
+
+  await order.save();
+
+  return successResponse(res, 200, 'Order cancelled successfully', mapOrder(order));
 });
 
 export const getOrderSummary = asyncHandler(async (req, res, next) => {
@@ -227,6 +260,13 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
   }
 
   const previousStatus = order.status;
+  if (previousStatus === 'cancelled' && req.body.status !== 'cancelled') {
+    return next(new AppError('Cancelled orders cannot be reopened from this flow', 400));
+  }
+  if (previousStatus === 'delivered' && req.body.status === 'cancelled') {
+    return next(new AppError('Delivered orders cannot be cancelled', 400));
+  }
+
   order.status = req.body.status;
 
   if (req.body.paymentStatus) {
@@ -240,6 +280,12 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
   }
   if (req.body.status === 'cancelled') {
     order.cancelledAt = new Date();
+    if (previousStatus !== 'cancelled') {
+      await revertFulfilledOrderSideEffects({
+        items: order.items,
+        couponData: order.coupon,
+      });
+    }
   }
   if (previousStatus !== req.body.status || req.body.note) {
     appendStatusHistory(

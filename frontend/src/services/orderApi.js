@@ -111,6 +111,14 @@ export const getMyOrder = async (id) => {
   return normalizeOrder(payload.data)
 }
 
+export const cancelMyOrder = async (id, data = {}) => {
+  const payload = await apiRequest(`/orders/my/${id}/cancel`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+  return normalizeOrder(payload.data)
+}
+
 export const getAdminOrders = async (params = {}) => {
   const query = new URLSearchParams()
   Object.entries(params).forEach(([key, value]) => {

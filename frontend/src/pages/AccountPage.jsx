@@ -11,7 +11,8 @@ import {
   Trash2, HelpCircle, Shield, FileText, ChevronLeft, Star, ShoppingBag, Gift, Heart, Menu, RefreshCw, Box, ExternalLink, Building, Map, ChevronDown
 } from 'lucide-react'
 import { indianStates, commonCities, addressTypes } from '../utils/indiaData'
-import { getMyOrders } from '../services/orderApi'
+import { cancelMyOrder, getMyOrders } from '../services/orderApi'
+import { useToast } from '../context/ToastContext'
 
 const upiLogos = {
   'Google Pay': (
@@ -185,6 +186,7 @@ export function AccountPage() {
   const { user, authLoading, logout, updateUser, addresses, addAddress, deleteAddress, updateAddress, setAsDefaultAddress } = useAuth()
   const { paymentHistory, savedMethods, addSavedMethod, deleteSavedMethod } = usePayment()
   const { wishlist } = useCart()
+  const { success, error: showError } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -202,6 +204,24 @@ export function AccountPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(true)
+
+  const canCancelOrder = (order) => ['pending', 'processing'].includes(order?.status)
+
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Cancel this order?')) return
+
+    setIsProcessing(true)
+    try {
+      const updatedOrder = await cancelMyOrder(orderId)
+      setOrders((prev) => prev.map((order) => order.id === orderId ? updatedOrder : order))
+      setSelectedOrder((prev) => (prev?.id === orderId ? updatedOrder : prev))
+      success(`Order ${updatedOrder.orderNumber} cancelled.`)
+    } catch (err) {
+      showError(err.message || 'Order cancellation failed')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
 
   // Corporate Info based on Image
   const corporateInfo = {
@@ -326,6 +346,14 @@ export function AccountPage() {
                       <div><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Value</p><p className="text-2xl font-bold font-grandstander text-gray-700">₹{selectedOrder.total.toFixed(2)}</p></div>
                       <div className="text-right"><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p><p className="text-[12px] font-bold text-green-500 uppercase tracking-widest">{selectedOrder.statusLabel}</p></div>
                    </div>
+                   {canCancelOrder(selectedOrder) && (
+                     <button
+                       onClick={() => handleCancelOrder(selectedOrder.id)}
+                       className="w-full h-12 bg-[#E84949] text-white rounded-2xl font-bold uppercase tracking-[0.18em] text-[10px] hover:bg-[#333] transition-all"
+                     >
+                       Cancel Order
+                     </button>
+                   )}
                 </div>
              </motion.div>
           </div>
@@ -498,7 +526,21 @@ export function AccountPage() {
                              <div><p className="text-[13px] font-bold text-gray-700">Order #{order.orderNumber}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items</p></div>
                           </div>
                           <div className="text-right flex items-center gap-4 md:gap-6">
-                             <div><p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">₹{order.total.toFixed(2)}</p><p className={`text-[9px] font-bold uppercase ${order.status==='cancelled'?'text-red-400':'text-green-500'}`}>{order.statusLabel}</p></div>
+                             <div>
+                               <p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">₹{order.total.toFixed(2)}</p>
+                               <p className={`text-[9px] font-bold uppercase ${order.status==='cancelled'?'text-red-400':'text-green-500'}`}>{order.statusLabel}</p>
+                               {canCancelOrder(order) && (
+                                 <button
+                                   onClick={(event) => {
+                                     event.stopPropagation()
+                                     handleCancelOrder(order.id)
+                                   }}
+                                   className="mt-2 text-[9px] font-bold uppercase tracking-widest text-[#E84949] hover:text-[#333] transition-colors"
+                                 >
+                                   Cancel
+                                 </button>
+                               )}
+                             </div>
                              <ChevronRight size={18} className="text-[#333]/40 group-hover:text-[#333] translate-x-0 group-hover:translate-x-1 transition-all"/>
                           </div>
                        </div>

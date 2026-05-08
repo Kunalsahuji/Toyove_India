@@ -9,6 +9,23 @@ import {
 import { useToast } from '../../context/ToastContext'
 import { getAdminOrder, updateAdminOrderStatus } from '../../services/orderApi'
 
+const getAllowedStatusOptions = (status) => {
+  switch (status) {
+    case 'pending':
+      return ['pending', 'processing', 'shipped', 'cancelled']
+    case 'processing':
+      return ['processing', 'shipped', 'cancelled']
+    case 'shipped':
+      return ['shipped', 'delivered', 'cancelled']
+    case 'delivered':
+      return ['delivered']
+    case 'cancelled':
+      return ['cancelled']
+    default:
+      return ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+  }
+}
+
 export function AdminOrderDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -240,13 +257,19 @@ export function AdminOrderDetail() {
                 </div>
                 <div className="space-y-3 pt-2">
                   <select value={status} onChange={(event) => setStatus(event.target.value)} className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none">
-                    <option value="pending">Pending</option>
-                    <option value="processing">Processing</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
+                    {getAllowedStatusOptions(order.status).map((value) => (
+                      <option key={value} value={value}>
+                        {value.charAt(0).toUpperCase() + value.slice(1)}
+                      </option>
+                    ))}
                   </select>
-                  <input value={trackingNumber} onChange={(event) => setTrackingNumber(event.target.value)} placeholder="Tracking Number" className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-white/40" />
+                  <input
+                    value={trackingNumber}
+                    onChange={(event) => setTrackingNumber(event.target.value)}
+                    placeholder="Tracking Number"
+                    disabled={!['shipped', 'delivered'].includes(status)}
+                    className="w-full h-11 px-4 rounded-xl bg-white/10 border border-white/10 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-white/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
                 </div>
                 <button className="w-full h-11 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all mt-2 flex items-center justify-center gap-2">
                    View Receipt <ExternalLink size={14} />

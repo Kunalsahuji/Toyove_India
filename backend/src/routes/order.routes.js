@@ -3,6 +3,7 @@ import {
   adminGetOrder,
   adminListOrders,
   adminUpdateOrderStatus,
+  cancelMyOrder,
   createOrder,
   getMyOrder,
   getOrderSummary,
@@ -13,6 +14,7 @@ import { validate } from '../middlewares/validate.js';
 import {
   adminListOrdersSchema,
   adminUpdateOrderStatusSchema,
+  cancelMyOrderSchema,
   createOrderSchema,
   listMyOrdersSchema,
   orderIdParamSchema,
@@ -26,6 +28,7 @@ router.post('/', optionalAuth, validate(createOrderSchema), createOrder);
 router.get('/summary/:orderNumber', optionalAuth, validate(orderSummaryParamSchema), getOrderSummary);
 router.get('/my', protect, validate(listMyOrdersSchema), listMyOrders);
 router.get('/my/:id', protect, validate(orderIdParamSchema), getMyOrder);
+router.patch('/my/:id/cancel', protect, validate(cancelMyOrderSchema), cancelMyOrder);
 
 adminRouter.use(protect, authorizeRoles('admin', 'super_admin'));
 adminRouter.get('/', validate(adminListOrdersSchema), adminListOrders);
