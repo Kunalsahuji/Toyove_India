@@ -61,3 +61,13 @@ export const getTrendingProducts = async () => {
   const payload = await apiRequest('/products/trending')
   return (payload.data || []).map(normalizeProduct)
 }
+
+export const getNewArrivalProducts = async () => {
+  const payload = await apiRequest('/products/new-arrivals')
+  return (payload.data || []).map(normalizeProduct)
+}
+
+export const getBestSellerProducts = async () => {
+  const payload = await apiRequest('/products/best-sellers')
+  return (payload.data || []).map(normalizeProduct)
+}

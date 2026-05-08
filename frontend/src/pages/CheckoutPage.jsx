@@ -57,6 +57,21 @@ const loadRazorpayScript = () => new Promise((resolve) => {
   document.body.appendChild(script)
 })
 
+const isMongoObjectId = (value) => {
+  if (!value || typeof value !== 'string') return false;
+  return /^[0-9a-fA-F]{24}$/.test(value);
+};
+const toOptionalString = (value) => {
+  if (value === undefined || value === null) return '';
+  return String(value);
+};
+const toSlugString = (value) => {
+  if (value === undefined || value === null || value === '') {
+    return undefined
+  }
+  return String(value).trim()
+}
+
 // Stable component outside to prevent focus loss on re-renders
 const CouponSection = ({ 
   discountCode, 
@@ -215,27 +230,27 @@ export function CheckoutPage() {
 
   const checkoutData = {
     customer: {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone,
+      firstName: toOptionalString(formData.firstName).trim(),
+      lastName: toOptionalString(formData.lastName).trim(),
+      email: toOptionalString(formData.email).trim(),
+      phone: toOptionalString(formData.phone).trim(),
     },
     shippingAddress: {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      address: formData.address,
-      apartment: formData.apartment,
-      city: formData.city,
-      district: formData.district,
-      state: formData.state,
-      country: formData.country,
-      postalCode: formData.postalCode,
-      phone: formData.phone,
+      firstName: toOptionalString(formData.firstName).trim(),
+      lastName: toOptionalString(formData.lastName).trim(),
+      address: toOptionalString(formData.address).trim(),
+      apartment: toOptionalString(formData.apartment).trim(),
+      city: toOptionalString(formData.city).trim(),
+      district: toOptionalString(formData.district).trim(),
+      state: toOptionalString(formData.state).trim(),
+      country: toOptionalString(formData.country).trim(),
+      postalCode: toOptionalString(formData.postalCode).trim(),
+      phone: toOptionalString(formData.phone).trim(),
     },
     items: cartItems.map((item) => ({
-      productId: item._id || undefined,
-      slug: item.slug || item.id,
-      quantity: item.qty,
+      productId: isMongoObjectId(item._id) ? item._id : (isMongoObjectId(item.id) ? item.id : undefined),
+      slug: toSlugString(item.slug || (!isMongoObjectId(item._id) && !isMongoObjectId(item.id) ? (item._id || item.id) : undefined)),
+      quantity: Math.max(1, parseInt(item.qty || item.quantity || 1, 10)),
     })),
     shippingMethod,
     paymentMethod: 'razorpay',
@@ -247,6 +262,13 @@ export function CheckoutPage() {
   const startPayment = async () => {
     setIsLaunchingPayment(true)
     try {
+      if (!checkoutData.customer.firstName || !checkoutData.customer.lastName || !checkoutData.customer.email || !checkoutData.customer.phone) {
+        throw new Error('Please complete contact details before continuing.')
+      }
+      if (!checkoutData.shippingAddress.address || !checkoutData.shippingAddress.city || !checkoutData.shippingAddress.state || !checkoutData.shippingAddress.postalCode) {
+        throw new Error('Please complete the shipping address before continuing.')
+      }
+
       const scriptLoaded = await loadRazorpayScript()
       if (!scriptLoaded || !window.Razorpay) {
         throw new Error('Razorpay checkout could not be loaded. Check your internet connection and try again.')
@@ -298,7 +320,8 @@ export function CheckoutPage() {
             clearCart()
             navigate('/order-success', { state: { order } })
           } catch (error) {
-            alert(error.message || 'Payment verification failed')
+            const validationMessage = error.details?.map((issue) => `${issue.path}: ${issue.message}`).join(', ')
+            alert(validationMessage || error.message || 'Payment verification failed')
           } finally {
             setIsProcessing(false)
           }
@@ -321,7 +344,8 @@ export function CheckoutPage() {
     } catch (error) {
       setIsLaunchingPayment(false)
       setIsProcessing(false)
-      alert(error.message || 'Unable to start payment')
+      const validationMessage = error.details?.map((issue) => `${issue.path}: ${issue.message}`).join(', ')
+      alert(validationMessage || error.message || 'Unable to start payment')
     }
   }
 
