@@ -367,6 +367,9 @@ export function AdminOrderDetail() {
                   <p className="text-[12px] text-gray-600">{order.returnRequest.reason}</p>
                 </div>
               )}
+              {order.returnRequest?.status === 'none' && (
+                <p className="text-[12px] text-gray-500">No return or refund request has been submitted for this order yet.</p>
+              )}
               {order.returnRequest?.status !== 'none' && (
                 <>
                   <select value={returnStatus} onChange={(event) => setReturnStatus(event.target.value)} className="w-full h-11 px-4 rounded-xl bg-[#FDF4E6] border border-black/[0.05] text-[#333] text-[11px] font-bold uppercase tracking-widest outline-none">

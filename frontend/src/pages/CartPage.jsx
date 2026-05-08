@@ -43,8 +43,39 @@ export function CartPage() {
 
         <h1 className="text-5xl md:text-6xl font-grandstander font-bold text-[#333] text-center mb-16 tracking-tighter">Main Cart</h1>
 
-        {/* High-Fidelity Table Layout with Dashed Borders */}
-        <div className="bg-transparent border-[1.2px] border-dashed border-[#333]/20 rounded-lg overflow-x-auto custom-scrollbar mb-12 shadow-sm">
+        {/* Mobile Card Layout */}
+        <div className="lg:hidden space-y-4 mb-10">
+          {cartItems.map((item) => (
+            <div key={item.id} className="bg-white/60 rounded-[28px] border border-black/10 p-4 shadow-sm">
+              <div className="flex gap-4">
+                <div className="w-24 h-24 bg-white rounded-2xl overflow-hidden shrink-0 border border-black/5">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-contain" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[16px] tracking-tight line-clamp-2 break-words">
+                    {item.title}
+                  </Link>
+                  <p className="text-[15px] font-bold text-[#E84949] mt-1">₹{item.price.toFixed(2)}</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 break-words">SKU: {item.sku || 'N/A'}</p>
+                </div>
+                <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-full flex items-center justify-center text-[#333]/40 hover:text-[#E84949] hover:bg-red-50 transition-all shrink-0">
+                  <Trash size={16} />
+                </button>
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <div className="flex items-center h-11 w-32 border border-black/20 rounded-xl bg-[#FDF4E6] overflow-hidden">
+                  <button onClick={() => updateQuantity(item.id, -1)} className="flex-1 h-full flex items-center justify-center hover:text-[#E84949]"><Minus size={14} /></button>
+                  <span className="w-8 text-center font-bold text-[15px]">{item.qty}</span>
+                  <button onClick={() => updateQuantity(item.id, 1)} className="flex-1 h-full flex items-center justify-center hover:text-[#E84949]"><Plus size={14} /></button>
+                </div>
+                <span className="font-grandstander font-bold text-[20px] text-[#333] tracking-tighter">₹{(item.price * item.qty).toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table Layout */}
+        <div className="hidden lg:block bg-transparent border-[1.2px] border-dashed border-[#333]/20 rounded-lg overflow-x-auto custom-scrollbar mb-12 shadow-sm">
            <table className="w-full min-w-[900px] border-collapse">
               <thead>
                  <tr className="border-b border-dashed border-[#333]/20 text-[11px] font-bold uppercase tracking-[0.2em] text-[#333]/60">
@@ -91,7 +122,7 @@ export function CartPage() {
            </table>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
            {/* Order Message Box */}
            <div className="p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
               <h3 className="font-grandstander font-bold text-xl text-[#333]">Order message</h3>
@@ -102,9 +133,9 @@ export function CartPage() {
            </div>
 
            {/* Totals and Buttons */}
-           <div className="flex flex-col items-end space-y-6">
-              <div className="text-right space-y-2">
-                 <div className="flex items-center justify-end gap-6">
+           <div className="flex flex-col items-stretch lg:items-end space-y-6">
+              <div className="text-left lg:text-right space-y-2">
+                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-6">
                     <span className="text-[16px] font-bold text-[#333]/60 uppercase tracking-widest">Estimated total:</span>
                     <span className="text-3xl font-grandstander font-bold text-[#333] tracking-tighter">₹{subtotal.toFixed(2)} INR</span>
                  </div>
@@ -119,8 +150,8 @@ export function CartPage() {
         </div>
 
         {/* Gift Wrap and Coupon Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-           <div className="p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl flex flex-col sm:flex-row gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+           <div className="p-6 md:p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl flex flex-col sm:flex-row gap-6 items-start">
               <div className="grow space-y-4 w-full">
                  <label className="flex items-center gap-3 cursor-pointer">
                     <input type="checkbox" className="w-5 h-5 accent-[#E84949]" />
@@ -128,14 +159,14 @@ export function CartPage() {
                  </label>
                  <textarea className="w-full h-24 bg-transparent border border-[#333]/10 rounded-xl p-4 text-[13px] outline-none italic" placeholder="Gift message" />
               </div>
-              <button className="h-12 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shrink-0 mt-8">Submit</button>
+              <button className="h-12 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shrink-0 mt-0 sm:mt-8 w-full sm:w-auto">Submit</button>
            </div>
 
-           <div className="p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
+           <div className="p-6 md:p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
               <p className="text-[13px] font-bold text-[#333]/60 uppercase tracking-widest">Enter coupon or discount code:</p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                  <input type="text" placeholder="Coupon code" className="grow h-14 bg-transparent border border-[#333]/10 rounded-xl px-4 outline-none font-bold text-[14px]" />
-                 <button className="h-14 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px]">Submit</button>
+                 <button className="h-14 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] w-full sm:w-auto">Submit</button>
               </div>
            </div>
         </div>

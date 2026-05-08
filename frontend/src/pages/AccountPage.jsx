@@ -93,8 +93,8 @@ const AddPaymentMethodModal = ({ isOpen, type, onComplete, onCancel }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300000] flex items-center justify-center p-4 bg-[#333]/60 backdrop-blur-md font-roboto">
-       <motion.div initial={{scale: 0.95, opacity:0}} animate={{scale: 1, opacity:1}} className="bg-[#FAEAD3] w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/40">
+    <div className="fixed inset-0 z-[300000] overflow-y-auto bg-[#333]/60 backdrop-blur-md font-roboto p-3 sm:p-4">
+       <motion.div initial={{scale: 0.95, opacity:0}} animate={{scale: 1, opacity:1}} className="bg-[#FAEAD3] w-full max-w-md rounded-[28px] sm:rounded-[40px] overflow-hidden shadow-2xl border border-white/40 my-3 sm:my-6 mx-auto max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-48px)] flex flex-col">
           <div className="bg-[#E84949] p-6 text-white flex justify-between items-center shadow-lg">
              <div className="flex items-center gap-3">
                <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm"><Plus size={18}/></div>
@@ -106,7 +106,7 @@ const AddPaymentMethodModal = ({ isOpen, type, onComplete, onCancel }) => {
              <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20}/></button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-10 space-y-6">
+          <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6 overflow-y-auto custom-scrollbar">
              {type === 'bankAccounts' && (
                <>
                  <div className="space-y-1.5">
@@ -350,27 +350,27 @@ export function AccountPage() {
       {/* Order Detail Modal */}
       <AnimatePresence>
         {selectedOrder && (
-          <div className="fixed inset-0 z-[300000] flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-             <motion.div initial={{scale:0.95, opacity:0}} animate={{scale:1, opacity:1}} exit={{scale:0.95, opacity:0}} className="bg-[#FDF4E6] w-full max-w-lg rounded-[32px] overflow-hidden shadow-2xl border border-white/50">
-                <div className="p-8 space-y-6">
-                   <div className="flex justify-between items-start">
+          <div className="fixed inset-0 z-[300000] overflow-y-auto bg-black/30 backdrop-blur-sm p-3 sm:p-4">
+             <motion.div initial={{scale:0.95, opacity:0}} animate={{scale:1, opacity:1}} exit={{scale:0.95, opacity:0}} className="bg-[#FDF4E6] w-full max-w-lg rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl border border-white/50 my-3 sm:my-6 mx-auto max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-48px)] flex flex-col">
+                <div className="p-5 sm:p-8 space-y-5 sm:space-y-6 overflow-y-auto custom-scrollbar">
+                   <div className="flex justify-between items-start sticky top-0 bg-[#FDF4E6] pb-3 z-10">
                       <div className="flex items-center gap-4">
-                         <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-[#6651A4] shadow-sm"><Box size={24}/></div>
-                         <div><h3 className="text-lg font-grandstander font-bold">Order #{selectedOrder.orderNumber}</h3><p className="text-[10px] text-gray-400 font-bold uppercase">{selectedOrder.date}</p></div>
+                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-2xl flex items-center justify-center text-[#6651A4] shadow-sm shrink-0"><Box size={20}/></div>
+                         <div className="min-w-0"><h3 className="text-base sm:text-lg font-grandstander font-bold break-words">Order #{selectedOrder.orderNumber}</h3><p className="text-[10px] text-gray-400 font-bold uppercase">{selectedOrder.date}</p></div>
                       </div>
                       <button onClick={()=>setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full"><X size={20}/></button>
                    </div>
-                   <div className="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar">
+                   <div className="space-y-4 max-h-[240px] sm:max-h-[300px] overflow-y-auto custom-scrollbar">
                       {selectedOrder.items.map((item, i) => (
-                        <div key={i} className="flex gap-4 p-3 bg-white/50 rounded-2xl border border-black/[0.03]">
-                           <img src={item.img} className="w-14 h-14 rounded-xl object-cover shadow-sm" />
-                           <div><h4 className="text-[12px] font-bold line-clamp-1">{item.title}</h4><p className="text-[10px] text-gray-400 mt-1">₹{item.price.toFixed(2)} · Qty {item.qty}</p></div>
+                        <div key={i} className="flex gap-3 sm:gap-4 p-3 bg-white/50 rounded-2xl border border-black/[0.03]">
+                           <img src={item.img} className="w-14 h-14 rounded-xl object-cover shadow-sm shrink-0" />
+                           <div className="min-w-0"><h4 className="text-[12px] font-bold line-clamp-2 break-words">{item.title}</h4><p className="text-[10px] text-gray-400 mt-1">₹{item.price.toFixed(2)} · Qty {item.qty}</p></div>
                         </div>
                       ))}
                    </div>
-                   <div className="flex justify-between items-center p-5 bg-[#FAEAD3] rounded-2xl">
-                      <div><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Value</p><p className="text-2xl font-bold font-grandstander text-gray-700">₹{selectedOrder.total.toFixed(2)}</p></div>
-                      <div className="text-right"><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p><p className="text-[12px] font-bold text-green-500 uppercase tracking-widest">{selectedOrder.statusLabel}</p></div>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 sm:p-5 bg-[#FAEAD3] rounded-2xl">
+                      <div><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Value</p><p className="text-xl sm:text-2xl font-bold font-grandstander text-gray-700 break-words">₹{selectedOrder.total.toFixed(2)}</p></div>
+                      <div className="text-left sm:text-right"><p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p><p className="text-[12px] font-bold text-green-500 uppercase tracking-widest break-words">{selectedOrder.statusLabel}</p></div>
                     </div>
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                      <div className="p-4 bg-white/60 rounded-2xl border border-black/[0.03]">
@@ -396,6 +396,15 @@ export function AccountPage() {
                      )}
                      {selectedOrder.returnRequest?.adminNote && (
                        <p className="mt-2 text-[12px] text-gray-600"><span className="font-bold">Admin Update:</span> {selectedOrder.returnRequest.adminNote}</p>
+                     )}
+                     {!canRequestReturn(selectedOrder) && selectedOrder.returnRequest?.status === 'none' && (
+                       <p className="mt-2 text-[12px] text-gray-500">
+                         {selectedOrder.status !== 'delivered'
+                           ? 'Return/refund requests become available after delivery.'
+                           : selectedOrder.paymentStatus !== 'paid'
+                             ? 'Refund requests are available only for paid orders.'
+                             : 'No request submitted yet.'}
+                       </p>
                      )}
                    </div>
                    {selectedOrder.statusHistory?.length > 0 && (
