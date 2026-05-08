@@ -1,38 +1,53 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { useAuth } from './AuthContext';
 
 const PaymentContext = createContext();
 
 export function PaymentProvider({ children }) {
-  const [paymentHistory, setPaymentHistory] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_payment_history');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user } = useAuth();
+  const storageScope = useMemo(() => user?.id || user?._id || user?.email || 'guest', [user]);
+  const paymentHistoryKey = `TOYOVOINDIA_payment_history_${storageScope}`;
+  const savedMethodsKey = `TOYOVOINDIA_saved_methods_${storageScope}`;
+  const ordersKey = `TOYOVOINDIA_orders_${storageScope}`;
 
-  const [savedMethods, setSavedMethods] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_saved_methods');
-    return saved ? JSON.parse(saved) : {
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [savedMethods, setSavedMethods] = useState({
+    bankAccounts: [],
+    upiIds: [],
+    cards: []
+  });
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(paymentHistoryKey);
+    setPaymentHistory(saved ? JSON.parse(saved) : []);
+  }, [paymentHistoryKey]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(savedMethodsKey);
+    setSavedMethods(saved ? JSON.parse(saved) : {
       bankAccounts: [],
       upiIds: [],
       cards: []
-    };
-  });
-
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_orders');
-    return saved ? JSON.parse(saved) : [];
-  });
+    });
+  }, [savedMethodsKey]);
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_payment_history', JSON.stringify(paymentHistory));
-  }, [paymentHistory]);
+    const saved = localStorage.getItem(ordersKey);
+    setOrders(saved ? JSON.parse(saved) : []);
+  }, [ordersKey]);
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_saved_methods', JSON.stringify(savedMethods));
-  }, [savedMethods]);
+    localStorage.setItem(paymentHistoryKey, JSON.stringify(paymentHistory));
+  }, [paymentHistory, paymentHistoryKey]);
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_orders', JSON.stringify(orders));
-  }, [orders]);
+    localStorage.setItem(savedMethodsKey, JSON.stringify(savedMethods));
+  }, [savedMethods, savedMethodsKey]);
+
+  useEffect(() => {
+    localStorage.setItem(ordersKey, JSON.stringify(orders));
+  }, [orders, ordersKey]);
 
   const addPaymentLog = (log) => {
     setPaymentHistory(prev => [

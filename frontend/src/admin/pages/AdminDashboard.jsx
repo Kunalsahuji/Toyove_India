@@ -2,30 +2,68 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Users, DollarSign, Package, ShoppingCart, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
+import { getAdminUsers } from '../../services/adminUserApi'
+import { getAdminProducts } from '../../services/adminCatalogApi'
+import { getAdminOrders } from '../../services/orderApi'
 
 export function AdminDashboard() {
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState([])
+  const [recentOrders, setRecentOrders] = useState([])
   const navigate = useNavigate()
+  const { error: showError } = useToast()
 
-  // Simulate API load
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500)
-    return () => clearTimeout(timer)
+    let isMounted = true
+
+    const loadDashboard = async () => {
+      setLoading(true)
+      try {
+        const [{ meta: userMeta }, { meta: productMeta }, { orders, meta: orderMeta }] = await Promise.all([
+          getAdminUsers({ limit: 1 }),
+          getAdminProducts({ limit: 1 }),
+          getAdminOrders({ limit: 6 }),
+        ])
+
+        if (!isMounted) return
+
+        const paidOrders = orders.filter((order) => order.paymentStatus === 'paid')
+        const totalRevenue = paidOrders.reduce((sum, order) => sum + order.total, 0)
+
+        setStats([
+          { title: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, trend: `${paidOrders.length} paid`, isUp: true, icon: <DollarSign size={24} />, color: 'bg-green-500', route: '/admin/finance' },
+          { title: 'Active Explorers', value: (userMeta?.total || 0).toLocaleString('en-IN'), trend: 'live users', isUp: true, icon: <Users size={24} />, color: 'bg-[#6651A4]', route: '/admin/users' },
+          { title: 'Total Orders', value: (orderMeta?.total || 0).toLocaleString('en-IN'), trend: `${orders.filter((order) => order.status === 'processing').length} processing`, isUp: true, icon: <ShoppingCart size={24} />, color: 'bg-[#F1641E]', route: '/admin/orders' },
+          { title: 'Products in Catalog', value: (productMeta?.total || 0).toLocaleString('en-IN'), trend: 'live catalog', isUp: true, icon: <Package size={24} />, color: 'bg-[#E8312A]', route: '/admin/products' },
+        ])
+
+        setRecentOrders(
+          orders.slice(0, 4).map((order) => ({
+            id: `#${order.orderNumber}`,
+            user: order.customerName || 'Customer',
+            date: order.date,
+            amount: `₹${order.total.toFixed(2)}`,
+            status: order.statusLabel,
+            orderId: order.id,
+          }))
+        )
+      } catch (err) {
+        if (isMounted) {
+          setStats([])
+          setRecentOrders([])
+          showError(err.message || 'Dashboard data could not be loaded')
+        }
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    loadDashboard()
+    return () => {
+      isMounted = false
+    }
   }, [])
-
-  const stats = [
-    { title: 'Total Revenue', value: '₹2,45,620.00', trend: '+14.5%', isUp: true, icon: <DollarSign size={24} />, color: 'bg-green-500', route: '/admin/finance' },
-    { title: 'Active Explorers', value: '1,245', trend: '+5.2%', isUp: true, icon: <Users size={24} />, color: 'bg-[#6651A4]', route: '/admin/users' },
-    { title: 'Total Orders', value: '458', trend: '-2.4%', isUp: false, icon: <ShoppingCart size={24} />, color: 'bg-[#F1641E]', route: '/admin/orders' },
-    { title: 'Products in Catalog', value: '184', trend: '+12 new', isUp: true, icon: <Package size={24} />, color: 'bg-[#E8312A]', route: '/admin/products' },
-  ]
-
-  const recentOrders = [
-    { id: '#ORD-7829', user: 'Emma Watson', date: '2 Mins ago', amount: '₹145.00', status: 'Pending' },
-    { id: '#ORD-7828', user: 'Liam Smith', date: '1 Hour ago', amount: '₹89.50', status: 'Shipped' },
-    { id: '#ORD-7827', user: 'Olivia Brown', date: '3 Hours ago', amount: '₹210.00', status: 'Delivered' },
-    { id: '#ORD-7826', user: 'Noah Jones', date: '5 Hours ago', amount: '₹45.00', status: 'Cancelled' },
-  ]
 
   return (
     <div className="shell space-y-8 pb-10">
@@ -227,11 +265,17 @@ export function AdminDashboard() {
                       <td className="py-3 px-2"><div className="h-5 w-16 bg-gray-100 rounded-full mx-auto"></div></td>
                     </tr>
                   ))
+                ) : recentOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="py-10 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      No live orders found
+                    </td>
+                  </tr>
                 ) : (
                   recentOrders.map((order, i) => (
                     <tr 
                       key={i} 
-                      onClick={() => navigate(`/admin/transactions/${order.id.replace('#', '')}`)}
+                      onClick={() => navigate(`/admin/orders/${order.orderId}`)}
                       className="border-b border-gray-50 last:border-0 hover:bg-[#FDF4E6]/50 transition-colors cursor-pointer group"
                     >
                       <td className="py-4 px-2 font-mono text-[11px] md:text-[13px] font-bold text-[#6651A4]">{order.id}</td>

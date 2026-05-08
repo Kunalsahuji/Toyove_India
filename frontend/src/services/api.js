@@ -1,9 +1,39 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const AUTH_USER_STORAGE_KEY = 'TOYOVOINDIA_auth_user'
+
+const getStoredAccessToken = () => {
+  try {
+    const raw = localStorage.getItem(AUTH_USER_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return parsed?.accessToken || null
+  } catch {
+    return null
+  }
+}
+
+const updateStoredAuthUser = (partial) => {
+  try {
+    const raw = localStorage.getItem(AUTH_USER_STORAGE_KEY)
+    if (!raw) return
+    const parsed = JSON.parse(raw)
+    localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify({
+      ...parsed,
+      ...partial,
+    }))
+  } catch {
+    // no-op
+  }
+}
 
 const buildHeaders = (options = {}) => {
   const headers = new Headers(options.headers || {})
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
+  }
+  const accessToken = getStoredAccessToken()
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`)
   }
   return headers
 }
@@ -23,10 +53,14 @@ export async function apiRequest(path, options = {}, meta = {}) {
     const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildHeaders({ headers: { 'Content-Type': 'application/json' } }),
     })
 
     if (refreshResponse.ok) {
+      const refreshPayload = await refreshResponse.json().catch(() => ({}))
+      if (refreshPayload?.data?.accessToken) {
+        updateStoredAuthUser(refreshPayload.data)
+      }
       return apiRequest(path, options, { skipRefresh: true })
     }
   }

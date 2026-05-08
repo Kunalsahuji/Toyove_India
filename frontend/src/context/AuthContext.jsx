@@ -12,6 +12,14 @@ const readStoredUser = () => {
   }
 }
 
+const persistAuthUser = (value) => {
+  if (value) {
+    localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(value))
+  } else {
+    localStorage.removeItem(AUTH_USER_STORAGE_KEY)
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(readStoredUser)
   const [authLoading, setAuthLoading] = useState(true)
@@ -33,6 +41,7 @@ export function AuthProvider({ children }) {
     try {
       const currentUser = await getCurrentUser()
       setUser(currentUser)
+      persistAuthUser(currentUser)
       return currentUser
     } catch {
       const fallbackUser = readStoredUser()
@@ -48,7 +57,10 @@ export function AuthProvider({ children }) {
       setAuthLoading(true)
       try {
         const currentUser = await getCurrentUser()
-        if (isMounted) setUser(currentUser)
+        if (isMounted) {
+          setUser(currentUser)
+          persistAuthUser(currentUser)
+        }
       } catch {
         if (isMounted) setUser((previousUser) => previousUser || readStoredUser())
       } finally {
@@ -67,11 +79,7 @@ export function AuthProvider({ children }) {
   }, [addresses])
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(user))
-    } else {
-      localStorage.removeItem(AUTH_USER_STORAGE_KEY)
-    }
+    persistAuthUser(user)
   }, [user])
 
   useEffect(() => {

@@ -48,7 +48,10 @@ export const register = asyncHandler(async (req, res, next) => {
     ip: req.ip
   });
 
-  return successResponse(res, 201, 'Registration successful', newUser.toJSON());
+  return successResponse(res, 201, 'Registration successful', {
+    ...newUser.toJSON(),
+    accessToken,
+  });
 });
 
 export const login = asyncHandler(async (req, res, next) => {
@@ -111,7 +114,10 @@ export const login = asyncHandler(async (req, res, next) => {
     ip: req.ip
   });
 
-  return successResponse(res, 200, 'Login successful', user.toJSON());
+  return successResponse(res, 200, 'Login successful', {
+    ...user.toJSON(),
+    accessToken,
+  });
 });
 
 export const refresh = asyncHandler(async (req, res, next) => {
@@ -184,7 +190,10 @@ export const refresh = asyncHandler(async (req, res, next) => {
     ip: req.ip
   });
 
-  return successResponse(res, 200, 'Token refreshed successfully', user.toJSON());
+  return successResponse(res, 200, 'Token refreshed successfully', {
+    ...user.toJSON(),
+    accessToken,
+  });
 });
 
 export const logout = asyncHandler(async (req, res, next) => {

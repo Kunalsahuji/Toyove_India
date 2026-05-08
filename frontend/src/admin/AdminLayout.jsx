@@ -6,6 +6,7 @@ import {
   Settings, LogOut, Menu, X, Bell, Search, 
   ChevronRight, CircleUser, Wallet, Tags, Percent, Megaphone, MessageSquare, Truck, Activity
 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 // --- Skeleton Component for Seamless Loading ---
 function AdminContentSkeleton() {
@@ -32,6 +33,7 @@ function AdminContentSkeleton() {
 }
 
 export function AdminLayout() {
+  const { logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
@@ -146,8 +148,9 @@ export function AdminLayout() {
 
         <div className="p-4 border-t border-black/[0.05] shrink-0 bg-gray-50/50">
           <button 
-            onClick={() => {
+            onClick={async () => {
               if (window.confirm('Are you sure you want to log out?')) {
+                await logout()
                 navigate('/login')
               }
             }}
