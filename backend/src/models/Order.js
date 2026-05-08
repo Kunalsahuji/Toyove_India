@@ -180,7 +180,8 @@ const orderSchema = new mongoose.Schema({
   },
   shippingMethod: {
     type: String,
-    enum: ['standard', 'express'],
+    trim: true,
+    lowercase: true,
     default: 'standard',
   },
   currency: {

@@ -1,11 +1,12 @@
 import Coupon from '../models/Coupon.js';
 import Product from '../models/Product.js';
+import ShippingMethod from '../models/ShippingMethod.js';
 import AppError from '../utils/AppError.js';
 import { getValidatedCouponResult } from './coupon.service.js';
 
-export const SHIPPING_RATES = {
-  standard: 15,
-  express: 45,
+const DEFAULT_SHIPPING_METHODS = {
+  standard: { charge: 15, maxDays: 5 },
+  express: { charge: 45, maxDays: 2 },
 };
 
 export const resolveOrderProduct = async (item) => {
@@ -52,7 +53,13 @@ export const buildOrderDraftFromCheckout = async (checkoutInput) => {
   }));
 
   const subtotal = Number(items.reduce((sum, item) => sum + item.totalPrice, 0).toFixed(2));
-  const shippingAmount = SHIPPING_RATES[checkoutInput.shippingMethod] ?? SHIPPING_RATES.standard;
+  const shippingMethodDoc = await ShippingMethod.findOne({
+    code: String(checkoutInput.shippingMethod || 'standard').toLowerCase(),
+    status: 'active',
+  }).lean();
+  const shippingFallback = DEFAULT_SHIPPING_METHODS[String(checkoutInput.shippingMethod || 'standard').toLowerCase()] || DEFAULT_SHIPPING_METHODS.standard;
+  const shippingAmount = Number(shippingMethodDoc?.charge ?? shippingFallback.charge);
+  const estimatedDeliveryDays = Number(shippingMethodDoc?.maxDays ?? shippingFallback.maxDays);
 
   let discountAmount = 0;
   let couponData;
@@ -76,7 +83,7 @@ export const buildOrderDraftFromCheckout = async (checkoutInput) => {
 
   const totalAmount = Number(Math.max(subtotal + shippingAmount - discountAmount, 0).toFixed(2));
   const estimatedDeliveryDate = new Date();
-  estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + (checkoutInput.shippingMethod === 'express' ? 2 : 5));
+  estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + estimatedDeliveryDays);
 
   return {
     items,

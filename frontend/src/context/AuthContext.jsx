@@ -20,26 +20,46 @@ const persistAuthUser = (value) => {
   }
 }
 
+const mergeWithStoredAccessToken = (value) => {
+  if (!value) return value
+  const storedUser = readStoredUser()
+  if (!value.accessToken && storedUser?.accessToken) {
+    return {
+      ...value,
+      accessToken: storedUser.accessToken,
+    }
+  }
+  return value
+}
+
+const getScopedStorageKey = (baseKey, user) => {
+  const scope = user?.id || user?._id || user?.email || 'guest'
+  return `${baseKey}_${scope}`
+}
+
+const isLegacyMockAddress = (address) => {
+  if (!address) return false
+  const firstName = String(address.firstName || '').trim().toLowerCase()
+  const lastName = String(address.lastName || '').trim().toLowerCase()
+  const street = String(address.address || '').trim().toLowerCase()
+  const city = String(address.city || '').trim().toLowerCase()
+  return firstName === 'john' && lastName === 'doe' && street.includes('toy street') && city === 'mumbai'
+}
+
+const sanitizeAddresses = (value) => {
+  if (!Array.isArray(value)) return []
+  return value.filter((address) => !isLegacyMockAddress(address))
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(readStoredUser)
   const [authLoading, setAuthLoading] = useState(true)
-  const [addresses, setAddresses] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_addresses')
-    return saved ? JSON.parse(saved) : [
-      { id: 1, type: 'Home', firstName: 'John', lastName: 'Doe', address: '123 Toy Street', apartment: 'Apt 4B', city: 'Mumbai', state: 'Maharashtra', postalCode: '400001', phone: '9876543210', isDefault: true },
-    ]
-  })
-
-  const [savedMethods, setSavedMethods] = useState(() => {
-    const saved = localStorage.getItem('TOYOVOINDIA_payment_methods')
-    return saved ? JSON.parse(saved) : [
-      { id: 1, type: 'card', label: 'TOYOVOINDIA Virtual Card', last4: '4242', expiry: '12/28', brand: 'Visa' },
-    ]
-  })
+  const [addresses, setAddresses] = useState([])
+  const [savedMethods, setSavedMethods] = useState([])
 
   const refreshUser = async () => {
     try {
-      const currentUser = await getCurrentUser()
+      const currentUser = mergeWithStoredAccessToken(await getCurrentUser())
       setUser(currentUser)
       persistAuthUser(currentUser)
       return currentUser
@@ -56,7 +76,7 @@ export function AuthProvider({ children }) {
     const bootstrapAuth = async () => {
       setAuthLoading(true)
       try {
-        const currentUser = await getCurrentUser()
+        const currentUser = mergeWithStoredAccessToken(await getCurrentUser())
         if (isMounted) {
           setUser(currentUser)
           persistAuthUser(currentUser)
@@ -75,16 +95,29 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_addresses', JSON.stringify(addresses))
-  }, [addresses])
-
-  useEffect(() => {
     persistAuthUser(user)
   }, [user])
 
   useEffect(() => {
-    localStorage.setItem('TOYOVOINDIA_payment_methods', JSON.stringify(savedMethods))
-  }, [savedMethods])
+    const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
+    const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
+
+    const savedAddresses = localStorage.getItem(addressesKey)
+    const savedMethods = localStorage.getItem(paymentMethodsKey)
+
+    setAddresses(savedAddresses ? sanitizeAddresses(JSON.parse(savedAddresses)) : [])
+    setSavedMethods(savedMethods ? JSON.parse(savedMethods) : [])
+  }, [user?.id, user?._id, user?.email])
+
+  useEffect(() => {
+    const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
+    localStorage.setItem(addressesKey, JSON.stringify(addresses))
+  }, [addresses, user])
+
+  useEffect(() => {
+    const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
+    localStorage.setItem(paymentMethodsKey, JSON.stringify(savedMethods))
+  }, [savedMethods, user])
 
   const login = async (email, password) => {
     try {

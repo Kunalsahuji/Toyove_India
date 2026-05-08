@@ -30,8 +30,9 @@ const PtIcon = () => (
   </svg>
 )
 
-import { countries, languages, promoMessages, mainNavLinks, categoryData } from '../../data/navigationData'
+import { countries, languages, mainNavLinks, categoryData } from '../../data/navigationData'
 import { getCategoryTree, getNavbarCategories } from '../../services/catalogApi'
+import { getStorefrontSettings } from '../../services/siteApi'
 
 const C = '#FF4E50'  
 import logo from '../../assets/toyovo.webp'
@@ -53,6 +54,9 @@ export function VisionHeader() {
   const [cartOpen, setCartOpen] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState({ name: 'India', code: 'IN', currency: 'INR' })
   const [selectedLang, setSelectedLang] = useState(languages[0])
+  const [promoMessages, setPromoMessages] = useState([
+    'Free Shipping On Orders Over ₹999!',
+  ])
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const { user, logout } = useAuth()
@@ -112,6 +116,28 @@ export function VisionHeader() {
     }
 
     buildDynamicNav()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadStorefront = async () => {
+      try {
+        const data = await getStorefrontSettings()
+        if (!isMounted) return
+        if (Array.isArray(data.announcementMessages) && data.announcementMessages.length > 0) {
+          setPromoMessages(data.announcementMessages)
+          setPromoIndex(0)
+        }
+      } catch {
+        // keep fallback header copy
+      }
+    }
+
+    loadStorefront()
     return () => {
       isMounted = false
     }

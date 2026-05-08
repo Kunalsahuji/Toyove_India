@@ -1,36 +1,140 @@
-import { Plus, Route, Truck } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Plus, Route, Truck, Save } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
+import { createAdminShippingMethod, getAdminShippingMethods, updateAdminShippingMethod } from '../../services/shippingApi'
 
-const methods = [
-  { id: 'SHP-STD', name: 'Standard Shipping', eta: '3-5 days', charge: '₹15', rule: 'Default India-wide shipping', status: 'Active' },
-  { id: 'SHP-EXP', name: 'Express Delivery', eta: '1-2 days', charge: '₹45', rule: 'Metro and serviceable pincodes', status: 'Active' },
-  { id: 'SHP-FREE', name: 'Free Shipping', eta: '3-5 days', charge: '₹0', rule: 'Above ₹999 or coupon based', status: 'Active' },
-]
+const defaultForm = {
+  name: '',
+  code: '',
+  minDays: 0,
+  maxDays: 0,
+  charge: 0,
+  rule: '',
+  status: 'active',
+  sortOrder: 0,
+}
 
 export function AdminShipping() {
+  const { success, error: showError } = useToast()
+  const [loading, setLoading] = useState(true)
+  const [savingId, setSavingId] = useState('')
+  const [methods, setMethods] = useState([])
+  const [newMethod, setNewMethod] = useState(defaultForm)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadMethods = async () => {
+      try {
+        const data = await getAdminShippingMethods()
+        if (!isMounted) return
+        setMethods(data)
+      } catch (error) {
+        if (isMounted) showError(error.message || 'Shipping methods could not be loaded')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    loadMethods()
+    return () => {
+      isMounted = false
+    }
+  }, [showError])
+
+  const handleCreate = async () => {
+    try {
+      const created = await createAdminShippingMethod({
+        ...newMethod,
+        code: newMethod.code.trim().toLowerCase(),
+        sortOrder: Number(newMethod.sortOrder),
+        minDays: Number(newMethod.minDays),
+        maxDays: Number(newMethod.maxDays),
+        charge: Number(newMethod.charge),
+      })
+      setMethods((prev) => [...prev, created].sort((a, b) => a.sortOrder - b.sortOrder))
+      setNewMethod(defaultForm)
+      success('Shipping method created.')
+    } catch (error) {
+      showError(error.message || 'Shipping method could not be created')
+    }
+  }
+
+  const handleUpdate = async (method) => {
+    setSavingId(method.id)
+    try {
+      const updated = await updateAdminShippingMethod(method.id, {
+        name: method.name,
+        code: method.code,
+        minDays: Number(method.minDays),
+        maxDays: Number(method.maxDays),
+        charge: Number(method.charge),
+        rule: method.rule,
+        status: method.status,
+        sortOrder: Number(method.sortOrder),
+      })
+      setMethods((prev) => prev.map((item) => (item.id === method.id ? updated : item)).sort((a, b) => a.sortOrder - b.sortOrder))
+      success('Shipping method updated.')
+    } catch (error) {
+      showError(error.message || 'Shipping method could not be updated')
+    } finally {
+      setSavingId('')
+    }
+  }
+
   return (
     <div className="shell space-y-6 pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-2xl md:text-4xl font-grandstander font-bold text-gray-800">Shipping</h1>
-          <p className="text-gray-500 font-medium text-[12px] md:text-sm mt-1">Manage delivery methods, rate rules, and future logistics integrations.</p>
+          <p className="text-gray-500 font-medium text-[12px] md:text-sm mt-1">Manage delivery methods and checkout shipping logic.</p>
         </div>
-        <button className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-[11px] shadow-lg hover:bg-[#5a4892] transition-all w-full md:w-max flex items-center justify-center gap-2">
-          <Plus size={16} /> New Rate
-        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {methods.map(method => (
-          <div key={method.id} className="bg-white rounded-[32px] p-6 border border-black/[0.03] shadow-sm hover:shadow-xl transition-all">
+      <div className="bg-white rounded-[32px] p-6 border border-black/[0.03] shadow-sm space-y-4">
+        <h2 className="text-lg font-grandstander font-bold text-gray-800 flex items-center gap-2"><Plus size={18} /> New Rate</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <input value={newMethod.name} onChange={(e) => setNewMethod((prev) => ({ ...prev, name: e.target.value }))} placeholder="Method name" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <input value={newMethod.code} onChange={(e) => setNewMethod((prev) => ({ ...prev, code: e.target.value }))} placeholder="Code" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <input type="number" value={newMethod.minDays} onChange={(e) => setNewMethod((prev) => ({ ...prev, minDays: e.target.value }))} placeholder="Min days" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <input type="number" value={newMethod.maxDays} onChange={(e) => setNewMethod((prev) => ({ ...prev, maxDays: e.target.value }))} placeholder="Max days" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <input type="number" value={newMethod.charge} onChange={(e) => setNewMethod((prev) => ({ ...prev, charge: e.target.value }))} placeholder="Charge" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <input value={newMethod.rule} onChange={(e) => setNewMethod((prev) => ({ ...prev, rule: e.target.value }))} placeholder="Rule" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <input type="number" value={newMethod.sortOrder} onChange={(e) => setNewMethod((prev) => ({ ...prev, sortOrder: e.target.value }))} placeholder="Sort order" className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+          <button onClick={handleCreate} className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg hover:bg-[#5a4892] transition-all w-full flex items-center justify-center gap-2">
+            <Plus size={16} /> New Rate
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {loading ? (
+          <div className="bg-white rounded-[32px] p-6 border border-black/[0.03] shadow-sm text-[12px] font-bold text-gray-400 uppercase tracking-widest">Loading shipping methods...</div>
+        ) : methods.map((method) => (
+          <div key={method.id} className="bg-white rounded-[32px] p-6 border border-black/[0.03] shadow-sm hover:shadow-xl transition-all space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#FAEAD3] text-[#F1641E] flex items-center justify-center"><Truck size={22} /></div>
-              <span className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-[9px] font-bold uppercase tracking-widest">{method.status}</span>
+              <select value={method.status} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, status: e.target.value } : item))} className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-[9px] font-bold uppercase tracking-widest outline-none">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
             </div>
-            <h3 className="text-xl font-grandstander font-bold text-gray-800 mt-6">{method.name}</h3>
-            <p className="text-[12px] text-gray-500 mt-1">{method.rule}</p>
-            <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between">
-              <span className="flex items-center gap-1 text-[11px] font-bold text-gray-400 uppercase tracking-widest"><Route size={13} /> {method.eta}</span>
-              <span className="text-2xl font-grandstander font-bold text-[#E8312A]">{method.charge}</span>
+            <input value={method.name} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, name: e.target.value } : item))} className="w-full text-xl font-grandstander font-bold text-gray-800 outline-none" />
+            <input value={method.rule} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, rule: e.target.value } : item))} className="w-full text-[12px] text-gray-500 outline-none" />
+            <div className="grid grid-cols-2 gap-3">
+              <input type="number" value={method.minDays} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, minDays: e.target.value } : item))} className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+              <input type="number" value={method.maxDays} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, maxDays: e.target.value } : item))} className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+              <input type="number" value={method.charge} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, charge: e.target.value } : item))} className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+              <input type="number" value={method.sortOrder} onChange={(e) => setMethods((prev) => prev.map((item) => item.id === method.id ? { ...item, sortOrder: e.target.value } : item))} className="h-11 px-4 rounded-xl bg-[#FDF4E6]/60 outline-none" />
+            </div>
+            <div className="pt-5 border-t border-gray-100 flex items-center justify-between gap-4">
+              <span className="flex items-center gap-1 text-[11px] font-bold text-gray-400 uppercase tracking-widest"><Route size={13} /> {method.etaLabel}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-grandstander font-bold text-[#E8312A]">{method.chargeLabel}</span>
+                <button onClick={() => handleUpdate(method)} disabled={savingId === method.id} className="h-10 px-4 bg-[#333] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 disabled:opacity-60">
+                  <Save size={14} /> {savingId === method.id ? 'Saving...' : 'Save'}
+                </button>
+              </div>
             </div>
           </div>
         ))}

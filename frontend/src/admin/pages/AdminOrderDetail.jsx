@@ -26,6 +26,11 @@ const getAllowedStatusOptions = (status) => {
   }
 }
 
+const formatJoinedDate = (value) => {
+  if (!value) return 'Guest checkout'
+  return new Date(value).toLocaleDateString('en-IN', { dateStyle: 'medium' })
+}
+
 export function AdminOrderDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -230,10 +235,12 @@ export function AdminOrderDetail() {
               <div className="w-12 h-12 bg-[#FAEAD3] rounded-full flex items-center justify-center text-xl font-bold font-grandstander text-[#6651A4]">
                 {order.customerName.charAt(0)}
               </div>
-              <div>
-                <p className="text-[15px] font-bold text-gray-800">{order.customerName}</p>
-                <p className="text-[11px] text-gray-400 font-medium">Joined 2 months ago</p>
-              </div>
+                      <div>
+                        <p className="text-[15px] font-bold text-gray-800">{order.customerName}</p>
+                        <p className="text-[11px] text-gray-400 font-medium">
+                          {order.user?.createdAt ? `Joined ${formatJoinedDate(order.user.createdAt)}` : 'Guest checkout'}
+                        </p>
+                      </div>
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-[13px] text-gray-600">

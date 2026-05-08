@@ -1,78 +1,85 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle2, Clock } from 'lucide-react'
-import { products } from '../../utils/ProductData'
+import { getPurchasePopupSettings } from '../../services/siteApi'
 
-const mockPurchases = [
-  {
-    id: 1,
-    name: 'Aanya',
-    location: 'Mumbai',
-    productId: 1,
-    time: '5 minute ago'
-  },
-  {
-    id: 2,
-    name: 'Ishaan',
-    location: 'Bangalore',
-    productId: 3,
-    time: '2 minute ago'
-  },
-  {
-    id: 3,
-    name: 'Diya',
-    location: 'Delhi',
-    productId: 5,
-    time: '12 minute ago'
-  },
-  {
-    id: 4,
-    name: 'Arjun',
-    location: 'Pune',
-    productId: 7,
-    time: '15 minute ago'
-  }
-]
+const formatRelativeTime = (value) => {
+  if (!value) return 'recently'
+  const createdAt = new Date(value).getTime()
+  const diffMinutes = Math.max(1, Math.round((Date.now() - createdAt) / 60000))
+  if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`
+  const diffHours = Math.round(diffMinutes / 60)
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+  const diffDays = Math.round(diffHours / 24)
+  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+}
 
 export function PurchaseNotification() {
+  const [popupConfig, setPopupConfig] = useState({
+    enabled: false,
+    initialDelaySeconds: 60,
+    repeatDelaySeconds: 120,
+    visibleDurationSeconds: 10,
+    maskNames: true,
+  })
+  const [activities, setActivities] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [hasBeenClosed, setHasBeenClosed] = useState(false)
 
   useEffect(() => {
-    if (hasBeenClosed) return
+    let isMounted = true
+
+    const loadPopupData = async () => {
+      try {
+        const data = await getPurchasePopupSettings()
+        if (!isMounted) return
+        setPopupConfig(data.settings || popupConfig)
+        setActivities(data.activities || [])
+      } catch {
+        if (!isMounted) return
+        setActivities([])
+      }
+    }
+
+    loadPopupData()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const visibleActivities = useMemo(
+    () => activities.filter((activity) => activity.status !== 'Hidden'),
+    [activities],
+  )
+
+  useEffect(() => {
+    if (hasBeenClosed || !popupConfig.enabled || visibleActivities.length === 0) return undefined
 
     const initialTimeout = setTimeout(() => {
       setIsVisible(true)
-    }, 60000)
+    }, Math.max(0, popupConfig.initialDelaySeconds) * 1000)
 
     return () => clearTimeout(initialTimeout)
-  }, [hasBeenClosed])
+  }, [hasBeenClosed, popupConfig.enabled, popupConfig.initialDelaySeconds, visibleActivities.length])
 
   useEffect(() => {
-    if (hasBeenClosed || !isVisible) return
+    if (hasBeenClosed || !isVisible || visibleActivities.length === 0) return undefined
 
     const hideTimeout = setTimeout(() => {
       setIsVisible(false)
-      
-      const nextTimeout = setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % mockPurchases.length)
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % visibleActivities.length)
         setIsVisible(true)
-      }, 120000)
-
-      return () => clearTimeout(nextTimeout)
-    }, 10000)
+      }, Math.max(30, popupConfig.repeatDelaySeconds) * 1000)
+    }, Math.max(5, popupConfig.visibleDurationSeconds) * 1000)
 
     return () => clearTimeout(hideTimeout)
-  }, [isVisible, hasBeenClosed])
+  }, [isVisible, hasBeenClosed, popupConfig.repeatDelaySeconds, popupConfig.visibleDurationSeconds, visibleActivities.length])
 
-  const handleClose = () => {
-    setIsVisible(false)
-    setHasBeenClosed(true)
-  }
+  const currentPurchase = visibleActivities[currentIndex]
 
-  const currentPurchase = mockPurchases[currentIndex]
-  const product = products.find(p => p.id === currentPurchase.productId)
+  if (!popupConfig.enabled || !currentPurchase) return null
 
   return (
     <AnimatePresence>
@@ -82,46 +89,49 @@ export function PurchaseNotification() {
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: -100 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          /* Positioned above the mobile bottom bar (bottom-[84px]) on small screens, and at bottom-6 on large screens */
           className="fixed bottom-[84px] md:bottom-6 left-5 md:left-6 z-[1001] w-[280px] md:w-[350px]"
         >
-          <div className="bg-[#FFF8EE] border border-[#333]/10 rounded-2xl p-3 md:p-4 shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative group ">
-            {/* Close Button */}
-            <button 
-              onClick={handleClose}
+          <div className="bg-[#FFF8EE] border border-[#333]/10 rounded-2xl p-3 md:p-4 shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative group">
+            <button
+              onClick={() => {
+                setIsVisible(false)
+                setHasBeenClosed(true)
+              }}
               className="absolute -top-2 -right-2 w-6 h-6 bg-[#E84949] text-white flex items-center justify-center rounded-lg shadow-lg hover:scale-110 transition-all z-50"
             >
               <X size={14} strokeWidth={3} />
             </button>
 
             <div className="flex items-center gap-3 md:gap-4">
-              {/* Product Image */}
               <div className="w-16 h-16 md:w-20 md:h-20 bg-[#F9EAD3] rounded-2xl flex-shrink-0 p-1.5 overflow-hidden">
-                <img 
-                  src={product?.img} 
-                  alt={product?.name} 
-                  className="w-full h-full object-cover rounded-xl"
-                />
+                {currentPurchase.image ? (
+                  <img
+                    src={currentPurchase.image}
+                    alt={currentPurchase.product || 'Toy'}
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-xl bg-white" />
+                )}
               </div>
 
-              {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="text-[12px] md:text-[14px] text-[#64748B] font-medium leading-none border-b border-dashed border-[#333]/10 pb-2 mb-2 flex items-center justify-between pr-2">
-                   {currentPurchase.name} Purchased ! - From {currentPurchase.location}
+                  {currentPurchase.name} purchased from {currentPurchase.city}
                 </div>
-                
+
                 <h4 className="text-[14px] md:text-[16px] font-grandstander font-bold text-[#333] truncate">
-                  {product?.name}
+                  {currentPurchase.product}
                 </h4>
 
                 <div className="flex items-center gap-4 mt-1.5 flex-wrap">
                   <div className="flex items-center gap-1.5 text-[11px] md:text-[12px] text-[#666]">
                     <Clock size={13} className="opacity-60" />
-                    <span>{currentPurchase.time}</span>
+                    <span>{formatRelativeTime(currentPurchase.createdAt)}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold text-[#E84949]">
                     <div className="w-4 h-4 rounded-full bg-[#E84949]/10 flex items-center justify-center">
-                        <CheckCircle2 size={11} strokeWidth={3} />
+                      <CheckCircle2 size={11} strokeWidth={3} />
                     </div>
                     <span>Verified</span>
                   </div>

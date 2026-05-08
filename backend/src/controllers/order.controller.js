@@ -252,7 +252,7 @@ export const adminListOrders = asyncHandler(async (req, res) => {
 });
 
 export const adminGetOrder = asyncHandler(async (req, res, next) => {
-  const order = await Order.findById(req.params.id).populate('user', 'firstName lastName email');
+  const order = await Order.findById(req.params.id).populate('user', 'firstName lastName email createdAt');
   if (!order) {
     return next(new AppError('Order not found', 404));
   }

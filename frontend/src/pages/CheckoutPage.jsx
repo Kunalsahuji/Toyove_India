@@ -7,6 +7,7 @@ import { usePayment } from '../context/PaymentContext'
 import { useAuth } from '../context/AuthContext'
 import { validateCouponCode } from '../services/couponApi'
 import { createRazorpayPaymentOrder, verifyRazorpayPayment } from '../services/orderApi'
+import { getShippingMethods } from '../services/shippingApi'
 
 const countries = ["India"]
 import { indianStates, commonCities } from '../utils/indiaData'
@@ -123,6 +124,7 @@ export function CheckoutPage() {
   const [couponError, setCouponError] = useState('')
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
   const [shippingMethod, setShippingMethod] = useState('standard')
+  const [shippingMethods, setShippingMethods] = useState([])
   
   // Address Management
   const defaultAddress = addresses?.find(a => a.isDefault) || (addresses?.length > 0 ? addresses[0] : null);
@@ -160,13 +162,41 @@ export function CheckoutPage() {
     }))
   }, [user, defaultAddress])
 
-  const shippingRates = { standard: 15.00, express: 45.00 }
-  const shippingCharge = shippingRates[shippingMethod]
+  const selectedShippingMethod = shippingMethods.find((method) => method.code === shippingMethod) || null
+  const shippingCharge = Number(selectedShippingMethod?.charge || 0)
   const discountAmount = couponState?.discountAmount || 0
   const total = subtotal + shippingCharge - discountAmount
 
   useEffect(() => {
     window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadShippingMethods = async () => {
+      try {
+        const methods = await getShippingMethods()
+        if (!isMounted) return
+        setShippingMethods(methods)
+        if (methods.length > 0) {
+          setShippingMethod((prev) => methods.some((method) => method.code === prev) ? prev : methods[0].code)
+        }
+      } catch {
+        if (!isMounted) return
+        const fallbackMethods = [
+          { id: 'standard', code: 'standard', name: 'Standard Shipping', minDays: 3, maxDays: 5, charge: 15 },
+          { id: 'express', code: 'express', name: 'Express Delivery', minDays: 1, maxDays: 2, charge: 45 },
+        ]
+        setShippingMethods(fallbackMethods)
+        setShippingMethod((prev) => fallbackMethods.some((method) => method.code === prev) ? prev : fallbackMethods[0].code)
+      }
+    }
+
+    loadShippingMethods()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   useEffect(() => {
@@ -489,20 +519,15 @@ export function CheckoutPage() {
             <section className="space-y-6">
                <h2 className="text-xl font-bold text-[#333] font-grandstander">Shipping method</h2>
                <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
-                  <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'standard' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
-                     <div className="flex items-center gap-4">
-                        <input type="radio" checked={shippingMethod === 'standard'} onChange={() => setShippingMethod('standard')} className="w-4 h-4 accent-[#005BD1]" />
-                        <span className="text-[14px] font-medium text-[#333]">Standard Shipping (3-5 days)</span>
-                     </div>
-                     <span className="font-bold text-[14px]">₹15.00</span>
-                  </label>
-                  <label className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === 'express' ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
-                     <div className="flex items-center gap-4">
-                        <input type="radio" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} className="w-4 h-4 accent-[#005BD1]" />
-                        <span className="text-[14px] font-medium text-[#333]">Express Delivery (1-2 days)</span>
-                     </div>
-                     <span className="font-bold text-[14px]">₹45.00</span>
-                  </label>
+                  {shippingMethods.map((method) => (
+                    <label key={method.id} className={`p-4 flex items-center justify-between cursor-pointer transition-all ${shippingMethod === method.code ? 'bg-[#F4F4F4]' : 'bg-white'}`}>
+                      <div className="flex items-center gap-4">
+                        <input type="radio" checked={shippingMethod === method.code} onChange={() => setShippingMethod(method.code)} className="w-4 h-4 accent-[#005BD1]" />
+                        <span className="text-[14px] font-medium text-[#333]">{method.name} ({method.minDays}-{method.maxDays} days)</span>
+                      </div>
+                      <span className="font-bold text-[14px]">₹{Number(method.charge || 0).toFixed(2)}</span>
+                    </label>
+                  ))}
                </div>
             </section>
 

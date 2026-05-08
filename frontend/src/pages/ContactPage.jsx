@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { submitContactMessage } from '../services/messageApi'
 
 const ContactInfoItem = ({ icon: Icon, title, content }) => (
   <div className="flex items-start gap-4 py-4 group">
@@ -14,9 +15,49 @@ const ContactInfoItem = ({ icon: Icon, title, content }) => (
 )
 
 export function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [feedback, setFeedback] = useState('')
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setSubmitting(true)
+    setFeedback('')
+    try {
+      await submitContactMessage({
+        ...formData,
+        type: 'contact',
+        subject: formData.subject || 'Contact Form Enquiry',
+      })
+      setFeedback('Message sent successfully.')
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+      })
+    } catch (error) {
+      setFeedback(error.message || 'Message could not be sent.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="bg-[#FDF4E6] pb-24 overflow-x-hidden">
@@ -71,34 +112,57 @@ export function ContactPage() {
           <div className="flex flex-col gap-8">
             <h2 className="text-[32px] md:text-[42px] font-grandstander font-bold text-[#333333] leading-tight tracking-tight">Contact Form</h2>
 
-            <form className="space-y-6 font-roboto">
+            <form className="space-y-6 font-roboto" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <input
                   type="text"
+                  name="name"
                   placeholder="Name"
+                  value={formData.name}
+                  onChange={handleChange}
                   className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
                 />
                 <input
                   type="email"
+                  name="email"
                   placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
                 />
               </div>
               <input
                 type="tel"
+                name="phone"
                 placeholder="Phone number"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
+              />
+              <input
+                type="text"
+                name="subject"
+                placeholder="Subject"
+                value={formData.subject}
+                onChange={handleChange}
                 className="w-full h-13.5 bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md px-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all"
               />
               <textarea
                 rows="6"
+                name="message"
                 placeholder="Comment"
+                value={formData.message}
+                onChange={handleChange}
                 className="w-full bg-[#F9EAD3] border-[1.2px] border-[#333333]/20 rounded-md p-6 text-[14px] focus:outline-none focus:border-[#333333] transition-all resize-none"
               ></textarea>
 
               <div className="pt-4">
-                <button className="h-13.5 px-12 bg-[#E84949] text-white rounded-md font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#333333] transition-all shadow-md">
-                  SEND MESSAGE
+                <button disabled={submitting} className="h-13.5 px-12 bg-[#E84949] text-white rounded-md font-bold text-[13px] tracking-[0.2em] uppercase hover:bg-[#333333] transition-all shadow-md disabled:opacity-60">
+                  {submitting ? 'SENDING...' : 'SEND MESSAGE'}
                 </button>
+                {feedback && (
+                  <p className="mt-4 text-[13px] font-medium text-[#333333]">{feedback}</p>
+                )}
               </div>
             </form>
           </div>

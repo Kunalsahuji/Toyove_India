@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
+import Order from '../models/Order.js';
 import RefreshToken from '../models/RefreshToken.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
@@ -39,6 +40,10 @@ export const register = asyncHandler(async (req, res, next) => {
   const { accessToken, refreshTokenPlain, refreshTokenHash } = generateTokens(newUser._id);
 
   await RefreshToken.createTokenRecord(newUser._id, refreshTokenHash, req);
+  await Order.updateMany(
+    { user: null, 'customer.email': newUser.email.toLowerCase() },
+    { $set: { user: newUser._id } }
+  );
 
   setAuthCookies(res, accessToken, refreshTokenPlain);
   logger.info('Auth register success', {
@@ -105,6 +110,10 @@ export const login = asyncHandler(async (req, res, next) => {
   const { accessToken, refreshTokenPlain, refreshTokenHash } = generateTokens(user._id);
 
   await RefreshToken.createTokenRecord(user._id, refreshTokenHash, req);
+  await Order.updateMany(
+    { user: null, 'customer.email': user.email.toLowerCase() },
+    { $set: { user: user._id } }
+  );
 
   setAuthCookies(res, accessToken, refreshTokenPlain);
   logger.info('Auth login success', {
