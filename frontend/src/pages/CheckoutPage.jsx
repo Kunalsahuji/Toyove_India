@@ -161,12 +161,21 @@ export function CheckoutPage() {
 
     const originalHtmlOverflow = document.documentElement.style.overflow
     const originalBodyOverflow = document.body.style.overflow
+    const originalHtmlPosition = document.documentElement.style.position
+    const originalBodyPosition = document.body.style.position
+    const originalBodyWidth = document.body.style.width
     document.documentElement.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
+    document.documentElement.style.position = 'relative'
+    document.body.style.position = 'relative'
+    document.body.style.width = '100%'
 
     return () => {
       document.documentElement.style.overflow = originalHtmlOverflow
       document.body.style.overflow = originalBodyOverflow
+      document.documentElement.style.position = originalHtmlPosition
+      document.body.style.position = originalBodyPosition
+      document.body.style.width = originalBodyWidth
     }
   }, [isLaunchingPayment, isProcessing])
 
@@ -470,23 +479,6 @@ export function CheckoutPage() {
                      </div>
                      <span className="font-bold text-[14px]">₹45.00</span>
                   </label>
-               </div>
-            </section>
-
-            <section className="space-y-4">
-               <div>
-                  <h2 className="text-xl font-bold text-[#333] font-grandstander">Payment</h2>
-                  <p className="text-[12px] text-gray-500 font-medium">All transactions are secure and encrypted.</p>
-                  <p className="text-[11px] text-[#005BD1] font-bold mt-1">Razorpay will show cards, UPI, wallets, and bank options on the next step.</p>
-               </div>
-               <div className="rounded-2xl border border-gray-200 bg-[#F8F8F8] p-5 md:p-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                     <div>
-                        <p className="text-[14px] font-bold text-[#333]">Secure Razorpay Checkout</p>
-                        <p className="mt-1 text-[12px] font-medium leading-5 text-gray-500">Your payment method selection happens inside Razorpay's secure checkout window.</p>
-                     </div>
-                     <span className="inline-flex h-8 items-center rounded-full bg-white px-3 text-[10px] font-bold uppercase tracking-widest text-[#005BD1] shadow-sm">Gateway</span>
-                  </div>
                </div>
             </section>
 
