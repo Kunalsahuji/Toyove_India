@@ -1,5 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useToast } from '../context/ToastContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { Star, Heart, Share2, Eye, ShoppingCart, Search, Repeat, Plus, Minus, CheckCircle, X, ChevronRight, Share, ZoomIn } from 'lucide-react'
@@ -38,7 +39,8 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => (
 
 export function ProductDetailPage() {
   const { title } = useParams()
-  const { addToCart, toggleWishlist, wishlist, toggleCompare } = useCart()
+  const { addToCart, toggleWishlist, wishlist, toggleCompare, compare } = useCart()
+  const { success, error: showError } = useToast()
   const navigate = useNavigate()
   const [selectedImg, setSelectedImg] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -114,11 +116,13 @@ export function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity)
+    success(`${product.title} added to cart!`)
     navigate('/cart')
   }
 
   const handleBuyNow = () => {
     addToCart(product, quantity)
+    success(`Proceeding to checkout with ${product.title}...`)
     navigate('/checkout')
   }
 
@@ -135,12 +139,14 @@ export function ProductDetailPage() {
       }
     } else {
       navigator.clipboard.writeText(window.location.href)
-      alert('Link copied to clipboard!')
+      success('Link copied to clipboard!')
     }
   }
 
   const handleCompare = () => {
+    const isCompared = compare?.some(item => item.id === product.id)
     toggleCompare(product)
+    success(isCompared ? `${product.title} removed from comparison.` : `${product.title} added to comparison!`)
     navigate('/compare')
   }
 
@@ -400,8 +406,12 @@ export function ProductDetailPage() {
                   </div>
                   <div className="flex gap-3 pt-1">
                     <button
-                      onClick={() => { toggleWishlist(product); navigate('/wishlist'); }}
-                      className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform ${isWishlisted ? 'bg-[#E84949] text-white' : 'bg-[#E84949] text-white'}`}
+                      onClick={() => { 
+                        const isCurrentlyWishlisted = wishlist.some(item => item.id === product.id);
+                        toggleWishlist(product); 
+                        success(isCurrentlyWishlisted ? `${product.title} removed from wishlist.` : `${product.title} added to wishlist!`);
+                      }}
+                      className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform bg-[#E84949] text-white`}
                     >
                       <Heart size={16} fill={isWishlisted ? 'white' : 'none'} />
                     </button>

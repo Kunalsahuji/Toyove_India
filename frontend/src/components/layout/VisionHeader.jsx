@@ -5,7 +5,6 @@ import { Search, ShoppingCart, Menu, X, ChevronLeft, ChevronRight, ChevronDown, 
 import CartDrawer from '../cart/CartDrawer'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
-import { products } from '../../utils/ProductData'
 
 const FbIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
@@ -31,7 +30,7 @@ const PtIcon = () => (
 )
 
 import { countries, languages, mainNavLinks, categoryData } from '../../data/navigationData'
-import { getCategoryTree, getNavbarCategories } from '../../services/catalogApi'
+import { getCategoryTree, getNavbarCategories, getProducts } from '../../services/catalogApi'
 import { getStorefrontSettings } from '../../services/siteApi'
 
 const C = '#FF4E50'  
@@ -177,14 +176,35 @@ export function VisionHeader() {
   }, [location])
 
   useEffect(() => {
-    if (searchTerm.trim().length > 1) {
-        const filtered = products.filter(p => 
-            p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.category.toLowerCase().includes(searchTerm.toLowerCase())
-        ).slice(0, 5)
-        setSuggestions(filtered)
-    } else {
-        setSuggestions([])
+    let isMounted = true
+
+    if (searchTerm.trim().length <= 1) {
+      setSuggestions([])
+      return () => {
+        isMounted = false
+      }
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const payload = await getProducts({
+          search: searchTerm.trim(),
+          limit: 5,
+          sort: 'relevance',
+        })
+        if (isMounted) {
+          setSuggestions(payload.products || [])
+        }
+      } catch {
+        if (isMounted) {
+          setSuggestions([])
+        }
+      }
+    }, 180)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
     }
   }, [searchTerm])
 
@@ -625,9 +645,9 @@ export function VisionHeader() {
                               className="mt-6 space-y-3 pb-4"
                             >
                                 {suggestions.map(p => (
-                                    <Link key={p.id} to={`/product/${p.name.toLowerCase().replaceAll(' ', '-')}`} onClick={handleLinkClick} className="flex items-center gap-3 p-2 rounded-xl bg-white/30 hover:bg-white transition-all shadow-xs">
+                                    <Link key={p.id} to={`/product/${p.slug || p.id}`} onClick={handleLinkClick} className="flex items-center gap-3 p-2 rounded-xl bg-white/30 hover:bg-white transition-all shadow-xs">
                                         <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-black/5"><img src={p.img} alt={p.name} className="w-full h-full object-cover" /></div>
-                                        <div className="grow"><h5 className="text-[14px] font-bold text-[#333] tracking-tight">{p.name}</h5><p className="text-[11px] text-[#999] mt-0.5 font-bold">${p.price}</p></div>
+                                        <div className="grow"><h5 className="text-[14px] font-bold text-[#333] tracking-tight">{p.name}</h5><p className="text-[11px] text-[#999] mt-0.5 font-bold">₹{p.price}</p></div>
                                         <Search size={14} className="text-gray-300 mr-2" />
                                     </Link>
                                 ))}
@@ -750,17 +770,23 @@ export function VisionHeader() {
                     </div>
 
                     
-                    <div className="relative">
-                      <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider">
+                    <div className="relative z-[100]">
+                      <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider p-1 hover:bg-[#333]/5 rounded-lg transition-colors">
                         <Globe size={12} className="opacity-40" />
                         <span className="whitespace-nowrap">{selectedLang}</span>
-                        <ChevronDown size={12} className="opacity-40" />
+                        <ChevronDown size={12} className={`opacity-40 transition-transform ${langDropdown ? 'rotate-180' : ''}`} />
                       </button>
                       <AnimatePresence>
                           {langDropdown && (
-                              <motion.div initial={{opacity:0, y:5}} animate={{opacity:1, y:0}} exit={{opacity:0, y:5}} className="absolute bottom-full left-0 mb-2 w-32 bg-white shadow-2xl rounded-xl py-2 z-50 border border-black/5 overflow-hidden">
+                              <motion.div 
+                                initial={{opacity:0, y:10}} 
+                                animate={{opacity:1, y:0}} 
+                                exit={{opacity:0, y:10}} 
+                                className="absolute bottom-full left-0 mb-3 w-40 bg-white shadow-2xl rounded-2xl py-3 z-[110] border border-black/5 overflow-hidden"
+                              >
+                                  <p className="px-4 pb-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest border-b border-black/[0.03] mb-1">Select Language</p>
                                   {languages.map(l => (
-                                      <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2 text-[12px] font-bold hover:bg-[#FDF4E6] ${selectedLang === l ? 'text-[#E84949]' : 'text-gray-700'}`}>
+                                      <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2.5 text-[12px] font-bold hover:bg-[#FDF4E6] transition-colors ${selectedLang === l ? 'text-[#E84949] bg-[#E84949]/5' : 'text-gray-700'}`}>
                                           {l}
                                       </button>
                                   ))}

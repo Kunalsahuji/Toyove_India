@@ -5,7 +5,9 @@ import {
   adminListUsers,
   adminUpdateUser,
   adminUpdateUserStatus,
+  getMyPreferences,
   getMe,
+  updateMyPreferences,
   updateMe,
   updatePassword,
 } from '../controllers/user.controller.js';
@@ -28,6 +30,8 @@ const adminRouter = express.Router();
 router.use(protect);
 
 router.get('/me', getMe);
+router.get('/me/preferences', getMyPreferences);
+router.patch('/me/preferences', updateMyPreferences);
 router.patch('/me', validate(updateProfileSchema), updateMe);
 router.patch('/me/password', validate(updatePasswordSchema), updatePassword);
 

@@ -164,24 +164,37 @@ export function CollectionPage() {
 
   useEffect(() => {
     if (isFilterOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
+      const scrollY = window.scrollY
+      document.documentElement.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      const scrollY = document.body.style.top
+      document.documentElement.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+      window.scrollTo(0, parseInt(scrollY || '0') * -1)
+    }
+
+    return () => {
+      document.documentElement.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
     }
   }, [isFilterOpen])
 
   useEffect(() => {
-    setIsLoading(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
     setCurrentPage(1)
-  }, [category, subcategory, innerSearch, sortBy, filters])
+    if (!isFilterOpen) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [category, subcategory, innerSearch, sortBy, filters, isFilterOpen])
 
   const toggleFilter = (key, value) => {
     setFilters(prev => ({
@@ -366,7 +379,10 @@ export function CollectionPage() {
                   ) : (
                     <div className="col-span-full rounded-[30px] border-[1.5px] border-dashed border-black/10 bg-[#F9EAD3] p-12 text-center">
                       <h3 className="text-2xl font-black uppercase text-[#444]">No products found</h3>
-                      <p className="mt-3 text-[13px] font-bold text-[#444]/60">Try changing filters or search terms.</p>
+                      <p className="mt-3 text-[13px] font-bold text-[#444]/60">
+                        We could not find any live products for {displayTitle}.
+                      </p>
+                      <p className="mt-2 text-[12px] font-medium text-[#444]/50">Try changing filters, search terms, or check another category.</p>
                     </div>
                   )}
                 </AnimatePresence>

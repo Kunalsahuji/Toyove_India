@@ -12,6 +12,9 @@ import { getShippingMethods } from '../services/shippingApi'
 const countries = ["India"]
 import { indianStates, commonCities } from '../utils/indiaData'
 
+const CHECKOUT_COUPON_STORAGE_KEY = 'TOYOVOINDIA_checkout_coupon'
+const getCheckoutDraftKey = (user) => `TOYOVOINDIA_checkout_draft_${user?.id || user?._id || user?.email || 'guest'}`
+
 const FloatingInput = ({ label, name, type = 'text', value, onChange, placeholder = ' ' }) => (
   <div className="relative group w-full mb-4">
     <input
@@ -118,7 +121,7 @@ export function CheckoutPage() {
   const [showSummary, setShowSummary] = useState(false)
   const [isLaunchingPayment, setIsLaunchingPayment] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [discountCode, setDiscountCode] = useState('')
+  const [discountCode, setDiscountCode] = useState(() => localStorage.getItem(CHECKOUT_COUPON_STORAGE_KEY) || '')
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
   const [couponState, setCouponState] = useState(null)
   const [couponError, setCouponError] = useState('')
@@ -146,6 +149,25 @@ export function CheckoutPage() {
     district: defaultAddress?.district || ''
   })
 
+  const checkoutDraftKey = getCheckoutDraftKey(user)
+
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(checkoutDraftKey)
+      if (!savedDraft) return
+      const parsed = JSON.parse(savedDraft)
+      if (parsed?.formData) {
+        setFormData((prev) => ({ ...prev, ...parsed.formData }))
+      }
+      if (parsed?.shippingMethod) setShippingMethod(parsed.shippingMethod)
+      if (parsed?.discountCode) setDiscountCode(parsed.discountCode)
+      if (typeof parsed?.useSavedAddress === 'boolean') setUseSavedAddress(parsed.useSavedAddress)
+      if (parsed?.selectedAddressId !== undefined) setSelectedAddressId(parsed.selectedAddressId)
+    } catch {
+      // ignore invalid draft
+    }
+  }, [checkoutDraftKey])
+
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -161,6 +183,21 @@ export function CheckoutPage() {
       district: prev.district || defaultAddress?.district || '',
     }))
   }, [user, defaultAddress])
+
+  useEffect(() => {
+    localStorage.setItem(CHECKOUT_COUPON_STORAGE_KEY, discountCode)
+  }, [discountCode])
+
+  useEffect(() => {
+    const draft = {
+      formData,
+      shippingMethod,
+      discountCode,
+      useSavedAddress,
+      selectedAddressId,
+    }
+    localStorage.setItem(checkoutDraftKey, JSON.stringify(draft))
+  }, [checkoutDraftKey, formData, shippingMethod, discountCode, useSavedAddress, selectedAddressId])
 
   const selectedShippingMethod = shippingMethods.find((method) => method.code === shippingMethod) || null
   const shippingCharge = Number(selectedShippingMethod?.charge || 0)
@@ -234,6 +271,35 @@ export function CheckoutPage() {
     setCouponState(null)
     setCouponError('')
   }, [shippingMethod, subtotal, cartItems])
+
+  useEffect(() => {
+    if (!discountCode.trim() || isDiscountApplied || isApplyingCoupon || !cartItems.length) return
+
+    let isMounted = true
+    const rehydrateCoupon = async () => {
+      try {
+        const result = await validateCouponCode({
+          code: discountCode.trim(),
+          subtotal,
+          shippingAmount: shippingCharge,
+          categorySlugs: [...new Set(cartItems.map((item) => item.category).filter(Boolean))],
+        })
+        if (!isMounted) return
+        setCouponState(result)
+        setIsDiscountApplied(true)
+      } catch {
+        if (!isMounted) return
+        setCouponState(null)
+        setIsDiscountApplied(false)
+      }
+    }
+
+    const timer = setTimeout(rehydrateCoupon, 120)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
+  }, [discountCode, subtotal, shippingCharge, cartItems, isDiscountApplied, isApplyingCoupon])
 
   const applyDiscount = async () => {
     if (!discountCode.trim()) return
@@ -347,6 +413,8 @@ export function CheckoutPage() {
               email: order.customerEmail,
             }))
 
+            localStorage.removeItem(checkoutDraftKey)
+            localStorage.removeItem(CHECKOUT_COUPON_STORAGE_KEY)
             clearCart()
             navigate('/order-success', { state: { order } })
           } catch (error) {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ShoppingBag, Heart, Eye, Layers, X, Star, Plus, Minus } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
+import { useToast } from '../../context/ToastContext'
 
 const QuickViewModal = ({ p, isOpen, onClose }) => {
   const { addToCart } = useCart()
@@ -108,7 +109,7 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
               </div>
               
               <Link 
-                to={`/product/${p.id}`} 
+                to={`/product/${p.slug || p.id}`} 
                 onClick={onClose} 
                 className="block text-center text-[10px] md:text-[12px] font-black text-[#333] uppercase tracking-widest underline underline-offset-4 decoration-2 decoration-[#E84949]/30 hover:text-[#E84949] transition-colors pt-4"
               >
@@ -124,6 +125,7 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
 
 export function ProductCard({ p, i, isGridOne = false }) {
   const { addToCart, toggleWishlist, toggleCompare, wishlist, compare } = useCart()
+  const { success } = useToast()
   const [showQuickView, setShowQuickView] = useState(false)
   
   const finalPrice = (p.price || 0).toFixed(0)
@@ -132,6 +134,21 @@ export function ProductCard({ p, i, isGridOne = false }) {
 
   const isWishlisted = wishlist?.find(item => item.id === p.id)
   const isCompared = compare?.find(item => item.id === p.id)
+
+  const handleAddToCart = () => {
+    addToCart(p)
+    success(`${p.name} added to cart!`)
+  }
+
+  const handleWishlist = () => {
+    toggleWishlist(p)
+    success(isWishlisted ? `${p.name} removed from wishlist.` : `${p.name} added to wishlist!`)
+  }
+
+  const handleCompare = () => {
+    toggleCompare(p)
+    success(isCompared ? `${p.name} removed from comparison.` : `${p.name} added to comparison!`)
+  }
 
   return (
     <>
@@ -150,7 +167,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
         <div className={`relative aspect-square rounded-[16px] md:rounded-[20px] border-[1.5px] border-dashed border-[#333]/30 group-hover:border-[#E84949] transition-all duration-300 bg-[#F9EAD3] overflow-hidden shrink-0 ${
           isGridOne ? 'w-full md:w-[320px] lg:w-[400px]' : 'w-full'
         }`}>
-          <Link to={`/product/${p.id}`} className="block w-full h-full relative z-10">
+          <Link to={`/product/${p.slug || p.id}`} className="block w-full h-full relative z-10">
             <img
               src={p.img}
               alt={p.name}
@@ -166,10 +183,10 @@ export function ProductCard({ p, i, isGridOne = false }) {
             max-[1023px]:opacity-100 max-[1023px]:translate-x-0">
             
             {[
-              { icon: <Eye size={14} className="md:w-4 md:h-4" />, label: 'Quick View', action: () => setShowQuickView(true) },
-              { icon: <ShoppingBag size={14} className="md:w-4 md:h-4" />, label: 'Add to Cart', action: () => addToCart(p) },
-              { icon: <Heart size={14} className={`md:w-4 md:h-4 ${isWishlisted ? 'fill-white' : ''}`} />, label: 'Wishlist', action: () => toggleWishlist(p) },
-              { icon: <Layers size={14} className={`md:w-4 md:h-4 ${isCompared ? 'fill-white' : ''}`} />, label: 'Compare', action: () => toggleCompare(p) },
+              { icon: <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />, label: 'Quick View', action: () => setShowQuickView(true) },
+              { icon: <ShoppingBag className="w-3.5 h-3.5 md:w-4 md:h-4" />, label: 'Add to Cart', action: handleAddToCart },
+              { icon: <Heart className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isWishlisted ? 'fill-white' : ''}`} />, label: 'Wishlist', action: handleWishlist },
+              { icon: <Layers className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isCompared ? 'fill-white' : ''}`} />, label: 'Compare', action: handleCompare },
             ].map((action, idx) => (
               <button
                 key={idx}
@@ -178,7 +195,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
                   e.stopPropagation();
                   action.action();
                 }}
-                className="w-7 h-7 md:w-9 md:h-9 bg-[#E84949] text-white rounded-[8px] md:rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
+                className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 bg-[#E84949] text-white rounded-[6px] sm:rounded-[8px] md:rounded-xl flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95 border border-white/10"
                 title={action.label}
               >
                 {action.icon}
@@ -196,7 +213,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
 
         {/* Details Section (OUTSIDE the box) */}
         <div className={`mt-4 flex flex-col ${isGridOne ? 'text-left items-start md:mt-0' : 'text-center items-center'} px-2`}>
-          <Link to={`/product/${p.id}`}>
+          <Link to={`/product/${p.slug || p.id}`}>
             <h3 className={`${isGridOne ? 'text-xl md:text-3xl' : 'text-[13px] md:text-[15px]'} font-bold text-[#444] group-hover:text-[#E84949] transition-colors duration-300 uppercase tracking-tight mb-1`}>
               {p.name}
             </h3>

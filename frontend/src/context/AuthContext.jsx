@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
   const [authLoading, setAuthLoading] = useState(true)
   const [addresses, setAddresses] = useState([])
   const [savedMethods, setSavedMethods] = useState([])
+  const [preferencesHydrated, setPreferencesHydrated] = useState(false)
 
   const refreshUser = async () => {
     try {
@@ -99,6 +100,7 @@ export function AuthProvider({ children }) {
   }, [user])
 
   useEffect(() => {
+    setPreferencesHydrated(false)
     const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
     const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
 
@@ -107,17 +109,20 @@ export function AuthProvider({ children }) {
 
     setAddresses(savedAddresses ? sanitizeAddresses(JSON.parse(savedAddresses)) : [])
     setSavedMethods(savedMethods ? JSON.parse(savedMethods) : [])
+    setPreferencesHydrated(true)
   }, [user?.id, user?._id, user?.email])
 
   useEffect(() => {
+    if (!preferencesHydrated) return
     const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
     localStorage.setItem(addressesKey, JSON.stringify(addresses))
-  }, [addresses, user])
+  }, [addresses, user, preferencesHydrated])
 
   useEffect(() => {
+    if (!preferencesHydrated) return
     const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
     localStorage.setItem(paymentMethodsKey, JSON.stringify(savedMethods))
-  }, [savedMethods, user])
+  }, [savedMethods, user, preferencesHydrated])
 
   const login = async (email, password) => {
     try {

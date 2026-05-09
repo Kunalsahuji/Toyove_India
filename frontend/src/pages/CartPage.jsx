@@ -4,14 +4,59 @@ import { motion } from 'framer-motion'
 import { Minus, Plus, X, ShoppingBag, ArrowRight, Trash2, Trash } from 'lucide-react'
 
 import { useCart } from '../context/CartContext'
+import { useToast } from '../context/ToastContext'
+import { validateCouponCode } from '../services/couponApi'
+
+const CHECKOUT_COUPON_STORAGE_KEY = 'TOYOVOINDIA_checkout_coupon'
+const getProductPath = (item) => `/product/${item.slug || item.id || item._id || item.title?.toLowerCase().replaceAll(' ', '-')}`
 
 export function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart, subtotal } = useCart()
+  const { success } = useToast()
   const navigate = useNavigate()
+  const [couponCode, setCouponCode] = useState(() => localStorage.getItem(CHECKOUT_COUPON_STORAGE_KEY) || '')
+  const [couponState, setCouponState] = useState(null)
+  const [couponError, setCouponError] = useState('')
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem(CHECKOUT_COUPON_STORAGE_KEY, couponCode)
+  }, [couponCode])
+
+  useEffect(() => {
+    if (!cartItems.length) {
+      setCouponState(null)
+      setCouponError('')
+    }
+  }, [cartItems])
+
+  const discountAmount = couponState?.discountAmount || 0
+  const finalTotal = Math.max(0, subtotal - discountAmount)
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return
+    setIsApplyingCoupon(true)
+    setCouponError('')
+    try {
+      const result = await validateCouponCode({
+        code: couponCode.trim(),
+        subtotal,
+        shippingAmount: 0,
+        categorySlugs: [...new Set(cartItems.map((item) => item.category).filter(Boolean))],
+      })
+      setCouponState(result)
+      success(`${result.coupon?.code || couponCode.trim().toUpperCase()} applied successfully.`)
+    } catch (error) {
+      setCouponState(null)
+      setCouponError(error.message || 'Invalid coupon code')
+    } finally {
+      setIsApplyingCoupon(false)
+    }
+  }
 
 
   if (cartItems.length === 0) {
@@ -52,13 +97,19 @@ export function CartPage() {
                   <img src={item.img} alt={item.title} className="w-full h-full object-contain" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[16px] tracking-tight line-clamp-2 break-words">
+                  <Link to={getProductPath(item)} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[16px] tracking-tight line-clamp-2 break-words">
                     {item.title}
                   </Link>
                   <p className="text-[15px] font-bold text-[#E84949] mt-1">₹{item.price.toFixed(2)}</p>
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 break-words">SKU: {item.sku || 'N/A'}</p>
                 </div>
-                <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-full flex items-center justify-center text-[#333]/40 hover:text-[#E84949] hover:bg-red-50 transition-all shrink-0">
+                <button 
+                  onClick={() => {
+                    removeFromCart(item.id);
+                    success(`${item.title} removed from cart.`);
+                  }} 
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-[#333]/40 hover:text-[#E84949] hover:bg-red-50 transition-all shrink-0"
+                >
                   <Trash size={16} />
                 </button>
               </div>
@@ -101,7 +152,7 @@ export function CartPage() {
                        </td>
                        <td className="p-6 border-r border-dashed border-[#333]/20">
                           <div className="space-y-1">
-                             <Link to={`/product/${item.title?.toLowerCase().replaceAll(' ', '-')}`} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[18px] tracking-tight">{item.title}</Link>
+                             <Link to={getProductPath(item)} className="font-grandstander font-bold text-[#333] hover:text-[#E84949] text-[18px] tracking-tight">{item.title}</Link>
                              <p className="text-[16px] font-bold text-[#E84949]">₹{item.price.toFixed(2)}</p>
                              <p className="text-[12px] text-gray-400 font-bold uppercase tracking-widest">SKU: {item.sku || 'N/A'}</p>
                           </div>
@@ -137,8 +188,11 @@ export function CartPage() {
               <div className="text-left lg:text-right space-y-2">
                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-6">
                     <span className="text-[16px] font-bold text-[#333]/60 uppercase tracking-widest">Estimated total:</span>
-                    <span className="text-3xl font-grandstander font-bold text-[#333] tracking-tighter">₹{subtotal.toFixed(2)} INR</span>
+                    <span className="text-3xl font-grandstander font-bold text-[#333] tracking-tighter">₹{finalTotal.toFixed(2)} INR</span>
                  </div>
+                 {couponState && (
+                  <p className="text-[12px] font-bold text-green-600">Discount ({couponState.coupon?.code}) applied: -₹{discountAmount.toFixed(2)}</p>
+                 )}
                  <p className="text-[12px] text-gray-400 font-medium italic">Taxes, discounts and shipping calculated at checkout</p>
               </div>
 
@@ -165,9 +219,10 @@ export function CartPage() {
            <div className="p-6 md:p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
               <p className="text-[13px] font-bold text-[#333]/60 uppercase tracking-widest">Enter coupon or discount code:</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                 <input type="text" placeholder="Coupon code" className="grow h-14 bg-transparent border border-[#333]/10 rounded-xl px-4 outline-none font-bold text-[14px]" />
-                 <button className="h-14 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] w-full sm:w-auto">Submit</button>
+                 <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} type="text" placeholder="Coupon code" className="grow h-14 bg-transparent border border-[#333]/10 rounded-xl px-4 outline-none font-bold text-[14px]" />
+                 <button onClick={applyCoupon} disabled={isApplyingCoupon || !couponCode.trim()} className="h-14 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] w-full sm:w-auto disabled:opacity-50">{isApplyingCoupon ? 'Applying...' : 'Submit'}</button>
               </div>
+              {couponError && <p className="text-[12px] font-bold text-[#E84949]">{couponError}</p>}
            </div>
         </div>
       </div>

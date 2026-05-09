@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { getAdminOrder, updateAdminOrderReturnRequest, updateAdminOrderStatus } from '../../services/orderApi'
+import { printOrderInvoice } from '../../utils/invoice'
 
 const getAllowedStatusOptions = (status) => {
   switch (status) {
@@ -159,7 +160,7 @@ export function AdminOrderDetail() {
         </div>
         
         <div className="flex gap-3 overflow-x-auto pb-2 md:pb-0">
-          <button className="h-10 md:h-12 px-5 bg-white border border-black/[0.05] text-gray-600 rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] shadow-sm hover:bg-gray-50 flex items-center gap-2 transition-all whitespace-nowrap">
+          <button onClick={() => printOrderInvoice(order)} className="h-10 md:h-12 px-5 bg-white border border-black/[0.05] text-gray-600 rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] shadow-sm hover:bg-gray-50 flex items-center gap-2 transition-all whitespace-nowrap">
             <Printer size={16} /> Print Invoice
           </button>
           <button onClick={handleSave} disabled={saving} className="h-10 md:h-12 px-6 bg-[#6651A4] text-white rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] shadow-lg hover:bg-[#5a4892] flex items-center gap-2 transition-all whitespace-nowrap disabled:opacity-60">

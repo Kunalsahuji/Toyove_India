@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const userPreferenceItemSchema = new mongoose.Schema({}, { _id: false, strict: false });
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -50,6 +52,20 @@ const userSchema = new mongoose.Schema({
   },
   passwordChangedAt: {
     type: Date,
+  },
+  preferences: {
+    cart: {
+      type: [userPreferenceItemSchema],
+      default: [],
+    },
+    wishlist: {
+      type: [userPreferenceItemSchema],
+      default: [],
+    },
+    compare: {
+      type: [userPreferenceItemSchema],
+      default: [],
+    },
   }
 }, {
   timestamps: true,

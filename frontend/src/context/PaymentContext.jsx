@@ -17,13 +17,16 @@ export function PaymentProvider({ children }) {
     cards: []
   });
   const [orders, setOrders] = useState([]);
+  const [storageHydrated, setStorageHydrated] = useState(false);
 
   useEffect(() => {
+    setStorageHydrated(false);
     const saved = localStorage.getItem(paymentHistoryKey);
     setPaymentHistory(saved ? JSON.parse(saved) : []);
   }, [paymentHistoryKey]);
 
   useEffect(() => {
+    setStorageHydrated(false);
     const saved = localStorage.getItem(savedMethodsKey);
     setSavedMethods(saved ? JSON.parse(saved) : {
       bankAccounts: [],
@@ -33,21 +36,26 @@ export function PaymentProvider({ children }) {
   }, [savedMethodsKey]);
 
   useEffect(() => {
+    setStorageHydrated(false);
     const saved = localStorage.getItem(ordersKey);
     setOrders(saved ? JSON.parse(saved) : []);
+    setStorageHydrated(true);
   }, [ordersKey]);
 
   useEffect(() => {
+    if (!storageHydrated) return;
     localStorage.setItem(paymentHistoryKey, JSON.stringify(paymentHistory));
-  }, [paymentHistory, paymentHistoryKey]);
+  }, [paymentHistory, paymentHistoryKey, storageHydrated]);
 
   useEffect(() => {
+    if (!storageHydrated) return;
     localStorage.setItem(savedMethodsKey, JSON.stringify(savedMethods));
-  }, [savedMethods, savedMethodsKey]);
+  }, [savedMethods, savedMethodsKey, storageHydrated]);
 
   useEffect(() => {
+    if (!storageHydrated) return;
     localStorage.setItem(ordersKey, JSON.stringify(orders));
-  }, [orders, ordersKey]);
+  }, [orders, ordersKey, storageHydrated]);
 
   const addPaymentLog = (log) => {
     setPaymentHistory(prev => [

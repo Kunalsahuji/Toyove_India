@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Plus, Minus, Truck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 const CartDrawer = ({ isOpen, onClose }) => {
   const { cartItems, updateQuantity, removeFromCart, subtotal } = useCart();
+  const { user } = useAuth();
   const [orderMessageOpen, setOrderMessageOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -210,9 +212,11 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     Continue Shopping
                   </button>
                   
-                  <p className="text-[13px] text-[#333]">
-                    <span className="font-bold">Have an account?</span> / <Link to="/login" onClick={onClose} className="text-[#3a6ea5] underline underline-offset-4 font-normal">Log in to check out faster.</Link>
-                  </p>
+                  {!user && (
+                    <p className="text-[13px] text-[#333]">
+                      <span className="font-bold">Have an account?</span> / <Link to="/login" onClick={onClose} className="text-[#3a6ea5] underline underline-offset-4 font-normal">Log in to check out faster.</Link>
+                    </p>
+                  )}
                 </div>
               )}
             </div>

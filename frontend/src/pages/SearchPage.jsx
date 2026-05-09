@@ -91,7 +91,7 @@ export function SearchPage() {
                 transition={{ delay: i * 0.1 }}
                 className="group relative flex flex-col"
               >
-                <Link to={`/product/${p.id}`} className="dashed-card relative overflow-hidden flex items-center justify-center bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-2 aspect-square mb-4">
+                <Link to={`/product/${p.slug || p.id}`} className="dashed-card relative overflow-hidden flex items-center justify-center bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-2 aspect-square mb-4">
                   <div className="absolute top-3 -right-12 z-40 flex flex-col gap-2 group-hover:right-3 transition-all duration-500 ease-out opacity-0 group-hover:opacity-100">
                     <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><ShoppingCart size={15} /></button>
                     <button className="h-9 w-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#E84949] hover:text-white transition-colors border border-transparent hover:border-[#E84949]"><Heart size={15} /></button>
@@ -101,7 +101,7 @@ export function SearchPage() {
                 </Link>
 
                 <div className="text-center">
-                  <Link to={`/product/${p.id}`}>
+                  <Link to={`/product/${p.slug || p.id}`}>
                     <h3 className="font-grandstander text-[14px] md:text-[17px] font-bold text-[#333] group-hover:text-[#E84949] transition-colors leading-tight tracking-tight capitalize">{p.name}</h3>
                   </Link>
                   <div className="flex items-center justify-center gap-3 mt-1">

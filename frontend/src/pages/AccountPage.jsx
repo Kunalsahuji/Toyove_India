@@ -13,6 +13,7 @@ import {
 import { indianStates, commonCities, addressTypes } from '../utils/indiaData'
 import { cancelMyOrder, getMyOrders, requestMyOrderReturn } from '../services/orderApi'
 import { useToast } from '../context/ToastContext'
+import { printOrderInvoice } from '../utils/invoice'
 
 const upiLogos = {
   'Google Pay': (
@@ -190,8 +191,20 @@ export function AccountPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard')
-  const [viewMode, setViewMode] = useState(location.state?.activeTab ? 'content' : 'menu')
+  const accountViewStorageKey = `TOYOVOINDIA_account_view_${user?.id || user?._id || user?.email || 'guest'}`
+  const readStoredAccountView = () => {
+    try {
+      const saved = localStorage.getItem(accountViewStorageKey)
+      if (!saved) return null
+      return JSON.parse(saved)
+    } catch {
+      return null
+    }
+  }
+
+  const initialAccountView = readStoredAccountView()
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || initialAccountView?.activeTab || 'dashboard')
+  const [viewMode, setViewMode] = useState(location.state?.activeTab ? 'content' : (initialAccountView?.viewMode || 'menu'))
   
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [profileForm, setProfileForm] = useState(user || {})
@@ -205,6 +218,26 @@ export function AccountPage() {
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [returnReason, setReturnReason] = useState('')
+
+  useEffect(() => {
+    const storedView = readStoredAccountView()
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab)
+      setViewMode('content')
+      return
+    }
+    if (storedView?.activeTab) {
+      setActiveTab(storedView.activeTab)
+      setViewMode(storedView.viewMode || 'content')
+    }
+  }, [accountViewStorageKey, location.state])
+
+  useEffect(() => {
+    localStorage.setItem(accountViewStorageKey, JSON.stringify({
+      activeTab,
+      viewMode,
+    }))
+  }, [accountViewStorageKey, activeTab, viewMode])
 
   const canCancelOrder = (order) => ['pending', 'processing'].includes(order?.status)
   const canRequestReturn = (order) => (
@@ -353,13 +386,16 @@ export function AccountPage() {
           <div className="fixed inset-0 z-[300000] overflow-y-auto bg-black/30 backdrop-blur-sm p-3 sm:p-4">
              <motion.div initial={{scale:0.95, opacity:0}} animate={{scale:1, opacity:1}} exit={{scale:0.95, opacity:0}} className="bg-[#FDF4E6] w-full max-w-lg rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl border border-white/50 my-3 sm:my-6 mx-auto max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-48px)] flex flex-col">
                 <div className="p-5 sm:p-8 space-y-5 sm:space-y-6 overflow-y-auto custom-scrollbar">
-                   <div className="flex justify-between items-start sticky top-0 bg-[#FDF4E6] pb-3 z-10">
-                      <div className="flex items-center gap-4">
-                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-2xl flex items-center justify-center text-[#6651A4] shadow-sm shrink-0"><Box size={20}/></div>
-                         <div className="min-w-0"><h3 className="text-base sm:text-lg font-grandstander font-bold break-words">Order #{selectedOrder.orderNumber}</h3><p className="text-[10px] text-gray-400 font-bold uppercase">{selectedOrder.date}</p></div>
-                      </div>
-                      <button onClick={()=>setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full"><X size={20}/></button>
-                   </div>
+                    <div className="flex justify-between items-start sticky top-0 bg-[#FDF4E6] pb-3 z-10 gap-2">
+                       <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-2xl flex items-center justify-center text-[#6651A4] shadow-sm shrink-0"><Box size={20}/></div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-sm sm:text-lg font-grandstander font-bold break-all leading-tight">Order #{selectedOrder.orderNumber}</h3>
+                            <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase mt-0.5">{selectedOrder.date}</p>
+                          </div>
+                       </div>
+                       <button onClick={()=>setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full shrink-0"><X size={18}/></button>
+                    </div>
                    <div className="space-y-4 max-h-[240px] sm:max-h-[300px] overflow-y-auto custom-scrollbar">
                       {selectedOrder.items.map((item, i) => (
                         <div key={i} className="flex gap-3 sm:gap-4 p-3 bg-white/50 rounded-2xl border border-black/[0.03]">
@@ -433,6 +469,12 @@ export function AccountPage() {
                        Cancel Order
                      </button>
                    )}
+                   <button
+                     onClick={() => printOrderInvoice(selectedOrder)}
+                     className="w-full h-12 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-[0.18em] text-[10px] hover:bg-[#6651A4] transition-all"
+                   >
+                     Download Invoice
+                   </button>
                    {canRequestReturn(selectedOrder) && (
                      <div className="space-y-3">
                        <textarea
@@ -758,12 +800,12 @@ export function AccountPage() {
                                    </button>
                                 ))}
                              </div>
-                             <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input required placeholder="First Name" value={addressForm.firstName} onChange={e=>setAddressForm({...addressForm, firstName: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                                 <input required placeholder="Last Name" value={addressForm.lastName} onChange={e=>setAddressForm({...addressForm, lastName: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                              </div>
                              <input required placeholder="Street Address" value={addressForm.address} onChange={e=>setAddressForm({...addressForm, address: e.target.value})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
-                             <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input placeholder="Apartment, Suite (Optional)" value={addressForm.apartment} onChange={e=>setAddressForm({...addressForm, apartment: e.target.value})} className="h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                                 <div className="relative">
                                   <select required value={addressForm.state} onChange={e=>setAddressForm({...addressForm, state: e.target.value, city: ''})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] appearance-none cursor-pointer">
@@ -773,7 +815,7 @@ export function AccountPage() {
                                   <ChevronDown size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"/>
                                 </div>
                              </div>
-                             <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="relative">
                                   <select required value={addressForm.city} onChange={e=>setAddressForm({...addressForm, city: e.target.value})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] appearance-none cursor-pointer">
                                      <option value="">Select City</option>

@@ -11,6 +11,39 @@ export const getMe = asyncHandler(async (req, res, next) => {
   return successResponse(res, 200, 'Current user profile', req.user.toJSON());
 });
 
+const normalizePreferenceItems = (value) => {
+  if (!Array.isArray(value)) return [];
+  return value.filter(Boolean);
+};
+
+export const getMyPreferences = asyncHandler(async (req, res) => {
+  return successResponse(res, 200, 'User preferences fetched successfully', {
+    cart: normalizePreferenceItems(req.user.preferences?.cart),
+    wishlist: normalizePreferenceItems(req.user.preferences?.wishlist),
+    compare: normalizePreferenceItems(req.user.preferences?.compare),
+  });
+});
+
+export const updateMyPreferences = asyncHandler(async (req, res) => {
+  const nextPreferences = {
+    cart: req.body.cart !== undefined ? normalizePreferenceItems(req.body.cart) : normalizePreferenceItems(req.user.preferences?.cart),
+    wishlist: req.body.wishlist !== undefined ? normalizePreferenceItems(req.body.wishlist) : normalizePreferenceItems(req.user.preferences?.wishlist),
+    compare: req.body.compare !== undefined ? normalizePreferenceItems(req.body.compare) : normalizePreferenceItems(req.user.preferences?.compare),
+  };
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    { preferences: nextPreferences },
+    { new: true }
+  );
+
+  return successResponse(res, 200, 'User preferences updated successfully', {
+    cart: normalizePreferenceItems(updatedUser.preferences?.cart),
+    wishlist: normalizePreferenceItems(updatedUser.preferences?.wishlist),
+    compare: normalizePreferenceItems(updatedUser.preferences?.compare),
+  });
+});
+
 export const updateMe = asyncHandler(async (req, res, next) => {
   const { firstName, lastName, phone } = req.body;
 

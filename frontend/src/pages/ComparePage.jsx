@@ -2,10 +2,12 @@ import { X, ShoppingCart, Trash2, Layers, ShoppingBag } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useToast } from '../context/ToastContext'
 import { useEffect } from 'react'
 
 export function ComparePage() {
   const { compare, toggleCompare, addToCart, clearCompare } = useCart()
+  const { success } = useToast()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -52,7 +54,10 @@ export function ComparePage() {
               {/* Product Image Section */}
               <div className="relative p-6 aspect-square bg-[#FDF4E6] border-b border-black/10 group">
                 <button 
-                  onClick={() => toggleCompare(item)} 
+                  onClick={() => {
+                    toggleCompare(item);
+                    success(`${item.title} removed from comparison.`);
+                  }} 
                   className="absolute top-4 right-4 z-10 w-8 h-8 bg-[#E84949] text-white rounded-md flex items-center justify-center shadow-md hover:scale-110 transition-all"
                 >
                   <X size={16} />
@@ -95,7 +100,10 @@ export function ComparePage() {
               {/* Add to Cart Section */}
               <div className="p-6 bg-transparent mt-auto">
                 <button 
-                  onClick={() => addToCart(item)} 
+                  onClick={() => {
+                    addToCart(item);
+                    success(`${item.title} added to cart!`);
+                  }} 
                   className="w-full py-4 bg-[#E84949] text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#333] transition-all flex items-center justify-center gap-2 shadow-lg"
                 >
                   <ShoppingCart size={15} /> Add to Cart
@@ -116,7 +124,15 @@ export function ComparePage() {
         </div>
 
         <div className="mt-16 flex justify-center">
-           <button onClick={clearCompare} className="px-12 py-4 border-2 border-[#333] text-[#333] rounded-full text-[12px] font-bold uppercase tracking-widest hover:bg-[#333] hover:text-white transition-all shadow-md active:scale-95">Clear All Comparison</button>
+           <button 
+             onClick={() => {
+               clearCompare();
+               success('Comparison cleared.');
+             }} 
+             className="px-12 py-4 border-2 border-[#333] text-[#333] rounded-full text-[12px] font-bold uppercase tracking-widest hover:bg-[#333] hover:text-white transition-all shadow-md active:scale-95"
+           >
+             Clear All Comparison
+           </button>
         </div>
       </div>
     </div>
