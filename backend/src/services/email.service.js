@@ -66,6 +66,40 @@ const buildOrderConfirmationHtml = (order) => {
   `;
 };
 
+const buildOrderStatusUpdateHtml = (order, options = {}) => {
+  const deliveryLine = order.estimatedDeliveryDate
+    ? `<p style="margin:0 0 6px;"><strong>Estimated Delivery:</strong> ${new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(order.estimatedDeliveryDate))}</p>`
+    : '';
+
+  const trackingLine = order.trackingNumber
+    ? `<p style="margin:0 0 6px;"><strong>Tracking Number:</strong> ${order.trackingNumber}</p>`
+    : '';
+
+  const reasonLine = options.deliveryDelayReason
+    ? `<p style="margin:0 0 6px;"><strong>Update Reason:</strong> ${options.deliveryDelayReason}</p>`
+    : '';
+
+  const noteLine = options.note
+    ? `<p style="margin:0;"><strong>Admin Note:</strong> ${options.note}</p>`
+    : '<p style="margin:0;"><strong>Current Status:</strong> ' + order.status + '</p>';
+
+  return `
+    <div style="font-family:Arial,sans-serif;color:#222;max-width:640px;margin:0 auto;">
+      <h2 style="margin-bottom:8px;">Order Update</h2>
+      <p>Hello ${order.customer.firstName},</p>
+      <p>Your Toyovo India order has been updated.</p>
+      <div style="background:#f7f7f7;padding:16px;border-radius:12px;margin:20px 0;">
+        <p style="margin:0 0 6px;"><strong>Order Number:</strong> ${order.orderNumber}</p>
+        ${deliveryLine}
+        ${trackingLine}
+        ${reasonLine}
+        ${noteLine}
+      </div>
+      <p>Please keep this email for your reference.</p>
+    </div>
+  `;
+};
+
 export const sendOrderConfirmationEmail = async (order) => {
   const mailer = getTransporter();
   if (!mailer) {
@@ -81,5 +115,23 @@ export const sendOrderConfirmationEmail = async (order) => {
   });
 
   logger.info(`Order confirmation email sent for ${order.orderNumber}`);
+  return { skipped: false };
+};
+
+export const sendOrderStatusUpdateEmail = async (order, options = {}) => {
+  const mailer = getTransporter();
+  if (!mailer) {
+    logger.warn('Order update email skipped because SMTP is not configured.');
+    return { skipped: true };
+  }
+
+  await mailer.sendMail({
+    from: env.SMTP_FROM,
+    to: order.customer.email,
+    subject: `Order Update - ${order.orderNumber}`,
+    html: buildOrderStatusUpdateHtml(order, options),
+  });
+
+  logger.info(`Order update email sent for ${order.orderNumber}`);
   return { skipped: false };
 };

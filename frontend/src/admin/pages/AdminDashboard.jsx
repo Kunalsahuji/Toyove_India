@@ -11,6 +11,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState([])
   const [recentOrders, setRecentOrders] = useState([])
+  const [revenueSeries, setRevenueSeries] = useState([])
   const navigate = useNavigate()
   const { error: showError } = useToast()
 
@@ -23,7 +24,7 @@ export function AdminDashboard() {
         const [{ meta: userMeta }, { meta: productMeta }, { orders, meta: orderMeta }] = await Promise.all([
           getAdminUsers({ limit: 1 }),
           getAdminProducts({ limit: 1 }),
-          getAdminOrders({ limit: 6 }),
+          getAdminOrders({ limit: 100 }),
         ])
 
         if (!isMounted) return
@@ -48,10 +49,43 @@ export function AdminDashboard() {
             orderId: order.id,
           }))
         )
+
+        const dailyRevenueMap = new Map()
+        const today = new Date()
+        for (let index = 6; index >= 0; index -= 1) {
+          const date = new Date(today)
+          date.setHours(0, 0, 0, 0)
+          date.setDate(today.getDate() - index)
+          const key = date.toISOString().slice(0, 10)
+          dailyRevenueMap.set(key, 0)
+        }
+
+        paidOrders.forEach((order) => {
+          const createdAt = new Date(order.createdAt || order.date)
+          createdAt.setHours(0, 0, 0, 0)
+          const key = createdAt.toISOString().slice(0, 10)
+          if (dailyRevenueMap.has(key)) {
+            dailyRevenueMap.set(key, dailyRevenueMap.get(key) + Number(order.total || 0))
+          }
+        })
+
+        const maxRevenue = Math.max(...dailyRevenueMap.values(), 1)
+        setRevenueSeries(
+          Array.from(dailyRevenueMap.entries()).map(([key, amount]) => {
+            const date = new Date(key)
+            return {
+              key,
+              amount,
+              height: Math.max((amount / maxRevenue) * 100, amount > 0 ? 8 : 0),
+              label: new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short' }).format(date),
+            }
+          })
+        )
       } catch (err) {
         if (isMounted) {
           setStats([])
           setRecentOrders([])
+          setRevenueSeries([])
           showError(err.message || 'Dashboard data could not be loaded')
         }
       } finally {
@@ -143,21 +177,21 @@ export function AdminDashboard() {
           </div>
           
           <div className="h-64 relative flex items-end justify-between gap-3 px-2">
-            {[45, 60, 40, 85, 55, 95, 75].map((val, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
+            {revenueSeries.map((entry) => (
+              <div key={entry.key} className="flex-1 flex flex-col items-center gap-3 group">
                 <div className="relative w-full flex items-end justify-center h-full">
                   <motion.div 
                     initial={{ height: 0 }}
-                    animate={{ height: `${val}%` }}
-                    transition={{ duration: 1, delay: 0.5 + (i * 0.1), ease: "circOut" }}
+                    animate={{ height: `${entry.height}%` }}
+                    transition={{ duration: 1, delay: 0.5, ease: "circOut" }}
                     className="w-full max-w-[48px] bg-[#6651A4] rounded-t-2xl group-hover:bg-[#F1641E] transition-colors relative shadow-sm"
                   >
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap shadow-xl z-20">
-                      ${val * 10}
+                      ₹{entry.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                   </motion.div>
                 </div>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Day {i + 1}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{entry.label}</span>
               </div>
             ))}
           </div>

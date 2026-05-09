@@ -9,6 +9,7 @@ export function RegisterPage() {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: ''
   })
   const [error, setError] = useState('')
@@ -86,6 +87,14 @@ export function RegisterPage() {
                 placeholder="Email" 
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="w-full h-14 bg-transparent border-[1.2px] border-dashed border-[#333]/20 rounded-xl px-6 outline-none focus:border-[#E84949] transition-all placeholder-[#333]/40"
+                required
+              />
+              <input 
+                type="tel" 
+                placeholder="Phone number" 
+                value={formData.phone}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 className="w-full h-14 bg-transparent border-[1.2px] border-dashed border-[#333]/20 rounded-xl px-6 outline-none focus:border-[#E84949] transition-all placeholder-[#333]/40"
                 required
               />

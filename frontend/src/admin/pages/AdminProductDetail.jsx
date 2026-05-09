@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
@@ -7,7 +7,7 @@ import {
   Edit2
 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
-import { createAdminProduct, deleteAdminProduct, getAdminCategories, getAdminProduct, updateAdminProduct } from '../../services/adminCatalogApi'
+import { createAdminProduct, deleteAdminProduct, getAdminCategories, getAdminProduct, updateAdminProduct, uploadAdminMedia } from '../../services/adminCatalogApi'
 
 const emptyProduct = {
   _id: '',
@@ -38,7 +38,9 @@ export function AdminProductDetail() {
   const [categories, setCategories] = useState([])
   const [loadError, setLoadError] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [product, setProduct] = useState(emptyProduct)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     let isMounted = true
@@ -157,6 +159,34 @@ export function AdminProductDetail() {
     }))
   }
 
+  const handleImageFileSelect = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setUploadingImage(true)
+    try {
+      const uploaded = await uploadAdminMedia(file, 'products')
+      setProduct((prev) => ({
+        ...prev,
+        images: [
+          ...prev.images,
+          {
+            url: uploaded.url,
+            publicId: uploaded.publicId,
+            alt: prev.name || uploaded.originalFilename || 'Toy image',
+            sortOrder: prev.images.length,
+          },
+        ],
+      }))
+      success('Image uploaded successfully.')
+    } catch (err) {
+      showError(err.message || 'Image upload failed')
+    } finally {
+      setUploadingImage(false)
+      if (event.target) event.target.value = ''
+    }
+  }
+
   if (loading) {
     return (
       <div className="shell flex items-center justify-center h-[60vh]">
@@ -248,9 +278,25 @@ export function AdminProductDetail() {
               {isEditing && (
                 <div className="space-y-3">
                   <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="w-full h-12 bg-[#6651A4] text-white rounded-2xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest disabled:opacity-60"
+                  >
+                    <Plus size={18} />
+                    <span>{uploadingImage ? 'Uploading...' : 'Upload via Cloudinary'}</span>
+                  </button>
+                  <input
                     value={imageUrl}
                     onChange={(event) => setImageUrl(event.target.value)}
-                    placeholder="Paste image URL for now"
+                    placeholder="Or paste an image URL"
                     className="w-full h-12 px-4 bg-[#FDF4E6]/50 rounded-2xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[12px] font-medium"
                   />
                   <button onClick={addImageUrl} className="w-full h-12 border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center text-gray-400 hover:bg-[#FDF4E6]/50 hover:border-[#6651A4]/30 transition-all gap-2">

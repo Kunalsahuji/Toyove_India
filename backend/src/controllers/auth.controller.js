@@ -10,7 +10,7 @@ import { setAuthCookies, clearAuthCookies } from '../utils/cookies.js';
 import logger from '../utils/logger.js';
 
 export const register = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, phone } = req.body;
   logger.info('Auth register attempt', {
     email,
     hasPassword: Boolean(password),
@@ -34,6 +34,7 @@ export const register = asyncHandler(async (req, res, next) => {
     firstName,
     lastName,
     email,
+    phone: phone || '',
     passwordHash,
   });
 

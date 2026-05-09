@@ -5,6 +5,7 @@ export const registerSchema = z.object({
     firstName: z.string().trim().min(1, 'First name is required'),
     lastName: z.string().trim().min(1, 'Last name is required'),
     email: z.string().trim().email('Invalid email address').toLowerCase(),
+    phone: z.string().trim().regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number format').optional().or(z.literal('')),
     password: z.string().min(8, 'Password must be at least 8 characters long'),
   })
 });

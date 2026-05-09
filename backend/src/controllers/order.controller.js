@@ -3,6 +3,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { applyFulfilledOrderSideEffects, buildOrderDraftFromCheckout, revertFulfilledOrderSideEffects } from '../services/order.service.js';
+import { sendOrderStatusUpdateEmail } from '../services/email.service.js';
 
 const STATUS_LABELS = {
   pending: 'Pending',
@@ -393,6 +394,24 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
   }
 
   await order.save();
+
+  const shouldSendUpdateEmail = (
+    previousStatus !== order.status ||
+    req.body.trackingNumber !== undefined ||
+    req.body.estimatedDeliveryDate !== undefined ||
+    req.body.note
+  );
+
+  if (shouldSendUpdateEmail) {
+    try {
+      await sendOrderStatusUpdateEmail(order, {
+        note: req.body.note?.trim() || '',
+        deliveryDelayReason: req.body.deliveryDelayReason?.trim() || '',
+      });
+    } catch {
+      // Email failure must not block order operations.
+    }
+  }
 
   return successResponse(res, 200, 'Order status updated successfully', mapOrder(order));
 });

@@ -86,3 +86,16 @@ export const deleteAdminProduct = async (id) => {
   })
   return normalizeProduct(payload.data)
 }
+
+export const uploadAdminMedia = async (file, folder = 'products') => {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('folder', folder)
+
+  const payload = await apiRequest('/admin/media/upload', {
+    method: 'POST',
+    body: formData,
+  })
+
+  return payload.data
+}

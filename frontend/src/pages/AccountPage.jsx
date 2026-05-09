@@ -14,6 +14,7 @@ import { indianStates, commonCities, addressTypes } from '../utils/indiaData'
 import { cancelMyOrder, getMyOrders, requestMyOrderReturn } from '../services/orderApi'
 import { useToast } from '../context/ToastContext'
 import { printOrderInvoice } from '../utils/invoice'
+import { updateMyProfile } from '../services/userProfileApi'
 
 const upiLogos = {
   'Google Pay': (
@@ -911,7 +912,23 @@ export function AccountPage() {
                {activeTab === 'profile' && (
                   <motion.div key="profile" initial={{opacity:0}} animate={{opacity:1}} className="max-w-xl mx-auto space-y-12">
                      <h3 className="text-3xl font-grandstander font-bold text-gray-700 text-center">Identity Hub</h3>
-                     <form onSubmit={(e)=>{e.preventDefault(); setIsProcessing(true); setTimeout(()=>{updateUser(profileForm); setIsProcessing(false); alert("Profile Updated!");},1000);}} className="space-y-8">
+                     <form onSubmit={async (e)=>{
+                        e.preventDefault()
+                        setIsProcessing(true)
+                        try {
+                          const updatedProfile = await updateMyProfile({
+                            firstName: profileForm.firstName,
+                            lastName: profileForm.lastName,
+                            phone: profileForm.phone || '',
+                          })
+                          updateUser(updatedProfile)
+                          success('Profile updated successfully.')
+                        } catch (err) {
+                          showError(err.message || 'Profile update failed')
+                        } finally {
+                          setIsProcessing(false)
+                        }
+                     }} className="space-y-8">
                         <div className="grid grid-cols-2 gap-6">
                            <div className="space-y-2">
                               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4">First Name</label>
@@ -924,7 +941,11 @@ export function AccountPage() {
                         </div>
                         <div className="space-y-2">
                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4">Explorer Email</label>
-                           <input value={profileForm.email} onChange={e=>setProfileForm({...profileForm, email:e.target.value})} className="w-full h-12 px-6 bg-[#FAEAD3]/50 rounded-2xl outline-none border-b-2 border-transparent focus:border-[#6651A4] font-bold text-gray-600" />
+                           <input value={profileForm.email} disabled className="w-full h-12 px-6 bg-[#FAEAD3]/50 rounded-2xl outline-none border-b-2 border-transparent font-bold text-gray-600 opacity-70 cursor-not-allowed" />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4">Phone Number</label>
+                           <input value={profileForm.phone || ''} onChange={e=>setProfileForm({...profileForm, phone:e.target.value})} className="w-full h-12 px-6 bg-[#FAEAD3]/50 rounded-2xl outline-none border-b-2 border-transparent focus:border-[#6651A4] font-bold text-gray-600" />
                         </div>
                         <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-[25px] font-grandstander font-bold uppercase tracking-widest text-[13px] hover:bg-[#6651A4] transition-all shadow-xl">Update Explorer ID</button>
                      </form>
