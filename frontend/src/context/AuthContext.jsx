@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getCurrentUser, loginUser, logoutUser, registerUser } from '../services/authApi'
+import { getMyAccountData, updateMyAccountData } from '../services/userAccountApi'
 
 const AuthContext = createContext()
 const AUTH_USER_STORAGE_KEY = 'TOYOVOINDIA_auth_user'
@@ -55,7 +56,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(readStoredUser)
   const [authLoading, setAuthLoading] = useState(true)
   const [addresses, setAddresses] = useState([])
-  const [savedMethods, setSavedMethods] = useState([])
+  const [savedMethods, setSavedMethods] = useState({ bankAccounts: [], upiIds: [], cards: [] })
   const [preferencesHydrated, setPreferencesHydrated] = useState(false)
 
   const refreshUser = async () => {
@@ -100,28 +101,58 @@ export function AuthProvider({ children }) {
   }, [user])
 
   useEffect(() => {
+    let isMounted = true
     setPreferencesHydrated(false)
-    const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
-    const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
 
-    const savedAddresses = localStorage.getItem(addressesKey)
-    const savedMethods = localStorage.getItem(paymentMethodsKey)
+    const hydrate = async () => {
+      if (user) {
+        try {
+          const data = await getMyAccountData()
+          if (!isMounted) return
+          setAddresses(sanitizeAddresses(data.addresses || []))
+          setSavedMethods(data.paymentVault || [])
+          setPreferencesHydrated(true)
+          return
+        } catch {
+          // fallback to local scoped data
+        }
+      }
 
-    setAddresses(savedAddresses ? sanitizeAddresses(JSON.parse(savedAddresses)) : [])
-    setSavedMethods(savedMethods ? JSON.parse(savedMethods) : [])
-    setPreferencesHydrated(true)
+      const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
+      const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
+      const savedAddresses = localStorage.getItem(addressesKey)
+      const savedMethods = localStorage.getItem(paymentMethodsKey)
+
+      if (!isMounted) return
+      setAddresses(savedAddresses ? sanitizeAddresses(JSON.parse(savedAddresses)) : [])
+      setSavedMethods(savedMethods ? JSON.parse(savedMethods) : { bankAccounts: [], upiIds: [], cards: [] })
+      setPreferencesHydrated(true)
+    }
+
+    hydrate()
+    return () => {
+      isMounted = false
+    }
   }, [user?.id, user?._id, user?.email])
 
   useEffect(() => {
     if (!preferencesHydrated) return
-    const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
-    localStorage.setItem(addressesKey, JSON.stringify(addresses))
+    if (user) {
+      updateMyAccountData({ addresses }).catch(() => {})
+    } else {
+      const addressesKey = getScopedStorageKey('TOYOVOINDIA_addresses', user)
+      localStorage.setItem(addressesKey, JSON.stringify(addresses))
+    }
   }, [addresses, user, preferencesHydrated])
 
   useEffect(() => {
     if (!preferencesHydrated) return
-    const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
-    localStorage.setItem(paymentMethodsKey, JSON.stringify(savedMethods))
+    if (user) {
+      updateMyAccountData({ paymentVault: savedMethods }).catch(() => {})
+    } else {
+      const paymentMethodsKey = getScopedStorageKey('TOYOVOINDIA_payment_methods', user)
+      localStorage.setItem(paymentMethodsKey, JSON.stringify(savedMethods))
+    }
   }, [savedMethods, user, preferencesHydrated])
 
   const login = async (email, password) => {
@@ -177,12 +208,18 @@ export function AuthProvider({ children }) {
     setAddresses((prev) => prev.map((address) => ({ ...address, isDefault: address.id === id })))
   }
 
-  const addPaymentMethod = (method) => {
-    setSavedMethods((prev) => [...prev, { ...method, id: Date.now() }])
+  const addPaymentMethod = (type, method) => {
+    setSavedMethods((prev) => ({
+      ...prev,
+      [type]: [{ ...method, id: Date.now() }, ...(prev[type] || [])],
+    }))
   }
 
-  const removePaymentMethod = (id) => {
-    setSavedMethods((prev) => prev.filter((method) => method.id !== id))
+  const removePaymentMethod = (type, id) => {
+    setSavedMethods((prev) => ({
+      ...prev,
+      [type]: (prev[type] || []).filter((method) => method.id !== id),
+    }))
   }
 
   const isAdmin = ['admin', 'super_admin'].includes(user?.role)

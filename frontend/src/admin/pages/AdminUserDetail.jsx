@@ -140,6 +140,9 @@ export function AdminUserDetail() {
   }
 
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
+  const savedAddresses = user.addresses || []
+  const recentOrders = user.recentOrders || []
+  const paymentHistory = user.paymentHistory || []
 
   return (
     <div className="shell space-y-6 pb-10">
@@ -329,7 +332,19 @@ export function AdminUserDetail() {
                 <MapPin size={18} className="text-gray-300" />
               </div>
               <div className="p-6 rounded-2xl border border-dashed border-black/[0.05] bg-[#FDF4E6]/30 text-center">
-                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Address records will connect in user profile phase.</p>
+                {savedAddresses.length === 0 ? (
+                  <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">No saved addresses</p>
+                ) : (
+                  <div className="space-y-3 text-left">
+                    {savedAddresses.slice(0, 3).map((address) => (
+                      <div key={address.id} className="rounded-xl bg-white/70 p-3">
+                        <p className="text-[12px] font-bold text-gray-700">{address.firstName} {address.lastName}</p>
+                        <p className="text-[11px] text-gray-500">{address.address}</p>
+                        <p className="text-[10px] text-gray-400">{address.city === 'Other' ? address.district : address.city}, {address.state}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -339,7 +354,19 @@ export function AdminUserDetail() {
                 <ShoppingBag size={18} className="text-gray-300" />
               </div>
               <div className="p-6 rounded-2xl border border-dashed border-black/[0.05] bg-[#FDF4E6]/30 text-center">
-                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Order history will connect in orders phase.</p>
+                {recentOrders.length === 0 ? (
+                  <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">No order history</p>
+                ) : (
+                  <div className="space-y-3 text-left">
+                    {recentOrders.map((order) => (
+                      <div key={order.id} className="rounded-xl bg-white/70 p-3">
+                        <p className="text-[12px] font-bold text-gray-700">{order.orderNumber}</p>
+                        <p className="text-[11px] text-gray-500">Rs {Number(order.total || 0).toFixed(2)}</p>
+                        <p className="text-[10px] text-gray-400 uppercase">{order.status}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -349,7 +376,19 @@ export function AdminUserDetail() {
                 <RefreshCcw size={18} className="text-gray-300" />
               </div>
               <div className="p-6 rounded-2xl border border-dashed border-black/[0.05] bg-[#FDF4E6]/30 text-center">
-                <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Payment timeline will connect in finance phase.</p>
+                {paymentHistory.length === 0 ? (
+                  <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">No payment history</p>
+                ) : (
+                  <div className="space-y-3 text-left">
+                    {paymentHistory.slice(0, 5).map((entry) => (
+                      <div key={entry.id} className="rounded-xl bg-white/70 p-3">
+                        <p className="text-[12px] font-bold text-gray-700">{entry.method}</p>
+                        <p className="text-[11px] text-gray-500">Rs {Number(entry.amount || 0).toFixed(2)}</p>
+                        <p className="text-[10px] text-gray-400 uppercase">{entry.date}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

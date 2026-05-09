@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContext';
+import { getMyAccountData, updateMyAccountData } from '../services/userAccountApi';
 
 const PaymentContext = createContext();
 
@@ -20,37 +21,60 @@ export function PaymentProvider({ children }) {
   const [storageHydrated, setStorageHydrated] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     setStorageHydrated(false);
-    const saved = localStorage.getItem(paymentHistoryKey);
-    setPaymentHistory(saved ? JSON.parse(saved) : []);
-  }, [paymentHistoryKey]);
 
-  useEffect(() => {
-    setStorageHydrated(false);
-    const saved = localStorage.getItem(savedMethodsKey);
-    setSavedMethods(saved ? JSON.parse(saved) : {
-      bankAccounts: [],
-      upiIds: [],
-      cards: []
-    });
-  }, [savedMethodsKey]);
+    const hydrate = async () => {
+      if (user) {
+        try {
+          const data = await getMyAccountData();
+          if (!isMounted) return;
+          setPaymentHistory(data.paymentHistory || []);
+          setSavedMethods(data.paymentVault || { bankAccounts: [], upiIds: [], cards: [] });
+          setStorageHydrated(true);
+          return;
+        } catch {
+          // fall back to local scoped storage
+        }
+      }
 
-  useEffect(() => {
-    setStorageHydrated(false);
-    const saved = localStorage.getItem(ordersKey);
-    setOrders(saved ? JSON.parse(saved) : []);
-    setStorageHydrated(true);
-  }, [ordersKey]);
+      const savedPaymentHistory = localStorage.getItem(paymentHistoryKey);
+      const savedMethodsData = localStorage.getItem(savedMethodsKey);
+      const savedOrders = localStorage.getItem(ordersKey);
+      if (!isMounted) return;
+      setPaymentHistory(savedPaymentHistory ? JSON.parse(savedPaymentHistory) : []);
+      setSavedMethods(savedMethodsData ? JSON.parse(savedMethodsData) : {
+        bankAccounts: [],
+        upiIds: [],
+        cards: []
+      });
+      setOrders(savedOrders ? JSON.parse(savedOrders) : []);
+      setStorageHydrated(true);
+    };
+
+    hydrate();
+    return () => {
+      isMounted = false;
+    };
+  }, [paymentHistoryKey, savedMethodsKey, ordersKey, user]);
 
   useEffect(() => {
     if (!storageHydrated) return;
-    localStorage.setItem(paymentHistoryKey, JSON.stringify(paymentHistory));
-  }, [paymentHistory, paymentHistoryKey, storageHydrated]);
+    if (user) {
+      updateMyAccountData({ paymentHistory }).catch(() => {});
+    } else {
+      localStorage.setItem(paymentHistoryKey, JSON.stringify(paymentHistory));
+    }
+  }, [paymentHistory, paymentHistoryKey, storageHydrated, user]);
 
   useEffect(() => {
     if (!storageHydrated) return;
-    localStorage.setItem(savedMethodsKey, JSON.stringify(savedMethods));
-  }, [savedMethods, savedMethodsKey, storageHydrated]);
+    if (user) {
+      updateMyAccountData({ paymentVault: savedMethods }).catch(() => {});
+    } else {
+      localStorage.setItem(savedMethodsKey, JSON.stringify(savedMethods));
+    }
+  }, [savedMethods, savedMethodsKey, storageHydrated, user]);
 
   useEffect(() => {
     if (!storageHydrated) return;

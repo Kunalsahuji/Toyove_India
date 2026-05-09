@@ -6,6 +6,7 @@ import RefreshToken from '../models/RefreshToken.js';
 import bcrypt from 'bcryptjs';
 import { generateTokens } from '../utils/jwt.js';
 import { setAuthCookies } from '../utils/cookies.js';
+import Order from '../models/Order.js';
 
 export const getMe = asyncHandler(async (req, res, next) => {
   return successResponse(res, 200, 'Current user profile', req.user.toJSON());
@@ -16,11 +17,73 @@ const normalizePreferenceItems = (value) => {
   return value.filter(Boolean);
 };
 
+const normalizeAddresses = (value) => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(Boolean)
+    .map((item, index) => ({
+      id: String(item.id || Date.now() + index),
+      type: item.type || 'Home',
+      firstName: item.firstName || '',
+      lastName: item.lastName || '',
+      address: item.address || '',
+      apartment: item.apartment || '',
+      city: item.city || '',
+      district: item.district || '',
+      state: item.state || '',
+      postalCode: item.postalCode || '',
+      phone: item.phone || '',
+      isDefault: Boolean(item.isDefault),
+    }))
+    .map((item, _, arr) => ({ ...item, isDefault: arr.some((candidate) => candidate.isDefault) ? item.isDefault : item === arr[0] }));
+};
+
+const normalizePaymentVault = (value) => ({
+  bankAccounts: Array.isArray(value?.bankAccounts) ? value.bankAccounts.filter(Boolean) : [],
+  upiIds: Array.isArray(value?.upiIds) ? value.upiIds.filter(Boolean) : [],
+  cards: Array.isArray(value?.cards) ? value.cards.filter(Boolean) : [],
+});
+
+const normalizePaymentHistory = (value) => Array.isArray(value) ? value.filter(Boolean) : [];
+
 export const getMyPreferences = asyncHandler(async (req, res) => {
   return successResponse(res, 200, 'User preferences fetched successfully', {
     cart: normalizePreferenceItems(req.user.preferences?.cart),
     wishlist: normalizePreferenceItems(req.user.preferences?.wishlist),
     compare: normalizePreferenceItems(req.user.preferences?.compare),
+  });
+});
+
+export const getMyAccountData = asyncHandler(async (req, res) => {
+  return successResponse(res, 200, 'User account data fetched successfully', {
+    addresses: normalizeAddresses(req.user.addresses),
+    paymentVault: normalizePaymentVault(req.user.paymentVault),
+    paymentHistory: normalizePaymentHistory(req.user.paymentHistory),
+  });
+});
+
+export const updateMyAccountData = asyncHandler(async (req, res) => {
+  const nextData = {};
+  if (req.body.addresses !== undefined) {
+    nextData.addresses = normalizeAddresses(req.body.addresses);
+  }
+  if (req.body.paymentVault !== undefined) {
+    nextData.paymentVault = normalizePaymentVault(req.body.paymentVault);
+  }
+  if (req.body.paymentHistory !== undefined) {
+    nextData.paymentHistory = normalizePaymentHistory(req.body.paymentHistory);
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: nextData },
+    { new: true }
+  );
+
+  return successResponse(res, 200, 'User account data updated successfully', {
+    addresses: normalizeAddresses(updatedUser.addresses),
+    paymentVault: normalizePaymentVault(updatedUser.paymentVault),
+    paymentHistory: normalizePaymentHistory(updatedUser.paymentHistory),
   });
 });
 
@@ -138,8 +201,21 @@ export const adminGetUser = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new AppError('User not found', 404));
   }
+  const recentOrders = await Order.find({ user: user._id }).sort({ createdAt: -1 }).limit(5);
 
-  return successResponse(res, 200, 'Admin user details', user);
+  return successResponse(res, 200, 'Admin user details', {
+    ...user.toObject(),
+    addresses: normalizeAddresses(user.addresses),
+    paymentVault: normalizePaymentVault(user.paymentVault),
+    paymentHistory: normalizePaymentHistory(user.paymentHistory),
+    recentOrders: recentOrders.map((order) => ({
+      id: order._id.toString(),
+      orderNumber: order.orderNumber,
+      total: order.totalAmount,
+      status: order.status,
+      createdAt: order.createdAt,
+    })),
+  });
 });
 
 export const adminCreateUser = asyncHandler(async (req, res, next) => {

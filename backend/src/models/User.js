@@ -2,6 +2,23 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const userPreferenceItemSchema = new mongoose.Schema({}, { _id: false, strict: false });
+const userAddressSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  type: { type: String, default: 'Home' },
+  firstName: { type: String, trim: true, default: '' },
+  lastName: { type: String, trim: true, default: '' },
+  address: { type: String, trim: true, default: '' },
+  apartment: { type: String, trim: true, default: '' },
+  city: { type: String, trim: true, default: '' },
+  district: { type: String, trim: true, default: '' },
+  state: { type: String, trim: true, default: '' },
+  postalCode: { type: String, trim: true, default: '' },
+  phone: { type: String, trim: true, default: '' },
+  isDefault: { type: Boolean, default: false },
+}, { _id: false });
+
+const userPaymentMethodSchema = new mongoose.Schema({}, { _id: false, strict: false });
+const userPaymentHistorySchema = new mongoose.Schema({}, { _id: false, strict: false });
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -66,6 +83,28 @@ const userSchema = new mongoose.Schema({
       type: [userPreferenceItemSchema],
       default: [],
     },
+  },
+  addresses: {
+    type: [userAddressSchema],
+    default: [],
+  },
+  paymentVault: {
+    bankAccounts: {
+      type: [userPaymentMethodSchema],
+      default: [],
+    },
+    upiIds: {
+      type: [userPaymentMethodSchema],
+      default: [],
+    },
+    cards: {
+      type: [userPaymentMethodSchema],
+      default: [],
+    },
+  },
+  paymentHistory: {
+    type: [userPaymentHistorySchema],
+    default: [],
   }
 }, {
   timestamps: true,

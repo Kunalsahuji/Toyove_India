@@ -6,7 +6,9 @@ import {
   adminUpdateUser,
   adminUpdateUserStatus,
   getMyPreferences,
+  getMyAccountData,
   getMe,
+  updateMyAccountData,
   updateMyPreferences,
   updateMe,
   updatePassword,
@@ -31,6 +33,8 @@ router.use(protect);
 
 router.get('/me', getMe);
 router.get('/me/preferences', getMyPreferences);
+router.get('/me/account-data', getMyAccountData);
+router.patch('/me/account-data', updateMyAccountData);
 router.patch('/me/preferences', updateMyPreferences);
 router.patch('/me', validate(updateProfileSchema), updateMe);
 router.patch('/me/password', validate(updatePasswordSchema), updatePassword);

@@ -224,13 +224,14 @@ export function AccountPage() {
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab)
       setViewMode('content')
+      navigate(location.pathname, { replace: true, state: null })
       return
     }
     if (storedView?.activeTab) {
       setActiveTab(storedView.activeTab)
       setViewMode(storedView.viewMode || 'content')
     }
-  }, [accountViewStorageKey, location.state])
+  }, [accountViewStorageKey, location.state, navigate, location.pathname])
 
   useEffect(() => {
     localStorage.setItem(accountViewStorageKey, JSON.stringify({
