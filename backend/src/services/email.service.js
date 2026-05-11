@@ -8,19 +8,28 @@ const canSendEmail = () => Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PA
 
 const getTransporter = () => {
   if (!canSendEmail()) {
+    logger.error('SMTP configuration missing in env variables', {
+      host: !!env.SMTP_HOST,
+      user: !!env.SMTP_USER,
+      pass: !!env.SMTP_PASS
+    });
     return null;
   }
 
   if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_PORT === 465,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS,
-      },
-    });
+    try {
+      logger.info('Creating new SMTP transporter (Gmail service)', { user: env.SMTP_USER });
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: env.SMTP_USER,
+          pass: env.SMTP_PASS,
+        },
+      });
+    } catch (error) {
+      logger.error('Failed to create transporter', { error: error.message });
+      return null;
+    }
   }
 
   return transporter;
@@ -159,6 +168,92 @@ const buildOrderStatusUpdateHtml = (order, options = {}, isAdmin = false) => {
   `;
 
   return buildBaseTemplate(content, 'Order Update');
+};
+
+const buildPasswordResetOtpHtml = (user, otp) => {
+  const content = `
+    <h2 style="color: #6651A4; margin-top: 0;">Password Reset Request</h2>
+    <p>Hello ${user.firstName},</p>
+    <p>We received a request to reset your password for your Toyovo India account. Use the following 6-digit OTP to complete the process:</p>
+    
+    <div style="background: #f4f4f4; padding: 20px; border-radius: 12px; text-align: center; margin: 30px 0;">
+      <span style="font-size: 32px; font-weight: bold; letter-spacing: 10px; color: #E84949;">${otp}</span>
+    </div>
+
+    <p style="font-size: 13px; color: #777;">This code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
+    <p style="font-size: 13px; color: #777;">For security, never share this code with anyone.</p>
+  `;
+
+  return buildBaseTemplate(content, 'Password Reset OTP');
+};
+
+export const sendPasswordResetOtpEmail = async (user, otp) => {
+  const mailer = getTransporter();
+  if (!mailer) {
+    logger.warn('Reset email skipped because SMTP is not configured.');
+    return { skipped: true };
+  }
+
+  try {
+    await mailer.sendMail({
+      from: `"Toyovo India" <${env.SMTP_USER}>`,
+      to: user.email,
+      subject: `${otp} is your Toyovo account recovery code`,
+      html: buildPasswordResetOtpHtml(user, otp),
+    });
+
+    logger.info(`Password reset OTP sent to ${user.email}`);
+    return { skipped: false };
+  } catch (error) {
+    logger.error(`Error sending reset email: ${error.message}`);
+    throw error;
+  }
+};
+
+const buildContactMessageHtml = (data) => {
+  const content = `
+    <h2 style="color: #6651A4; margin-top: 0;">New Contact Enquiry</h2>
+    <p>You have received a new message from the Toyovo India website:</p>
+    
+    <div class="card">
+      <p style="margin: 0 0 8px;"><strong>Name:</strong> ${data.name}</p>
+      <p style="margin: 0 0 8px;"><strong>Email:</strong> ${data.email}</p>
+      <p style="margin: 0 0 8px;"><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
+      <p style="margin: 0 0 8px;"><strong>Subject:</strong> ${data.subject}</p>
+      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+        <strong>Message:</strong><br/>
+        <p style="white-space: pre-line; color: #555;">${data.message}</p>
+      </div>
+    </div>
+  `;
+
+  return buildBaseTemplate(content, 'New Contact Message');
+};
+
+export const sendContactMessageEmail = async (data) => {
+  const mailer = getTransporter();
+  if (!mailer) {
+    logger.warn('Contact email skipped because SMTP is not configured.');
+    return { skipped: true };
+  }
+
+  const adminEmail = process.env.ADMIN_SEED_EMAIL || 'toyovoindia@gmail.com';
+
+  try {
+    await mailer.sendMail({
+      from: `"Toyovo Website" <${env.SMTP_USER}>`,
+      to: adminEmail,
+      replyTo: data.email,
+      subject: `[CONTACT] ${data.subject} - from ${data.name}`,
+      html: buildContactMessageHtml(data),
+    });
+
+    logger.info(`Contact message notification sent to ${adminEmail}`);
+    return { skipped: false };
+  } catch (error) {
+    logger.error(`Error sending contact email: ${error.message}`);
+    throw error;
+  }
 };
 
 export const sendOrderConfirmationEmail = async (order) => {

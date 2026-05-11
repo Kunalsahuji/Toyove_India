@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, refresh, logout, getMe } from '../controllers/auth.controller.js';
+import { register, login, refresh, logout, getMe, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
 import { validate } from '../middlewares/validate.js';
 import { registerSchema, loginSchema } from '../validators/auth.validator.js';
 import { authLimiter, refreshLimiter } from '../middlewares/rateLimiter.js';
@@ -9,6 +9,8 @@ const router = express.Router();
 
 router.post('/register', authLimiter, validate(registerSchema), register);
 router.post('/login', authLimiter, validate(loginSchema), login);
+router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/reset-password', authLimiter, resetPassword);
 router.post('/refresh', refreshLimiter, refresh);
 router.post('/logout', logout);
 

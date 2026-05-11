@@ -21,7 +21,9 @@ export const errorHandler = (err, req, res, next) => {
 
   // Mongoose duplicate key
   if (err.code === 11000) {
-    const message = 'Duplicate field value entered';
+    const field = Object.keys(err.keyValue || {})[0] || 'field';
+    const value = err.keyValue ? err.keyValue[field] : '';
+    const message = `This ${field} (${value}) is already registered. Please use another one.`;
     error = new AppError(message, 400);
   }
 

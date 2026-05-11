@@ -48,6 +48,9 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true,
+    unique: true,
+    sparse: true,
+    index: true,
     maxlength: [20, 'Phone number cannot exceed 20 characters']
   },
   role: {
@@ -69,6 +72,14 @@ const userSchema = new mongoose.Schema({
   },
   passwordChangedAt: {
     type: Date,
+  },
+  resetPasswordOTP: {
+    type: String,
+    select: false,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    select: false,
   },
   preferences: {
     cart: {

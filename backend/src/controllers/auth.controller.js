@@ -7,6 +7,7 @@ import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { generateTokens, hashToken } from '../utils/jwt.js';
 import { setAuthCookies, clearAuthCookies } from '../utils/cookies.js';
+import { sendPasswordResetOtpEmail } from '../services/email.service.js';
 import logger from '../utils/logger.js';
 
 export const register = asyncHandler(async (req, res, next) => {
@@ -18,13 +19,20 @@ export const register = asyncHandler(async (req, res, next) => {
     origin: req.headers.origin
   });
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    logger.warn('Auth register blocked: email already registered', {
-      email,
-      ip: req.ip
-    });
-    return next(new AppError('Email is already registered. Please log in instead.', 400));
+  // Check if email already exists
+  const existingEmail = await User.findOne({ email: email.toLowerCase() });
+  if (existingEmail) {
+    logger.warn('Auth register blocked: email already registered', { email, ip: req.ip });
+    return next(new AppError('This email is already registered. Please log in or use a different email.', 400));
+  }
+
+  // Check if phone already exists (if provided)
+  if (phone && phone.trim() !== '') {
+    const existingPhone = await User.findOne({ phone: phone.trim() });
+    if (existingPhone) {
+      logger.warn('Auth register blocked: phone already registered', { phone, ip: req.ip });
+      return next(new AppError('This mobile number is already registered. Please use a different number or log in.', 400));
+    }
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -33,8 +41,8 @@ export const register = asyncHandler(async (req, res, next) => {
   const newUser = await User.create({
     firstName,
     lastName,
-    email,
-    phone: phone || '',
+    email: email.toLowerCase(),
+    phone: (phone && phone.trim() !== '') ? phone.trim() : undefined,
     passwordHash,
   });
 
@@ -42,10 +50,10 @@ export const register = asyncHandler(async (req, res, next) => {
     { user: null, 'customer.email': newUser.email.toLowerCase() },
     { $set: { user: newUser._id } }
   );
+  
   logger.info('Auth register success', {
     userId: newUser._id,
     email: newUser.email,
-    role: newUser.role,
     ip: req.ip
   });
 
@@ -225,4 +233,73 @@ export const getMe = asyncHandler(async (req, res, next) => {
     ip: req.ip
   });
   return successResponse(res, 200, 'Current user profile', req.user.toJSON());
+});
+
+export const forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return next(new AppError('Please provide an email address', 400));
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    // For security reasons, don't reveal if user exists or not, 
+    // but in development we can be more specific or just send success.
+    return successResponse(res, 200, 'If an account exists with this email, you will receive an OTP.');
+  }
+
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  user.resetPasswordOTP = otp;
+  user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  await user.save({ validateBeforeSave: false });
+
+  try {
+    await sendPasswordResetOtpEmail(user, otp);
+    return successResponse(res, 200, 'Password reset OTP sent to your email.');
+  } catch (error) {
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError('Error sending email. Please try again later.', 500));
+  }
+});
+
+export const resetPassword = asyncHandler(async (req, res, next) => {
+  const { email, otp, password } = req.body;
+  if (!email || !otp || !password) {
+    return next(new AppError('Please provide email, OTP and new password', 400));
+  }
+
+  const user = await User.findOne({ 
+    email: email.toLowerCase(),
+    resetPasswordOTP: otp,
+    resetPasswordExpires: { $gt: Date.now() }
+  }).select('+resetPasswordOTP +resetPasswordExpires');
+
+  if (!user) {
+    return next(new AppError('Invalid or expired OTP', 400));
+  }
+
+  // Hash new password
+  const salt = await bcrypt.genSalt(10);
+  user.passwordHash = await bcrypt.hash(password, salt);
+  
+  // Clear OTP fields
+  user.resetPasswordOTP = undefined;
+  user.resetPasswordExpires = undefined;
+  user.passwordChangedAt = Date.now();
+  
+  await user.save();
+
+  // Optionally generate new tokens and log them in immediately
+  const { accessToken, refreshTokenPlain, refreshTokenHash } = generateTokens(user._id);
+  await RefreshToken.createTokenRecord(user._id, refreshTokenHash, req);
+  setAuthCookies(res, accessToken, refreshTokenPlain);
+
+  return successResponse(res, 200, 'Password reset successful. You are now logged in.', {
+    ...user.toJSON(),
+    accessToken,
+  });
 });

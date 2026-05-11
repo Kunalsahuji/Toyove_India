@@ -15,6 +15,7 @@ import { WishlistPage } from './pages/WishlistPage'
 import { SearchPage } from './pages/SearchPage'
 import { CollectionPage } from './pages/CollectionPage'
 import { LoginPage } from './pages/LoginPage'
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { AccountPage } from './pages/AccountPage'
 import { CartPage } from './pages/CartPage'
@@ -199,6 +200,7 @@ function AppContent() {
 
             {/* Auth Pages */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/account" element={<AccountPage />} />
             <Route path="/cart" element={<CartPage />} />

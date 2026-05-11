@@ -2,9 +2,17 @@ import ContactMessage from '../models/ContactMessage.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
+import { sendContactMessageEmail } from '../services/email.service.js';
+import logger from '../utils/logger.js';
 
 export const createContactMessage = asyncHandler(async (req, res) => {
   const message = await ContactMessage.create(req.body);
+  
+  // Background email notification to admin
+  Promise.resolve(sendContactMessageEmail(message)).catch((error) => {
+    logger.warn(`Contact notification email failed for message from ${message.email}: ${error.message}`);
+  });
+
   return successResponse(res, 201, 'Message submitted successfully', message);
 });
 

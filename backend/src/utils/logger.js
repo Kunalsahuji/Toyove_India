@@ -12,6 +12,11 @@ const logger = winston.createLogger({
         winston.format.colorize(),
         winston.format.simple()
       )
+    }),
+    new winston.transports.File({ 
+      filename: 'backend-errors.log', 
+      level: 'error',
+      dirname: './backend/logs'
     })
   ]
 });

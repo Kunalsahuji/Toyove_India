@@ -87,7 +87,7 @@ export function LoginPage() {
                   required
                 />
                 <div className="flex justify-between items-center px-1">
-                    <button type="button" className="text-[12px] text-[#666] hover:text-[#E84949] font-medium underline">Forgot your password?</button>
+                    <Link to="/forgot-password" size={18} className="text-[12px] text-[#666] hover:text-[#E84949] font-medium underline">Forgot your password?</Link>
                     <Link to="/" className="text-[12px] text-[#666] hover:text-[#E84949] font-medium flex items-center gap-1">Back to store</Link>
                 </div>
               </div>
