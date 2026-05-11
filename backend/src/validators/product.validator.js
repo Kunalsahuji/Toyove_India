@@ -65,7 +65,7 @@ export const listProductsSchema = z.object({
     maxPrice: z.coerce.number().min(0).optional(),
     sort: z.enum(['relevance', 'price-asc', 'price-desc', 'alpha-asc', 'alpha-desc', 'newest', 'oldest', 'best-selling']).optional(),
     page: z.coerce.number().int().min(1).optional(),
-    limit: z.coerce.number().int().min(1).max(60).optional(),
+    limit: z.coerce.number().int().min(1).max(200).optional(),
   }),
 });
 

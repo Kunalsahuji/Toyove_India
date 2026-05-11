@@ -85,7 +85,7 @@ export const adminListOrdersSchema = z.object({
     status: z.enum(['pending', 'processing', 'shipped', 'delivered', 'cancelled']).optional().or(z.literal('')),
     paymentStatus: z.enum(['pending', 'paid', 'failed', 'refunded']).optional().or(z.literal('')),
     page: z.coerce.number().int().min(1).optional(),
-    limit: z.coerce.number().int().min(1).max(100).optional(),
+    limit: z.coerce.number().int().min(1).max(200).optional(),
   }),
 });
 

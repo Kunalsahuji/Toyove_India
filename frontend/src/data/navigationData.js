@@ -13,95 +13,95 @@ export const promoMessages = [
 export const categoryData = {
   'Musical Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Pianos', 'Drums', 'Guitars', 'Xylophones', 'Flutes', 'Trumpets', 'Musical Sets'] }],
-    banner: 'https://images.pexels.com/photos/10566482/pexels-photo-10566482.jpeg'
+    banner: 'https://images.pexels.com/photos/6743167/pexels-photo-6743167.jpeg'
   },
   'Learning & Educational Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Alphabet Blocks', 'Flash Cards', 'Counting Toys', 'Scientific Kits', 'Global Maps', 'Language Learning', 'Solar System Models'] }],
-    banner: 'https://images.pexels.com/photos/35979966/pexels-photo-35979966.jpeg'
+    banner: 'https://images.pexels.com/photos/8923982/pexels-photo-8923982.jpeg'
   },
   'Soft Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Teddy Bears', 'Plush Animals', 'Dolls', 'Character Plushes', 'Squishies', 'Hand Puppets', 'Baby Comforters'] }],
-    banner: 'https://images.pexels.com/photos/32328596/pexels-photo-32328596.jpeg'
+    banner: 'https://images.pexels.com/photos/15130364/pexels-photo-15130364.jpeg'
   },
   'Indoor & Outdoor Play': {
     content: [{ title: 'SHOP BY TYPE', items: ['Trampolines', 'Swings', 'Slides', 'Playhouse', 'Tents', 'Ball Pits', 'Tunnels'] }],
-    banner: 'https://images.pexels.com/photos/1000498/pexels-photo-1000498.jpeg'
+    banner: 'https://images.pexels.com/photos/5274618/pexels-photo-5274618.jpeg'
   },
   'Play Gyms & Playmats': {
     content: [{ title: 'SHOP BY TYPE', items: ['Activity Gyms', 'Foam Mats', 'Jigsaw Mats', 'Portable Playmats', 'Musical Gyms', 'Tummy Time Mats'] }],
-    banner: 'https://images.pexels.com/photos/3958519/pexels-photo-3958519.jpeg'
+    banner: 'https://images.pexels.com/photos/3875233/pexels-photo-3875233.jpeg'
   },
   'Sports & Games': {
     content: [{ title: 'SHOP BY TYPE', items: ['Cricket Bats', 'Footballs', 'Basketball Hoops', 'Badminton Rackets', 'Skates', 'Hockey Sticks', 'Archery Sets'] }],
-    banner: 'https://images.pexels.com/photos/37052023/pexels-photo-37052023.jpeg'
+    banner: 'https://images.pexels.com/photos/9654718/pexels-photo-9654718.jpeg'
   },
   'Role & Pretend Play Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Kitchen Sets', 'Doctor Kits', 'Tool Sets', 'Dollhouses', 'Supermarket Sets', 'Beauty Kits', 'Police/Fireman Gear'] }],
-    banner: 'https://images.pexels.com/photos/159491/pexels-photo-159491.jpeg'
+    banner: 'https://images.pexels.com/photos/27705031/pexels-photo-27705031.jpeg'
   },
   'Blocks & Construction Sets': {
     content: [{ title: 'SHOP BY TYPE', items: ['Building Blocks', 'Magnetic Tiles', 'LEGO Sets', 'Architectural Models', 'Marble Runs', 'Gear Sets'] }],
-    banner: 'https://images.pexels.com/photos/27660140/pexels-photo-27660140.jpeg'
+    banner: 'https://images.pexels.com/photos/2372442/pexels-photo-2372442.jpeg'
   },
   'Stacking Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Stacking Rings', 'Nesting Cups', 'Balancing Blocks', 'Pyramid Stackers', 'Wooden Towers', 'Sort & Stack Sets'] }],
-    banner: 'https://images.pexels.com/photos/1329571/pexels-photo-1329571.jpeg'
+    banner: 'https://images.pexels.com/photos/9271757/pexels-photo-9271757.jpeg'
   },
   'Kids Puzzles': {
     content: [{ title: 'SHOP BY TYPE', items: ['Jigsaw Puzzles', '3D Puzzles', 'Shape Sorters', 'Peg Puzzles', 'Knob Puzzles', 'Puzzle Mats', 'Tangrams'] }],
-    banner: 'https://images.pexels.com/photos/1420709/pexels-photo-1420709.jpeg'
+    banner: 'https://images.pexels.com/photos/6255750/pexels-photo-6255750.jpeg'
   },
   'Baby Rattles': {
     content: [{ title: 'SHOP BY TYPE', items: ['Wrist Rattles', 'Teething Rattles', 'Musical Rattles', 'Plush Rattles', 'Shakers', 'Ring Rattles', 'Sensory Rattles'] }],
-    banner: 'https://images.pexels.com/photos/3845493/pexels-photo-3845493.jpeg'
+    banner: 'https://images.pexels.com/photos/4488187/pexels-photo-4488187.jpeg'
   },
   'Toys Cars Trains & Vehicles': {
     content: [{ title: 'SHOP BY TYPE', items: ['Remote Control Cars', 'Die-cast Vehicles', 'Train Sets', 'Monster Trucks', 'Construction Vehicles', 'Planes', 'Fire Engines'] }],
-    banner: 'https://images.pexels.com/photos/255514/pexels-photo-255514.jpeg'
+    banner: 'https://images.pexels.com/photos/4887210/pexels-photo-4887210.jpeg'
   },
   'Dolls & Dollhouses': {
     content: [{ title: 'SHOP BY TYPE', items: ['Fashion Dolls', 'Baby Dolls', 'Miniature Houses', 'Doll Accessories', 'Wooden Dollhouses', 'Doll Furniture', 'Interactive Dolls'] }],
-    banner: 'https://images.pexels.com/photos/1319591/pexels-photo-1319591.jpeg'
+    banner: 'https://images.pexels.com/photos/8205899/pexels-photo-8205899.jpeg'
   },
   'Push & Pull Along Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Walker Wagons', 'Pull-along Animals', 'Push Walkers', 'Activity Walkers', 'Stacking Wagons', 'Friction Powered Toys'] }],
-    banner: 'https://images.pexels.com/photos/1000498/pexels-photo-1000498.jpeg'
+    banner: 'https://images.pexels.com/photos/7663992/pexels-photo-7663992.jpeg'
   },
   'Art Crafts & Hobby Kits': {
     content: [{ title: 'SHOP BY TYPE', items: ['Painting Sets', 'Clay & Dough', 'Jewelry Making', 'Origami Kits', 'Knitting Kits', 'Sand Art', 'Tie-Dye Kits'] }],
-    banner: 'https://images.pexels.com/photos/1148998/pexels-photo-1148998.jpeg'
+    banner: 'https://images.pexels.com/photos/30698566/pexels-photo-30698566.jpeg'
   },
   'Board Games': {
     content: [{ title: 'SHOP BY TYPE', items: ['IQ Games', 'Ludo, Snakes & Ladders', 'Words, Pictures & Scrabble Games', 'Playing Cards', 'Life & Travel Board Games', 'Animal, Birds & Marine Life Games', 'Business/Monopoly'] }],
-    banner: 'https://images.pexels.com/photos/1420709/pexels-photo-1420709.jpeg'
+    banner: 'https://images.pexels.com/photos/20152634/pexels-photo-20152634.jpeg'
   },
   'Action Figures & Collectibles': {
     content: [{ title: 'SHOP BY TYPE', items: ['Superhero Figures', 'Dinosaur Figures', 'Robot Toys', 'Anime Figures', 'Collectible Cards', 'Blind Boxes'] }],
-    banner: 'https://images.pexels.com/photos/163036/pexels-photo-163036.jpeg'
+    banner: 'https://images.pexels.com/photos/5795435/pexels-photo-5795435.jpeg'
   },
   'Radio & Remote Control Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['RC Cars', 'RC Drones', 'RC Boats', 'RC Helicopters', 'RC Robots', 'Stunt Cars'] }],
-    banner: 'https://images.pexels.com/photos/255514/pexels-photo-255514.jpeg'
+    banner: 'https://images.pexels.com/photos/9227215/pexels-photo-9227215.jpeg'
   },
   'Bath Toys': {
     content: [{ title: 'SHOP BY TYPE', items: ['Rubber Ducks', 'Water Sprinklers', 'Bath Boats', 'Floating Toys', 'Bath Books', 'Water Pumps', 'Bath Crayons'] }],
-    banner: 'https://images.pexels.com/photos/35979966/pexels-photo-35979966.jpeg'
+    banner: 'https://images.pexels.com/photos/6432494/pexels-photo-6432494.jpeg'
   },
   'Toys Guns & Weapons': {
     content: [{ title: 'SHOP BY TYPE', items: ['Foam Blasters', 'Water Guns', 'Laser Tag', 'Bow & Arrow', 'Toy Swords', 'Shield Sets'] }],
-    banner: 'https://images.pexels.com/photos/163036/pexels-photo-163036.jpeg'
+    banner: 'https://images.pexels.com/photos/5257443/pexels-photo-5257443.jpeg'
   },
   'RIDE-ONS & SCOOTERS': {
     content: [{ title: 'SHOP BY TYPE', items: ['Battery Operated Ride-ons', 'Manual Push Ride-ons', 'Swing cars/twisters', 'Scooters', 'Rocking Ride Ons', 'Tricycles', 'Bicycles', 'Balance Bike'] }],
-    banner: 'https://images.pexels.com/photos/37052023/pexels-photo-37052023.jpeg'
+    banner: 'https://images.pexels.com/photos/36909926/pexels-photo-36909926.jpeg'
   },
   'BOARD GAMES': {
     content: [{ title: 'SHOP BY TYPE', items: ['IQ Games', 'Ludo, Snakes & Ladders', 'Words, Pictures & Scrabble Games', 'Playing Cards', 'Life & Travel Board Games', 'Animal, Birds & Marine Life Games', 'Business/Monopoly'] }],
-    banner: 'https://images.pexels.com/photos/27660140/pexels-photo-27660140.jpeg'
+    banner: 'https://images.pexels.com/photos/20152634/pexels-photo-20152634.jpeg'
   },
   'HOME PLAY ACTIVITIES': {
     content: [{ title: 'SHOP BY TYPE', items: ['Play Dough, Sand & Moulds', 'Coloring, Sequencing & Engraving Art', 'Activity Kit', 'Building Construction Sets', 'Multi Model Making Sets', 'Kitchen Sets', 'Play Foods', 'Kids\' Doctor Sets', 'Piano & Keyboards', 'Drum Sets & Percussion'] }],
-    banner: 'https://images.pexels.com/photos/3958519/pexels-photo-3958519.jpeg'
+    banner: 'https://images.pexels.com/photos/7156361/pexels-photo-7156361.jpeg'
   }
 }
 

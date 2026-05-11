@@ -78,12 +78,13 @@ export function VisionHeader() {
 
         const treeData = {}
         tree.forEach(category => {
+          const staticData = categoryData[category.name] || {}
           treeData[category.name] = {
             content: [{
               title: 'SHOP BY TYPE',
               items: category.children?.length ? category.children.map(child => child.name) : [category.name],
             }],
-            banner: category.bannerImage?.url,
+            banner: category.bannerImage?.url || staticData.banner,
           }
         })
 
@@ -101,7 +102,10 @@ export function VisionHeader() {
           ...navbarCategories.map(category => ({
             name: category.name.toUpperCase(),
             href: `/collections/${category.slug}`,
-            mega: treeData[category.name] || { content: [{ title: 'SHOP BY TYPE', items: [category.name] }] },
+            mega: treeData[category.name] || { 
+              content: [{ title: 'SHOP BY TYPE', items: [category.name] }],
+              banner: categoryData[category.name]?.banner
+            },
           })),
           { name: 'Contact', href: '/contact', hideOnDesktop: true },
         ]
@@ -772,10 +776,11 @@ export function VisionHeader() {
                     
                     <div 
                       className="relative"
-                      onMouseEnter={() => setLangDropdown(true)}
-                      onMouseLeave={() => setLangDropdown(false)}
                     >
-                      <button className="flex items-center gap-1.5 text-[11px] font-black text-[#333] uppercase tracking-widest p-2 hover:bg-[#333]/5 rounded-xl transition-all active:scale-95">
+                      <button 
+                        onClick={() => setLangDropdown(!langDropdown)}
+                        className="flex items-center gap-1.5 text-[11px] font-black text-[#333] uppercase tracking-widest p-2 hover:bg-[#333]/5 rounded-xl transition-all active:scale-95"
+                      >
                         <Globe size={14} className="opacity-40" />
                         <span className="whitespace-nowrap">{selectedLang}</span>
                         <ChevronDown size={14} className={`opacity-40 transition-transform duration-300 ${langDropdown ? 'rotate-180' : ''}`} />

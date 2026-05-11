@@ -3,7 +3,8 @@ import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { applyFulfilledOrderSideEffects, buildOrderDraftFromCheckout, revertFulfilledOrderSideEffects } from '../services/order.service.js';
-import { sendOrderStatusUpdateEmail } from '../services/email.service.js';
+import { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail } from '../services/email.service.js';
+import logger from '../utils/logger.js';
 
 const STATUS_LABELS = {
   pending: 'Pending',
@@ -153,6 +154,10 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     couponData: draft.couponData,
   });
 
+  Promise.resolve(sendOrderConfirmationEmail(order)).catch((error) => {
+    logger.warn(`Order confirmation email failed for ${order.orderNumber}: ${error.message}`);
+  });
+
   return successResponse(res, 201, 'Order placed successfully', mapOrder(order));
 });
 
@@ -271,7 +276,7 @@ export const getOrderSummary = asyncHandler(async (req, res, next) => {
 
 export const adminListOrders = asyncHandler(async (req, res) => {
   const page = Number(req.query.page || 1);
-  const limit = Math.min(Number(req.query.limit || 20), 100);
+  const limit = Math.min(Number(req.query.limit || 20), 200);
   const skip = (page - 1) * limit;
   const filter = {};
 

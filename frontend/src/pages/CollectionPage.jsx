@@ -93,10 +93,26 @@ export function CollectionPage() {
     type: []
   })
 
-  const catKey = category?.toUpperCase().replaceAll('-', ' ')
-  const currentCatData = categoryData[catKey] || categoryData['BOY FASHION']
+  const getCategoryDataBySlug = (slug) => {
+    if (!slug) return null;
+    const normalized = slug.toLowerCase().replaceAll('-', ' ');
+    const entries = Object.entries(categoryData);
+    
+    // Try direct match
+    let match = entries.find(([k]) => k.toLowerCase() === normalized);
+    if (match) return match[1];
+
+    // Try ampersand vs "and"
+    const withAmp = normalized.replaceAll(' and ', ' & ');
+    match = entries.find(([k]) => k.toLowerCase() === withAmp);
+    if (match) return match[1];
+
+    return null;
+  };
+
+  const currentCatData = getCategoryDataBySlug(category) || categoryData['Musical Toys'];
   const displayTitle = categoryMeta?.name || (subcategory || category || 'Collection').replaceAll('-', ' ')
-  const bannerImg = categoryMeta?.bannerImage?.url || currentCatData?.banner || 'https://toykio.myshopify.com/cdn/shop/files/collection-01.jpg?v=1710995380&width=1600'
+  const bannerImg = categoryMeta?.bannerImage?.url || currentCatData?.banner || 'https://images.pexels.com/photos/6743167/pexels-photo-6743167.jpeg'
   const processedProducts = products
   const totalPages = meta.totalPages || 1
   const paginatedProducts = products

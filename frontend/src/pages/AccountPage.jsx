@@ -388,7 +388,7 @@ export function AccountPage() {
           <div className="fixed inset-0 z-[300000] overflow-y-auto bg-black/30 backdrop-blur-sm p-3 sm:p-4">
              <motion.div initial={{scale:0.95, opacity:0}} animate={{scale:1, opacity:1}} exit={{scale:0.95, opacity:0}} className="bg-[#FDF4E6] w-full max-w-lg rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl border border-white/50 my-3 sm:my-6 mx-auto max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-48px)] flex flex-col">
                 <div className="p-5 sm:p-8 space-y-5 sm:space-y-6 overflow-y-auto custom-scrollbar">
-                    <div className="flex justify-between items-start sticky top-0 bg-[#FDF4E6] pb-3 z-10 gap-2">
+                    <div className="flex justify-between items-start bg-[#FDF4E6] pb-3 gap-2">
                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-2xl flex items-center justify-center text-[#6651A4] shadow-sm shrink-0"><Box size={20}/></div>
                           <div className="min-w-0 flex-1">
@@ -654,39 +654,46 @@ export function AccountPage() {
                     ) : orders.length === 0 ? (
                        <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">No orders found</div>
                     ) : orders.map(order => (
-                       <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-4 md:p-6 bg-white/60 rounded-[32px] border border-black/[0.03] hover:shadow-lg transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                          <div className="flex items-center gap-4 md:gap-5">
-                             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 border border-black/5 shadow-sm">
-                                {order.items?.[0]?.img ? (
-                                   <img src={order.items[0].img} className="w-full h-full object-cover" />
-                                ) : (
-                                   <Box size={24} className="text-[#6651A4] opacity-20"/>
+                       <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-5 md:p-6 bg-white/60 rounded-[32px] border border-black/[0.03] hover:shadow-lg transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 sm:gap-4">
+                           <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 md:gap-5 text-center sm:text-left">
+                              <div className="w-20 h-20 sm:w-12 sm:h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border border-black/5 shadow-sm">
+                                 {order.items?.[0]?.img ? (
+                                    <img src={order.items[0].img} className="w-full h-full object-cover" />
+                                 ) : (
+                                    <Box size={24} className="text-[#6651A4] opacity-20"/>
+                                 )}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-[14px] sm:text-[13px] font-bold text-gray-700 font-grandstander">Order #{order.orderNumber}</p>
+                                <p className="text-[11px] sm:text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-wider">{order.date} · {order.items.length} Items</p>
+                                <p className="text-[11px] sm:text-[10px] text-[#6651A4] font-bold mt-0.5 uppercase tracking-widest">ETA {order.deliveryDate || '-'}</p>
+                              </div>
+                           </div>
+                           <div className="text-center sm:text-right flex flex-col sm:flex-row items-center gap-4 md:gap-6 border-t sm:border-t-0 border-black/[0.03] pt-4 sm:pt-0">
+                              <div className="grow sm:grow-0">
+                                <p className="text-2xl sm:text-lg md:text-xl font-bold font-grandstander text-gray-800">₹{order.total.toFixed(2)}</p>
+                                <div className="flex items-center justify-center sm:justify-end gap-2 mt-1">
+                                  <div className={`w-1.5 h-1.5 rounded-full ${order.status==='cancelled'?'bg-red-400':'bg-green-500'}`}></div>
+                                  <p className={`text-[10px] font-bold uppercase tracking-widest ${order.status==='cancelled'?'text-red-400':'text-green-500'}`}>{order.statusLabel}</p>
+                                </div>
+                                {order.returnRequest?.status !== 'none' && (
+                                  <p className="mt-1 text-[9px] font-bold uppercase text-[#6651A4]">{order.returnRequest.statusLabel}</p>
                                 )}
-                             </div>
-                             <div><p className="text-[13px] font-bold text-gray-700">Order #{order.orderNumber}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items · ETA {order.deliveryDate || '-'}</p></div>
-                          </div>
-                          <div className="text-right flex items-center gap-4 md:gap-6">
-                             <div>
-                               <p className="text-lg md:text-xl font-bold font-grandstander text-gray-700">₹{order.total.toFixed(2)}</p>
-                               <p className={`text-[9px] font-bold uppercase ${order.status==='cancelled'?'text-red-400':'text-green-500'}`}>{order.statusLabel}</p>
-                               {order.returnRequest?.status !== 'none' && (
-                                 <p className="mt-1 text-[9px] font-bold uppercase text-[#6651A4]">{order.returnRequest.statusLabel}</p>
-                               )}
-                               {canCancelOrder(order) && (
-                                 <button
-                                   onClick={(event) => {
-                                     event.stopPropagation()
-                                     handleCancelOrder(order.id)
-                                   }}
-                                   className="mt-2 text-[9px] font-bold uppercase tracking-widest text-[#E84949] hover:text-[#333] transition-colors"
-                                 >
-                                   Cancel
-                                 </button>
-                               )}
-                             </div>
-                             <ChevronRight size={18} className="text-[#333]/40 group-hover:text-[#333] translate-x-0 group-hover:translate-x-1 transition-all"/>
-                          </div>
-                       </div>
+                                {canCancelOrder(order) && (
+                                  <button
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                      handleCancelOrder(order.id)
+                                    }}
+                                    className="mt-3 sm:mt-2 text-[10px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-[#E84949] hover:text-[#333] transition-colors py-1.5 px-4 sm:p-0 bg-red-50 sm:bg-transparent rounded-lg"
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
+                              </div>
+                              <ChevronRight size={18} className="text-[#333]/40 group-hover:text-[#333] translate-x-0 group-hover:translate-x-1 transition-all hidden sm:block"/>
+                           </div>
+                        </div>
                     ))}
                  </motion.div>
                )}
@@ -722,15 +729,6 @@ export function AccountPage() {
                                     <button onClick={() => deleteSavedMethod(section.id, item.id)} className="w-7 h-7 rounded-lg bg-red-50 text-[#E84949] flex items-center justify-center hover:bg-[#E84949] hover:text-white transition-all"><Trash2 size={12}/></button>
                                  </motion.div>
                                ))}
-                               {section.items.length === 0 && (
-                                 <button 
-                                   onClick={() => { setPaymentTypeToAdd(section.id); setShowAddPayment(true); }}
-                                   className="w-full py-12 flex flex-col items-center gap-3 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all group/empty"
-                                 >
-                                    <div className="w-12 h-12 border-2 border-dashed border-[#E84949] rounded-2xl flex items-center justify-center group-hover/empty:scale-110 transition-all"><Plus size={16} className="text-[#E84949]"/></div>
-                                    <p className="text-[9px] font-bold uppercase tracking-widest">Add New</p>
-                                 </button>
-                               )}
                             </div>
                          </div>
                        ))}
