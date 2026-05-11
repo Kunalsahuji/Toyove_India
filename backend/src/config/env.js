@@ -44,7 +44,10 @@ const env = {
   ],
   VERCEL_PROJECT_SLUG: process.env.VERCEL_PROJECT_SLUG || 'toyove-india-jhkr',
   ALLOWED_ORIGIN_PATTERNS: [
-    new RegExp(`^https://${escapeRegex(process.env.VERCEL_PROJECT_SLUG || 'toyove-india-jhkr')}(?:-[a-z0-9-]+)?\\.vercel\\.app$`, 'i'),
+    // Matches toyove-india-jhkr.vercel.app, toyove-india-jhkr-git-main.vercel.app, etc.
+    new RegExp(`^https://${escapeRegex(process.env.VERCEL_PROJECT_SLUG || 'toyove-india-jhkr')}.*\\.vercel\\.app$`, 'i'),
+    // Matches localhost with any port (for development)
+    /^http:\/\/localhost:\d+$/,
   ],
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
