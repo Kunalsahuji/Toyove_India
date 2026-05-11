@@ -23,7 +23,6 @@ yarn-error.log*
 # OS Files
 .DS_Store
 Thumbs.db
-
 # Build/Coverage (if any)
 dist/
 coverage/
@@ -31,3 +30,6 @@ coverage/
 backend/.env*
 !backend/.env.example
 .env.example
+
+# others
+firebase-service-account.json

@@ -279,3 +279,34 @@ export const adminUpdateUserStatus = asyncHandler(async (req, res, next) => {
 
   return successResponse(res, 200, 'User status updated successfully', user);
 });
+
+export const saveFcmToken = asyncHandler(async (req, res, next) => {
+  const { token, platform } = req.body;
+  if (!token) {
+    return next(new AppError('Token is required', 400));
+  }
+
+  const field = platform === 'mobile' ? 'fcmTokenMobile' : 'fcmTokens';
+
+  await User.findByIdAndUpdate(req.user._id, {
+    $addToSet: { [field]: token }
+  });
+
+  return successResponse(res, 200, 'FCM token saved successfully');
+});
+
+export const removeFcmToken = asyncHandler(async (req, res, next) => {
+  const { token } = req.body;
+  if (!token) {
+    return next(new AppError('Token is required', 400));
+  }
+
+  await User.findByIdAndUpdate(req.user._id, {
+    $pull: { 
+      fcmTokens: token,
+      fcmTokenMobile: token
+    }
+  });
+
+  return successResponse(res, 200, 'FCM token removed successfully');
+});

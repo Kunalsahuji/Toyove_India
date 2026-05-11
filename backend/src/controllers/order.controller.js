@@ -4,6 +4,7 @@ import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { applyFulfilledOrderSideEffects, buildOrderDraftFromCheckout, revertFulfilledOrderSideEffects } from '../services/order.service.js';
 import { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail } from '../services/email.service.js';
+import { notifyOrderPlaced, notifyOrderStatusChanged, notifyDeliveryRescheduled, notifyOrderCancelled, notifyReturnRequested, notifyReturnStatusChanged } from '../services/notification.service.js';
 import logger from '../utils/logger.js';
 
 const STATUS_LABELS = {
@@ -158,6 +159,9 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     logger.warn(`Order confirmation email failed for ${order.orderNumber}: ${error.message}`);
   });
 
+  // Push notification
+  Promise.resolve(notifyOrderPlaced(order)).catch(() => {});
+
   return successResponse(res, 201, 'Order placed successfully', mapOrder(order));
 });
 
@@ -219,6 +223,9 @@ export const cancelMyOrder = asyncHandler(async (req, res, next) => {
 
   await order.save();
 
+  // Push notification
+  Promise.resolve(notifyOrderCancelled(order)).catch(() => {});
+
   return successResponse(res, 200, 'Order cancelled successfully', mapOrder(order));
 });
 
@@ -250,6 +257,9 @@ export const requestMyOrderReturn = asyncHandler(async (req, res, next) => {
 
   appendStatusHistory(order, order.status, 'customer', `Return requested: ${req.body.reason.trim()}`);
   await order.save();
+
+  // Push notification
+  Promise.resolve(notifyReturnRequested(order)).catch(() => {});
 
   return successResponse(res, 200, 'Return request submitted successfully', mapOrder(order));
 });
@@ -416,6 +426,14 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
     })
   }
 
+  // Push notifications
+  if (previousStatus !== order.status) {
+    Promise.resolve(notifyOrderStatusChanged(order, previousStatus)).catch(() => {});
+  }
+  if (req.body.estimatedDeliveryDate !== undefined && req.body.deliveryDelayReason?.trim()) {
+    Promise.resolve(notifyDeliveryRescheduled(order, req.body.deliveryDelayReason.trim())).catch(() => {});
+  }
+
   return successResponse(res, 200, 'Order status updated successfully', mapOrder(order));
 });
 
@@ -446,5 +464,9 @@ export const adminUpdateOrderReturnRequest = asyncHandler(async (req, res, next)
   );
 
   await order.save();
+
+  // Push notification
+  Promise.resolve(notifyReturnStatusChanged(order)).catch(() => {});
+
   return successResponse(res, 200, 'Return request updated successfully', mapOrder(order));
 });

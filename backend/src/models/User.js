@@ -116,6 +116,14 @@ const userSchema = new mongoose.Schema({
   paymentHistory: {
     type: [userPaymentHistorySchema],
     default: [],
+  },
+  fcmTokens: {
+    type: [String],
+    default: [],
+  },
+  fcmTokenMobile: {
+    type: [String],
+    default: [],
   }
 }, {
   timestamps: true,

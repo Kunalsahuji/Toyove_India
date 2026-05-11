@@ -28,6 +28,7 @@ import { MobileBottomBar } from './components/layout/MobileBottomBar'
 import { AsideSidebar } from './components/layout/AsideSidebar'
 import { PurchaseNotification } from './components/ui/PurchaseNotification'
 import { useAuth } from './context/AuthContext'
+import { FirebaseTokenManager } from './components/FirebaseTokenManager'
 
 // Helper component to scroll to top on route change
 function ScrollToTop() {
@@ -139,6 +140,7 @@ function AppContent() {
     return (
       <>
         <ScrollToTop />
+        <FirebaseTokenManager />
         <Suspense fallback={<AdminFallback />}>
           <AdminRouteGate>
             <Routes>
@@ -175,6 +177,7 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
+      <FirebaseTokenManager />
       <div className="min-h-screen flex flex-col bg-[#FDF4E6] overflow-x-hidden relative">
         {!hideLayouts && <VisionHeader />}
         <main className="flex-grow">

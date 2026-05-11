@@ -8,6 +8,7 @@ import { successResponse } from '../utils/apiResponse.js';
 import { generateTokens, hashToken } from '../utils/jwt.js';
 import { setAuthCookies, clearAuthCookies } from '../utils/cookies.js';
 import { sendPasswordResetOtpEmail } from '../services/email.service.js';
+import { notifyWelcome, notifySecurityLogin } from '../services/notification.service.js';
 import logger from '../utils/logger.js';
 
 export const register = asyncHandler(async (req, res, next) => {
@@ -56,6 +57,9 @@ export const register = asyncHandler(async (req, res, next) => {
     email: newUser.email,
     ip: req.ip
   });
+
+  // Welcome push notification (fire-and-forget)
+  Promise.resolve(notifyWelcome(newUser)).catch(() => {});
 
   return successResponse(res, 201, 'Registration successful. Please log in to continue.', newUser.toJSON());
 });
@@ -123,6 +127,9 @@ export const login = asyncHandler(async (req, res, next) => {
     role: user.role,
     ip: req.ip
   });
+
+  // Security login notification (fire-and-forget)
+  Promise.resolve(notifySecurityLogin(user)).catch(() => {});
 
   return successResponse(res, 200, 'Login successful', {
     ...user.toJSON(),

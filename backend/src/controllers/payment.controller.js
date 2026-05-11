@@ -5,6 +5,7 @@ import { successResponse } from '../utils/apiResponse.js';
 import { buildOrderDraftFromCheckout, applyFulfilledOrderSideEffects } from '../services/order.service.js';
 import { sendOrderConfirmationEmail } from '../services/email.service.js';
 import { getRazorpayClient, verifyRazorpayPaymentSignature, verifyRazorpayWebhookSignature } from '../utils/razorpay.js';
+import { notifyPaymentSuccess, notifyPaymentFailed, notifyRefundProcessed } from '../services/notification.service.js';
 import env from '../config/env.js';
 import logger from '../utils/logger.js';
 
@@ -116,6 +117,9 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
     logger.warn(`Order confirmation email failed for ${order.orderNumber}: ${error.message}`);
   });
 
+  // Push notification
+  Promise.resolve(notifyPaymentSuccess(order)).catch(() => {});
+
   logger.info('Razorpay payment verification success', {
     orderNumber: order.orderNumber,
     razorpayOrderId: req.body.razorpayOrderId,
@@ -157,10 +161,12 @@ export const handleRazorpayWebhook = asyncHandler(async (req, res, next) => {
 
       if (event === 'payment.captured') {
         order.paymentStatus = 'paid';
+        Promise.resolve(notifyPaymentSuccess(order)).catch(() => {});
       }
 
       if (event === 'payment.failed') {
         order.paymentStatus = 'failed';
+        Promise.resolve(notifyPaymentFailed(order)).catch(() => {});
       }
 
       await order.save();
@@ -177,6 +183,7 @@ export const handleRazorpayWebhook = asyncHandler(async (req, res, next) => {
         lastWebhookAt: new Date(),
       };
       await order.save();
+      Promise.resolve(notifyRefundProcessed(order)).catch(() => {});
     }
   }
 

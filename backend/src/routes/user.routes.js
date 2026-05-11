@@ -12,6 +12,8 @@ import {
   updateMyPreferences,
   updateMe,
   updatePassword,
+  saveFcmToken,
+  removeFcmToken,
 } from '../controllers/user.controller.js';
 import { validate } from '../middlewares/validate.js';
 import {
@@ -38,6 +40,8 @@ router.patch('/me/account-data', updateMyAccountData);
 router.patch('/me/preferences', updateMyPreferences);
 router.patch('/me', validate(updateProfileSchema), updateMe);
 router.patch('/me/password', validate(updatePasswordSchema), updatePassword);
+router.post('/me/fcm-token', saveFcmToken);
+router.delete('/me/fcm-token', removeFcmToken);
 
 adminRouter.use(protect, authorizeRoles('admin', 'super_admin'));
 adminRouter.get('/', validate(adminListUsersSchema), adminListUsers);

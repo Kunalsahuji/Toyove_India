@@ -15,6 +15,8 @@ import { cancelMyOrder, getMyOrders, requestMyOrderReturn } from '../services/or
 import { useToast } from '../context/ToastContext'
 import { printOrderInvoice } from '../utils/invoice'
 import { updateMyProfile } from '../services/userProfileApi'
+import { requestForToken } from '../config/firebase'
+import { saveFcmToken } from '../services/notificationApi'
 
 const upiLogos = {
   'Google Pay': (
@@ -601,6 +603,80 @@ export function AccountPage() {
                           <div><p className="text-3xl font-bold font-grandstander text-gray-700">{savedMethods.bankAccounts.length + savedMethods.upiIds.length + savedMethods.cards.length}</p><p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Accounts</p></div>
                        </div>
                     </div>
+
+                    {/* ── PUSH NOTIFICATION TEST PANEL ── */}
+                    <div className="p-6 md:p-8 bg-white rounded-3xl border border-dashed border-[#6651A4]/20 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#6651A4]/10 rounded-xl flex items-center justify-center">
+                          <span className="text-xl">🔔</span>
+                        </div>
+                        <div>
+                          <h4 className="text-[13px] font-bold text-gray-700 uppercase tracking-widest">Push Notification Test</h4>
+                          <p className="text-[10px] text-gray-400 font-medium mt-0.5">Dev tool — test FCM token & foreground notification</p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          id="btn-test-fcm-token"
+                          onClick={async () => {
+                            try {
+                              console.log('[FCM] Requesting permission & token...');
+                              const token = await requestForToken();
+                              if (token) {
+                                console.log('[FCM] ✅ Token generated:', token);
+                                await saveFcmToken(token, 'web');
+                                console.log('[FCM] ✅ Token saved to DB via API');
+                                success('FCM token saved! Check console for details.');
+                              } else {
+                                console.warn('[FCM] ⚠️ No token — check browser permission');
+                                showError('No token generated. Allow notification permission first.');
+                              }
+                            } catch (err) {
+                              console.error('[FCM] ❌ Error:', err);
+                              showError('Error: ' + err.message);
+                            }
+                          }}
+                          className="flex-1 h-12 bg-[#6651A4] text-white text-[11px] font-bold uppercase tracking-widest rounded-2xl hover:bg-[#5541a0] active:scale-95 transition-all shadow-md shadow-[#6651A4]/20"
+                        >
+                          📱 Get & Save FCM Token
+                        </button>
+
+                        <button
+                          id="btn-test-foreground-notif"
+                          onClick={() => {
+                            if (!('Notification' in window)) {
+                              showError('Notifications not supported in this browser.');
+                              return;
+                            }
+                            if (Notification.permission !== 'granted') {
+                              showError('Notification permission not granted. Click the first button first.');
+                              return;
+                            }
+                            console.log('[FCM] Firing a local foreground test notification...');
+                            const n = new Notification('🎉 Toyovo India', {
+                              body: 'This is a foreground notification test! FCM is working.',
+                              icon: '/logo.png',
+                            });
+                            n.onclick = () => {
+                              console.log('[FCM] Notification clicked!');
+                              window.focus();
+                            };
+                            success('Foreground notification fired! Check your browser.');
+                          }}
+                          className="flex-1 h-12 bg-[#E84949] text-white text-[11px] font-bold uppercase tracking-widest rounded-2xl hover:bg-[#d43d3d] active:scale-95 transition-all shadow-md shadow-[#E84949]/20"
+                        >
+                          🔔 Fire Test Notification
+                        </button>
+                      </div>
+
+                      <p className="text-[9px] text-gray-400 font-medium leading-relaxed">
+                        <span className="font-bold text-[#6651A4]">Step 1:</span> Click "Get & Save FCM Token" — allow browser permission, check console + DB.<br/>
+                        <span className="font-bold text-[#E84949]">Step 2:</span> Click "Fire Test Notification" to verify foreground display.
+                      </p>
+                    </div>
+                    {/* ── END TEST PANEL ── */}
+
                  </motion.div>
                )}
 

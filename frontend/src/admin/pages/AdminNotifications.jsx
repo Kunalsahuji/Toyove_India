@@ -1,38 +1,86 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { 
   Bell, ShoppingBag, Package, Users, 
-  Wallet, AlertCircle, CheckCircle, Info,
-  Trash2, Filter, Search, ChevronRight, Clock
+  Wallet, AlertCircle, CheckCircle, Search, ChevronRight, Clock,
+  RefreshCw, Shield, CreditCard
 } from 'lucide-react'
+import { getAdminNotifications, markAdminNotificationsRead } from '../../services/notificationAdminApi'
+import { useToast } from '../../context/ToastContext'
+
+const CATEGORY_ICONS = {
+  Order: { icon: <ShoppingBag size={18} />, color: 'bg-blue-500' },
+  Payment: { icon: <CreditCard size={18} />, color: 'bg-green-500' },
+  Return: { icon: <RefreshCw size={18} />, color: 'bg-[#F1641E]' },
+  Auth: { icon: <Users size={18} />, color: 'bg-[#6651A4]' },
+  Security: { icon: <Shield size={18} />, color: 'bg-red-600' },
+  System: { icon: <AlertCircle size={18} />, color: 'bg-gray-500' },
+  General: { icon: <Bell size={18} />, color: 'bg-purple-500' }
+}
 
 export function AdminNotifications() {
   const [filter, setFilter] = useState('All')
-  
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: 'Order', title: 'New Haul Received', desc: 'Emma Watson placed order #ORD-8001 for 3 toys.', time: '2 mins ago', status: 'unread', icon: <ShoppingBag size={18} />, color: 'bg-blue-500' },
-    { id: 2, type: 'Stock', title: 'Inventory Alert', desc: 'Shop & Glow Toy Cart Orange Car is running low (5 left).', time: '15 mins ago', status: 'unread', icon: <AlertCircle size={18} />, color: 'bg-[#F1641E]' },
-    { id: 3, type: 'Finance', title: 'Wallet Recharge', desc: 'Liam Smith added $500.00 Joy to their wallet.', time: '1 hour ago', status: 'read', icon: <Wallet size={18} />, color: 'bg-green-500' },
-    { id: 4, type: 'User', title: 'New Explorer Joined', desc: 'Noah Jones just signed up for Toyovo India.', time: '3 hours ago', status: 'read', icon: <Users size={18} />, color: 'bg-[#6651A4]' },
-    { id: 5, type: 'Product', title: 'Blueprint Updated', desc: 'Playbox The Builder Wooden Toys specifications were modified.', time: '5 hours ago', status: 'read', icon: <Package size={18} />, color: 'bg-purple-500' },
-    { id: 6, type: 'Finance', title: 'Payment Failed', desc: 'Transaction TXN-9024 for $210.00 was declined by bank.', time: '8 hours ago', status: 'read', icon: <AlertCircle size={18} />, color: 'bg-[#E8312A]' },
-    { id: 7, type: 'Admin', title: 'Security Alert', desc: 'Maintenance Mode was toggled OFF by Super Admin.', time: '12 hours ago', status: 'read', icon: <Info size={18} />, color: 'bg-gray-500' },
-    { id: 8, type: 'Stock', title: 'Out of Stock', desc: 'Fun And Educational Toy For Babies is now out of stock.', time: '1 day ago', status: 'read', icon: <Trash2 size={18} />, color: 'bg-red-600' },
-  ])
+  const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const { success, error: showError } = useToast()
+  const navigate = useNavigate()
 
-  const filteredNotifications = filter === 'All' 
-    ? notifications 
-    : notifications.filter(n => n.type === filter)
-
-  const markAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, status: 'read' })))
+  const fetchNotifications = async (p = 1, f = filter) => {
+    setLoading(true)
+    try {
+      const res = await getAdminNotifications({ 
+        page: p, 
+        unreadOnly: f === 'Unread'
+      })
+      setNotifications(res.data)
+      setUnreadCount(res.meta.unread)
+      setTotalPages(res.meta.totalPages)
+    } catch (err) {
+      showError('Failed to fetch alerts')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const deleteNotification = (id) => {
-    setNotifications(notifications.filter(n => n.id !== id))
+  useEffect(() => {
+    fetchNotifications(1, filter)
+  }, [filter])
+
+  const handleMarkAllRead = async () => {
+    try {
+      await markAdminNotificationsRead()
+      success('All alerts marked as read')
+      fetchNotifications(page, filter)
+    } catch (err) {
+      showError('Failed to update alerts')
+    }
   }
 
-  const categories = ['All', 'Order', 'Stock', 'Finance', 'User', 'Product', 'Admin']
+  const handleNotificationClick = async (notif) => {
+    if (!notif.readByAdmin) {
+      await markAdminNotificationsRead([notif._id])
+    }
+    if (notif.adminActionUrl) {
+      navigate(notif.adminActionUrl)
+    }
+  }
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diff = Math.floor((now - date) / 1000)
+
+    if (diff < 60) return 'Just now'
+    if (diff < 3600) return `${Math.floor(diff / 60)} mins ago`
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`
+    return date.toLocaleDateString()
+  }
+
+  const categories = ['All', 'Unread', 'Order', 'Payment', 'Return', 'Auth', 'Security']
 
   return (
     <div className="shell space-y-8 pb-10">
@@ -41,15 +89,16 @@ export function AdminNotifications() {
           <h1 className="text-3xl md:text-4xl font-grandstander font-bold text-gray-800 flex items-center gap-4">
             Alert Center
             <span className="px-3 py-1 bg-[#F1641E] text-white rounded-full text-[12px] font-bold shadow-sm">
-              {notifications.filter(n => n.status === 'unread').length} New
+              {unreadCount} New
             </span>
           </h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Real-time pulse of all Toyovo India operations.</p>
         </div>
         <div className="flex gap-3">
           <button 
-            onClick={markAllRead}
-            className="h-11 px-6 bg-white border border-[#6651A4]/20 text-[#6651A4] rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-[#FAEAD3] transition-all flex items-center gap-2"
+            onClick={handleMarkAllRead}
+            disabled={unreadCount === 0}
+            className="h-11 px-6 bg-white border border-[#6651A4]/20 text-[#6651A4] rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-sm hover:bg-[#FAEAD3] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCircle size={16} /> Mark All Read
           </button>
@@ -81,55 +130,82 @@ export function AdminNotifications() {
         </div>
 
         {/* Notifications List */}
-        <div className="divide-y divide-gray-50">
-          <AnimatePresence mode="popLayout">
-            {filteredNotifications.length > 0 ? (
-              filteredNotifications.map((n) => (
-                <motion.div
-                  layout
-                  key={n.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className={`p-6 flex items-start justify-between group transition-all ${n.status === 'unread' ? 'bg-[#FDF4E6]/50' : 'hover:bg-gray-50'}`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${n.color} shrink-0`}>
-                      {n.icon}
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <h3 className={`text-[15px] font-bold ${n.status === 'unread' ? 'text-gray-900' : 'text-gray-600'}`}>{n.title}</h3>
-                        <span className="px-2 py-0.5 bg-gray-100 text-gray-400 rounded-md text-[9px] font-bold uppercase tracking-widest">{n.type}</span>
-                      </div>
-                      <p className="text-[13px] text-gray-500 leading-relaxed max-w-2xl">{n.desc}</p>
-                      <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest pt-1">
-                        <Clock size={12} /> {n.time}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 text-gray-400 hover:text-[#6651A4] hover:bg-white rounded-lg transition-all shadow-sm">
-                      <ChevronRight size={18} />
-                    </button>
-                    <button 
-                      onClick={() => deleteNotification(n.id)}
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg transition-all shadow-sm"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <div className="py-20 text-center">
-                <Bell size={48} className="mx-auto text-gray-100 mb-4" />
-                <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px]">No alerts found in this category</p>
-              </div>
-            )}
-          </AnimatePresence>
+        <div className="divide-y divide-gray-50 min-h-[400px]">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="w-8 h-8 border-4 border-[#6651A4] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {notifications.length > 0 ? (
+                notifications
+                  .filter(n => filter === 'All' || filter === 'Unread' || n.category === filter)
+                  .map((n) => {
+                    const iconConfig = CATEGORY_ICONS[n.category] || CATEGORY_ICONS.General
+                    return (
+                      <motion.div
+                        layout
+                        key={n._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        onClick={() => handleNotificationClick(n)}
+                        className={`p-6 flex items-start justify-between group transition-all cursor-pointer ${!n.readByAdmin ? 'bg-[#FDF4E6]/50' : 'hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${iconConfig.color} shrink-0`}>
+                            {iconConfig.icon}
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                              <h3 className={`text-[15px] font-bold ${!n.readByAdmin ? 'text-gray-900' : 'text-gray-600'}`}>{n.title}</h3>
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-400 rounded-md text-[9px] font-bold uppercase tracking-widest">{n.category}</span>
+                            </div>
+                            <p className="text-[13px] text-gray-500 leading-relaxed max-w-2xl">{n.body}</p>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest pt-1">
+                              <Clock size={12} /> {formatTime(n.createdAt)}
+                              {n.userId && <span className="ml-2">· {n.userId.firstName} {n.userId.lastName}</span>}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button className="p-2 text-gray-400 hover:text-[#6651A4] hover:bg-white rounded-lg transition-all shadow-sm">
+                            <ChevronRight size={18} />
+                          </button>
+                        </div>
+                      </motion.div>
+                    )
+                  })
+              ) : (
+                <div className="py-20 text-center">
+                  <Bell size={48} className="mx-auto text-gray-100 mb-4" />
+                  <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px]">No alerts found</p>
+                </div>
+              )}
+            </AnimatePresence>
+          )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-black/[0.03] flex justify-center gap-2">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setPage(i + 1)
+                  fetchNotifications(i + 1)
+                }}
+                className={`w-10 h-10 rounded-xl font-bold text-[12px] transition-all ${
+                  page === i + 1 ? 'bg-[#6651A4] text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

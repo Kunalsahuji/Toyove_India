@@ -7,6 +7,7 @@ import {
   ChevronRight, CircleUser, Wallet, Tags, Percent, Megaphone, MessageSquare, Truck, Activity
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { getAdminUnreadCount } from '../services/notificationAdminApi'
 
 // --- Skeleton Component for Seamless Loading ---
 function AdminContentSkeleton() {
@@ -39,6 +40,23 @@ export function AdminLayout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
   const location = useLocation()
   const navigate = useNavigate()
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  // Fetch unread count
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const count = await getAdminUnreadCount()
+        setUnreadCount(count)
+      } catch (err) {
+        console.error('Failed to fetch unread count')
+      }
+    }
+    fetchCount()
+    // Poll every 1 minute
+    const interval = setInterval(fetchCount, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Handle window resize for responsiveness
   useEffect(() => {
@@ -197,7 +215,11 @@ export function AdminLayout() {
               className="relative p-2.5 text-gray-400 hover:text-[#6651A4] transition-colors bg-[#FAEAD3]/30 hover:bg-[#FAEAD3] rounded-full"
             >
               <Bell size={20} />
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#E8312A] rounded-full animate-pulse" />
+              {unreadCount > 0 && (
+                <span className="absolute top-2 right-2.5 w-4 h-4 bg-[#E8312A] rounded-full flex items-center justify-center text-[8px] font-bold text-white shadow-sm ring-2 ring-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
             
             <div className="h-8 w-[1px] bg-gray-200 hidden sm:block" />
