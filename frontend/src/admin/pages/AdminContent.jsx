@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Image, Megaphone, Save, Star } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { getAdminStorefrontSettings, updateAdminStorefrontSettings } from '../../services/siteApi'
+import { uploadAdminMedia } from '../../services/adminCatalogApi'
 
 const emptyMessages = ['', '', '']
 
@@ -10,6 +11,8 @@ export function AdminContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [messages, setMessages] = useState(emptyMessages)
+  const [storefrontMedia, setStorefrontMedia] = useState({ heroBanner: { url: '', publicId: '', alt: '' }, promoBanners: [], brandLogos: [] })
+  const [uploadingSlot, setUploadingSlot] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -20,6 +23,7 @@ export function AdminContent() {
         if (!isMounted) return
         const nextMessages = [...(data.announcementMessages || []), '', '', ''].slice(0, 3)
         setMessages(nextMessages)
+        setStorefrontMedia(data.storefrontMedia || { heroBanner: { url: '', publicId: '', alt: '' }, promoBanners: [], brandLogos: [] })
       } catch (error) {
         if (isMounted) showError(error.message || 'Storefront settings could not be loaded')
       } finally {
@@ -42,13 +46,50 @@ export function AdminContent() {
 
     setSaving(true)
     try {
-      const data = await updateAdminStorefrontSettings({ announcementMessages })
+      const data = await updateAdminStorefrontSettings({ announcementMessages, storefrontMedia })
       setMessages([...(data.announcementMessages || []), '', '', ''].slice(0, 3))
+      setStorefrontMedia(data.storefrontMedia || storefrontMedia)
       success('Storefront messages updated.')
     } catch (error) {
       showError(error.message || 'Storefront messages could not be updated')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleMediaUpload = async (slot, file) => {
+    if (!file) return
+    setUploadingSlot(slot)
+    try {
+      const uploaded = await uploadAdminMedia(file, 'storefront')
+      setStorefrontMedia((prev) => {
+        if (slot === 'heroBanner') {
+          return {
+            ...prev,
+            heroBanner: {
+              url: uploaded.url,
+              publicId: uploaded.publicId,
+              alt: uploaded.originalFilename || 'Hero banner',
+            },
+          }
+        }
+        return {
+          ...prev,
+          [slot]: [
+            ...(prev[slot] || []),
+            {
+              url: uploaded.url,
+              publicId: uploaded.publicId,
+              alt: uploaded.originalFilename || slot,
+            },
+          ],
+        }
+      })
+      success('Storefront media uploaded.')
+    } catch (error) {
+      showError(error.message || 'Storefront media upload failed')
+    } finally {
+      setUploadingSlot('')
     }
   }
 
@@ -95,11 +136,22 @@ export function AdminContent() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {['Hero Banner', 'Promo Banners', 'Brand Logos'].map((item) => (
-          <div key={item} className="bg-white rounded-[28px] p-6 border border-black/[0.03] shadow-sm">
+        {[
+          { key: 'heroBanner', label: 'Hero Banner', items: storefrontMedia.heroBanner?.url ? [storefrontMedia.heroBanner] : [] },
+          { key: 'promoBanners', label: 'Promo Banners', items: storefrontMedia.promoBanners || [] },
+          { key: 'brandLogos', label: 'Brand Logos', items: storefrontMedia.brandLogos || [] },
+        ].map((item) => (
+          <div key={item.key} className="bg-white rounded-[28px] p-6 border border-black/[0.03] shadow-sm space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#FAEAD3] text-[#F1641E] flex items-center justify-center mb-5"><Image size={20} /></div>
-            <h3 className="font-grandstander font-bold text-lg text-gray-800">{item}</h3>
-            <p className="text-[12px] text-gray-400 mt-1">Media slots stay catalog-driven for now. Upload-backed controls can be added once Cloudinary admin uploads are wired.</p>
+            <h3 className="font-grandstander font-bold text-lg text-gray-800">{item.label}</h3>
+            <p className="text-[12px] text-gray-400 mt-1">Upload-backed storefront media via Cloudinary.</p>
+            <input type="file" accept="image/*" onChange={(event) => handleMediaUpload(item.key, event.target.files?.[0])} className="block w-full text-[12px]" />
+            {uploadingSlot === item.key && <p className="text-[11px] font-bold text-[#6651A4] uppercase tracking-widest">Uploading...</p>}
+            <div className="space-y-2">
+              {item.items.map((media, index) => (
+                <img key={`${item.key}-${index}`} src={media.url} alt={media.alt || item.label} className="w-full h-28 object-cover rounded-2xl border border-black/[0.03]" />
+              ))}
+            </div>
           </div>
         ))}
       </div>

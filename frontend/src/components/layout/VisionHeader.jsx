@@ -763,33 +763,48 @@ export function VisionHeader() {
                       <span>{user ? 'My Account' : 'Log in'}</span>
                     </Link>
                   </div>
-                  <div className="px-6 py-5 border-b border-[#333]/5 flex items-center justify-between gap-2 overflow-hidden">
+                  <div className="px-6 py-5 border-b border-[#333]/5 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-[#333]/5 rounded-lg border border-[#333]/10">
                       <span className="flex items-center justify-center w-5 h-4 bg-[#FF4E50]/10 rounded-sm text-[9px] font-black text-[#FF4E50]">IN</span>
                       <span className="text-[11px] font-black uppercase tracking-widest text-[#333]">India</span>
                     </div>
 
                     
-                    <div className="relative z-[100]">
-                      <button onClick={() => setLangDropdown(!langDropdown)} className="flex items-center gap-1.5 text-[10px] font-bold text-[#333] uppercase tracking-wider p-1 hover:bg-[#333]/5 rounded-lg transition-colors">
-                        <Globe size={12} className="opacity-40" />
+                    <div 
+                      className="relative"
+                      onMouseEnter={() => setLangDropdown(true)}
+                      onMouseLeave={() => setLangDropdown(false)}
+                    >
+                      <button className="flex items-center gap-1.5 text-[11px] font-black text-[#333] uppercase tracking-widest p-2 hover:bg-[#333]/5 rounded-xl transition-all active:scale-95">
+                        <Globe size={14} className="opacity-40" />
                         <span className="whitespace-nowrap">{selectedLang}</span>
-                        <ChevronDown size={12} className={`opacity-40 transition-transform ${langDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={14} className={`opacity-40 transition-transform duration-300 ${langDropdown ? 'rotate-180' : ''}`} />
                       </button>
                       <AnimatePresence>
                           {langDropdown && (
                               <motion.div 
-                                initial={{opacity:0, y:10}} 
-                                animate={{opacity:1, y:0}} 
-                                exit={{opacity:0, y:10}} 
-                                className="absolute bottom-full left-0 mb-3 w-40 bg-white shadow-2xl rounded-2xl py-3 z-[110] border border-black/5 overflow-hidden"
+                                initial={{opacity:0, scale:0.9, y:10, x: 0}} 
+                                animate={{opacity:1, scale:1, y:0, x: 0}} 
+                                exit={{opacity:0, scale:0.9, y:10, x: 0}} 
+                                className="absolute bottom-full right-0 mb-4 w-44 bg-white shadow-[0_25px_60px_rgba(0,0,0,0.18)] rounded-[24px] py-4 z-[1000] border border-black/[0.04] overflow-visible"
+                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                               >
-                                  <p className="px-4 pb-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest border-b border-black/[0.03] mb-1">Select Language</p>
-                                  {languages.map(l => (
-                                      <button key={l} onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} className={`w-full text-left px-4 py-2.5 text-[12px] font-bold hover:bg-[#FDF4E6] transition-colors ${selectedLang === l ? 'text-[#E84949] bg-[#E84949]/5' : 'text-gray-700'}`}>
-                                          {l}
-                                      </button>
-                                  ))}
+                                  <div className="px-5 pb-3 mb-2 border-b border-black/[0.03]">
+                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Select Language</p>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    {languages.map(l => (
+                                        <button 
+                                          key={l} 
+                                          onClick={()=>{setSelectedLang(l); setLangDropdown(false)}} 
+                                          className={`w-full text-left px-5 py-3 text-[13px] font-bold transition-all ${selectedLang === l ? 'text-[#E84949] bg-[#E84949]/5' : 'text-[#333] hover:bg-gray-50'}`}
+                                        >
+                                            {l}
+                                        </button>
+                                    ))}
+                                  </div>
+                                  {/* Subtle Arrow */}
+                                  <div className="absolute top-full right-6 w-3 h-3 bg-white border-r border-b border-black/[0.04] rotate-45 -translate-y-1.5" />
                               </motion.div>
                           )}
                       </AnimatePresence>

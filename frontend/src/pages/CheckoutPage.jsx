@@ -115,7 +115,7 @@ const CouponSection = ({
 export function CheckoutPage() {
   const { cartItems, subtotal, clearCart } = useCart()
   const { addPaymentLog } = usePayment()
-  const { user, addresses } = useAuth()
+  const { user, addresses, authLoading } = useAuth()
   const navigate = useNavigate()
   
   const [showSummary, setShowSummary] = useState(false)
@@ -126,8 +126,10 @@ export function CheckoutPage() {
   const [couponState, setCouponState] = useState(null)
   const [couponError, setCouponError] = useState('')
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
+  const [couponHydrated, setCouponHydrated] = useState(false)
   const [shippingMethod, setShippingMethod] = useState('standard')
   const [shippingMethods, setShippingMethods] = useState([])
+  const [checkoutNotes, setCheckoutNotes] = useState({ orderMessage: '', giftWrap: false, giftMessage: '' })
   
   // Address Management
   const defaultAddress = addresses?.find(a => a.isDefault) || (addresses?.length > 0 ? addresses[0] : null);
@@ -163,10 +165,17 @@ export function CheckoutPage() {
       if (parsed?.discountCode) setDiscountCode(parsed.discountCode)
       if (typeof parsed?.useSavedAddress === 'boolean') setUseSavedAddress(parsed.useSavedAddress)
       if (parsed?.selectedAddressId !== undefined) setSelectedAddressId(parsed.selectedAddressId)
+      if (parsed?.checkoutNotes) setCheckoutNotes(parsed.checkoutNotes)
     } catch {
       // ignore invalid draft
     }
   }, [checkoutDraftKey])
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login?next=%2Fcheckout', { replace: true })
+    }
+  }, [authLoading, user, navigate])
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -195,9 +204,10 @@ export function CheckoutPage() {
       discountCode,
       useSavedAddress,
       selectedAddressId,
+      checkoutNotes,
     }
     localStorage.setItem(checkoutDraftKey, JSON.stringify(draft))
-  }, [checkoutDraftKey, formData, shippingMethod, discountCode, useSavedAddress, selectedAddressId])
+  }, [checkoutDraftKey, formData, shippingMethod, discountCode, useSavedAddress, selectedAddressId, checkoutNotes])
 
   const selectedShippingMethod = shippingMethods.find((method) => method.code === shippingMethod) || null
   const shippingCharge = Number(selectedShippingMethod?.charge || 0)
@@ -273,7 +283,11 @@ export function CheckoutPage() {
   }, [shippingMethod, subtotal, cartItems])
 
   useEffect(() => {
-    if (!discountCode.trim() || isDiscountApplied || isApplyingCoupon || !cartItems.length) return
+    if (couponHydrated) return
+    if (!discountCode.trim() || !cartItems.length) {
+      setCouponHydrated(true)
+      return
+    }
 
     let isMounted = true
     const rehydrateCoupon = async () => {
@@ -291,15 +305,16 @@ export function CheckoutPage() {
         if (!isMounted) return
         setCouponState(null)
         setIsDiscountApplied(false)
+      } finally {
+        if (isMounted) setCouponHydrated(true)
       }
     }
 
-    const timer = setTimeout(rehydrateCoupon, 120)
+    rehydrateCoupon()
     return () => {
       isMounted = false
-      clearTimeout(timer)
     }
-  }, [discountCode, subtotal, shippingCharge, cartItems, isDiscountApplied, isApplyingCoupon])
+  }, [couponHydrated, discountCode, subtotal, shippingCharge, cartItems])
 
   const applyDiscount = async () => {
     if (!discountCode.trim()) return
@@ -351,6 +366,9 @@ export function CheckoutPage() {
     shippingMethod,
     paymentMethod: 'razorpay',
     couponCode: couponState?.coupon?.code || '',
+    notes: [checkoutNotes.orderMessage, checkoutNotes.giftWrap ? `Gift wrap requested.${checkoutNotes.giftMessage ? ` Gift message: ${checkoutNotes.giftMessage}` : ''}` : '']
+      .filter(Boolean)
+      .join(' | '),
   }
 
   const getPaymentMethodLabel = () => 'Razorpay'
@@ -445,6 +463,10 @@ export function CheckoutPage() {
       const validationMessage = error.details?.map((issue) => `${issue.path}: ${issue.message}`).join(', ')
       alert(validationMessage || error.message || 'Unable to start payment')
     }
+  }
+
+  if (authLoading || !user) {
+    return null
   }
 
   if (cartItems.length === 0) {

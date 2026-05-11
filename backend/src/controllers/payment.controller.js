@@ -112,11 +112,9 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
     couponData: draft.couponData,
   });
 
-  try {
-    await sendOrderConfirmationEmail(order);
-  } catch (error) {
+  Promise.resolve(sendOrderConfirmationEmail(order)).catch((error) => {
     logger.warn(`Order confirmation email failed for ${order.orderNumber}: ${error.message}`);
-  }
+  });
 
   logger.info('Razorpay payment verification success', {
     orderNumber: order.orderNumber,

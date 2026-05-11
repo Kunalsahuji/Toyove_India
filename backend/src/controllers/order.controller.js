@@ -403,14 +403,12 @@ export const adminUpdateOrderStatus = asyncHandler(async (req, res, next) => {
   );
 
   if (shouldSendUpdateEmail) {
-    try {
-      await sendOrderStatusUpdateEmail(order, {
-        note: req.body.note?.trim() || '',
-        deliveryDelayReason: req.body.deliveryDelayReason?.trim() || '',
-      });
-    } catch {
+    Promise.resolve(sendOrderStatusUpdateEmail(order, {
+      note: req.body.note?.trim() || '',
+      deliveryDelayReason: req.body.deliveryDelayReason?.trim() || '',
+    })).catch(() => {
       // Email failure must not block order operations.
-    }
+    })
   }
 
   return successResponse(res, 200, 'Order status updated successfully', mapOrder(order));

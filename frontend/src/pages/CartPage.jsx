@@ -6,18 +6,24 @@ import { Minus, Plus, X, ShoppingBag, ArrowRight, Trash2, Trash } from 'lucide-r
 import { useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { validateCouponCode } from '../services/couponApi'
+import { useAuth } from '../context/AuthContext'
 
 const CHECKOUT_COUPON_STORAGE_KEY = 'TOYOVOINDIA_checkout_coupon'
 const getProductPath = (item) => `/product/${item.slug || item.id || item._id || item.title?.toLowerCase().replaceAll(' ', '-')}`
+const getCheckoutDraftKey = (user) => `TOYOVOINDIA_checkout_draft_${user?.id || user?._id || user?.email || 'guest'}`
 
 export function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart, subtotal } = useCart()
   const { success } = useToast()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [couponCode, setCouponCode] = useState(() => localStorage.getItem(CHECKOUT_COUPON_STORAGE_KEY) || '')
   const [couponState, setCouponState] = useState(null)
   const [couponError, setCouponError] = useState('')
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
+  const [orderMessage, setOrderMessage] = useState('')
+  const [giftWrap, setGiftWrap] = useState(false)
+  const [giftMessage, setGiftMessage] = useState('')
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -26,6 +32,37 @@ export function CartPage() {
   useEffect(() => {
     localStorage.setItem(CHECKOUT_COUPON_STORAGE_KEY, couponCode)
   }, [couponCode])
+
+  useEffect(() => {
+    try {
+      const draft = localStorage.getItem(getCheckoutDraftKey(user))
+      if (!draft) return
+      const parsed = JSON.parse(draft)
+      setOrderMessage(parsed?.checkoutNotes?.orderMessage || '')
+      setGiftWrap(Boolean(parsed?.checkoutNotes?.giftWrap))
+      setGiftMessage(parsed?.checkoutNotes?.giftMessage || '')
+    } catch {
+      // ignore invalid draft
+    }
+  }, [user])
+
+  useEffect(() => {
+    try {
+      const key = getCheckoutDraftKey(user)
+      const current = JSON.parse(localStorage.getItem(key) || '{}')
+      localStorage.setItem(key, JSON.stringify({
+        ...current,
+        discountCode: couponCode,
+        checkoutNotes: {
+          orderMessage,
+          giftWrap,
+          giftMessage,
+        },
+      }))
+    } catch {
+      // ignore local persistence failure
+    }
+  }, [user, couponCode, orderMessage, giftWrap, giftMessage])
 
   useEffect(() => {
     if (!cartItems.length) {
@@ -180,6 +217,8 @@ export function CartPage() {
               <textarea 
                 className="w-full h-32 bg-transparent border border-[#333]/10 rounded-xl p-4 text-[14px] outline-none focus:border-[#E84949] font-roboto italic text-[#666]" 
                 placeholder="Order message"
+                value={orderMessage}
+                onChange={(e) => setOrderMessage(e.target.value)}
               />
            </div>
 
@@ -197,7 +236,9 @@ export function CartPage() {
               </div>
 
               <div className="flex flex-col gap-3 w-full sm:w-[400px]">
-                 <Link to="/checkout" className="w-full h-14 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[12px] flex items-center justify-center hover:scale-[1.01] transition-all shadow-xl shadow-[#E84949]/20">Check Out</Link>
+                 <button onClick={() => navigate(user ? '/checkout' : '/login?next=%2Fcheckout')} className="w-full h-14 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[12px] flex items-center justify-center hover:scale-[1.01] transition-all shadow-xl shadow-[#E84949]/20">
+                   {user ? 'Check Out' : 'Login to Checkout'}
+                 </button>
                  <Link to="/" className="w-full h-14 bg-[#333] text-white rounded-xl font-bold uppercase tracking-widest text-[12px] flex items-center justify-center hover:scale-[1.01] transition-all shadow-lg">Continue Shopping</Link>
               </div>
            </div>
@@ -208,12 +249,12 @@ export function CartPage() {
            <div className="p-6 md:p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl flex flex-col sm:flex-row gap-6 items-start">
               <div className="grow space-y-4 w-full">
                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 accent-[#E84949]" />
+                    <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} className="w-5 h-5 accent-[#E84949]" />
                     <span className="text-[14px] font-bold text-[#333]">Do you want a gift wrap?</span>
                  </label>
-                 <textarea className="w-full h-24 bg-transparent border border-[#333]/10 rounded-xl p-4 text-[13px] outline-none italic" placeholder="Gift message" />
+                 <textarea value={giftMessage} onChange={(e) => setGiftMessage(e.target.value)} className="w-full h-24 bg-transparent border border-[#333]/10 rounded-xl p-4 text-[13px] outline-none italic" placeholder="Gift message" />
               </div>
-              <button className="h-12 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shrink-0 mt-0 sm:mt-8 w-full sm:w-auto">Submit</button>
+              <button onClick={() => success('Cart notes saved for checkout.')} className="h-12 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shrink-0 mt-0 sm:mt-8 w-full sm:w-auto">Save</button>
            </div>
 
            <div className="p-6 md:p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">

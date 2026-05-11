@@ -22,15 +22,23 @@ export const getStorefrontSettings = asyncHandler(async (req, res) => {
   const config = await ensureSiteConfig();
   return successResponse(res, 200, 'Storefront settings fetched successfully', {
     announcementMessages: config.announcementMessages,
+    storefrontMedia: config.storefrontMedia,
   });
 });
 
 export const updateStorefrontSettings = asyncHandler(async (req, res) => {
   const config = await ensureSiteConfig();
   config.announcementMessages = (req.body.announcementMessages || []).filter(Boolean);
+  if (req.body.storefrontMedia) {
+    config.storefrontMedia = {
+      ...config.storefrontMedia.toObject(),
+      ...req.body.storefrontMedia,
+    };
+  }
   await config.save();
   return successResponse(res, 200, 'Storefront settings updated successfully', {
     announcementMessages: config.announcementMessages,
+    storefrontMedia: config.storefrontMedia,
   });
 });
 

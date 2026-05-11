@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import registerImage from '../assets/TOYOVOINIDIA_auth_banner.webp'
@@ -16,10 +16,13 @@ export function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  const nextPath = new URLSearchParams(location.search).get('next')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,7 +33,10 @@ export function RegisterPage() {
       const res = await register(formData)
       
       if (res.success) {
-        navigate('/', { replace: true })
+        navigate(`/login${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ''}`, {
+          replace: true,
+          state: { registrationSuccess: true, registeredEmail: formData.email },
+        })
       } else {
         setError(res.message)
       }
@@ -117,7 +123,7 @@ export function RegisterPage() {
                 </button>
                 <div className="flex flex-col gap-2">
                     <p className="text-[14px] text-[#666]">Already have an account?</p>
-                    <Link to="/login" className="text-[13px] font-bold text-[#333] underline hover:text-[#E84949] uppercase tracking-widest">Login here</Link>
+                    <Link to={`/login${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ''}`} className="text-[13px] font-bold text-[#333] underline hover:text-[#E84949] uppercase tracking-widest">Login here</Link>
                 </div>
               </div>
             </form>

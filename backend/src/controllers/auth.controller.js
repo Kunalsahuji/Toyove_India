@@ -38,15 +38,10 @@ export const register = asyncHandler(async (req, res, next) => {
     passwordHash,
   });
 
-  const { accessToken, refreshTokenPlain, refreshTokenHash } = generateTokens(newUser._id);
-
-  await RefreshToken.createTokenRecord(newUser._id, refreshTokenHash, req);
   await Order.updateMany(
     { user: null, 'customer.email': newUser.email.toLowerCase() },
     { $set: { user: newUser._id } }
   );
-
-  setAuthCookies(res, accessToken, refreshTokenPlain);
   logger.info('Auth register success', {
     userId: newUser._id,
     email: newUser.email,
@@ -54,10 +49,7 @@ export const register = asyncHandler(async (req, res, next) => {
     ip: req.ip
   });
 
-  return successResponse(res, 201, 'Registration successful', {
-    ...newUser.toJSON(),
-    accessToken,
-  });
+  return successResponse(res, 201, 'Registration successful. Please log in to continue.', newUser.toJSON());
 });
 
 export const login = asyncHandler(async (req, res, next) => {

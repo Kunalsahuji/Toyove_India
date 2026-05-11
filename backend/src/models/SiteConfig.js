@@ -15,6 +15,29 @@ const siteConfigSchema = new mongoose.Schema({
       'New arrivals every week - shop now',
     ],
   },
+  storefrontMedia: {
+    heroBanner: {
+      url: { type: String, default: '' },
+      publicId: { type: String, default: '' },
+      alt: { type: String, default: '' },
+    },
+    promoBanners: {
+      type: [{
+        url: { type: String, default: '' },
+        publicId: { type: String, default: '' },
+        alt: { type: String, default: '' },
+      }],
+      default: [],
+    },
+    brandLogos: {
+      type: [{
+        url: { type: String, default: '' },
+        publicId: { type: String, default: '' },
+        alt: { type: String, default: '' },
+      }],
+      default: [],
+    },
+  },
   purchasePopup: {
     enabled: {
       type: Boolean,

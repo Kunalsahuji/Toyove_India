@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Archive, Check, Eye, EyeOff, GripVertical, Plus, Search, Tags } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
-import { deleteAdminCategory, getAdminCategories, toggleAdminCategoryNavbar } from '../../services/adminCatalogApi'
+import { deleteAdminCategory, getAdminCategories, toggleAdminCategoryNavbar, updateAdminCategory, uploadAdminMedia } from '../../services/adminCatalogApi'
 
 export function AdminCategories() {
   const { success, error: showError } = useToast()
@@ -9,6 +9,7 @@ export function AdminCategories() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [uploadingBannerFor, setUploadingBannerFor] = useState('')
 
   const loadCategories = async () => {
     setLoading(true)
@@ -75,6 +76,27 @@ export function AdminCategories() {
       success(`${category.name} archived.`)
     } catch (err) {
       showError(err.message || 'Category archive failed')
+    }
+  }
+
+  const handleBannerUpload = async (category, file) => {
+    if (!file) return
+    setUploadingBannerFor(category.id)
+    try {
+      const uploaded = await uploadAdminMedia(file, 'categories')
+      const updated = await updateAdminCategory(category.id, {
+        bannerImage: {
+          url: uploaded.url,
+          publicId: uploaded.publicId,
+          alt: category.name,
+        },
+      })
+      setCategories((prev) => prev.map((item) => item.id === category.id ? updated : item))
+      success(`${category.name} banner updated.`)
+    } catch (err) {
+      showError(err.message || 'Category banner upload failed')
+    } finally {
+      setUploadingBannerFor('')
     }
   }
 
@@ -149,6 +171,15 @@ export function AdminCategories() {
                         ))}
                       </div>
                     )}
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      {category.bannerImage?.url && (
+                        <img src={category.bannerImage.url} alt={category.bannerImage.alt || category.name} className="w-16 h-16 rounded-2xl object-cover border border-black/[0.03]" />
+                      )}
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-[#6651A4] cursor-pointer hover:underline">
+                        {uploadingBannerFor === category.id ? 'Uploading...' : 'Upload Banner'}
+                        <input type="file" accept="image/*" className="hidden" onChange={(event) => handleBannerUpload(category, event.target.files?.[0])} />
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between lg:justify-end gap-3">

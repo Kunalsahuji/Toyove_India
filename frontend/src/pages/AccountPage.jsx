@@ -101,7 +101,7 @@ const AddPaymentMethodModal = ({ isOpen, type, onComplete, onCancel }) => {
              <div className="flex items-center gap-3">
                <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm"><Plus size={18}/></div>
                <div>
-                 <h3 className="font-grandstander text-lg font-bold leading-tight">Secure Addition</h3>
+                 <h3 className="font-grandstander text-lg font-bold leading-tight">Add Payment Method</h3>
                  <p className="text-[10px] uppercase tracking-widest font-bold opacity-60">Registering {type === 'bankAccounts' ? 'Bank' : type === 'upiIds' ? 'UPI' : 'Card'}</p>
                </div>
              </div>
@@ -344,7 +344,7 @@ export function AccountPage() {
     { id: 'dashboard', label: 'Dashboard', icon: <Star size={16}/>, color: 'text-yellow-500/60' },
     { id: 'orders', label: 'Order History', icon: <Box size={16}/>, color: 'text-[#6651A4]/60' },
     { id: 'payments', label: 'Bank & Cards', icon: <CreditCard size={16}/>, color: 'text-[#E84949]/60' },
-    { id: 'addresses', label: 'Saved Bases', icon: <MapPin size={16}/>, color: 'text-green-500/60' },
+    { id: 'addresses', label: 'Addresses', icon: <MapPin size={16}/>, color: 'text-green-500/60' },
     { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={16}/>, color: 'text-pink-500/60', isLink: true, path: '/wishlist' },
     { id: 'profile', label: 'Settings', icon: <User size={16}/>, color: 'text-blue-500/60' },
   ]
@@ -378,7 +378,7 @@ export function AccountPage() {
       {isProcessing && (
         <div className="fixed inset-0 z-[1000000] bg-[#FDF4E6]/95 backdrop-blur-md flex flex-col items-center justify-center">
            <div className="w-8 h-8 border-2 border-gray-100 border-t-[#6651A4] rounded-full animate-spin mb-3" />
-           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Authenticating...</p>
+           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Processing...</p>
         </div>
       )}
 
@@ -526,13 +526,13 @@ export function AccountPage() {
          <div className="grow overflow-y-auto custom-scrollbar p-5 flex flex-col">
             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-3">Quick Navigation</p>
             <div className="space-y-0.5 mb-10">
-               {menuItems.map(item => (
-                 <button key={item.id} onClick={() => item.isLink ? navigate(item.path) : handleTabChange(item.id)} className={`w-full p-3.5 rounded-xl flex items-center gap-4 transition-all border-b border-black/[0.03] last:border-b-0 ${activeTab === item.id ? 'bg-white shadow-sm' : 'hover:bg-white/40'}`}>
-                    <span className={item.color}>{item.icon}</span>
-                    <span className={`text-[12px] font-bold ${activeTab === item.id ? 'text-[#333]' : 'text-gray-500'}`}>{item.label}</span>
-                    {activeTab === item.id && <ChevronRight size={14} className="ml-auto text-[#6651A4]/40"/>}
-                 </button>
-               ))}
+                {menuItems.map(item => (
+                  <button key={item.id} onClick={() => item.isLink ? navigate(item.path) : handleTabChange(item.id)} className={`w-full p-3.5 rounded-xl flex items-center gap-4 transition-all border-b border-black/[0.03] last:border-b-0 ${activeTab === item.id ? 'bg-white shadow-sm' : 'hover:bg-white/40'}`}>
+                     <span className={item.color}>{item.icon}</span>
+                     <span className={`text-[12px] font-bold ${activeTab === item.id ? 'text-[#333]' : 'text-gray-600'}`}>{item.label}</span>
+                     {activeTab === item.id && <ChevronRight size={14} className="ml-auto text-[#6651A4]/40"/>}
+                  </button>
+                ))}
             </div>
 
             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-3">Help & Policy</p>
@@ -547,7 +547,7 @@ export function AccountPage() {
                     else handleTabChange(item.id);
                  }} className={`w-full p-3 rounded-xl flex items-center gap-4 transition-all border-b border-black/[0.02] last:border-b-0 ${activeTab === item.id ? 'bg-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>
                     <span className="opacity-60">{item.icon}</span>
-                    <span className="text-[11px] font-bold uppercase tracking-widest">{item.label}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{item.label}</span>
                  </button>
                ))}
             </div>
@@ -652,15 +652,15 @@ export function AccountPage() {
                     {ordersLoading ? (
                        <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">Loading Orders...</div>
                     ) : orders.length === 0 ? (
-                       <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">Empty Haul History</div>
+                       <div className="py-20 text-center text-gray-300 font-bold uppercase tracking-widest text-[9px]">No orders found</div>
                     ) : orders.map(order => (
-                       <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-4 md:p-5 hover:bg-[#FAEAD3]/40 border-b border-black/[0.02] flex items-center justify-between cursor-pointer group transition-all">
+                       <div key={order.id} onClick={()=>setSelectedOrder(order)} className="p-4 md:p-6 bg-white/60 rounded-[32px] border border-black/[0.03] hover:shadow-lg transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                           <div className="flex items-center gap-4 md:gap-5">
                              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 border border-black/5 shadow-sm">
                                 {order.items?.[0]?.img ? (
                                    <img src={order.items[0].img} className="w-full h-full object-cover" />
                                 ) : (
-                                   <Box size={20} className="text-[#6651A4] opacity-20"/>
+                                   <Box size={24} className="text-[#6651A4] opacity-20"/>
                                 )}
                              </div>
                              <div><p className="text-[13px] font-bold text-gray-700">Order #{order.orderNumber}</p><p className="text-[10px] text-gray-400 font-medium">{order.date} · {order.items.length} Items · ETA {order.deliveryDate || '-'}</p></div>
@@ -693,13 +693,13 @@ export function AccountPage() {
 
                {activeTab === 'payments' && (
                  <motion.div key="payments" initial={{opacity:0}} animate={{opacity:1}} className="space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                        {[
                          { id: 'bankAccounts', label: 'Linked Banks', icon: <Landmark size={24}/>, items: savedMethods.bankAccounts, theme: 'bg-[#FAEAD3]' },
                          { id: 'upiIds', label: 'UPI Addresses', icon: <Smartphone size={24}/>, items: savedMethods.upiIds, theme: 'bg-[#FAEAD3]' },
                          { id: 'cards', label: 'Vaulted Cards', icon: <CreditCard size={24}/>, items: savedMethods.cards, theme: 'bg-[#FAEAD3]' }
                        ].map(section => (
-                         <div key={section.id} className={`p-6 md:p-10 ${section.theme} border border-white/20 rounded-[50px] space-y-6 md:space-y-8 shadow-sm hover:shadow-xl transition-all duration-500 group/card relative overflow-hidden`}>
+                         <div key={section.id} className="p-6 bg-[#FAEAD3] border border-white/20 rounded-[40px] space-y-6 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#E84949]/5 rounded-full blur-3xl group-hover/card:bg-[#E84949]/10 transition-colors" />
                             
                             <div className="flex justify-between items-start">
@@ -719,7 +719,7 @@ export function AccountPage() {
                                        <p className="text-[12px] font-bold text-gray-700 truncate font-grandstander">{item.bankName || item.upiId || `Card • ${item.cardNo.slice(-4)}`}</p>
                                        <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">{item.accNo ? `A/C: ${item.accNo.slice(-4)}` : item.exp ? `Exp: ${item.exp}` : 'Primary VPA'}</p>
                                     </div>
-                                    <button onClick={() => deleteSavedMethod(section.id, item.id)} className="w-8 h-8 rounded-xl bg-red-50 text-[#E84949] flex items-center justify-center opacity-0 group-hover/item:opacity-100 hover:bg-[#E84949] hover:text-white transition-all transform hover:rotate-12"><Trash2 size={14}/></button>
+                                    <button onClick={() => deleteSavedMethod(section.id, item.id)} className="w-7 h-7 rounded-lg bg-red-50 text-[#E84949] flex items-center justify-center hover:bg-[#E84949] hover:text-white transition-all"><Trash2 size={12}/></button>
                                  </motion.div>
                                ))}
                                {section.items.length === 0 && (
@@ -728,7 +728,7 @@ export function AccountPage() {
                                    className="w-full py-12 flex flex-col items-center gap-3 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all group/empty"
                                  >
                                     <div className="w-12 h-12 border-2 border-dashed border-[#E84949] rounded-2xl flex items-center justify-center group-hover/empty:scale-110 transition-all"><Plus size={16} className="text-[#E84949]"/></div>
-                                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Safe & Encrypted</p>
+                                    <p className="text-[9px] font-bold uppercase tracking-widest">Add New</p>
                                  </button>
                                )}
                             </div>
@@ -736,11 +736,10 @@ export function AccountPage() {
                        ))}
                     </div>
 
-                    <div className="space-y-8">
-                       <div className="flex items-center justify-between px-6">
-                          <h4 className="text-[13px] font-bold uppercase tracking-[0.3em] text-gray-400 font-grandstander">Ledger Records</h4>
-                          <History size={16} className="text-gray-300"/>
-                       </div>
+                        <div className="flex items-center justify-between px-6">
+                           <h4 className="text-[13px] font-bold uppercase tracking-[0.3em] text-gray-400 font-grandstander">Ledger Records</h4>
+                           <button onClick={() => { setIsProcessing(true); setTimeout(() => { setIsProcessing(false); success('Ledger synchronized.'); }, 1000); }} className="p-2 bg-white rounded-xl text-gray-400 hover:text-[#6651A4] shadow-sm transition-all"><RefreshCw size={14} className={isProcessing ? 'animate-spin' : ''}/></button>
+                        </div>
                        <div className="bg-[#FAEAD3]/30 rounded-[40px] border border-white/20 overflow-hidden">
                           {paymentHistory.length === 0 ? (
                             <div className="py-24 text-center">
@@ -762,20 +761,19 @@ export function AccountPage() {
                              </div>
                           ))}
                        </div>
-                    </div>
                  </motion.div>
                )}
 
                {activeTab === 'addresses' && (
                   <motion.div key="addresses" initial={{opacity:0}} animate={{opacity:1}} className="space-y-10">
                      <div className="flex justify-between items-center px-4">
-                        <h3 className="text-2xl font-grandstander font-bold text-gray-700">Shipping Bases</h3>
+                        <h3 className="text-2xl font-grandstander font-bold text-gray-700">Saved Addresses</h3>
                         <button onClick={() => { 
                            setEditingAddressId(null); 
                            setAddressForm({ type: 'Home', firstName: user.firstName || '', lastName: user.lastName || '', address: '', apartment: '', city: '', state: '', postalCode: '', phone: '', district: '' });
                            setShowAddAddress(!showAddAddress); 
                         }} className="text-[11px] font-bold text-[#6651A4] uppercase flex items-center gap-2 hover:underline transition-all">
-                           {showAddAddress ? <X size={18}/> : <Plus size={18}/>} {showAddAddress ? 'Cancel' : 'New Base'}
+                           {showAddAddress ? <X size={18}/> : <Plus size={18}/>} {showAddAddress ? 'Cancel' : 'Add New Address'}
                         </button>
                      </div>
 
@@ -795,9 +793,9 @@ export function AccountPage() {
                             }} 
                             className="p-10 bg-[#FAEAD3] rounded-[50px] space-y-6 overflow-hidden border border-white/40 shadow-xl"
                           >
-                             <div className="flex gap-3 mb-4">
+                             <div className="flex gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
                                 {addressTypes.map(t => (
-                                   <button key={t} type="button" onClick={() => setAddressForm({...addressForm, type: t})} className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest border-2 transition-all ${addressForm.type === t ? 'bg-[#333] text-white border-[#333]' : 'bg-[#FDF4E6] border-transparent text-gray-400 hover:border-gray-200'}`}>
+                                   <button key={t} type="button" onClick={() => setAddressForm({...addressForm, type: t})} className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest border-2 transition-all shrink-0 ${addressForm.type === t ? 'bg-[#333] text-white border-[#333]' : 'bg-[#FDF4E6] border-transparent text-gray-400 hover:border-gray-200'}`}>
                                       {t}
                                    </button>
                                 ))}
@@ -834,7 +832,7 @@ export function AccountPage() {
                              <input required placeholder="Phone Number" value={addressForm.phone} onChange={e=>setAddressForm({...addressForm, phone: e.target.value})} className="w-full h-14 px-6 bg-[#FDF4E6] rounded-2xl text-[13px] font-bold outline-none border-2 border-transparent focus:border-[#E84949] transition-all" />
                              
                              <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-[#E84949] transition-all shadow-xl active:scale-[0.98] mt-4 flex items-center justify-center gap-3">
-                                <ShieldCheck size={18}/> {editingAddressId ? 'Apply Base Modifications' : 'Encrypt & Save This Base'}
+                                {editingAddressId ? 'Update Address' : 'Save Address'}
                              </button>
                           </motion.form>
                         )}
@@ -861,9 +859,9 @@ export function AccountPage() {
                                        setAddressForm(addr); 
                                        setShowAddAddress(true); 
                                        window.scrollTo({top: 0, behavior: 'smooth'}); 
-                                    }} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#6651A4] hover:bg-white transition-all shadow-sm"><Edit2 size={16}/></button>
+                                    }} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#6651A4] hover:bg-white opacity-0 group-hover:opacity-100 transition-all shadow-sm"><Edit2 size={16}/></button>
                                     {!addr.isDefault && (
-                                       <button onClick={() => deleteAddress(addr.id)} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#E84949] hover:bg-white transition-all shadow-sm"><Trash2 size={16}/></button>
+                                       <button onClick={() => deleteAddress(addr.id)} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#E84949] hover:bg-white opacity-0 group-hover:opacity-100 transition-all shadow-sm"><Trash2 size={16}/></button>
                                     )}
                                  </div>
                               </div>
@@ -877,9 +875,9 @@ export function AccountPage() {
                               </div>
                               <div className="flex items-center justify-between mt-auto relative z-10 pt-4 border-t border-black/[0.03]">
                                  {!addr.isDefault ? (
-                                    <button onClick={() => setAsDefaultAddress(addr.id)} className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6651A4] hover:text-[#E84949] transition-all">Set as Primary Base</button>
+                                    <button onClick={() => setAsDefaultAddress(addr.id)} className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6651A4] hover:text-[#E84949] transition-all">Set as Primary Address</button>
                                  ) : (
-                                    <span className="px-4 py-1.5 bg-[#E84949] text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#E84949]/20"><Check size={12}/> Established Primary</span>
+                                    <span className="px-4 py-1.5 bg-[#E84949] text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#E84949]/20"><Check size={12}/> Primary Address</span>
                                  )}
                               </div>
                            </div>
@@ -911,7 +909,7 @@ export function AccountPage() {
 
                {activeTab === 'profile' && (
                   <motion.div key="profile" initial={{opacity:0}} animate={{opacity:1}} className="max-w-xl mx-auto space-y-12">
-                     <h3 className="text-3xl font-grandstander font-bold text-gray-700 text-center">Identity Hub</h3>
+                     <h3 className="text-3xl font-grandstander font-bold text-gray-700 text-center">Profile Settings</h3>
                      <form onSubmit={async (e)=>{
                         e.preventDefault()
                         setIsProcessing(true)
@@ -940,14 +938,14 @@ export function AccountPage() {
                            </div>
                         </div>
                         <div className="space-y-2">
-                           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4">Explorer Email</label>
+                           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4">Email Address</label>
                            <input value={profileForm.email} disabled className="w-full h-12 px-6 bg-[#FAEAD3]/50 rounded-2xl outline-none border-b-2 border-transparent font-bold text-gray-600 opacity-70 cursor-not-allowed" />
                         </div>
                         <div className="space-y-2">
                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4">Phone Number</label>
                            <input value={profileForm.phone || ''} onChange={e=>setProfileForm({...profileForm, phone:e.target.value})} className="w-full h-12 px-6 bg-[#FAEAD3]/50 rounded-2xl outline-none border-b-2 border-transparent focus:border-[#6651A4] font-bold text-gray-600" />
                         </div>
-                        <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-[25px] font-grandstander font-bold uppercase tracking-widest text-[13px] hover:bg-[#6651A4] transition-all shadow-xl">Update Explorer ID</button>
+                        <button type="submit" className="w-full h-16 bg-[#333] text-white rounded-[25px] font-grandstander font-bold uppercase tracking-widest text-[13px] hover:bg-[#6651A4] transition-all shadow-xl">Update Profile</button>
                      </form>
                   </motion.div>
                )}

@@ -58,6 +58,11 @@ export function LoginPage() {
           >
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-grandstander font-bold text-[#333] tracking-tighter">Login</h1>
+              {location.state?.registrationSuccess && (
+                <p className="mt-4 text-green-600 text-[13px] font-bold uppercase tracking-wider">
+                  Account created. Please log in to continue.
+                </p>
+              )}
               {error && <p className="mt-4 text-[#E84949] text-[13px] font-bold uppercase tracking-wider">{error}</p>}
             </div>
 
@@ -96,7 +101,7 @@ export function LoginPage() {
                   {isSubmitting ? 'SIGNING IN...' : 'SIGN IN'}
                 </button>
                 <Link 
-                  to="/register"
+                  to={`/register${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ''}`}
                   className="w-full h-14 bg-[#333] text-white font-bold text-[13px] tracking-[0.2em] uppercase rounded-xl hover:bg-[#E84949] transition-all shadow-md flex items-center justify-center"
                 >
                   CREATE ACCOUNT
