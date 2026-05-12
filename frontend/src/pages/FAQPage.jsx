@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Minus } from 'lucide-react'
 import { PolicyPageLayout } from '../components/layout/PolicyPageLayout'
 
+import { Link } from 'react-router-dom'
+
 const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -79,9 +81,12 @@ export function FAQPage() {
       <div className="mt-12 p-8 bg-[#F9EAD3] rounded-3xl border-[1.6px] border-dashed border-[#333333]/15 text-center">
         <h3 className="text-xl font-grandstander font-bold text-[#333] mb-4">Still have questions?</h3>
         <p className="mb-6 font-roboto text-[15px] text-[#666]">Our friendly support team is always ready to help you find the perfect toy.</p>
-        <button className="h-12 px-10 bg-[#E84949] text-white rounded-full font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#333] transition-all">
+        <Link 
+          to="/contact"
+          className="inline-flex h-12 px-10 bg-[#E84949] text-white rounded-full font-bold text-[12px] tracking-[0.2em] uppercase hover:bg-[#333] transition-all items-center justify-center"
+        >
           Contact Support
-        </button>
+        </Link>
       </div>
     </PolicyPageLayout>
   )

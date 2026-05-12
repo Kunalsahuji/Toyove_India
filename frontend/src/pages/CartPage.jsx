@@ -260,8 +260,8 @@ export function CartPage() {
            <div className="p-6 md:p-8 border-[1.2px] border-dashed border-[#333]/20 rounded-2xl space-y-4">
               <p className="text-[13px] font-bold text-[#333]/60 uppercase tracking-widest">Enter coupon or discount code:</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                 <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} type="text" placeholder="Coupon code" className="grow h-14 bg-transparent border border-[#333]/10 rounded-xl px-4 outline-none font-bold text-[14px]" />
-                 <button onClick={applyCoupon} disabled={isApplyingCoupon || !couponCode.trim()} className="h-14 px-10 bg-[#E84949] text-white rounded-xl font-bold uppercase tracking-widest text-[11px] w-full sm:w-auto disabled:opacity-50">{isApplyingCoupon ? 'Applying...' : 'Submit'}</button>
+                 <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} type="text" placeholder="Coupon code" className="grow h-14 bg-white border border-[#333]/10 rounded-xl px-4 outline-none font-bold text-[14px] focus:border-[#E84949] transition-all" />
+                 <button onClick={applyCoupon} disabled={isApplyingCoupon || !couponCode.trim()} className={`h-14 px-10 rounded-xl font-bold uppercase tracking-widest text-[11px] w-full sm:w-auto transition-all ${isApplyingCoupon || !couponCode.trim() ? 'bg-[#E84949]/30 text-white cursor-not-allowed' : 'bg-[#E84949] text-white hover:bg-[#333] shadow-lg active:scale-95'}`}>{isApplyingCoupon ? 'Applying...' : 'Submit'}</button>
               </div>
               {couponError && <p className="text-[12px] font-bold text-[#E84949]">{couponError}</p>}
            </div>

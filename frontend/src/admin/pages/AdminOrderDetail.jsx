@@ -281,6 +281,18 @@ export function AdminOrderDetail() {
             </div>
           </motion.div>
 
+          {/* Customer Notes / Gift Requests */}
+          {order.notes && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-[32px] p-6 md:p-8 shadow-sm border border-[#F1641E]/10 bg-orange-50/30">
+               <h3 className="text-lg font-grandstander font-bold text-gray-800 mb-4 flex items-center gap-2 text-[#F1641E]">
+                 <Clock size={18} /> Customer Notes
+               </h3>
+               <div className="p-4 bg-white border border-orange-100 rounded-2xl italic text-gray-600 text-[13px] leading-relaxed">
+                 {order.notes}
+               </div>
+            </motion.div>
+          )}
+
           {/* Payment Hub */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="bg-[#6651A4] rounded-[32px] p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />

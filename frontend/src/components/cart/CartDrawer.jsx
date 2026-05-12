@@ -162,7 +162,19 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       {orderMessageOpen && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                           <textarea 
-                            className="w-full h-28 p-4 mb-5 bg-[#F9EAD3] border border-black/10 rounded-[7px] text-[13px] outline-none"
+                            value={localStorage.getItem(`TOYOVOINDIA_checkout_draft_${user?.email || 'guest'}`) ? JSON.parse(localStorage.getItem(`TOYOVOINDIA_checkout_draft_${user?.email || 'guest'}`)).checkoutNotes?.orderMessage : ''}
+                            onChange={(e) => {
+                               const key = `TOYOVOINDIA_checkout_draft_${user?.email || 'guest'}`;
+                               const current = JSON.parse(localStorage.getItem(key) || '{}');
+                               localStorage.setItem(key, JSON.stringify({
+                                 ...current,
+                                 checkoutNotes: {
+                                   ...(current.checkoutNotes || {}),
+                                   orderMessage: e.target.value
+                                 }
+                               }));
+                            }}
+                            className="w-full h-28 p-4 mb-5 bg-[#F9EAD3] border border-black/10 rounded-[7px] text-[13px] outline-none font-roboto italic"
                             placeholder="Add a message for your order..."
                           />
                         </motion.div>
@@ -170,16 +182,27 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     </AnimatePresence>
                   </div>
 
-                  {/* Currency Marquee - PURE text, no box, between lines */}
+                  {/* Currency Marquee - Faster & Immediate via CSS */}
+                  <style>{`
+                    @keyframes marquee {
+                      0% { transform: translateX(0); }
+                      100% { transform: translateX(-50%); }
+                    }
+                    .marquee-container {
+                      display: flex;
+                      width: max-content;
+                      animation: marquee 15s linear infinite;
+                    }
+                  `}</style>
                   <div className="py-4 border-b border-black/10 overflow-hidden relative">
-                    <motion.div 
-                      initial={{ x: '100%' }}
-                      animate={{ x: '-100%' }}
-                      transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-                      className="whitespace-nowrap inline-block text-[11px] font-bold text-[#333]/40 uppercase tracking-[1.5px] py-1"
-                    >
-                      All charges are applied in Indian Rupees (INR ₹) &nbsp; &bull; &nbsp; Pan India Express Delivery &nbsp; &bull; &nbsp; All charges are applied in Indian Rupees (INR ₹) &nbsp; &bull; &nbsp; Fast Pan India Shipping
-                    </motion.div>
+                    <div className="marquee-container">
+                      <div className="whitespace-nowrap text-[11px] font-bold text-[#333]/40 uppercase tracking-[1.5px] py-1 pr-4">
+                        All charges are applied in Indian Rupees (INR ₹) &nbsp; &bull; &nbsp; Pan India Express Delivery &nbsp; &bull; &nbsp; Fast Pan India Shipping &nbsp; &bull; &nbsp; 
+                      </div>
+                      <div className="whitespace-nowrap text-[11px] font-bold text-[#333]/40 uppercase tracking-[1.5px] py-1 pr-4">
+                        All charges are applied in Indian Rupees (INR ₹) &nbsp; &bull; &nbsp; Pan India Express Delivery &nbsp; &bull; &nbsp; Fast Pan India Shipping &nbsp; &bull; &nbsp; 
+                      </div>
+                    </div>
                   </div>
 
                   {/* Footer Section (NOT sticky, part of the flow) */}
