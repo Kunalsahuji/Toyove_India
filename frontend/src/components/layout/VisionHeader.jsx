@@ -369,7 +369,7 @@ export function VisionHeader() {
       </div>
 
       <header style={{ backgroundColor: '#FDF3E7', borderBottom: '1px solid #ebebeb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 1200 }}>
-        <div className="hdr-inner flex items-center h-15 md:h-17.5 relative">
+        <div className="hdr-inner flex items-center h-15 md:h-17.5 relative max-w-[1600px] mx-auto px-4 lg:px-8">
           {/* Mobile Burger: Left-aligned, hidden on 1024px+ */}
           <div className="lg:hidden flex-1 flex items-center">
             <button 
@@ -386,8 +386,8 @@ export function VisionHeader() {
             </Link>
           </div>
 
-          {/* Desktop Navigation: Only visible on 1024px+, strictly follows Logo */}
-          <nav className="hidden lg:flex items-center justify-center gap-0 xl:gap-0 2xl:gap-0.5 flex-grow h-full px-1 xl:px-1.5">
+          {/* Desktop Navigation: Optimized for responsiveness */}
+          <nav className="hidden lg:flex items-center justify-center gap-x-1 xl:gap-x-2 2xl:gap-x-4 flex-grow h-full px-2 overflow-hidden shrink min-w-0">
             {navLinks.filter(l => !l.hideOnDesktop).map(link => (
               <div key={link.name} className={`group/nav py-6 ${link.dropdown ? 'relative' : ''}`} onMouseEnter={() => { setActiveMenu(link.name); if(link.name === 'ALL CATEGORIES') setActiveMasterCat('Musical Toys'); }} onMouseLeave={() => setActiveMenu(null)}>
                 <Link to={link.href} onClick={handleLinkClick} className={`flex items-center gap-0.5 px-0.5 xl:px-1 2xl:px-1.5 text-[10px] xl:text-[11px] 2xl:text-[12.5px] font-bold tracking-widest transition-all uppercase whitespace-nowrap font-grandstander ${location.pathname === link.href ? 'text-[#E84949]' : 'text-[#333] hover:text-[#E84949]'}`}>
@@ -567,8 +567,8 @@ export function VisionHeader() {
               </span>
             </button>
 
-            {/* Account Icon: Shown only on desktops LG+ */}
-            <div className="relative hidden lg:block" onMouseEnter={() => setProfileDropdown(true)} onMouseLeave={() => setProfileDropdown(false)}>
+            {/* Account Icon: Visible on Tablet and Desktop */}
+            <div className="relative flex items-center" onMouseEnter={() => setProfileDropdown(true)} onMouseLeave={() => setProfileDropdown(false)}>
                 <Link to={user ? "/account" : "/login"} className="p-2 text-[#333] hover:text-[#E84949] transition-colors flex items-center gap-2 group/user">
                     <User size={22} />
                     {user && <span className="hidden xl:block text-[11px] font-bold uppercase tracking-widest text-[#333] group-hover/user:text-[#E84949]">{user.firstName}</span>}

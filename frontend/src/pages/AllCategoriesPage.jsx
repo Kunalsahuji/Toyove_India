@@ -158,19 +158,15 @@ export function AllCategoriesPage() {
     const loadCategories = async () => {
       try {
         const tree = await getCategoryTree()
-        const flattened = tree.flatMap(category => [
-          { id: category.slug, slug: category.slug, name: category.name },
-          ...(category.children || []).map(child => ({
-            id: child.slug,
-            slug: child.slug,
-            name: child.name,
-            parentSlug: category.slug,
-          })),
-        ])
+        const parentOnly = tree.map(category => ({
+          id: category.slug,
+          slug: category.slug,
+          name: category.name
+        }))
 
-        if (!isMounted || flattened.length === 0) return
-        setCategories(flattened)
-        setActiveCategory(flattened[0])
+        if (!isMounted || parentOnly.length === 0) return
+        setCategories(parentOnly)
+        setActiveCategory(parentOnly[0])
       } catch (err) {
         console.warn('Category tree fallback used:', err.message)
       }
