@@ -107,6 +107,14 @@ export function VisionHeader() {
               banner: categoryData[category.name]?.banner
             },
           })),
+          // Ensure specific categories are visible as requested
+          ...['Stacking Toys', 'Kids Puzzles', 'Baby Rattles']
+            .filter(name => !navbarCategories.find(c => c.name === name) && treeData[name])
+            .map(name => ({
+              name: name.toUpperCase(),
+              href: `/collections/${name.toLowerCase().replaceAll(' ', '-')}`,
+              mega: treeData[name]
+            })),
           { name: 'Contact', href: '/contact', hideOnDesktop: true },
         ]
 
@@ -402,13 +410,14 @@ export function VisionHeader() {
                         transition={{ duration: 0.15 }}
                         className="absolute top-full left-1/2 -translate-x-1/2 w-screen bg-[#FDF4E6] shadow-[0_40px_100px_rgba(0,0,0,0.12)] border-t border-[#ebebeb] flex justify-center z-[1000]"
                       >
-                        <div className="w-full max-w-[1400px] flex h-[420px]">
+                        <div className="w-full max-w-[1400px] flex h-[480px]">
                           {/* Sidebar (Optional) */}
                           {link.mega.type === 'master' ? (
                             <div className="w-72 bg-[#F9EAD3] border-x border-black/5 p-8 space-y-1.5 h-full overflow-y-auto custom-scrollbar shrink-0">
                                {link.mega.sidebar.map(s => (
                                  <button 
                                   key={s.name} 
+                                  onMouseEnter={() => setActiveMasterCat(s.name)}
                                   onClick={() => setActiveMasterCat(s.name)}
                                   className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6] hover:text-[#E84949]'}`}
                                  >

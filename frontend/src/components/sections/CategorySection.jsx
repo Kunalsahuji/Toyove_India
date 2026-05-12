@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 
 const categories = [
   { label: 'Soft Toys', img: 'https://plus.unsplash.com/premium_vector-1732761041055-b5cd5b4a82b7?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { label: 'Puzzle Game', img: 'https://plus.unsplash.com/premium_vector-1727264696290-c2dd2d226378?q=80&w=1112&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { label: 'Outdoor Toys', img: 'https://images.unsplash.com/vector-1774596267025-f6aecd37a689?q=80&w=1077&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { label: 'Medical Toys', img: 'https://plus.unsplash.com/premium_vector-1770403124887-26326dc77452?q=80&w=1151&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { label: 'Kids Fashion', img: 'https://plus.unsplash.com/premium_vector-1728402578566-5532c28d45a1?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { label: 'Kids Puzzle', img: 'https://plus.unsplash.com/premium_vector-1727264696290-c2dd2d226378?q=80&w=1112&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { label: 'Indoor & Outdoor', img: 'https://images.unsplash.com/vector-1774596267025-f6aecd37a689?q=80&w=1077&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { label: 'Musical Toys', img: 'https://plus.unsplash.com/premium_vector-1770403124887-26326dc77452?q=80&w=1151&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { label: 'Baby Rattles', img: 'https://plus.unsplash.com/premium_vector-1728402578566-5532c28d45a1?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
 ];
 
 const marqueeItems = [
@@ -113,7 +113,7 @@ export function CategorySection() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none"
                       />
                     </div>
-                    <h3 className="text-[14px] md:text-[16px] lg:text-[19px] font-bold text-[#333] text-center font-grandstander group-hover:text-[#E84949] transition-colors duration-300 pointer-events-none">
+                    <h3 className="text-[12px] md:text-[14px] lg:text-[17px] font-bold text-[#333] text-center font-grandstander group-hover:text-[#E84949] transition-colors duration-300 pointer-events-none whitespace-nowrap overflow-hidden text-ellipsis">
                       {cat.label}
                     </h3>
                   </div>

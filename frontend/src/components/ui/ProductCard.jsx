@@ -53,7 +53,7 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
           initial={{ scale: 0.9, opacity: 0, y: 50 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 50 }}
-          className="relative bg-[#FDF4E6] w-full max-w-4xl max-h-[90vh] md:max-h-[85vh] rounded-[30px] md:rounded-[50px] overflow-hidden shadow-2xl flex flex-col md:flex-row border-[1.5px] border-dashed border-black/10 overflow-y-auto no-scrollbar"
+          className="relative bg-[#FDF4E6] w-full max-w-4xl max-h-[90vh] rounded-[30px] md:rounded-[50px] overflow-hidden shadow-2xl flex flex-col md:flex-row border-[1.5px] border-dashed border-black/10 overflow-y-auto no-scrollbar"
         >
           {/* Close Button */}
           <button 
@@ -75,11 +75,11 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
           </div>
 
           {/* Right: Info Section */}
-          <div className="w-full md:w-[55%] p-6 md:p-14 flex flex-col justify-center">
-            <div className="space-y-4 md:space-y-6">
+          <div className="w-full md:w-[55%] p-6 md:p-14 flex flex-col">
+            <div className="my-auto space-y-4 md:space-y-6 py-4">
               <div className="space-y-2">
                 <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-[#E84949]">Limited Edition</p>
-                <h2 className="text-2xl md:text-5xl font-grandstander font-bold text-[#333] tracking-tighter leading-[0.95]">{p.name}</h2>
+                <h2 className="text-2xl md:text-5xl font-grandstander font-bold text-[#333] tracking-tighter leading-tight">{p.name}</h2>
               </div>
 
               <div className="flex items-center gap-3">
