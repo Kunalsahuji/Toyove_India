@@ -162,9 +162,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       {orderMessageOpen && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                           <textarea 
-                            value={localStorage.getItem(`TOYOVOINDIA_checkout_draft_${user?.email || 'guest'}`) ? JSON.parse(localStorage.getItem(`TOYOVOINDIA_checkout_draft_${user?.email || 'guest'}`)).checkoutNotes?.orderMessage : ''}
+                            value={localStorage.getItem(`TOYOVOINDIA_checkout_draft_${user?.id || user?._id || user?.email || 'guest'}`) ? (JSON.parse(localStorage.getItem(`TOYOVOINDIA_checkout_draft_${user?.id || user?._id || user?.email || 'guest'}`)).checkoutNotes?.orderMessage || '') : ''}
                             onChange={(e) => {
-                               const key = `TOYOVOINDIA_checkout_draft_${user?.email || 'guest'}`;
+                               const key = `TOYOVOINDIA_checkout_draft_${user?.id || user?._id || user?.email || 'guest'}`;
                                const current = JSON.parse(localStorage.getItem(key) || '{}');
                                localStorage.setItem(key, JSON.stringify({
                                  ...current,

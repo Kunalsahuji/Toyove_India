@@ -134,6 +134,7 @@ export function CheckoutPage() {
   const [shippingMethod, setShippingMethod] = useState('standard')
   const [shippingMethods, setShippingMethods] = useState([])
   const [checkoutNotes, setCheckoutNotes] = useState({ orderMessage: '', giftWrap: false, giftMessage: '' })
+  const [isHydrated, setIsHydrated] = useState(false)
   
   // Address Management
   const defaultAddress = addresses?.find(a => a.isDefault) || (addresses?.length > 0 ? addresses[0] : null);
@@ -171,8 +172,9 @@ export function CheckoutPage() {
       if (typeof parsed?.useSavedAddress === 'boolean') setUseSavedAddress(parsed.useSavedAddress)
       if (parsed?.selectedAddressId !== undefined) setSelectedAddressId(parsed.selectedAddressId)
       if (parsed?.checkoutNotes) setCheckoutNotes(parsed.checkoutNotes)
+      setIsHydrated(true)
     } catch {
-      // ignore invalid draft
+      setIsHydrated(true)
     }
   }, [checkoutDraftKey])
 
@@ -203,6 +205,7 @@ export function CheckoutPage() {
   }, [discountCode])
 
   useEffect(() => {
+    if (!isHydrated) return
     const draft = {
       formData,
       shippingMethod,
@@ -212,7 +215,7 @@ export function CheckoutPage() {
       checkoutNotes,
     }
     localStorage.setItem(checkoutDraftKey, JSON.stringify(draft))
-  }, [checkoutDraftKey, formData, shippingMethod, discountCode, useSavedAddress, selectedAddressId, checkoutNotes])
+  }, [checkoutDraftKey, formData, shippingMethod, discountCode, useSavedAddress, selectedAddressId, checkoutNotes, isHydrated])
 
   const selectedShippingMethod = shippingMethods.find((method) => method.code === shippingMethod) || null
   const shippingCharge = Number(selectedShippingMethod?.charge || 0)
