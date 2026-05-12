@@ -113,17 +113,17 @@ function AdminRouteGate({ children }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <PaymentProvider>
-          <Router>
-            <ToastProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <CartProvider>
+          <PaymentProvider>
+            <Router>
               <AppContent />
-            </ToastProvider>
-          </Router>
-        </PaymentProvider>
-      </CartProvider>
-    </AuthProvider>
+            </Router>
+          </PaymentProvider>
+        </CartProvider>
+      </AuthProvider>
+    </ToastProvider>
   )
 }
 

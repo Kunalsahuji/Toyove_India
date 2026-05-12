@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search, Filter, PackageOpen, Plus, Tag, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { deleteAdminProduct, getAdminCategories, getAdminProducts } from '../../services/adminCatalogApi'
+import { ConfirmationModal } from '../components/ConfirmationModal'
 
 export function AdminProducts() {
   const navigate = useNavigate()
@@ -14,6 +15,8 @@ export function AdminProducts() {
   const [categories, setCategories] = useState([])
   const [meta, setMeta] = useState({ totalPages: 1, total: 0 })
   const [error, setError] = useState('')
+  
+  const [productToArchive, setProductToArchive] = useState(null)
   
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
@@ -81,8 +84,14 @@ export function AdminProducts() {
     return 'active'
   }
 
-  const handleDelete = async (product) => {
-    if (!window.confirm(`Are you sure you want to archive ${product.name}?`)) return
+  const handleDelete = (product) => {
+    setProductToArchive(product)
+  }
+
+  const confirmDelete = async () => {
+    if (!productToArchive) return
+    const product = productToArchive
+    setProductToArchive(null)
 
     try {
       await deleteAdminProduct(product._id)
@@ -241,6 +250,14 @@ export function AdminProducts() {
         </div>
       )}
 
+      <ConfirmationModal 
+        isOpen={!!productToArchive}
+        onClose={() => setProductToArchive(null)}
+        onConfirm={confirmDelete}
+        title="Archive Toy?"
+        message={`Are you sure you want to archive "${productToArchive?.name}"? This will hide it from the storefront.`}
+        confirmText="Archive"
+      />
     </div>
   )
 }

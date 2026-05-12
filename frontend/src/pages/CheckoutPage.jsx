@@ -15,7 +15,7 @@ import { indianStates, commonCities } from '../utils/indiaData'
 const CHECKOUT_COUPON_STORAGE_KEY = 'TOYOVOINDIA_checkout_coupon'
 const getCheckoutDraftKey = (user) => `TOYOVOINDIA_checkout_draft_${user?.id || user?._id || user?.email || 'guest'}`
 
-const FloatingInput = ({ label, name, type = 'text', value, onChange, placeholder = ' ' }) => (
+const FloatingInput = ({ label, name, type = 'text', value, onChange, placeholder = ' ', error }) => (
   <div className="relative group w-full mb-4">
     <input
       type={type}
@@ -23,28 +23,32 @@ const FloatingInput = ({ label, name, type = 'text', value, onChange, placeholde
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="peer w-full h-14 px-4 pt-4 bg-white border border-gray-300 rounded-xl outline-none transition-all focus:border-[#E84949] focus:ring-1 focus:ring-[#E84949] placeholder-transparent"
+      className={`peer w-full h-14 px-4 pt-4 bg-white border ${error ? 'border-red-500' : 'border-gray-300'} rounded-xl outline-none transition-all focus:border-[#E84949] focus:ring-1 focus:ring-[#E84949] placeholder-transparent`}
     />
-    <label className="absolute left-4 top-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-[#E84949] pointer-events-none">
+    <label className={`absolute left-4 top-1 text-[10px] font-bold ${error ? 'text-red-500' : 'text-gray-400'} uppercase tracking-widest transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-[#E84949] pointer-events-none`}>
       {label}
     </label>
+    {error && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1 uppercase tracking-tight">{error}</p>}
   </div>
 )
 
-const FloatingSelect = ({ label, name, value, onChange, options }) => (
+const FloatingSelect = ({ label, name, value, onChange, options, error }) => (
   <div className="relative group w-full mb-4">
-    <select
-      name={name}
-      value={value}
-      onChange={onChange}
-      className="peer w-full h-14 px-4 pt-4 bg-white border border-gray-300 rounded-xl outline-none transition-all focus:border-[#E84949] appearance-none"
-    >
-      {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-    </select>
-    <label className="absolute left-4 top-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest pointer-events-none">
-      {label}
-    </label>
-    <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+    <div className="relative">
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className={`peer w-full h-14 px-4 pt-4 bg-white border ${error ? 'border-red-500' : 'border-gray-300'} rounded-xl outline-none transition-all focus:border-[#E84949] appearance-none`}
+      >
+        {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+      </select>
+      <label className={`absolute left-4 top-1 text-[10px] font-bold ${error ? 'text-red-500' : 'text-gray-400'} uppercase tracking-widest pointer-events-none`}>
+        {label}
+      </label>
+      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+    </div>
+    {error && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1 uppercase tracking-tight">{error}</p>}
   </div>
 )
 
@@ -150,6 +154,7 @@ export function CheckoutPage() {
     upiId: '',
     district: defaultAddress?.district || ''
   })
+  const [formErrors, setFormErrors] = useState({})
 
   const checkoutDraftKey = getCheckoutDraftKey(user)
 
@@ -274,6 +279,33 @@ export function CheckoutPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    // Clear error for this field
+    if (formErrors[name]) {
+      setFormErrors(prev => {
+        const next = { ...prev }
+        delete next[name]
+        return next
+      })
+    }
+  }
+
+  const validateForm = () => {
+    const errors = {}
+    if (!formData.email.trim()) errors.email = 'Required'
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) errors.email = 'Invalid email'
+    
+    if (!formData.firstName.trim()) errors.firstName = 'Required'
+    if (!formData.lastName.trim()) errors.lastName = 'Required'
+    if (!formData.address.trim()) errors.address = 'Required'
+    if (!formData.state) errors.state = 'Required'
+    if (!formData.city) errors.city = 'Required'
+    if (formData.city === 'Other' && !formData.district?.trim()) errors.district = 'Required'
+    if (!formData.postalCode.trim()) errors.postalCode = 'Required'
+    if (!formData.phone.trim()) errors.phone = 'Required'
+    else if (!/^[0-9]{10}$/.test(formData.phone.replace(/[^0-9]/g, ''))) errors.phone = 'Invalid phone'
+
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   useEffect(() => {
@@ -374,14 +406,14 @@ export function CheckoutPage() {
   const getPaymentMethodLabel = () => 'Razorpay'
 
   const startPayment = async () => {
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    
     setIsLaunchingPayment(true)
+    setFormErrors({}) // Reset server/general errors
     try {
-      if (!checkoutData.customer.firstName || !checkoutData.customer.lastName || !checkoutData.customer.email || !checkoutData.customer.phone) {
-        throw new Error('Please complete contact details before continuing.')
-      }
-      if (!checkoutData.shippingAddress.address || !checkoutData.shippingAddress.city || !checkoutData.shippingAddress.state || !checkoutData.shippingAddress.postalCode) {
-        throw new Error('Please complete the shipping address before continuing.')
-      }
 
       const scriptLoaded = await loadRazorpayScript()
       if (!scriptLoaded || !window.Razorpay) {
@@ -437,7 +469,7 @@ export function CheckoutPage() {
             navigate('/order-success', { state: { order } })
           } catch (error) {
             const validationMessage = error.details?.map((issue) => `${issue.path}: ${issue.message}`).join(', ')
-            alert(validationMessage || error.message || 'Payment verification failed')
+            setFormErrors({ general: validationMessage || error.message || 'Payment verification failed' })
           } finally {
             setIsProcessing(false)
           }
@@ -453,7 +485,7 @@ export function CheckoutPage() {
       razorpay.on('payment.failed', (response) => {
         setIsLaunchingPayment(false)
         setIsProcessing(false)
-        alert(response.error?.description || 'Payment failed')
+        setFormErrors({ general: response.error?.description || 'Payment failed' })
       })
       setIsLaunchingPayment(false)
       razorpay.open()
@@ -461,7 +493,7 @@ export function CheckoutPage() {
       setIsLaunchingPayment(false)
       setIsProcessing(false)
       const validationMessage = error.details?.map((issue) => `${issue.path}: ${issue.message}`).join(', ')
-      alert(validationMessage || error.message || 'Unable to start payment')
+      setFormErrors({ general: validationMessage || error.message || 'Unable to start payment' })
     }
   }
 
@@ -535,7 +567,7 @@ export function CheckoutPage() {
                    <p className="text-[13px] text-green-600 font-bold">Logged in as {user.firstName}</p>
                  )}
                </div>
-               <FloatingInput label="Email or mobile phone number" name="email" value={formData.email} onChange={handleInputChange} />
+               <FloatingInput label="Email or mobile phone number" name="email" value={formData.email} onChange={handleInputChange} error={formErrors.email} />
             </section>
 
             <section className="space-y-6">
@@ -584,23 +616,23 @@ export function CheckoutPage() {
                   </div>
                ) : (
                   <div className="space-y-4">
-                     <FloatingSelect label="Country/Region" name="country" value={formData.country} onChange={handleInputChange} options={countries} />
+                     <FloatingSelect label="Country/Region" name="country" value={formData.country} onChange={handleInputChange} options={countries} error={formErrors.country} />
                      <div className="grid grid-cols-2 gap-4">
-                        <FloatingInput label="First name" name="firstName" value={formData.firstName} onChange={handleInputChange} />
-                        <FloatingInput label="Last name" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+                        <FloatingInput label="First name" name="firstName" value={formData.firstName} onChange={handleInputChange} error={formErrors.firstName} />
+                        <FloatingInput label="Last name" name="lastName" value={formData.lastName} onChange={handleInputChange} error={formErrors.lastName} />
                      </div>
-                     <FloatingInput label="Address" name="address" value={formData.address} onChange={handleInputChange} />
-                     <FloatingInput label="Apartment, suite, etc. (optional)" name="apartment" value={formData.apartment} onChange={handleInputChange} />
+                     <FloatingInput label="Address" name="address" value={formData.address} onChange={handleInputChange} error={formErrors.address} />
+                     <FloatingInput label="Apartment, suite, etc. (optional)" name="apartment" value={formData.apartment} onChange={handleInputChange} error={formErrors.apartment} />
                      <div className="grid grid-cols-2 gap-4">
-                        <FloatingSelect label="State" name="state" value={formData.state} onChange={handleInputChange} options={["", ...indianStates]} />
-                        <FloatingSelect label="City" name="city" value={formData.city} onChange={handleInputChange} options={["", ...(commonCities[formData.state] || []), "Other"]} />
+                        <FloatingSelect label="State" name="state" value={formData.state} onChange={handleInputChange} options={["", ...indianStates]} error={formErrors.state} />
+                        <FloatingSelect label="City" name="city" value={formData.city} onChange={handleInputChange} options={["", ...(commonCities[formData.state] || []), "Other"]} error={formErrors.city} />
                      </div>
                      {formData.city === 'Other' && (
-                        <FloatingInput label="Enter City/District" name="district" value={formData.district} onChange={handleInputChange} />
+                        <FloatingInput label="Enter City/District" name="district" value={formData.district} onChange={handleInputChange} error={formErrors.district} />
                      )}
                      <div className="grid grid-cols-2 gap-4">
-                        <FloatingInput label="ZIP code" name="postalCode" value={formData.postalCode} onChange={handleInputChange} />
-                        <FloatingInput label="Phone number" name="phone" value={formData.phone} onChange={handleInputChange} />
+                        <FloatingInput label="ZIP code" name="postalCode" value={formData.postalCode} onChange={handleInputChange} error={formErrors.postalCode} />
+                        <FloatingInput label="Phone number" name="phone" value={formData.phone} onChange={handleInputChange} error={formErrors.phone} />
                      </div>
                   </div>
                )}
@@ -718,6 +750,12 @@ export function CheckoutPage() {
              </div>
 
              <div className="flex flex-col gap-4">
+                {formErrors.general && (
+                  <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-[13px] font-bold">
+                    <AlertCircle size={18} />
+                    {formErrors.general}
+                  </div>
+                )}
                 <button onClick={startPayment} disabled={isProcessing || isLaunchingPayment} className="w-full h-16 bg-[#005BD1] px-4 text-white font-bold rounded-xl tracking-widest uppercase hover:bg-[#00459E] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl text-center">
                    Pay Now - ₹{total.toFixed(2)}
                 </button>

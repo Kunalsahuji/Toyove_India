@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from './AuthContext'
+import { useToast } from './ToastContext'
 import { getMyPreferences, updateMyPreferences as persistMyPreferences } from '../services/userPreferencesApi'
 
 const CartContext = createContext()
@@ -195,6 +196,8 @@ export function CartProvider({ children }) {
     })
   }
 
+  const { error: showToastError } = useToast()
+  
   const toggleCompare = (product) => {
     const normalizedProduct = normalizeProductRef(product)
     if (!normalizedProduct) return
@@ -205,7 +208,7 @@ export function CartProvider({ children }) {
         return prev.filter((item) => item.id !== normalizedProduct.id)
       }
       if (prev.length >= 4) {
-        alert('Comparison list is full (max 4 products)')
+        showToastError('Comparison list is full (max 4 products)')
         return prev
       }
       return [...prev, normalizedProduct]

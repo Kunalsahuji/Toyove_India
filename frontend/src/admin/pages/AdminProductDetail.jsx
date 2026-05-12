@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { createAdminProduct, deleteAdminProduct, getAdminCategories, getAdminProduct, updateAdminProduct, uploadAdminMedia } from '../../services/adminCatalogApi'
+import { ConfirmationModal } from '../components/ConfirmationModal'
 
 const emptyProduct = {
   _id: '',
@@ -40,6 +41,7 @@ export function AdminProductDetail() {
   const [imageUrl, setImageUrl] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
   const [product, setProduct] = useState(emptyProduct)
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -125,8 +127,12 @@ export function AdminProductDetail() {
     }
   }
 
-  const handleDelete = async () => {
-    if (isNew || !window.confirm(`Archive ${product.name}?`)) return
+  const handleDelete = () => {
+    if (isNew) return
+    setShowConfirmDelete(true)
+  }
+
+  const confirmDelete = async () => {
     try {
       await deleteAdminProduct(id)
       success(`${product.name} archived.`)
@@ -417,6 +423,14 @@ export function AdminProductDetail() {
           </motion.div>
         </div>
       </div>
+      <ConfirmationModal 
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        onConfirm={confirmDelete}
+        title="Archive Toy?"
+        message={`Are you sure you want to archive "${product.name}"? This will hide it from the storefront.`}
+        confirmText="Archive"
+      />
     </div>
   )
 }

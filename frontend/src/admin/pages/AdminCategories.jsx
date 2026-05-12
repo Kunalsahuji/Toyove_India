@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Archive, Check, Eye, EyeOff, GripVertical, Plus, Search, Tags } from 'lucide-react'
+import { Archive, Check, Eye, EyeOff, GripVertical, Plus, Search, Tags, X, ChevronDown } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
-import { deleteAdminCategory, getAdminCategories, toggleAdminCategoryNavbar, updateAdminCategory, uploadAdminMedia } from '../../services/adminCatalogApi'
+import { createAdminCategory, deleteAdminCategory, getAdminCategories, toggleAdminCategoryNavbar, updateAdminCategory, uploadAdminMedia } from '../../services/adminCatalogApi'
+import { ConfirmationModal } from '../components/ConfirmationModal'
 
 export function AdminCategories() {
   const { success, error: showError } = useToast()
@@ -10,6 +11,20 @@ export function AdminCategories() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [uploadingBannerFor, setUploadingBannerFor] = useState('')
+  
+  // Create Modal State
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    parentCategory: '',
+    description: '',
+    showInNavbar: false,
+    showInAllCategories: true
+  })
+
+  // Confirmation Modal State
+  const [confirmModal, setConfirmModal] = useState({ show: false, category: null })
 
   const loadCategories = async () => {
     setLoading(true)
@@ -67,8 +82,13 @@ export function AdminCategories() {
     }
   }
 
-  const handleArchive = async (category) => {
-    if (!window.confirm(`Archive ${category.name}?`)) return
+  const handleArchive = (category) => {
+    setConfirmModal({ show: true, category })
+  }
+
+  const confirmArchive = async () => {
+    const { category } = confirmModal
+    setConfirmModal({ show: false, category: null })
 
     try {
       const archived = await deleteAdminCategory(category.id)
@@ -100,6 +120,33 @@ export function AdminCategories() {
     }
   }
 
+  const handleCreate = async (e) => {
+    e.preventDefault()
+    if (!formData.name.trim()) return showError('Category name is required')
+    
+    setIsSubmitting(true)
+    try {
+      const payload = { ...formData }
+      if (!payload.parentCategory) delete payload.parentCategory
+      
+      const newCat = await createAdminCategory(payload)
+      setCategories(prev => [...prev, newCat])
+      success('Category created successfully!')
+      setShowAddModal(false)
+      setFormData({
+        name: '',
+        parentCategory: '',
+        description: '',
+        showInNavbar: false,
+        showInAllCategories: true
+      })
+    } catch (err) {
+      showError(err.message || 'Failed to create category')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="shell space-y-6 pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -107,10 +154,110 @@ export function AdminCategories() {
           <h1 className="text-2xl md:text-4xl font-grandstander font-bold text-gray-800">Categories</h1>
           <p className="text-gray-500 font-medium text-[12px] md:text-sm mt-1">Control storefront collections, mega menu, and all-categories navigation.</p>
         </div>
-        <button className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-[11px] shadow-lg hover:bg-[#5a4892] transition-all w-full md:w-max flex items-center justify-center gap-2">
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-[11px] shadow-lg hover:bg-[#5a4892] transition-all w-full md:w-max flex items-center justify-center gap-2"
+        >
           <Plus size={16} /> New Category
         </button>
       </div>
+
+      {/* Add Category Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
+          <div className="relative bg-[#FDF4E6] w-full max-w-xl rounded-[32px] shadow-2xl overflow-hidden border border-white/20">
+            <div className="p-6 md:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-grandstander font-bold text-gray-800">Add Category</h2>
+                <button onClick={() => setShowAddModal(false)} className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shadow-sm">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreate} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Category Name</label>
+                  <input 
+                    required
+                    type="text"
+                    value={formData.name}
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                    placeholder="Enter category name..."
+                    className="w-full h-12 px-4 bg-white rounded-xl border border-black/5 focus:border-[#6651A4]/30 outline-none text-sm font-medium transition-all"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Parent Category (Optional)</label>
+                  <div className="relative">
+                    <select 
+                      value={formData.parentCategory}
+                      onChange={e => setFormData({...formData, parentCategory: e.target.value})}
+                      className="w-full h-12 px-4 bg-white rounded-xl border border-black/5 focus:border-[#6651A4]/30 outline-none text-sm font-medium transition-all appearance-none"
+                    >
+                      <option value="">No Parent (Top Level)</option>
+                      {categories.filter(c => !c.parentCategory && c.isActive).map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Description</label>
+                  <textarea 
+                    rows={3}
+                    value={formData.description}
+                    onChange={e => setFormData({...formData, description: e.target.value})}
+                    placeholder="Briefly describe this category..."
+                    className="w-full p-4 bg-white rounded-xl border border-black/5 focus:border-[#6651A4]/30 outline-none text-sm font-medium transition-all resize-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-6 pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                      type="checkbox"
+                      checked={formData.showInNavbar}
+                      onChange={e => setFormData({...formData, showInNavbar: e.target.checked})}
+                      className="w-4 h-4 rounded border-gray-300 text-[#6651A4] focus:ring-[#6651A4]"
+                    />
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-700">Navbar</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                      type="checkbox"
+                      checked={formData.showInAllCategories}
+                      onChange={e => setFormData({...formData, showInAllCategories: e.target.checked})}
+                      className="w-4 h-4 rounded border-gray-300 text-[#6651A4] focus:ring-[#6651A4]"
+                    />
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider group-hover:text-gray-700">All Categories</span>
+                  </label>
+                </div>
+
+                <button 
+                  disabled={isSubmitting}
+                  className="w-full h-14 mt-4 bg-[#6651A4] text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-[#6651A4]/20 hover:bg-[#5a4892] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                >
+                  {isSubmitting ? 'Creating...' : 'Create Category'}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal 
+        isOpen={confirmModal.show}
+        onClose={() => setConfirmModal({ show: false, category: null })}
+        onConfirm={confirmArchive}
+        title="Archive Category?"
+        message={`Are you sure you want to archive "${confirmModal.category?.name}"? This will hide it from the storefront.`}
+        confirmText="Archive"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
@@ -164,10 +311,19 @@ export function AdminCategories() {
                       <span className={`px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${category.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>{category.status}</span>
                     </div>
                     <p className="text-[11px] text-gray-400 font-mono mt-1">/{category.slug}</p>
-                    {category.children.length > 0 && (
+                    {category.children.filter(child => child.isActive).length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-3">
-                        {category.children.map(child => (
-                          <span key={child.id} className="px-3 py-1 bg-[#FDF4E6] border border-dashed border-black/5 rounded-full text-[10px] font-bold text-gray-500">{child.name}</span>
+                        {category.children.filter(child => child.isActive).map(child => (
+                          <div key={child.id} className="group/child flex items-center gap-2 px-3 py-1 bg-[#FDF4E6] border border-dashed border-black/5 rounded-full transition-all hover:border-[#E8312A]/30">
+                            <span className="text-[10px] font-bold text-gray-500">{child.name}</span>
+                            <button 
+                              onClick={() => handleArchive(child)}
+                              className="w-4 h-4 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-red-500 hover:shadow-sm opacity-0 group-hover/child:opacity-100 transition-all"
+                              title={`Archive ${child.name}`}
+                            >
+                              <X size={10} strokeWidth={3} />
+                            </button>
+                          </div>
                         ))}
                       </div>
                     )}
