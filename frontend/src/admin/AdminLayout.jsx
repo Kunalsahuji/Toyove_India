@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, Users, Package, ShoppingCart, 
   Settings, LogOut, Menu, X, Bell, Search, 
-  ChevronRight, CircleUser, Wallet, Tags, Percent, Megaphone, MessageSquare, Truck, Activity
+  ChevronRight, CircleUser, Wallet, Tags, Percent, Megaphone, MessageSquare, Truck, Activity, FileText
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { getAdminUnreadCount } from '../services/notificationAdminApi'
@@ -91,6 +91,7 @@ export function AdminLayout() {
     { path: '/admin/public-activity', label: 'Live Popups', icon: <Activity size={20} /> },
     { path: '/admin/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
     { path: '/admin/shipping', label: 'Shipping', icon: <Truck size={20} /> },
+    { path: '/admin/legal-pages', label: 'Legal Pages', icon: <FileText size={20} /> },
     { path: '/admin/settings', label: 'Settings', icon: <Settings size={20} /> },
   ]
 

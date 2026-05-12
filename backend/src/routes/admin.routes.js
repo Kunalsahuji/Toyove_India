@@ -8,6 +8,7 @@ import { adminSiteRoutes } from './site.routes.js';
 import { adminShippingRoutes } from './shipping.routes.js';
 import { adminMessageRoutes } from './message.routes.js';
 import { adminMediaRoutes } from './media.routes.js';
+import { adminPageRoutes } from './pageContent.routes.js';
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use('/site', adminSiteRoutes);
 router.use('/shipping-methods', adminShippingRoutes);
 router.use('/messages', adminMessageRoutes);
 router.use('/media', adminMediaRoutes);
+router.use('/pages', adminPageRoutes);
 
 export default router;

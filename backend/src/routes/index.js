@@ -12,6 +12,7 @@ import siteRoutes from './site.routes.js';
 import shippingRoutes from './shipping.routes.js';
 import messageRoutes from './message.routes.js';
 import notificationRoutes from './notification.routes.js';
+import pageContentRoutes from './pageContent.routes.js';
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ router.use('/site', siteRoutes);
 router.use('/shipping-methods', shippingRoutes);
 router.use('/messages', messageRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/pages', pageContentRoutes);
 router.use('/admin', adminRoutes);
 
 export default router;
