@@ -323,3 +323,51 @@ export const sendOrderStatusUpdateEmail = async (order, options = {}) => {
     throw error;
   }
 };
+
+const buildNewsletterWelcomeHtml = (email) => {
+  const content = `
+    <h2 style="color: #6651A4; margin-top: 0;">Welcome to the Toyovo Family! 🎈</h2>
+    <p>Hi there,</p>
+    <p>Thank you for subscribing to our newsletter. We're thrilled to have you with us!</p>
+    <p>As a token of our appreciation, here's a special gift for your little one's first order:</p>
+    
+    <div style="background: #f9ead3; border: 2px dashed #e84949; padding: 25px; border-radius: 16px; text-align: center; margin: 30px 0;">
+      <p style="margin: 0 0 10px; font-size: 14px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 1px;">Use Code At Checkout</p>
+      <span style="font-size: 36px; font-weight: 900; color: #e84949; letter-spacing: 2px;">WELCOME10</span>
+      <p style="margin: 10px 0 0; font-size: 18px; font-weight: bold; color: #333;">10% OFF YOUR FIRST ORDER</p>
+    </div>
+
+    <p>Get ready for exclusive updates on new arrivals, parenting tips, and special offers delivered straight to your inbox.</p>
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="${env.CLIENT_URL}/shop" class="btn">Shop Now</a>
+    </div>
+
+    <p style="font-size: 13px; color: #777; margin-top: 40px;">*Valid on first order only. Cannot be combined with other offers.</p>
+  `;
+
+  return buildBaseTemplate(content, 'Welcome to Toyovo India');
+};
+
+export const sendNewsletterWelcomeEmail = async (email) => {
+  const mailer = getTransporter();
+  if (!mailer) {
+    logger.warn('Newsletter welcome email skipped because SMTP is not configured.');
+    return { skipped: true };
+  }
+
+  try {
+    await mailer.sendMail({
+      from: `"Toyovo India" <${env.SMTP_USER}>`,
+      to: email,
+      subject: 'Welcome to Toyovo India! Here is your 10% Discount Code 🎁',
+      html: buildNewsletterWelcomeHtml(email),
+    });
+
+    logger.info(`Newsletter welcome email sent to ${email}`);
+    return { skipped: false };
+  } catch (error) {
+    logger.error(`Error sending newsletter email: ${error.message}`);
+    throw error;
+  }
+};

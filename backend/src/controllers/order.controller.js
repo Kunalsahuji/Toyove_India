@@ -470,3 +470,65 @@ export const adminUpdateOrderReturnRequest = asyncHandler(async (req, res, next)
 
   return successResponse(res, 200, 'Return request updated successfully', mapOrder(order));
 });
+
+export const getRevenueStats = asyncHandler(async (req, res) => {
+  const { timeframe = 'monthly' } = req.query;
+  
+  let groupStage = {};
+  let sortStage = { "_id.year": -1 };
+
+  if (timeframe === 'yearly') {
+    groupStage = { year: { $year: "$createdAt" } };
+  } else if (timeframe === 'weekly') {
+    groupStage = { 
+      year: { $year: "$createdAt" },
+      week: { $week: "$createdAt" }
+    };
+    sortStage = { "_id.year": -1, "_id.week": -1 };
+  } else {
+    // default: monthly
+    groupStage = { 
+      year: { $year: "$createdAt" },
+      month: { $month: "$createdAt" }
+    };
+    sortStage = { "_id.year": -1, "_id.month": -1 };
+  }
+
+  const stats = await Order.aggregate([
+    {
+      $match: {
+        paymentStatus: 'paid'
+      }
+    },
+    {
+      $group: {
+        _id: groupStage,
+        revenue: { $sum: "$totalAmount" },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $sort: sortStage
+    }
+  ]);
+
+  const formattedStats = stats.map(item => {
+    let label = '';
+    if (timeframe === 'yearly') {
+      label = `Year ${item._id.year}`;
+    } else if (timeframe === 'weekly') {
+      label = `Week ${item._id.week + 1}, ${item._id.year}`;
+    } else {
+      label = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(item._id.year, item._id.month - 1));
+    }
+
+    return {
+      ...item._id,
+      revenue: item.revenue,
+      orderCount: item.count,
+      label
+    };
+  });
+
+  return successResponse(res, 200, 'Revenue stats fetched successfully', formattedStats);
+});

@@ -91,6 +91,7 @@ export function AdminLayout() {
     { path: '/admin/public-activity', label: 'Live Popups', icon: <Activity size={20} /> },
     { path: '/admin/reviews', label: 'Reviews', icon: <Star size={20} /> },
     { path: '/admin/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
+    { path: '/admin/subscribers', label: 'Newsletter', icon: <Megaphone size={20} /> },
     { path: '/admin/shipping', label: 'Shipping', icon: <Truck size={20} /> },
     { path: '/admin/legal-pages', label: 'Legal Pages', icon: <FileText size={20} /> },
     { path: '/admin/settings', label: 'Settings', icon: <Settings size={20} /> },

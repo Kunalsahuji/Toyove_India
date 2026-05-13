@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, Headset } from 'lucide-react'
+import { useToast } from '../../context/ToastContext'
+import { subscribeToNewsletter } from '../../services/newsletterApi'
+import { useAuth } from '../../context/AuthContext'
 
 const FB = () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
 const IG = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
@@ -47,7 +50,32 @@ const PaymentBadges = () => (
 )
 
 export function Footer() {
+  const { user } = useAuth()
   const [email, setEmail] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { success, error } = useToast()
+
+  // Update email if user logs in/out
+  useEffect(() => {
+    if (user?.email) setEmail(user.email)
+    else setEmail('')
+  }, [user])
+
+  const handleSubscribe = async (e) => {
+    if (e) e.preventDefault()
+    if (!email) return error('Please enter your email')
+    
+    setIsSubmitting(true)
+    try {
+      await subscribeToNewsletter(email)
+      success('Thank you for subscribing! Check your email for your 10% discount code.')
+      setEmail('')
+    } catch (err) {
+      error(err.message || 'Subscription failed. Please try again later.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <footer className="bg-[#6449A4] text-white">
@@ -56,19 +84,27 @@ export function Footer() {
 
           {/* Newsletter Column */}
           <div className="lg:pr-0 py-6 lg:py-16">
-            <FooterAccordion title="Sign Up For News, Updates & 10% Off Your First Order." isNewsletter={true}>
-              <div className="flex flex-row gap-2 w-full max-w-xl mt-2 lg:mt-0">
+            <FooterAccordion 
+              title={user ? "Stay Updated With Our Latest Collections & News." : "Sign Up For News, Updates & 10% Off Your First Order."} 
+              isNewsletter={true}
+            >
+              <form onSubmit={handleSubscribe} className="flex flex-row gap-2 w-full max-w-xl mt-2 lg:mt-0">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   className="w-full flex-1 h-11 px-3 sm:px-4 text-[14px] text-[#333] outline-none bg-white rounded-md placeholder:text-gray-500"
+                  required
                 />
-                <button className="h-11 px-4 sm:px-6 bg-white text-[#333] text-[12px] sm:text-[13px] font-bold rounded-md hover:bg-[#E84949] hover:text-white transition-colors uppercase whitespace-nowrap">
-                  SUBSCRIBE
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`h-11 px-4 sm:px-6 bg-white text-[#333] text-[12px] sm:text-[13px] font-bold rounded-md hover:bg-[#E84949] hover:text-white transition-colors uppercase whitespace-nowrap ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {isSubmitting ? '...' : 'SUBSCRIBE'}
                 </button>
-              </div>
+              </form>
 
               <div className="flex gap-2.5 mt-8">
                 <a href="#" className="h-9 w-9 rounded-md bg-[#3B5998] flex items-center justify-center text-white hover:opacity-80 transition-opacity">

@@ -10,6 +10,7 @@ import {
   getOrderSummary,
   listMyOrders,
   requestMyOrderReturn,
+  getRevenueStats,
 } from '../controllers/order.controller.js';
 import { authorizeRoles, optionalAuth, protect } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
@@ -37,6 +38,7 @@ router.patch('/my/:id/return-request', protect, validate(requestReturnSchema), r
 
 adminRouter.use(protect, authorizeRoles('admin', 'super_admin'));
 adminRouter.get('/', validate(adminListOrdersSchema), adminListOrders);
+adminRouter.get('/stats/revenue', getRevenueStats);
 adminRouter.get('/:id', validate(orderIdParamSchema), adminGetOrder);
 adminRouter.patch('/:id/status', validate(adminUpdateOrderStatusSchema), adminUpdateOrderStatus);
 adminRouter.patch('/:id/return-request', validate(adminUpdateReturnRequestSchema), adminUpdateOrderReturnRequest);

@@ -1,22 +1,169 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { FileSpreadsheet, FileText, Calendar, Download, CheckCircle, PieChart, TrendingUp, Users } from 'lucide-react'
+import { getAdminOrders } from '../../services/orderApi'
+import { getAdminProducts } from '../../services/adminCatalogApi'
+import { getAdminUsers } from '../../services/adminUserApi'
+import { useToast } from '../../context/ToastContext'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export function AdminReports() {
+  const toast = useToast()
   const [reportType, setReportType] = useState('sales')
   const [dateRange, setDateRange] = useState('this-month')
   const [format, setFormat] = useState('csv')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generated, setGenerated] = useState(false)
 
-  const handleGenerate = () => {
+  const jsonToCSV = (json, fileName) => {
+    if (!json || json.length === 0) {
+      toast.error('No data found for this report')
+      return
+    }
+
+    try {
+      const header = Object.keys(json[0])
+      const csvRows = [
+        header.join(','), // Header row
+        ...json.map(row => 
+          header.map(fieldName => {
+            const value = row[fieldName] ?? ''
+            const stringValue = String(value).replace(/"/g, '""')
+            return `"${stringValue}"`
+          }).join(',')
+        )
+      ]
+
+      const csvString = csvRows.join('\n')
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `${fileName}_${new Date().toISOString().split('T')[0]}.csv`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      return true
+    } catch (err) {
+      console.error('CSV Conversion Error:', err)
+      return false
+    }
+  }
+
+  const jsonToPDF = (json, fileName, title) => {
+    if (!json || json.length === 0) {
+      toast.error('No data found for this report')
+      return false
+    }
+
+    try {
+      const doc = new jsPDF()
+      const headers = Object.keys(json[0])
+      const data = json.map(row => headers.map(field => row[field]))
+
+      // Report Branding
+      doc.setFontSize(20)
+      doc.setTextColor(102, 81, 164) // #6651A4
+      doc.text('Toyovo India - Admin Intelligence', 14, 20)
+      
+      doc.setFontSize(12)
+      doc.setTextColor(100)
+      doc.text(`Report: ${title}`, 14, 30)
+      doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 37)
+      
+      // Draw Table
+      autoTable(doc, {
+        head: [headers],
+        body: data,
+        startY: 45,
+        theme: 'striped',
+        headStyles: { fillStyle: 'fill', fillColor: [102, 81, 164], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [250, 234, 211, 0.2] }, // Light brand color
+        margin: { top: 45 },
+        styles: { fontSize: 8, cellPadding: 3 }
+      })
+
+      doc.save(`${fileName}_${new Date().toISOString().split('T')[0]}.pdf`)
+      return true
+    } catch (err) {
+      console.error('PDF Conversion Error:', err)
+      return false
+    }
+  }
+
+  const handleGenerate = async () => {
     setIsGenerating(true)
     setGenerated(false)
-    setTimeout(() => {
-      setIsGenerating(false)
-      setGenerated(true)
+    
+    try {
+      let data = []
+      let fileName = 'report'
+
+      if (reportType === 'sales') {
+        const res = await getAdminOrders({ limit: 200 })
+        data = (res.orders || []).map(o => ({
+          OrderNumber: o.orderNumber,
+          Customer: o.customerName,
+          Email: o.customerEmail,
+          Amount: o.total,
+          Items: o.items?.length || 0,
+          Status: o.status,
+          Payment: o.paymentStatus,
+          Date: new Date(o.createdAt).toLocaleDateString()
+        }))
+        fileName = 'Sales_Revenue_Report'
+      } else if (reportType === 'inventory') {
+        const res = await getAdminProducts({ limit: 200 })
+        data = (res.products || []).map(p => ({
+          Name: p.name,
+          SKU: p.sku || 'N/A',
+          Category: p.category?.name || 'Uncategorized',
+          Price: p.price,
+          OldPrice: p.oldPrice || 0,
+          Stock: p.stock,
+          Status: p.status,
+          Rating: p.ratings || 0
+        }))
+        fileName = 'Toy_Catalog_Report'
+      } else if (reportType === 'users') {
+        const res = await getAdminUsers({ limit: 200 })
+        data = (res.users || []).map(u => ({
+          Name: u.name,
+          Email: u.email,
+          Role: u.role,
+          Status: u.isActive ? 'Active' : 'Inactive',
+          Joined: new Date(u.createdAt).toLocaleDateString()
+        }))
+        fileName = 'Explorer_Growth_Report'
+      }
+
+      // UX delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      if (format === 'csv') {
+        const success = jsonToCSV(data, fileName)
+        if (success) {
+          setGenerated(true)
+          toast.success('Report downloaded successfully!')
+        }
+      } else if (format === 'pdf') {
+        const title = reportType === 'sales' ? 'Sales & Revenue Report' : 
+                      reportType === 'inventory' ? 'Toy Catalog Health' : 'Explorer Growth Report'
+        const success = jsonToPDF(data, fileName, title)
+        if (success) {
+          setGenerated(true)
+          toast.success('PDF Report generated successfully!')
+        }
+      }
+
       setTimeout(() => setGenerated(false), 3000)
-    }, 2000)
+    } catch (error) {
+      console.error('Report Generation Error:', error)
+      toast.error('Failed to generate report. Please try again.')
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   return (
@@ -31,7 +178,6 @@ export function AdminReports() {
           
           {/* Form Side */}
           <div className="space-y-8">
-            {/* Report Type */}
             <div className="space-y-3">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Report Subject</label>
               <div className="grid grid-cols-1 gap-3">
@@ -53,7 +199,6 @@ export function AdminReports() {
               </div>
             </div>
 
-            {/* Date Range */}
             <div className="space-y-3">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Time Period</label>
               <div className="relative">
@@ -72,7 +217,6 @@ export function AdminReports() {
               </div>
             </div>
 
-            {/* Format */}
             <div className="space-y-3">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Export Format</label>
               <div className="flex gap-4">
@@ -86,7 +230,6 @@ export function AdminReports() {
                 </label>
               </div>
             </div>
-
           </div>
 
           {/* Action Side */}
@@ -115,7 +258,6 @@ export function AdminReports() {
               {isGenerating ? 'Compiling Data...' : generated ? 'Report Downloaded!' : 'Generate & Download'}
             </button>
           </div>
-
         </div>
       </div>
     </div>

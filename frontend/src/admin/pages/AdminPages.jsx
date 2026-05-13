@@ -7,6 +7,8 @@ import {
 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { getAdminPages, updateAdminPage } from '../../services/pageApi'
+import ReactQuill from 'react-quill-new'
+import 'react-quill-new/dist/quill.snow.css'
 
 const PAGE_METADATA = {
   'privacy-policy': { icon: ShieldCheck, color: 'text-blue-500', bg: 'bg-blue-50' },
@@ -118,13 +120,13 @@ export function AdminPages() {
             </div>
           </div>
 
-          <div className="bg-orange-50 rounded-[24px] border border-orange-100 p-6">
-            <div className="flex items-start gap-3 text-orange-700">
-              <AlertCircle size={20} className="shrink-0 mt-0.5" />
+          <div className="bg-[#6651A4]/5 rounded-[24px] border border-[#6651A4]/10 p-6">
+            <div className="flex items-start gap-3 text-[#6651A4]">
+              <Edit3 size={20} className="shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-bold text-[14px]">Pro Tip</h4>
+                <h4 className="font-bold text-[14px]">Visual Editor</h4>
                 <p className="text-[12px] mt-1 leading-relaxed opacity-80">
-                  Use HTML tags like &lt;h2&gt;, &lt;p&gt;, and &lt;ul&gt; to format your policies. These will be rendered directly on the storefront.
+                  Select a page and start typing. Your changes will be saved with all formatting and reflected instantly for users.
                 </p>
               </div>
             </div>
@@ -169,19 +171,52 @@ export function AdminPages() {
                   </button>
                 </div>
 
-                <div className="p-6 md:p-8 space-y-6">
-                  <div className="relative group">
-                    <div className="absolute -top-3 left-6 px-2 bg-white text-[10px] font-bold text-gray-400 uppercase tracking-widest z-10 group-focus-within:text-[#6651A4] transition-colors">
-                      HTML Content Editor
+                  <div className="p-6 md:p-8 space-y-6 quill-editor-wrapper">
+                    <div className="relative group">
+                      <div className="absolute -top-3 left-6 px-2 bg-white text-[10px] font-bold text-gray-400 uppercase tracking-widest z-10 group-focus-within:text-[#6651A4] transition-colors">
+                        Page Content Editor
+                      </div>
+                      <ReactQuill 
+                        theme="snow"
+                        value={editContent}
+                        onChange={setEditContent}
+                        className="bg-gray-50/30 rounded-[24px] overflow-hidden border-gray-100"
+                        modules={{
+                          toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link', 'clean']
+                          ],
+                        }}
+                      />
+                      <style dangerouslySetInnerHTML={{ __html: `
+                        .quill-editor-wrapper .ql-toolbar {
+                          border-top-left-radius: 24px;
+                          border-top-right-radius: 24px;
+                          border-color: #f3f4f6;
+                          background: #fff;
+                          padding: 12px 24px;
+                        }
+                        .quill-editor-wrapper .ql-container {
+                          border-bottom-left-radius: 24px;
+                          border-bottom-right-radius: 24px;
+                          border-color: #f3f4f6;
+                          min-height: 500px;
+                          font-family: 'Inter', sans-serif;
+                          font-size: 14px;
+                          color: #374151;
+                        }
+                        .quill-editor-wrapper .ql-editor {
+                          min-height: 500px;
+                          padding: 24px;
+                        }
+                        .quill-editor-wrapper .ql-editor.ql-blank::before {
+                          left: 24px;
+                        }
+                      `}} />
                     </div>
-                    <textarea
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      className="w-full min-h-[500px] p-8 bg-gray-50/30 border border-gray-100 rounded-[24px] outline-none focus:border-[#6651A4]/30 focus:bg-white transition-all font-mono text-[13px] leading-relaxed text-gray-700"
-                      placeholder="Write your policy content here..."
-                    />
                   </div>
-                </div>
 
                 <div className="px-8 py-4 bg-gray-50 border-t border-black/[0.03] flex items-center justify-between text-[11px] font-medium text-gray-400">
                   <span>Last modified: {new Date(selectedPage.updatedAt).toLocaleString()}</span>

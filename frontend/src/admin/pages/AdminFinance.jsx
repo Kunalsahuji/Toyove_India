@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { DollarSign, CreditCard, Landmark, Settings as SettingsIcon, Search, Wallet, User, RefreshCcw } from 'lucide-react'
+import { DollarSign, CreditCard, Landmark, Settings as SettingsIcon, Search, Wallet, User, RefreshCcw, Download } from 'lucide-react'
 import { getAdminOrders } from '../../services/orderApi'
 import { getAdminUsers } from '../../services/adminUserApi'
 import { useToast } from '../../context/ToastContext'
@@ -77,6 +77,44 @@ export function AdminFinance() {
     if (!query) return true
     return [user.name, user.email].filter(Boolean).some((value) => value.toLowerCase().includes(query))
   }), [orders, search, users])
+  const handleExportCSV = () => {
+    if (!ledgerRows || ledgerRows.length === 0) {
+      showError('No transactions found to export')
+      return
+    }
+
+    const data = ledgerRows.map(o => ({
+      Order: `#${o.orderNumber}`,
+      Customer: o.customerName,
+      Email: o.customerEmail,
+      Method: o.paymentMethodLabel || 'N/A',
+      Status: o.paymentStatusLabel || o.paymentStatus,
+      Amount: o.total,
+      Date: o.createdAt ? new Date(o.createdAt).toLocaleDateString() : 'N/A'
+    }))
+
+    const header = Object.keys(data[0])
+    const csvRows = [
+      header.join(','),
+      ...data.map(row => 
+        header.map(fieldName => {
+          const value = row[fieldName] ?? ''
+          const stringValue = String(value).replace(/"/g, '""')
+          return `"${stringValue}"`
+        }).join(',')
+      )
+    ]
+
+    const csvString = csvRows.join('\n')
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `Financial_Ledger_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <div className="shell space-y-8 pb-10">
@@ -146,11 +184,17 @@ export function AdminFinance() {
 
           {activeTab === 'ledger' && (
             <div className="bg-white rounded-[32px] border border-black/[0.03] shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-black/[0.03]">
+              <div className="p-6 border-b border-black/[0.03] flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="relative w-full md:w-96">
                   <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input value={search} onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search orders, customer, payment..." className="w-full h-11 pl-11 pr-4 bg-[#FDF4E6]/50 rounded-xl outline-none border border-transparent focus:border-[#6651A4]/30 text-[13px] font-medium" />
                 </div>
+                <button 
+                  onClick={handleExportCSV}
+                  className="flex items-center justify-center gap-2 h-11 px-6 bg-[#6651A4] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-[#5a4892] transition-all shadow-md active:scale-95"
+                >
+                  <Download size={14} /> Export CSV
+                </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">

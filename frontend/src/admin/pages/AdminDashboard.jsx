@@ -1,40 +1,46 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Users, DollarSign, Package, ShoppingCart, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react'
+import { Users, DollarSign, Package, ShoppingCart, ArrowUpRight, ArrowDownRight, Activity, ChevronDown } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { getAdminUsers } from '../../services/adminUserApi'
 import { getAdminProducts } from '../../services/adminCatalogApi'
-import { getAdminOrders } from '../../services/orderApi'
+import { getAdminOrders, getAdminRevenueStats } from '../../services/orderApi'
 
-const buildRevenueSeries = (orders, timeframe) => {
-  const dayCount = timeframe === 'month' ? 30 : 7
-  const map = new Map()
-  const today = new Date()
+const formatCurrencyShort = (val) => {
+  if (val >= 10000000) return (val / 10000000).toFixed(1).replace('.0', '') + ' Cr'
+  if (val >= 100000) return (val / 100000).toFixed(1).replace('.0', '') + ' L'
+  if (val >= 1000) return (val / 1000).toFixed(0) + ' k'
+  return val
+}
 
-  for (let index = dayCount - 1; index >= 0; index -= 1) {
-    const date = new Date(today)
-    date.setHours(0, 0, 0, 0)
-    date.setDate(today.getDate() - index)
-    map.set(date.toISOString().slice(0, 10), 0)
-  }
-
-  orders.forEach((order) => {
-    const createdAt = new Date(order.createdAt || Date.now())
-    createdAt.setHours(0, 0, 0, 0)
-    const key = createdAt.toISOString().slice(0, 10)
-    if (map.has(key)) {
-      map.set(key, map.get(key) + Number(order.total || 0))
+const buildRevenueSeries = (stats) => {
+  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+  const currentYear = new Date().getFullYear()
+  
+  const series = months.map((monthName, index) => {
+    const monthNum = index + 1
+    const monthData = stats.find(s => Number(s.month) === monthNum && Number(s.year) === currentYear)
+    const amount = monthData ? Number(monthData.revenue || 0) : 0
+    
+    return {
+      key: monthName,
+      amount,
+      label: monthName
     }
   })
 
-  const max = Math.max(...map.values(), 1)
-  return Array.from(map.entries()).map(([key, amount]) => ({
-    key,
-    amount,
-    height: Math.max((amount / max) * 100, amount > 0 ? 8 : 0),
-    label: new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short' }).format(new Date(key)),
-  }))
+  const maxDataVal = Math.max(...series.map(s => s.amount), 1000)
+  // Give 20% headroom for a professional look
+  const chartMax = Math.ceil((maxDataVal * 1.2) / 1000) * 1000
+
+  return {
+    chartMax,
+    series: series.map(s => ({
+      ...s,
+      height: chartMax > 0 ? (s.amount / chartMax) * 100 : 0
+    }))
+  }
 }
 
 export function AdminDashboard() {
@@ -44,7 +50,11 @@ export function AdminDashboard() {
   const [allOrders, setAllOrders] = useState([])
   const [allProducts, setAllProducts] = useState([])
   const [allUsers, setAllUsers] = useState([])
-  const [timeframe, setTimeframe] = useState('week')
+  const [monthlyStats, setMonthlyStats] = useState([])
+  const [selectedMonth, setSelectedMonth] = useState('')
+  const [revenueTimeframe, setRevenueTimeframe] = useState('monthly')
+  const [chartData, setChartData] = useState([])
+  const [timeframe, setTimeframe] = useState('month')
   const navigate = useNavigate()
   const { error: showError } = useToast()
 
@@ -54,22 +64,54 @@ export function AdminDashboard() {
     const loadDashboard = async () => {
       setLoading(true)
       try {
-        const [{ users, meta: userMeta }, { products, meta: productMeta }, { orders, meta: orderMeta }] = await Promise.all([
+        const [
+          { users, meta: userMeta }, 
+          { products, meta: productMeta }, 
+          { orders, meta: orderMeta }, 
+          chartRes
+        ] = await Promise.all([
           getAdminUsers({ limit: 200 }),
           getAdminProducts({ limit: 200 }),
           getAdminOrders({ limit: 200 }),
+          getAdminRevenueStats('monthly')
         ])
 
         if (!isMounted) return
-
-        const paidOrders = orders.filter((order) => order.paymentStatus === 'paid')
-        const totalRevenue = paidOrders.reduce((sum, order) => sum + order.total, 0)
+        
+        const totalRevenue = chartRes.reduce((sum, m) => sum + m.revenue, 0)
+        const paidOrdersCount = chartRes.reduce((sum, m) => sum + m.orderCount, 0)
 
         setAllUsers(users)
         setAllProducts(products)
         setAllOrders(orders)
+        
+        // Setup 12 Months Data for both Dropdown and Chart
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        const currentYear = new Date().getFullYear()
+        const currentMonth = new Date().getMonth() // 0-11
+        
+        const fullYearStats = months.map((m, i) => {
+          const data = chartRes.find(s => s.month === (i + 1) && s.year === currentYear)
+          return {
+            label: `${m} ${currentYear}`,
+            revenue: data ? data.revenue : 0,
+            orderCount: data ? data.orderCount : 0,
+            month: i + 1,
+            year: currentYear
+          }
+        }).filter((_, i) => i <= currentMonth) // Only show months up to now
+
+        setMonthlyStats(fullYearStats)
+        setChartData(chartRes)
+        
+        if (fullYearStats.length > 0) {
+          // Default to current month
+          const currentLabel = `${months[currentMonth]} ${currentYear}`
+          setSelectedMonth(currentLabel)
+        }
+
         setStats([
-          { title: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, trend: `${paidOrders.length} paid`, isUp: true, icon: <DollarSign size={24} />, color: 'bg-green-500', route: '/admin/finance' },
+          { title: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, trend: `${paidOrdersCount} paid`, isUp: true, icon: <DollarSign size={24} />, color: 'bg-green-500', route: '/admin/finance' },
           { title: 'Active Explorers', value: (userMeta?.total || 0).toLocaleString('en-IN'), trend: 'live users', isUp: true, icon: <Users size={24} />, color: 'bg-[#6651A4]', route: '/admin/users' },
           { title: 'Total Orders', value: (orderMeta?.total || 0).toLocaleString('en-IN'), trend: `${orders.filter((order) => order.status === 'processing').length} processing`, isUp: true, icon: <ShoppingCart size={24} />, color: 'bg-[#F1641E]', route: '/admin/orders' },
           { title: 'Products in Catalog', value: (productMeta?.total || 0).toLocaleString('en-IN'), trend: 'live catalog', isUp: true, icon: <Package size={24} />, color: 'bg-[#E8312A]', route: '/admin/products' },
@@ -104,7 +146,8 @@ export function AdminDashboard() {
   }, [showError])
 
   const paidOrders = useMemo(() => allOrders.filter((order) => order.paymentStatus === 'paid'), [allOrders])
-  const revenueSeries = useMemo(() => buildRevenueSeries(paidOrders, timeframe), [paidOrders, timeframe])
+  const revenueSeriesData = useMemo(() => buildRevenueSeries(chartData), [chartData])
+  const { chartMax, series: revenueSeries } = revenueSeriesData
 
   const categoryBreakdown = useMemo(() => {
     const categoryCountMap = new Map()
@@ -164,65 +207,152 @@ export function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, idx) => (
-          <motion.div key={idx} onClick={() => navigate(stat.route)} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-white p-6 rounded-[24px] shadow-sm hover:shadow-xl transition-all border border-black/[0.03] group relative overflow-hidden cursor-pointer">
-            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 group-hover:scale-150 transition-transform duration-700 ${stat.color}`} />
-            {loading ? (
-              <div className="animate-pulse space-y-4">
-                <div className="flex justify-between items-start">
-                  <div className="h-4 w-24 bg-gray-200 rounded"></div>
-                  <div className="h-12 w-12 bg-gray-200 rounded-2xl"></div>
-                </div>
-                <div className="h-8 w-32 bg-gray-200 rounded"></div>
-                <div className="h-3 w-16 bg-gray-200 rounded mt-2"></div>
+        {loading ? (
+          [1, 2, 3, 4].map((idx) => (
+            <div key={idx} className="bg-white p-6 rounded-[24px] shadow-sm border border-black/[0.03] animate-pulse">
+              <div className="flex justify-between items-start mb-4">
+                <div className="h-4 w-24 bg-gray-100 rounded"></div>
+                <div className="w-12 h-12 bg-gray-100 rounded-2xl"></div>
               </div>
-            ) : (
-              <>
-                <div className="flex justify-between items-start mb-4 relative z-10">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{stat.title}</p>
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md ${stat.color}`}>{stat.icon}</div>
+              <div className="space-y-3">
+                <div className="h-8 w-32 bg-gray-100 rounded"></div>
+                <div className="h-3 w-40 bg-gray-50 rounded"></div>
+              </div>
+            </div>
+          ))
+        ) : (
+          stats.map((stat, idx) => (
+            <motion.div key={idx} onClick={() => navigate(stat.route)} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-white p-6 rounded-[24px] shadow-sm hover:shadow-xl transition-all border border-black/[0.03] group relative overflow-hidden cursor-pointer">
+              <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 group-hover:scale-150 transition-transform duration-700 ${stat.color}`} />
+              <div className="flex justify-between items-start mb-4 relative z-10">
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{stat.title}</p>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md ${stat.color}`}>{stat.icon}</div>
+              </div>
+              <div className="relative z-10">
+                <h3 className="text-3xl font-grandstander font-bold text-gray-800">{stat.value}</h3>
+                <div className="flex items-center gap-1 mt-2">
+                  <span className={`flex items-center text-[11px] font-bold ${stat.isUp ? 'text-green-500' : 'text-red-500'}`}>
+                    {stat.isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />} {stat.trend}
+                  </span>
+                  <span className="text-[11px] text-gray-400 font-medium ml-1">vs last period</span>
                 </div>
-                <div className="relative z-10">
-                  <h3 className="text-3xl font-grandstander font-bold text-gray-800">{stat.value}</h3>
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className={`flex items-center text-[11px] font-bold ${stat.isUp ? 'text-green-500' : 'text-red-500'}`}>
-                      {stat.isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />} {stat.trend}
-                    </span>
-                    <span className="text-[11px] text-gray-400 font-medium ml-1">vs last period</span>
-                  </div>
-                </div>
-              </>
-            )}
-          </motion.div>
-        ))}
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
+      
+      {/* Monthly Revenue Card */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]">
+        {loading ? (
+          <div className="animate-pulse space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2">
+                <div className="h-6 w-48 bg-gray-100 rounded"></div>
+                <div className="h-4 w-32 bg-gray-100 rounded"></div>
+              </div>
+              <div className="h-12 w-52 bg-gray-100 rounded-2xl"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="h-32 bg-gray-50 rounded-[24px]"></div>
+              <div className="h-32 bg-gray-50 rounded-[24px]"></div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-1">
+                <h2 className="text-xl font-grandstander font-bold text-gray-800">Gross Revenue Analytics</h2>
+                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Live performance metrics across timeframes</p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                {/* Selection Dropdown */}
+                <div className="relative group min-w-[220px] w-full sm:w-auto">
+                  <select 
+                    value={selectedMonth} 
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="w-full h-12 pl-4 pr-10 bg-[#FDF4E6]/50 rounded-2xl outline-none border border-transparent focus:border-[#6651A4]/30 font-bold text-[13px] appearance-none cursor-pointer transition-all"
+                  >
+                    {monthlyStats.map(m => (
+                      <option key={m.label} value={m.label}>{m.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-[#6651A4] transition-colors" />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="p-8 bg-[#6651A4]/5 rounded-[24px] border border-[#6651A4]/10 relative overflow-hidden group">
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#6651A4]/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Revenue</p>
+                <h3 className="text-4xl font-grandstander font-bold text-[#6651A4]">
+                  ₹{monthlyStats.find(m => m.label === selectedMonth)?.revenue.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                </h3>
+              </div>
+              
+              <div className="p-8 bg-[#F1641E]/5 rounded-[24px] border border-[#F1641E]/10 relative overflow-hidden group">
+                 <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#F1641E]/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Successful Orders</p>
+                 <h3 className="text-4xl font-grandstander font-bold text-[#F1641E]">
+                  {monthlyStats.find(m => m.label === selectedMonth)?.orderCount || 0} Orders
+                </h3>
+              </div>
+            </div>
+          </>
+        )}
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-[32px] p-8 shadow-sm border border-black/[0.03]">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2 className="text-xl font-grandstander font-bold text-gray-800">Revenue Flow</h2>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1">Dynamic revenue analytics</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setTimeframe('week')} className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${timeframe === 'week' ? 'bg-[#6651A4] text-white' : 'bg-gray-100 text-gray-500'}`}>Week</button>
-              <button onClick={() => setTimeframe('month')} className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${timeframe === 'month' ? 'bg-[#6651A4] text-white' : 'bg-gray-100 text-gray-500'}`}>Month</button>
-            </div>
+          <div className="flex flex-col items-center mb-10">
+            <h2 className="text-3xl font-bold text-[#E8312A] tracking-tight uppercase">Revenue Overview</h2>
+            <p className="text-[12px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-2">Annual Performance Analytics</p>
           </div>
-          <div className="h-64 relative flex items-end justify-between gap-2 px-2">
-            {revenueSeries.map((entry) => (
-              <div key={entry.key} className="flex-1 flex flex-col items-center gap-3 group">
-                <div className="relative w-full flex items-end justify-center h-full">
-                  <motion.div initial={{ height: 0 }} animate={{ height: `${entry.height}%` }} transition={{ duration: 1, delay: 0.2, ease: 'circOut' }} className="w-full max-w-[36px] bg-[#6651A4] rounded-t-2xl group-hover:bg-[#F1641E] transition-colors relative shadow-sm">
-                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap shadow-xl z-20">
-                      ₹{entry.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </div>
-                  </motion.div>
-                </div>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{entry.label}</span>
+          
+          <div className="relative h-80 flex gap-6 px-4">
+            {/* Y-Axis Labels */}
+            <div className="flex flex-col justify-between text-[11px] font-bold text-gray-500 w-14 pb-8">
+              {[1, 0.8, 0.6, 0.4, 0.2, 0].map(p => (
+                <span key={p} className="text-right">
+                  {formatCurrencyShort(chartMax * p)}
+                </span>
+              ))}
+            </div>
+
+            {/* Chart Area */}
+            <div className="flex-1 relative flex items-end justify-between gap-2 border-l-2 border-b-2 border-gray-800 pb-2">
+              {/* Grid Lines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-2">
+                {[0, 1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className="w-full border-t border-dotted border-gray-200" />
+                ))}
               </div>
-            ))}
+
+              {/* Monthly Bars */}
+              {revenueSeries.map((entry) => (
+                <div key={entry.key} className="flex-1 flex flex-col items-center gap-4 group relative z-10 h-full justify-end">
+                  <div className="relative w-full flex items-end justify-center h-full">
+                    <motion.div 
+                      initial={{ height: 0 }} 
+                      animate={{ height: `${Math.max(entry.height, 1)}%` }} 
+                      transition={{ duration: 1, delay: 0.2 }} 
+                      className="w-full max-w-[32px] bg-[#4CAF50] group-hover:bg-[#6651A4] transition-colors relative shadow-sm rounded-t-sm"
+                    >
+                      {entry.amount > 0 && (
+                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap shadow-xl z-20">
+                          ₹{entry.amount.toLocaleString('en-IN')}
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+                  <span className="absolute -bottom-8 text-[10px] font-bold text-gray-800 uppercase tracking-tighter">{entry.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
+          <div className="h-10" /> {/* Spacer for labels */}
         </motion.div>
 
         <div className="space-y-6 md:space-y-8">

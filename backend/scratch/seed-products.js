@@ -12,7 +12,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const PRICES = [299, 499, 799, 999, 1299, 1499, 1999];
 
-// --- FIRSTCRY REAL DATA (As provided by user) ---
+// --- FIRSTCRY REAL DATA ---
 const SOFT_TOYS_REAL_DATA = [
   { name: "Bonfino 18.5 cm Premium My Little Zoo House with Carry Handle", price: 1148.92, oldPrice: 1995, img: "13195316a.webp", desc: "18 Months+, L 22 x B 16 x H 18.5 cm, Make playtime fun and educational with 7 Jungle Safari Plush Figurines." },
   { name: "PLAY TOONS 30 cm Giraffe Soft Toy Brown - (Color May Vary)", price: 260.1, oldPrice: 289, img: "9025124a.webp", desc: "2 Months+, develops social and emotional growth, keeps kids playful for hours." },
@@ -122,6 +122,21 @@ const SPORTS_GAMES_REAL_DATA = [
   { name: "Babyhug 3-In-1 Multi-Activity Playset - Red/White", price: 1799.1, oldPrice: 2999, img: "14520767a.webp", desc: "3 years+, develops balance and coordination with a strong and sturdy multi-sports hoop." }
 ];
 
+const ROLE_PRETEND_PLAY_REAL_DATA = [
+  { name: "Babyhug Pretend Play Doctor Set with LED Lights", price: 549.05, oldPrice: 945, img: "16650550a.webp", desc: "2 Years+, Pretend Play Doctor Set with Realistic Medical Instruments & LED Lights." },
+  { name: "ADKD Kitchen Set Toy with Realistic Lights & Sounds", price: 984.27, oldPrice: 2999, img: "20455175a.webp", desc: "2 Years+, The kids kitchen set includes play stove with realistic light & 42 Accessories." },
+  { name: "Lumo Brilliant Toys Spray Kitchen Set Toys | 88 Pieces", price: 5428.74, oldPrice: 8985, img: "21337325a.webp", desc: "3 Years+, The Spray Kitchen Set Toy is an exciting 88-piece pretend play kit." },
+  { name: "Babyhug Disney Frozen Theme Pretend Play Makeup Trolley", price: 999.1, oldPrice: 1995, img: "19375982a.webp", desc: "3 Years+, Disney Frozen Theme 2 in 1 Vanity Table Beauty Make Up Trolley Set." },
+  { name: "Play Nation Premium 15 Pcs Makeup Kit Beauty Set", price: 252.5, oldPrice: 349, img: "16650552a.webp", desc: "3 Years+, Pretend to Play Hair Styling Make up Accessories Cosmetics Kit." },
+  { name: "Play Nation Kitchen Play Set for Kids | 24 Pcs", price: 978.91, oldPrice: 1999, img: "21431712a.webp", desc: "3 Years+, Portable Little Chef Roleplay Toy with Cooking Accessories & Utensils." },
+  { name: "Yamama Pretend Play Kitchen Set - Yellow", price: 400.86, oldPrice: 799, img: "3129534a.webp", desc: "3 Years+, 24 x 22 x 10 cm, helps develop creativity and eye hand coordination." },
+  { name: "Babyhug Disney Frozen Sisters Theme Kitchen Play Set", price: 498.89, oldPrice: 995, img: "19383125a.webp", desc: "3 Years+, Adorned with beloved Disney characters, making every pretend meal magical." },
+  { name: "Play Nation Binoculars with 2x Magnification for Kids", price: 299.02, oldPrice: 599, img: "21934156a.webp", desc: "7 Years+, Perfect-Fit Goggles with Neck Strap for Outdoor Exploration." },
+  { name: "Babyhug Fruits & Vegetable Set of 40 - Multicolour", price: 364.14, oldPrice: 595, img: "9303147a.webp", desc: "2 Years+, Realistic Pretend Food Collection teaches healthy eating habits." },
+  { name: "Play Nation Premium 21 Pcs Pink Kitchen Suitcase on Wheels", price: 399.2, oldPrice: 999, img: "16650549a.webp", desc: "3 Years+, Portable Kitchen Little Chef Roleplay Pretend Play Toy." },
+  { name: "Play Nation Premium 14 Pcs Blue Little Doctor Play Set", price: 202.49, oldPrice: 349, img: "16650551a.webp", desc: "3 Years+, Pretend Play Medical Accessories Doctor Set with Foldable Suitcase." }
+];
+
 const UNIQUE_TOY_IMG_IDS = ["1532330393533-443990a51d10", "1596461404969-9ae70f2830c1", "1558060370-d644479cb6f7"];
 
 async function seed() {
@@ -145,16 +160,14 @@ async function seed() {
     let seededProducts = [];
 
     const CATEGORY_DATA_MAP = {
-      "Soft Toys": SOFT_TOYS_REAL_DATA,
-      "Musical Toys": MUSICAL_TOYS_REAL_DATA,
-      "Indoor & Outdoor Play": INDOOR_OUTDOOR_REAL_DATA,
-      "Learning & Educational Toys": LEARNING_EDUCATION_REAL_DATA,
-      "Stacking Toys": STACKING_TOYS_REAL_DATA,
-      "Kids Puzzles": KIDS_PUZZLES_REAL_DATA,
-      "Baby Rattles": BABY_RATTLES_REAL_DATA,
-      "Play Gyms & Playmats": PLAY_GYMS_MATS_REAL_DATA,
-      "Sports & Games": SPORTS_GAMES_REAL_DATA,
-      // Add more categories here as you provide data
+      "Soft Toys": typeof SOFT_TOYS_REAL_DATA !== 'undefined' ? SOFT_TOYS_REAL_DATA : null,
+      "Musical Toys": typeof MUSICAL_TOYS_REAL_DATA !== 'undefined' ? MUSICAL_TOYS_REAL_DATA : null,
+      "Indoor & Outdoor Play": typeof INDOOR_OUTDOOR_REAL_DATA !== 'undefined' ? INDOOR_OUTDOOR_REAL_DATA : null,
+      "Learning & Educational Toys": typeof LEARNING_EDUCATION_REAL_DATA !== 'undefined' ? LEARNING_EDUCATION_REAL_DATA : null,
+      "Stacking Toys": typeof STACKING_TOYS_REAL_DATA !== 'undefined' ? STACKING_TOYS_REAL_DATA : null,
+      "Kids Puzzles": typeof KIDS_PUZZLES_REAL_DATA !== 'undefined' ? KIDS_PUZZLES_REAL_DATA : null,
+      "Baby Rattles": typeof BABY_RATTLES_REAL_DATA !== 'undefined' ? BABY_RATTLES_REAL_DATA : null,
+      "Play Gyms & Playmats": typeof PLAY_GYMS_MATS_REAL_DATA !== 'undefined' ? PLAY_GYMS_MATS_REAL_DATA : null,
     };
 
     const COLORS = ['Red', 'Blue', 'Pink', 'Yellow', 'Green', 'Orange', 'Multicolor', 'White', 'Brown'];

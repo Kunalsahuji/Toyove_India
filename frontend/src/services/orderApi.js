@@ -174,3 +174,8 @@ export const updateAdminOrderReturnRequest = async (id, data) => {
   })
   return normalizeOrder(payload.data)
 }
+
+export const getAdminRevenueStats = async (timeframe = 'monthly') => {
+  const payload = await apiRequest(`/admin/orders/stats/revenue?timeframe=${timeframe}`)
+  return payload.data
+}
