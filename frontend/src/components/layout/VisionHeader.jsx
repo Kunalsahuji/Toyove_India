@@ -56,6 +56,7 @@ export function VisionHeader() {
   const [promoMessages, setPromoMessages] = useState([
     'Free Shipping On Orders Over ₹999!',
   ])
+  const [siteConfig, setSiteConfig] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const { user, logout } = useAuth()
@@ -139,6 +140,7 @@ export function VisionHeader() {
       try {
         const data = await getStorefrontSettings()
         if (!isMounted) return
+        setSiteConfig(data)
         if (Array.isArray(data.announcementMessages) && data.announcementMessages.length > 0) {
           setPromoMessages(data.announcementMessages)
           setPromoIndex(0)
@@ -346,7 +348,7 @@ export function VisionHeader() {
         </div>
 
         {/* Mobile Utility Bar (0 - 767px) */}
-        <div className="ann-mob hdr-inner flex items-center justify-center h-[25px]">
+        <div style={{ backgroundColor: siteConfig?.announcementBg || '#6651A4' }} className="ann-mob hdr-inner flex items-center justify-center h-[25px]">
             <button onClick={prev} className="w-10 h-full flex items-center justify-start text-[#FDF3E7]/70 hover:text-white transition-colors shrink-0">
               <ChevronLeft size={14} />
             </button>
@@ -390,7 +392,7 @@ export function VisionHeader() {
 
           <div className="lg:static absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 flex items-center shrink-0 lg:mr-1 xl:mr-4 z-10">
             <Link to="/" onClick={handleLinkClick} className="flex items-center gap-2">
-              <img src={logo} alt="TOYOVOINDIA" className="h-10 md:h-12 lg:h-11 xl:h-14 w-auto" />
+              <img src={siteConfig?.siteLogo?.url || logo} alt={siteConfig?.siteName || "TOYOVOINDIA"} className="h-10 md:h-12 lg:h-11 xl:h-14 w-auto" />
             </Link>
           </div>
 

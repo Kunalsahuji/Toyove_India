@@ -7,8 +7,8 @@ const normalizeShippingMethod = (method) => ({
   chargeLabel: `₹${Number(method.charge || 0).toFixed(2)}`,
 })
 
-export const getShippingMethods = async () => {
-  const payload = await apiRequest('/shipping-methods')
+export const getShippingMethods = async (subtotal = 0) => {
+  const payload = await apiRequest(`/shipping-methods?subtotal=${subtotal}`)
   return (payload.data || []).map(normalizeShippingMethod)
 }
 

@@ -231,7 +231,7 @@ export function CheckoutPage() {
 
     const loadShippingMethods = async () => {
       try {
-        const methods = await getShippingMethods()
+        const methods = await getShippingMethods(subtotal)
         if (!isMounted) return
         setShippingMethods(methods)
         if (methods.length > 0) {
@@ -240,7 +240,7 @@ export function CheckoutPage() {
       } catch {
         if (!isMounted) return
         const fallbackMethods = [
-          { id: 'standard', code: 'standard', name: 'Standard Shipping', minDays: 3, maxDays: 5, charge: 15 },
+          { id: 'standard', code: 'standard', name: 'Standard Shipping', minDays: 3, maxDays: 5, charge: subtotal >= 999 ? 0 : 15 },
           { id: 'express', code: 'express', name: 'Express Delivery', minDays: 1, maxDays: 2, charge: 45 },
         ]
         setShippingMethods(fallbackMethods)
@@ -252,7 +252,7 @@ export function CheckoutPage() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [subtotal])
 
   useEffect(() => {
     if (!isLaunchingPayment && !isProcessing) {

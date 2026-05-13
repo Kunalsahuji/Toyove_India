@@ -1,4 +1,5 @@
 import ShippingMethod from '../models/ShippingMethod.js';
+import SiteConfig from '../models/SiteConfig.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { successResponse } from '../utils/apiResponse.js';
@@ -17,8 +18,26 @@ const ensureShippingMethods = async () => {
 
 export const listShippingMethods = asyncHandler(async (req, res) => {
   await ensureShippingMethods();
-  const methods = await ShippingMethod.find({ status: 'active' }).sort({ sortOrder: 1, createdAt: 1 });
-  return successResponse(res, 200, 'Shipping methods fetched successfully', methods);
+  const subtotal = Number(req.query.subtotal || 0);
+  
+  const [methods, config] = await Promise.all([
+    ShippingMethod.find({ status: 'active' }).sort({ sortOrder: 1, createdAt: 1 }),
+    SiteConfig.findOne({ key: 'default' })
+  ]);
+
+  // If subtotal is provided and exceeds the threshold in SiteConfig, set standard shipping charge to 0
+  const threshold = config?.freeShippingThreshold || 999;
+  
+  const mappedMethods = methods.map(method => {
+    const plainMethod = method.toObject();
+    if (subtotal >= threshold && plainMethod.code === 'standard') {
+      plainMethod.charge = 0;
+      plainMethod.name = `${plainMethod.name} (Free)`;
+    }
+    return plainMethod;
+  });
+
+  return successResponse(res, 200, 'Shipping methods fetched successfully', mappedMethods);
 });
 
 export const adminListShippingMethods = asyncHandler(async (req, res) => {

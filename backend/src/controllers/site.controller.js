@@ -20,26 +20,26 @@ const maskName = (value) => {
 
 export const getStorefrontSettings = asyncHandler(async (req, res) => {
   const config = await ensureSiteConfig();
-  return successResponse(res, 200, 'Storefront settings fetched successfully', {
-    announcementMessages: config.announcementMessages,
-    storefrontMedia: config.storefrontMedia,
-  });
+  return successResponse(res, 200, 'Storefront settings fetched successfully', config);
 });
 
 export const updateStorefrontSettings = asyncHandler(async (req, res) => {
-  const config = await ensureSiteConfig();
-  config.announcementMessages = (req.body.announcementMessages || []).filter(Boolean);
-  if (req.body.storefrontMedia) {
-    config.storefrontMedia = {
-      ...config.storefrontMedia.toObject(),
-      ...req.body.storefrontMedia,
-    };
-  }
-  await config.save();
-  return successResponse(res, 200, 'Storefront settings updated successfully', {
-    announcementMessages: config.announcementMessages,
-    storefrontMedia: config.storefrontMedia,
+  let config = await ensureSiteConfig();
+  
+  // Dynamic update: handle nested objects like socialLinks or storefrontMedia
+  Object.keys(req.body).forEach(key => {
+    if (typeof req.body[key] === 'object' && !Array.isArray(req.body[key]) && req.body[key] !== null) {
+      config[key] = {
+        ...config[key]?.toObject?.() || config[key],
+        ...req.body[key]
+      };
+    } else {
+      config[key] = req.body[key];
+    }
   });
+
+  await config.save();
+  return successResponse(res, 200, 'Storefront settings updated successfully', config);
 });
 
 export const getPurchasePopupSettings = asyncHandler(async (req, res) => {

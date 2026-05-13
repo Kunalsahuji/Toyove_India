@@ -7,6 +7,16 @@ const siteConfigSchema = new mongoose.Schema({
     unique: true,
     default: 'default',
   },
+  // --- General Settings ---
+  siteName: { type: String, default: 'Toyove India' },
+  siteLogo: {
+    url: { type: String, default: '' },
+    publicId: { type: String, default: '' }
+  },
+  favicon: { type: String, default: '' },
+  maintenanceMode: { type: Boolean, default: false },
+
+  // --- Announcement Bar ---
   announcementMessages: {
     type: [String],
     default: [
@@ -15,6 +25,28 @@ const siteConfigSchema = new mongoose.Schema({
       'New arrivals every week - shop now',
     ],
   },
+  announcementBg: { type: String, default: '#6651A4' },
+  announcementTextColor: { type: String, default: '#FFFFFF' },
+
+  // --- Financial & Shipping ---
+  currencySymbol: { type: String, default: '₹' },
+  freeShippingThreshold: { type: Number, default: 999 },
+  defaultShippingFee: { type: Number, default: 99 },
+  taxPercentage: { type: Number, default: 0 },
+  codEnabled: { type: Boolean, default: true },
+
+  // --- Contact & Social ---
+  contactEmail: { type: String, default: 'support@toyoveindia.com' },
+  contactPhone: { type: String, default: '+91 9876543210' },
+  contactAddress: { type: String, default: 'Toyove India HQ, New Delhi' },
+  socialLinks: {
+    instagram: { type: String, default: '' },
+    facebook: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    linkedin: { type: String, default: '' }
+  },
+
+  // --- Storefront Media (Hero & Banners) ---
   storefrontMedia: {
     heroBanner: {
       url: { type: String, default: '' },
@@ -28,43 +60,16 @@ const siteConfigSchema = new mongoose.Schema({
         alt: { type: String, default: '' },
       }],
       default: [],
-    },
-    brandLogos: {
-      type: [{
-        url: { type: String, default: '' },
-        publicId: { type: String, default: '' },
-        alt: { type: String, default: '' },
-      }],
-      default: [],
-    },
+    }
   },
+
+  // --- Existing Popup Settings ---
   purchasePopup: {
-    enabled: {
-      type: Boolean,
-      default: true,
-    },
-    initialDelaySeconds: {
-      type: Number,
-      default: 60,
-      min: 0,
-      max: 600,
-    },
-    repeatDelaySeconds: {
-      type: Number,
-      default: 120,
-      min: 30,
-      max: 3600,
-    },
-    visibleDurationSeconds: {
-      type: Number,
-      default: 10,
-      min: 5,
-      max: 60,
-    },
-    maskNames: {
-      type: Boolean,
-      default: true,
-    },
+    enabled: { type: Boolean, default: true },
+    initialDelaySeconds: { type: Number, default: 60 },
+    repeatDelaySeconds: { type: Number, default: 120 },
+    visibleDurationSeconds: { type: Number, default: 10 },
+    maskNames: { type: Boolean, default: true },
   },
 }, { timestamps: true });
 

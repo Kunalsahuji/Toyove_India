@@ -4,6 +4,7 @@ import { ChevronDown, Headset } from 'lucide-react'
 import { useToast } from '../../context/ToastContext'
 import { subscribeToNewsletter } from '../../services/newsletterApi'
 import { useAuth } from '../../context/AuthContext'
+import { getStorefrontSettings } from '../../services/siteApi'
 
 const FB = () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
 const IG = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
@@ -55,10 +56,23 @@ export function Footer() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { success, error } = useToast()
 
+  const [siteConfig, setSiteConfig] = useState(null)
+
   // Update email if user logs in/out
   useEffect(() => {
     if (user?.email) setEmail(user.email)
     else setEmail('')
+
+    // Load site config for social links
+    const loadConfig = async () => {
+      try {
+        const data = await getStorefrontSettings()
+        setSiteConfig(data)
+      } catch (err) {
+        console.error('Failed to load footer config:', err)
+      }
+    }
+    loadConfig()
   }, [user])
 
   const handleSubscribe = async (e) => {
@@ -107,17 +121,17 @@ export function Footer() {
               </form>
 
               <div className="flex gap-2.5 mt-8">
-                <a href="#" className="h-9 w-9 rounded-md bg-[#3B5998] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
+                <a href={siteConfig?.socialLinks?.facebook || "#"} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-md bg-[#3B5998] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
                   <FB />
                 </a>
-                <a href="#" className="h-9 w-9 rounded-md bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
+                <a href={siteConfig?.socialLinks?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-md bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
                   <IG />
                 </a>
-                <a href="#" className="h-9 w-9 rounded-md bg-[#00ACEE] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
+                <a href={siteConfig?.socialLinks?.twitter || "#"} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-md bg-[#00ACEE] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
                   <TW />
                 </a>
-                <a href="#" className="h-9 w-9 rounded-md bg-[#E60023] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
-                  <PT />
+                <a href={siteConfig?.socialLinks?.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-md bg-[#0077b5] flex items-center justify-center text-white hover:opacity-80 transition-opacity">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 </a>
               </div>
             </FooterAccordion>
@@ -166,16 +180,16 @@ export function Footer() {
                   <Headset size={32} strokeWidth={1} className="text-white shrink-0 mt-1" />
                   <div className="flex flex-col gap-1">
                     <span className="text-[13px] text-white/90">Hotline free 24/7:</span>
-                    <span className="font-bold text-[18px] leading-none">+91 98765 43210</span>
+                    <span className="font-bold text-[18px] leading-none">{siteConfig?.contactPhone || "+91 98765 43210"}</span>
                   </div>
                 </div>
                 <div className="mt-2">
                   <span className="font-bold uppercase text-[13px]">ADDRESS: </span>
-                  <span className="text-white/90 text-[14px]">Unit 703, 7th Floor, Block 1 Mayagarden, Zirakpur, Rajpura, Mohali- 140603, Punjab</span>
+                  <span className="text-white/90 text-[14px]">{siteConfig?.contactAddress || "Unit 703, 7th Floor, Block 1 Mayagarden, Zirakpur, Rajpura, Mohali- 140603, Punjab"}</span>
                 </div>
                 <div>
                   <span className="font-bold uppercase text-[13px]">EMAIL: </span>
-                  <a href="mailto:hello@toyovoindia.com" className="text-white/90 text-[14px] hover:text-white">hello@toyovoindia.com</a>
+                  <a href={`mailto:${siteConfig?.contactEmail || "hello@toyovoindia.com"}`} className="text-white/90 text-[14px] hover:text-white">{siteConfig?.contactEmail || "hello@toyovoindia.com"}</a>
                 </div>
               </div>
             </FooterAccordion>
