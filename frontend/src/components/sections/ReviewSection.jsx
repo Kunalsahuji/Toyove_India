@@ -11,15 +11,18 @@ export function ReviewSection({ productId, productName }) {
   const [reviews, setReviews] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [rating, setRating] = useState(5)
+  const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
   const [hoverRating, setHoverRating] = useState(0)
 
   useEffect(() => {
-    loadReviews()
+    if (productId) {
+      loadReviews()
+    }
   }, [productId])
 
   const loadReviews = async () => {
+    if (!productId || productId === 'undefined') return;
     try {
       setIsLoading(true)
       const data = await getProductReviews(productId)
@@ -37,6 +40,10 @@ export function ReviewSection({ productId, productName }) {
       showError('Please login to submit a review')
       return
     }
+    if (rating === 0) {
+      showError('Please select a rating')
+      return
+    }
     if (!comment.trim()) {
       showError('Comment cannot be empty')
       return
@@ -51,7 +58,7 @@ export function ReviewSection({ productId, productName }) {
       })
       success('Review submitted for approval!')
       setComment('')
-      setRating(5)
+      setRating(0)
       // We don't refresh reviews here because the new one is 'pending'
     } catch (err) {
       showError(err.message || 'Failed to submit review')
@@ -181,11 +188,11 @@ export function ReviewSection({ productId, productName }) {
                         onMouseEnter={() => setHoverRating(s)}
                         onMouseLeave={() => setHoverRating(0)}
                         onClick={() => setRating(s)}
-                        className="transition-transform hover:scale-110"
+                        className="transition-transform hover:scale-110 active:scale-95"
                       >
                         <Star 
                           size={32} 
-                          className={(hoverRating || rating) >= s ? 'fill-[#E84949] text-[#E84949]' : 'text-gray-200'} 
+                          className={(hoverRating || rating) >= s ? 'fill-[#FFD700] text-[#FFD700]' : 'text-gray-200'} 
                         />
                       </button>
                     ))}

@@ -24,7 +24,20 @@ export const getRecentReviews = asyncHandler(async (req, res) => {
 export const createReview = asyncHandler(async (req, res) => {
   const { product, rating, comment } = req.body;
   
-  const review = await Review.create({
+  // Check if user already reviewed this product
+  let review = await Review.findOne({ product, user: req.user._id });
+
+  if (review) {
+    // Update existing review
+    review.rating = rating;
+    review.comment = comment;
+    review.status = 'pending'; // Reset to pending for re-approval
+    await review.save();
+    return successResponse(res, 200, 'Review updated and submitted for approval', review);
+  }
+
+  // Create new review
+  review = await Review.create({
     product,
     user: req.user._id,
     userName: `${req.user.firstName} ${req.user.lastName}`,

@@ -67,7 +67,7 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
           <div className="w-full md:w-[45%] bg-[#F9EAD3] p-6 md:p-10 flex items-center justify-center border-b md:border-b-0 md:border-r border-dashed border-black/10 shrink-0">
             <div className="relative w-full aspect-square max-w-[300px] md:max-w-none">
               <img 
-                src={p.thumbnail?.url || p.images?.[0]?.url || p.img} 
+                src={p.thumbnail?.url || p.images?.[0]?.url || p.img || 'https://images.unsplash.com/photo-1532330393533-443990a51d10?auto=format&fit=crop&q=80&w=800'} 
                 alt={p.name} 
                 className="w-full h-full object-cover rounded-[25px] md:rounded-[40px] shadow-xl border-[1.5px] border-dashed border-black/10" 
               />
@@ -83,8 +83,12 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex text-[#E84949]"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/></div>
-                <span className="text-[10px] md:text-[12px] font-bold text-gray-400 uppercase tracking-widest">(12 Customer Reviews)</span>
+                <div className="flex text-[#E84949]">
+                  {[1, 2, 3, 4, 5].map(s => (
+                    <Star key={s} size={14} fill={s <= Math.round(p.ratingAverage || 0) ? "currentColor" : "none"} className={s <= Math.round(p.ratingAverage || 0) ? "" : "text-gray-300"} />
+                  ))}
+                </div>
+                <span className="text-[10px] md:text-[12px] font-bold text-gray-400 uppercase tracking-widest">({p.reviewCount || 0} Customer Reviews)</span>
               </div>
 
               <div className="flex items-center gap-4 py-4 md:py-6 border-y border-dashed border-black/10">
@@ -169,7 +173,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
         }`}>
           <Link to={`/product/${p.slug || p.id}`} className="block w-full h-full relative z-10">
             <img
-              src={p.thumbnail?.url || p.images?.[0]?.url || p.img}
+              src={p.thumbnail?.url || p.images?.[0]?.url || p.img || 'https://images.unsplash.com/photo-1532330393533-443990a51d10?auto=format&fit=crop&q=80&w=800'}
               alt={p.name}
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
             />

@@ -104,7 +104,7 @@ export function ProductDetailPage() {
     name: title?.replaceAll('-', ' ') || "KidsKraze Creations",
     price: 89.00,
     oldPrice: 129.00,
-    img: productImages[0],
+    img: productImages[0] || 'https://images.unsplash.com/photo-1532330393533-443990a51d10?auto=format&fit=crop&q=80&w=800',
     sku: "Product-08",
     category: "Toys"
   }
@@ -259,7 +259,7 @@ export function ProductDetailPage() {
             <div className="shell flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="hidden sm:block w-12 h-12 rounded-lg border-[1.2px] border-dashed border-[#333]/30 overflow-hidden bg-[#FDF4E6]">
-                  <img src={product.thumbnail?.url || product.images?.[0]?.url || product.img} alt="" className="w-full h-full object-cover" />
+                  <img src={product.thumbnail?.url || product.images?.[0]?.url || product.img || 'https://images.unsplash.com/photo-1532330393533-443990a51d10?auto=format&fit=crop&q=80&w=800'} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="text-[14px] font-bold text-[#333333] hidden lg:block font-grandstander tracking-tight">{product.title}</h4>
@@ -386,7 +386,24 @@ export function ProductDetailPage() {
                   <p className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-[#E84949] uppercase">In Stock</p>
                 </div>
                 
-                <h1 className="font-grandstander font-black text-[#333] text-[28px] md:text-[36px] xl:text-[42px] leading-tight tracking-tight">{product.title}</h1>
+                <h1 className="font-grandstander font-black text-[#333] text-[28px] md:text-[36px] xl:text-[42px] leading-tight tracking-tight">{product.title || product.name}</h1>
+
+                <div className="flex items-center gap-4 py-1">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={14} className={s <= Math.round(product.ratingAverage || 0) ? 'fill-[#E84949] text-[#E84949]' : 'text-gray-300'} />
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('reviews');
+                      document.getElementById('tabs-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="text-[12px] font-bold text-[#666] hover:text-[#E84949] transition-colors underline underline-offset-4"
+                  >
+                    ({product.reviewCount || 0} Customer Reviews)
+                  </button>
+                </div>
 
                 <div className="flex items-center gap-4 pt-2">
                   <div className="flex items-baseline gap-3">
@@ -511,7 +528,7 @@ export function ProductDetailPage() {
       </div>
 
       {/* Tabs Section */}
-      <div className="py-12 md:py-16 shell">
+      <div id="tabs-section" className="py-12 md:py-16 shell">
         <div className="flex overflow-x-auto w-full border border-[#E5E5E5] rounded-t-lg bg-[#FDF4E6] [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
           {['Description', 'Additional', 'Reviews', 'Variant', 'Custom'].map((t) => (
             <button
@@ -523,7 +540,10 @@ export function ProductDetailPage() {
                 : 'text-[#666] bg-[#FDF4E6]/40 hover:bg-[#FDF4E6]/70 border-b border-b-[#E5E5E5]'
               }`}
             >
-              {t === 'Description' ? 'Product Description' : t === 'Additional' ? 'Additional information' : t === 'Variant' ? 'Variant Information' : 'Custom field'}
+              {t === 'Description' ? 'Product Description' : 
+               t === 'Additional' ? 'Additional Information' : 
+               t === 'Reviews' ? 'Customer Reviews' :
+               t === 'Variant' ? 'Variant Information' : 'Custom Field'}
             </button>
           ))}
         </div>
@@ -532,16 +552,18 @@ export function ProductDetailPage() {
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
               {activeTab === 'description' && (
                 <div className="space-y-6">
-                  <p>Discover TOYOVOINDIA, the ultimate Shopify 2.0 theme meticulously crafted for baby shops and kids' toy stores. Elevate your online presence with TOYOVOINDIA’s seamless fusion of aesthetic charm and robust functionality, designed to make your products shine on every device.</p>
-                  <p>At the heart of TOYOVOINDIA its flawless integration with Shopify 2.0, offering advanced features that enhance user experience and propel your store to top search engine rankings. Whether your inventory focuses on educational toys, plush baby essentials, or trendy kids' gadgets, TOYOVOINDIA responsive design ensures impeccable presentation across desktops, tablets, and smartphones.</p>
-                  <p>Customization is effortless with TOYOVOINDIA or your store’s appearance effortlessly—adjust colors, fonts, and layouts without touching a single line of code. The drag-and-drop interface empowers you to establish a unique brand identity that resonates deeply with your discerning clientele.</p>
-                  <p>TOYOVOINDIA definition images to detailed descriptions and customer reviews, every detail is optimized to drive engagement and conversions. Whether highlighting interactive playsets, eco-friendly nursery items, or imaginative toys, TOYOVOINDIA captivates your au TOYOVOINDIA </p>
-                  <p>SEO optimization forms the cornerstone of TOYOVOINDIA’s design philosophy. Optimized meta tags, clean code, and swift load times ensure prominent visibility in search results. This strategic approach not only attracts organic traffic but also converts visitors into loyal customers, fostering sustained growth for your baby and kids' toy store.</p>
-                  <p>Seamlessly integrate potent marketing tools with TOYOVOINDIA. From targeted email campaigns to impactful social media promotions, product badges, and eye-catching banners, amplify your brand’s reach and boost sales effectively. TOYOVOINDIA’s secure payment gateways and robust data encryption build trust and loyalty among your customers.</p>
-                  <p>Expand your global footprint with TOYOVOINDIA’s support for multilingual and multi-currency capabilities. Deliver a personalized shopping experience in customers’ preferred languages and currencies, enhancing accessibility and elevating conversion rates. TOYOVOINDIAINDIA-India’s modern design, built with HTML5, CSS3, and Bootstrap, guarantees flawless performance across diverse platforms, optimizing user satisfaction.</p>
-                  <p>Customer-centric features such as quick view options, wish lists, and streamlined checkout processes enhance usability and drive sales. Transparent shipping policies and comprehensive FAQs further enhance customer satisfaction, encouraging repeat business and fostering brand loyalty.</p>
-                  <p>Benefit from TOYOVOINDIA’s comprehensive support and regular updates. Access extensive documentation, tutorials, and responsive customer service to maximize your store’s performance and promptly address inquiries. With continuous improvements and feature updates, TOYOVOINDIA ensures your baby shop and kids' toy store remains competitive and innovative in the dynamic ecommerce landscape.</p>
-                  <p>Choose TOYOVOINDIA - Baby Shop & Kids Toys Store Multipurpose Shopify 2.0 Responsive Theme to transform your online store into a thriving ecommerce destination. Enhance your brand’s online presence, attract a global audience, and drive sustainable growth with TOYOVOINDIA’s tailored solutions for baby shops and kids' toy retailers.</p>
+                  <div className="bg-white p-6 rounded-2xl border border-dashed border-[#E84949]/20 mb-6">
+                    <h4 className="text-[18px] font-black text-[#333] uppercase tracking-tight mb-3">Product Overview</h4>
+                    <p className="text-[#444] leading-relaxed italic">{product.description || "High-quality premium product from ToyovoIndia."}</p>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="text-[18px] font-black text-[#333] uppercase tracking-tight">Why Choose TOYOVOINDIA?</h4>
+                    <p>Discover **TOYOVOINDIA**, India's premium marketplace meticulously crafted for baby essentials and kids' toys. Our mission is to elevate your parenting journey with a seamless fusion of quality, safety, and joy.</p>
+                    <p>At the heart of TOYOVOINDIA is a commitment to child development. Every product in our catalog—from educational STEM kits to plush baby rattles—is curated to spark imagination and support milestones. Our responsive platform ensures a smooth shopping experience across all your devices.</p>
+                    <p>We prioritize safety above all. TOYOVOINDIA products undergo rigorous quality checks to ensure they are non-toxic and child-safe. Our secure payment gateways and robust data protection build the trust that modern parents deserve.</p>
+                    <p>Experience the future of toy shopping with TOYOVOINDIA. From targeted categories to verified customer reviews, every detail is optimized to help you make the best choice for your little ones.</p>
+                  </div>
                 </div>
               )}
               {activeTab === 'additional' &&
@@ -586,8 +608,8 @@ export function ProductDetailPage() {
                   </span>
                 </div>
               }
-              {activeTab === 'reviews' && (
-                <ReviewSection productId={product.id || product._id} productName={product.title} />
+              {activeTab === 'reviews' && productState?._id && (
+                <ReviewSection productId={productState._id} productName={product.title} />
               )}
             </motion.div>
           </AnimatePresence>
