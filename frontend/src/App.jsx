@@ -66,6 +66,7 @@ const AdminTransactionDetail = React.lazy(() => import('./admin/pages/AdminTrans
 const AdminReports = React.lazy(() => import('./admin/pages/AdminReports').then(m => ({ default: m.AdminReports })))
 const AdminSystemLogs = React.lazy(() => import('./admin/pages/AdminSystemLogs').then(m => ({ default: m.AdminSystemLogs })))
 const AdminPages = React.lazy(() => import('./admin/pages/AdminPages').then(m => ({ default: m.AdminPages })))
+const AdminReviews = React.lazy(() => import('./admin/pages/AdminReviews').then(m => ({ default: m.AdminReviews })))
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })))
 
 const AdminFallback = () => (
@@ -167,6 +168,7 @@ function AppContent() {
                 <Route path="reports" element={<AdminReports />} />
                 <Route path="system-logs" element={<AdminSystemLogs />} />
                 <Route path="legal-pages" element={<AdminPages />} />
+                <Route path="reviews" element={<AdminReviews />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>

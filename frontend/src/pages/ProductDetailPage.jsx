@@ -18,6 +18,7 @@ const productImages = [
 
 import { ProductCard } from '../components/ui/ProductCard'
 import { getProductBySlug, getProducts } from '../services/catalogApi'
+import { ReviewSection } from '../components/sections/ReviewSection'
 
 const FAQItem = ({ question, answer, isOpen, onToggle }) => (
   <div className="border-b border-[#E5E5E5] py-6">
@@ -258,7 +259,7 @@ export function ProductDetailPage() {
             <div className="shell flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="hidden sm:block w-12 h-12 rounded-lg border-[1.2px] border-dashed border-[#333]/30 overflow-hidden bg-[#FDF4E6]">
-                  <img src={product.img} alt="" className="w-full h-full object-cover" />
+                  <img src={product.thumbnail?.url || product.images?.[0]?.url || product.img} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="text-[14px] font-bold text-[#333333] hidden lg:block font-grandstander tracking-tight">{product.title}</h4>
@@ -512,7 +513,7 @@ export function ProductDetailPage() {
       {/* Tabs Section */}
       <div className="py-12 md:py-16 shell">
         <div className="flex overflow-x-auto w-full border border-[#E5E5E5] rounded-t-lg bg-[#FDF4E6] [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
-          {['Description', 'Additional', 'Variant', 'Custom'].map((t) => (
+          {['Description', 'Additional', 'Reviews', 'Variant', 'Custom'].map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t.toLowerCase())}
@@ -585,6 +586,9 @@ export function ProductDetailPage() {
                   </span>
                 </div>
               }
+              {activeTab === 'reviews' && (
+                <ReviewSection productId={product.id || product._id} productName={product.title} />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

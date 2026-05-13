@@ -13,6 +13,7 @@ import shippingRoutes from './shipping.routes.js';
 import messageRoutes from './message.routes.js';
 import notificationRoutes from './notification.routes.js';
 import pageContentRoutes from './pageContent.routes.js';
+import reviewRoutes from './review.routes.js';
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.use('/shipping-methods', shippingRoutes);
 router.use('/messages', messageRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/pages', pageContentRoutes);
+router.use('/reviews', reviewRoutes);
 router.use('/admin', adminRoutes);
 
 export default router;

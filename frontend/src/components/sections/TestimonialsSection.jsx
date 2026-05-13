@@ -1,62 +1,64 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, useMotionValue, useSpring, useTransform, animate } from 'framer-motion'
+import { motion, animate, useMotionValue } from 'framer-motion'
+import { getRecentReviews } from '../../services/reviewApi'
 
-const originalTestimonials = [
+// Fallback data in case DB is empty initially
+const fallbackReviews = [
   {
-    id: 1,
-    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
-    name: "JEMIS P",
-    role: "MANAGER",
-    stars: 5,
+    _id: 'f1',
+    comment: "The quality of the toys is exceptional. My kids love the soft toys, especially the panda plush!",
+    userName: "JEMIS P",
+    role: "Verified Parent",
+    rating: 5,
   },
   {
-    id: 2,
-    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
-    name: "SARAH L",
-    role: "MANAGER",
-    stars: 5,
-  },
-  {
-    id: 3,
-    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
-    name: "MIKE R",
-    role: "DIRECTOR",
-    stars: 5,
-  },
-  {
-    id: 4,
-    quote: "Customers can't always tell you what they want but they can always tell you what's wrong. Can't always tell you what your most un happy customers.",
-    name: "ANNA K",
-    role: "DESIGNER",
-    stars: 5,
+    _id: 'f2',
+    comment: "Fast delivery and great customer support. The musical duck is the best gift for toddlers.",
+    userName: "SARAH L",
+    role: "Happy Customer",
+    rating: 5,
   }
 ]
 
-// Extended list for smoother infinite looping
-const testimonials = [...originalTestimonials, ...originalTestimonials, ...originalTestimonials]
-
 export function TestimonialsSection() {
+  const [reviews, setReviews] = useState([])
   const [isMobile, setIsMobile] = useState(false)
   const containerRef = useRef(null)
   const x = useMotionValue(0)
   
   useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        const data = await getRecentReviews()
+        if (data && data.length > 0) {
+          // Double/Triple for infinite scroll
+          setReviews([...data, ...data, ...data])
+        } else {
+          setReviews([...fallbackReviews, ...fallbackReviews, ...fallbackReviews])
+        }
+      } catch (err) {
+        setReviews([...fallbackReviews, ...fallbackReviews, ...fallbackReviews])
+      }
+    }
+    loadReviews()
+
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Initial Position Logic (Start in middle clone)
+  // Initial Position Logic
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && reviews.length > 0) {
         const itemWidth = containerRef.current.offsetWidth / (isMobile ? 1 : 2)
-        const initialX = -(itemWidth * originalTestimonials.length)
+        const initialX = -(itemWidth * (reviews.length / 3))
         x.set(initialX)
     }
-  }, [isMobile])
+  }, [isMobile, reviews])
 
   const handleDragEnd = (event, info) => {
+    if (reviews.length === 0) return
     const itemWidth = containerRef.current.offsetWidth / (isMobile ? 1 : 2)
     const threshold = itemWidth / 4
     const offset = info.offset.x
@@ -75,9 +77,8 @@ export function TestimonialsSection() {
       bounce: 0.15,
       duration: 0.6,
       onComplete: () => {
-        // Handle Infinite Wrap
-        const totalItems = originalTestimonials.length
-        const totalWidth = itemWidth * totalItems
+        const originalCount = reviews.length / 3
+        const totalWidth = itemWidth * originalCount
         if (targetX <= -(totalWidth * 2)) {
             x.set(targetX + totalWidth)
         } else if (targetX >= -totalWidth / 2) {
@@ -86,6 +87,8 @@ export function TestimonialsSection() {
       }
     })
   }
+
+  if (reviews.length === 0) return null
 
   return (
     <section className="bg-[#6449A4] relative overflow-hidden border-y border-dashed border-white/20 select-none">
@@ -96,13 +99,13 @@ export function TestimonialsSection() {
         <motion.div
           style={{ x }}
           drag="x"
-          dragConstraints={{ left: -10000, right: 10000 }} // Handled manually for infinite
+          dragConstraints={{ left: -10000, right: 10000 }}
           onDragEnd={handleDragEnd}
           className="flex h-full"
         >
-          {testimonials.map((t, i) => (
+          {reviews.map((t, i) => (
             <div 
-              key={`${t.id}-${i}`}
+              key={`${t._id}-${i}`}
               className="flex-shrink-0 w-full md:w-1/2 px-8 md:px-16 lg:px-24 py-14 md:py-20 flex flex-col gap-6 border-r border-dashed border-white/30 last:border-r-0 h-full"
             >
               {/* Quote Icon */}
@@ -113,7 +116,7 @@ export function TestimonialsSection() {
               </div>
 
               <p className="text-white text-[16px] md:text-[18px] lg:text-[20px] leading-[1.6] font-medium tracking-tight">
-                {t.quote}
+                {t.comment}
               </p>
 
               <div className="flex flex-col gap-4 mt-auto">
@@ -121,14 +124,14 @@ export function TestimonialsSection() {
                 <div className="flex gap-1.5">
                   {Array.from({ length: 5 }).map((_, j) => (
                     <span key={j} className="text-white text-[16px]">
-                      {j < t.stars ? '★' : '☆'}
+                      {j < t.rating ? '★' : '☆'}
                     </span>
                   ))}
                 </div>
 
                 {/* Author Info */}
                 <div className="flex items-center gap-2 text-white font-bold text-[13px] tracking-[0.2em] uppercase">
-                  <span>{t.name}</span>
+                  <span>{t.userName}</span>
                   <span className="opacity-40">-</span>
                   <span>{t.role}</span>
                 </div>

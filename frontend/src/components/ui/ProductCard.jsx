@@ -67,7 +67,7 @@ const QuickViewModal = ({ p, isOpen, onClose }) => {
           <div className="w-full md:w-[45%] bg-[#F9EAD3] p-6 md:p-10 flex items-center justify-center border-b md:border-b-0 md:border-r border-dashed border-black/10 shrink-0">
             <div className="relative w-full aspect-square max-w-[300px] md:max-w-none">
               <img 
-                src={p.img} 
+                src={p.thumbnail?.url || p.images?.[0]?.url || p.img} 
                 alt={p.name} 
                 className="w-full h-full object-cover rounded-[25px] md:rounded-[40px] shadow-xl border-[1.5px] border-dashed border-black/10" 
               />
@@ -169,7 +169,7 @@ export function ProductCard({ p, i, isGridOne = false }) {
         }`}>
           <Link to={`/product/${p.slug || p.id}`} className="block w-full h-full relative z-10">
             <img
-              src={p.img}
+              src={p.thumbnail?.url || p.images?.[0]?.url || p.img}
               alt={p.name}
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
             />

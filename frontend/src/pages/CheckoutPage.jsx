@@ -676,7 +676,7 @@ export function CheckoutPage() {
                          >
                             <div className="flex items-center gap-4">
                                <div className="w-12 h-12 rounded-lg border border-gray-100 bg-white shadow-sm overflow-hidden p-1">
-                                  <img src={cartItems[0]?.img} className="w-full h-full object-contain" />
+                                  <img src={cartItems[0]?.thumbnail?.url || cartItems[0]?.images?.[0]?.url || cartItems[0]?.img} className="w-full h-full object-contain" />
                                </div>
                                <div className="text-left">
                                   <span className="block text-[14px] font-bold text-[#333]">Total</span>
@@ -710,7 +710,7 @@ export function CheckoutPage() {
                                   {cartItems.map(item => (
                                      <div key={item.id} className="flex items-center gap-4 pt-1 pr-1">
                                         <div className="w-16 h-16 rounded-2xl border border-gray-200 relative bg-white shadow-sm shrink-0">
-                                           <img src={item.img} className="w-full h-full object-cover rounded-2xl" />
+                                           <img src={item.thumbnail?.url || item.images?.[0]?.url || item.img} className="w-full h-full object-cover rounded-2xl" />
                                            <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm z-10">{item.qty}</span>
                                         </div>
                                         <div className="grow min-w-0">
@@ -773,7 +773,7 @@ export function CheckoutPage() {
             {cartItems.map(item => (
               <div key={item.id} className="flex items-center gap-4 group pt-2 pr-2">
                 <div className="w-16 h-16 rounded-xl border border-gray-200 relative bg-white shadow-sm group-hover:shadow-md transition-all">
-                  <img src={item.img} className="w-full h-full object-cover rounded-xl" />
+                  <img src={item.thumbnail?.url || item.images?.[0]?.url || item.img} className="w-full h-full object-cover rounded-xl" />
                   <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#333] text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm z-10">{item.qty}</span>
                 </div>
                 <div className="grow"><h4 className="text-[13px] font-bold text-[#333] font-grandstander">{item.title}</h4><p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">SKU: {item.sku || 'TOY-001'}</p></div>
