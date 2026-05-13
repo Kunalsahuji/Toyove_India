@@ -415,14 +415,15 @@ export function VisionHeader() {
                           {link.mega.type === 'master' ? (
                             <div className="w-72 bg-[#F9EAD3] border-x border-black/5 p-8 space-y-1.5 h-full overflow-y-auto custom-scrollbar shrink-0">
                                {link.mega.sidebar.map(s => (
-                                 <button 
+                                 <Link 
                                   key={s.name} 
+                                  to={`/collections/${s.id}`}
                                   onMouseEnter={() => setActiveMasterCat(s.name)}
-                                  onClick={() => setActiveMasterCat(s.name)}
-                                  className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6] hover:text-[#E84949]'}`}
+                                  onClick={handleLinkClick}
+                                  className={`w-full text-left px-5 py-3 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all block ${activeMasterCat === s.name ? 'bg-[#E84949] text-white shadow-xl shadow-[#E84949]/20' : 'text-[#333] hover:bg-[#FDF4E6] hover:text-[#E84949]'}`}
                                  >
                                    {s.name}
-                                 </button>
+                                 </Link>
                                ))}
                             </div>
                           ) : link.mega.sidebar ? (
@@ -440,8 +441,14 @@ export function VisionHeader() {
                             {/* Master Top Header (Optional) */}
                             {link.mega.type === 'master' && (
                               <div className="px-10 pt-8 pb-4 border-b border-black/5 bg-[#FDF4E6]/95 backdrop-blur-md sticky top-0 z-10">
-                                <h3 className="text-[#E84949] font-black text-xs tracking-[0.3em] uppercase mb-1">ALL</h3>
-                                <div className="w-10 h-[1.5px] bg-[#E84949] rounded-full"></div>
+                                <Link 
+                                  to={`/collections/${link.mega.sidebar.find(s => s.name === activeMasterCat)?.id}`}
+                                  onClick={handleLinkClick}
+                                  className="group/all inline-block"
+                                >
+                                  <h3 className="text-[#E84949] font-black text-xs tracking-[0.3em] uppercase mb-1 group-hover/all:underline decoration-2 underline-offset-4">ALL</h3>
+                                  <div className="w-10 h-[1.5px] bg-[#E84949] rounded-full"></div>
+                                </Link>
                               </div>
                             )}
 

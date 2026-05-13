@@ -7,13 +7,7 @@ import { Star, Heart, Share2, Eye, ShoppingCart, Search, Repeat, Plus, Minus, Ch
 
 
 const productImages = [
-  "https://toykio.myshopify.com/cdn/shop/files/product-08_bd7b541b-d749-4444-bdaa-d040b7d4ff0f.jpg?v=1716179376&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-08-02_1ed2d2ac-88dd-401e-a474-8579b20407ff.jpg?v=1716179376&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-07.jpg?v=1710995380&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-07-02.jpg?v=1710995381&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-06.jpg?v=1710995380&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/product-06-02.jpg?v=1710995381&width=533",
-  "https://toykio.myshopify.com/cdn/shop/files/preview_images/85175d99987d4adb9478a6e7912fd6db.thumbnail.0000000000.jpg?v=1711011026&width=533"
+  "https://images.unsplash.com/photo-1532330393533-443990a51d10?auto=format&fit=crop&q=80&w=800"
 ]
 
 import { ProductCard } from '../components/ui/ProductCard'
@@ -111,7 +105,7 @@ export function ProductDetailPage() {
   const product = productState || fallbackProduct
   const galleryImages = productState?.images?.length
     ? productState.images.map(image => image.url).filter(Boolean)
-    : productImages
+    : [productState?.thumbnail?.url || product.img || productImages[0]]
 
   const isWishlisted = wishlist.some(item => item.id === product.id)
 
@@ -152,23 +146,16 @@ export function ProductDetailPage() {
   }
 
   const fallbackRelated = [
-    { id: 1, name: 'Planet Toy Explorer', price: 126, img: productImages[2], hoverImg: productImages[3] },
-    { id: 2, name: 'WildHarvests Maker Toy', price: 150, img: productImages[4], hoverImg: productImages[5] },
-    { id: 3, name: 'Rainbow Stacker Set', price: 85, img: productImages[6], hoverImg: productImages[0] },
-    { id: 4, name: 'JoyfulJamboree Juniors', price: 89, img: productImages[1], hoverImg: productImages[0] },
-    { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[1] },
-    { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[4], hoverImg: productImages[3] },
-    { id: 7, name: 'WildHarvests Maker', price: 110, img: productImages[5], hoverImg: productImages[6] },
-    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[6], hoverImg: productImages[0] }
+    { id: 1, name: 'Planet Toy Explorer', price: 126, img: productImages[0], hoverImg: productImages[0] },
+    { id: 2, name: 'WildHarvests Maker Toy', price: 150, img: productImages[0], hoverImg: productImages[0] },
+    { id: 3, name: 'Rainbow Stacker Set', price: 85, img: productImages[0], hoverImg: productImages[0] },
+    { id: 4, name: 'JoyfulJamboree Juniors', price: 89, img: productImages[0], hoverImg: productImages[0] },
   ]
   const related = relatedProducts.length ? relatedProducts : fallbackRelated
 
   const recentlyViewed = [
-    { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[1] },
-    { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[4], hoverImg: productImages[3] },
-    { id: 7, name: 'WildHarvests Maker', price: 110, img: productImages[5], hoverImg: productImages[6] },
-    { id: 8, name: 'Rainbow Stacker', price: 95, img: productImages[6], hoverImg: productImages[0] },
-    { id: 9, name: 'Joyful Juniors', price: 75, img: productImages[2], hoverImg: productImages[3] }
+    { id: 5, name: 'TinyTinker Toys', price: 60, img: productImages[0], hoverImg: productImages[0] },
+    { id: 6, name: 'Baby Activity Mat', price: 130, img: productImages[0], hoverImg: productImages[0] },
   ]
 
   if (isLoadingProduct && !productState) {
