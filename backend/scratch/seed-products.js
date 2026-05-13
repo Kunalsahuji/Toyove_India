@@ -175,7 +175,7 @@ async function seed() {
       console.log(`🛍️ Seeding ${realData.length} products for: ${sub.name}`);
 
       for (let i = 0; i < realData.length; i++) {
-        let productName, imgUrl, price, oldPrice, desc;
+        let productName, imgUrl, price, oldPrice, desc, brand, ageGroup;
         const randomColor = COLORS[Math.floor(Math.random() * COLORS.length)];
         const randomGender = GENDERS[Math.floor(Math.random() * GENDERS.length)];
 
@@ -186,6 +186,8 @@ async function seed() {
           price = item.price;
           oldPrice = item.oldPrice;
           desc = item.desc;
+          brand = item.name.split(' ')[0];
+          ageGroup = item.desc.split(',')[0].replace('Ideal Age ', '').replace('Ideal age ', '');
         } else {
           productName = `Premium Toy Edition #${i} (${sub.name})`;
           const imgId = UNIQUE_TOY_IMG_IDS[globalImgCounter % UNIQUE_TOY_IMG_IDS.length];
@@ -193,6 +195,8 @@ async function seed() {
           price = PRICES[i % PRICES.length];
           oldPrice = price + 250;
           desc = "High quality toy for child development.";
+          brand = 'Toyovo';
+          ageGroup = '0-10 Years';
           globalImgCounter++;
         }
 
@@ -204,12 +208,12 @@ async function seed() {
           subcategories: [sub._id],
           thumbnail: { url: imgUrl },
           images: [{ url: imgUrl }],
-          brand: 'Toyovo',
+          brand: brand,
           price: price,
           oldPrice: oldPrice,
           stock: 100,
           status: 'active',
-          ageGroup: '0-10 Years',
+          ageGroup: ageGroup,
           gender: randomGender,
           color: [randomColor],
           material: 'Child-Safe Premium',

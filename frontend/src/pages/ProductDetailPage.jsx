@@ -117,13 +117,13 @@ export function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity)
-    success(`${product.title} added to cart!`)
+    success(`${product.title || product.name} added to cart!`)
     navigate('/cart')
   }
 
   const handleBuyNow = () => {
     addToCart(product, quantity)
-    success(`Proceeding to checkout with ${product.title}...`)
+    success(`Proceeding to checkout with ${product.title || product.name}...`)
     navigate('/checkout')
   }
 
@@ -131,7 +131,7 @@ export function ProductDetailPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: product.title,
+          title: product.title || product.name,
           text: 'Check out this amazing toy!',
           url: window.location.href,
         })
@@ -147,7 +147,7 @@ export function ProductDetailPage() {
   const handleCompare = () => {
     const isCompared = compare?.some(item => item.id === product.id)
     toggleCompare(product)
-    success(isCompared ? `${product.title} removed from comparison.` : `${product.title} added to comparison!`)
+    success(isCompared ? `${product.title || product.name} removed from comparison.` : `${product.title || product.name} added to comparison!`)
     navigate('/compare')
   }
 
@@ -262,10 +262,10 @@ export function ProductDetailPage() {
                   <img src={product.thumbnail?.url || product.images?.[0]?.url || product.img || 'https://images.unsplash.com/photo-1532330393533-443990a51d10?auto=format&fit=crop&q=80&w=800'} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h4 className="text-[14px] font-bold text-[#333333] hidden lg:block font-grandstander tracking-tight">{product.title}</h4>
+                  <h4 className="text-[14px] font-bold text-[#333333] hidden lg:block font-grandstander tracking-tight">{product.title || product.name}</h4>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#E84949] font-bold text-[18px]">₹{product.price.toFixed(2)}</span>
-                    <span className="text-[12px] text-gray-400 line-through font-bold">₹{product.oldPrice.toFixed(2)}</span>
+                    <span className="text-[#E84949] font-bold text-[18px]">₹{Number(product.price || 0).toFixed(2)}</span>
+                    {product.oldPrice && <span className="text-[12px] text-gray-400 line-through font-bold">₹{Number(product.oldPrice).toFixed(2)}</span>}
                   </div>
                 </div>
               </div>
@@ -288,7 +288,7 @@ export function ProductDetailPage() {
           <nav className="flex items-center gap-2 text-[11px] md:text-[12px] text-[#666] mb-8 tracking-widest font-bold">
             <Link to="/" className="hover:text-[#E84949] transition-colors">Home</Link>
             <span className="text-gray-300">/</span>
-            <span className="text-[#333] capitalize">{product.title}</span>
+            <span className="text-[#333] capitalize">{product.title || product.name}</span>
           </nav>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 xl:gap-12 items-stretch relative">
@@ -407,10 +407,14 @@ export function ProductDetailPage() {
 
                 <div className="flex items-center gap-4 pt-2">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-2xl md:text-3xl font-black text-[#E84949] tracking-tight">₹{product.price.toFixed(2)}</span>
-                    <span className="text-lg text-gray-400 line-through font-bold tracking-tight">₹{product.oldPrice.toFixed(2)}</span>
+                    <span className="text-2xl md:text-3xl font-black text-[#E84949] tracking-tight">₹{Number(product.price || 0).toFixed(2)}</span>
+                    {product.oldPrice && (
+                      <span className="text-lg text-gray-400 line-through font-bold tracking-tight">₹{Number(product.oldPrice).toFixed(2)}</span>
+                    )}
                   </div>
-                  <span className="bg-[#E84949] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-widest">Sale</span>
+                  {product.oldPrice && product.oldPrice > product.price && (
+                    <span className="bg-[#E84949] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-widest">Sale</span>
+                  )}
                 </div>
 
                 <div className="space-y-4 py-5 border-y border-dashed border-gray-300">
@@ -427,7 +431,7 @@ export function ProductDetailPage() {
                       onClick={() => { 
                         const isCurrentlyWishlisted = wishlist.some(item => item.id === product.id);
                         toggleWishlist(product); 
-                        success(isCurrentlyWishlisted ? `${product.title} removed from wishlist.` : `${product.title} added to wishlist!`);
+                        success(isCurrentlyWishlisted ? `${product.title || product.name} removed from wishlist.` : `${product.title || product.name} added to wishlist!`);
                       }}
                       className={`w-9 h-9 rounded flex items-center justify-center hover:scale-110 transition-transform bg-[#E84949] text-white`}
                     >
@@ -593,6 +597,7 @@ export function ProductDetailPage() {
                   </span>
                 </div>
               }
+
               {activeTab === 'variant' &&
                 <div className="space-y-6">
                   <span className='whitespace-pre-line'>
@@ -609,7 +614,7 @@ export function ProductDetailPage() {
                 </div>
               }
               {activeTab === 'reviews' && productState?._id && (
-                <ReviewSection productId={productState._id} productName={product.title} />
+                <ReviewSection productId={productState._id} productName={product.title || product.name} />
               )}
             </motion.div>
           </AnimatePresence>

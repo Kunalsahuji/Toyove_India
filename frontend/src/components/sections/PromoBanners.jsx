@@ -9,8 +9,9 @@ const banners = [
     id: 1,
     bg: '#2A9AA6',
     label: 'Music And Sounds',
-    title: 'Shop & Glow Toy Cart Orange Car',
+    title: 'Musical Toys Collection',
     img: shop,
+    link: '/shop?category=Musical Toys',
     tall: true,
     gridClass: 'lg:col-start-1 lg:row-span-2',
     layout: 'default',
@@ -21,8 +22,9 @@ const banners = [
     id: 2,
     bg: '#EA4C4E',
     label: 'Big Season Sale',
-    title: 'Playbox The Builder Wooden Toys',
+    title: 'Wooden Stacking Toys',
     img: bigsale,
+    link: '/shop?category=Stacking Toys',
     tall: false,
     gridClass: 'lg:col-start-2 lg:row-start-1',
     layout: 'mirrored',
@@ -33,8 +35,9 @@ const banners = [
     id: 3,
     bg: '#6E5BB9',
     label: 'Season Sale',
-    title: 'Plan Toys Pull-Along Musical Bear',
+    title: 'Educational Kids Puzzles',
     img: musicalbear,
+    link: '/shop?category=Kids Puzzles',
     tall: false,
     gridClass: 'lg:col-start-2 lg:row-start-2',
     layout: 'default',
@@ -44,9 +47,10 @@ const banners = [
   {
     id: 4,
     bg: '#ED6D2A',
-    label: 'Music And Sounds',
-    title: 'Fun And Educational Toy For Babies',
+    label: 'Soft & Squeaky',
+    title: 'Premium Baby Rattles',
     img: educationtoys,
+    link: '/shop?category=Baby Rattles',
     tall: true,
     gridClass: 'lg:col-start-3 lg:row-span-2',
     layout: 'default',
@@ -88,7 +92,7 @@ function BannerCard({ banner }) {
                  ${isMobileCentered ? 'items-center md:items-start' : 'items-start'}`}
       style={{ backgroundColor: banner.bg }}
     >
-      <Link to={`/product/${banner.title.toLowerCase().replaceAll(' ', '-')}`} className="absolute inset-0 z-30" />
+      <Link to={banner.link || '/shop'} className="absolute inset-0 z-30" />
       <div className={`relative z-20 p-8 lg:p-10 flex flex-col pointer-events-none w-full
                       ${isMirrored ? 'items-end' : 'items-start'}
                       ${isMobileCentered ? 'justify-center md:justify-start' : 'justify-start'}`}>
@@ -106,7 +110,7 @@ function BannerCard({ banner }) {
           transition={{ duration: 0.5, delay: 0.28 }}
           className="w-fit pointer-events-auto"
         >
-          <Link to={`/product/${banner.title.toLowerCase().replaceAll(' ', '-')}`} className="h-9 px-7 bg-white text-black text-[12px] font-bold uppercase tracking-[0.16em] rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 shadow-sm flex items-center justify-center">
+          <Link to={banner.link || '/shop'} className="h-9 px-7 bg-white text-black text-[12px] font-bold uppercase tracking-[0.16em] rounded-[6px] border-2 border-transparent hover:scale-105 active:scale-95 transition-all duration-300 shadow-sm flex items-center justify-center">
             SHOP NOW
           </Link>
         </motion.div>

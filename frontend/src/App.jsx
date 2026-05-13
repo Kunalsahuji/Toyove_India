@@ -203,6 +203,7 @@ function AppContent() {
             <Route path="/search" element={<SearchPage />} />
             
             {/* Collection / Category Pages */}
+            <Route path="/shop" element={<CollectionPage />} />
             <Route path="/collections/:category/:subcategory?" element={<CollectionPage />} />
 
             {/* Auth Pages */}

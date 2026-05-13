@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, SlidersHorizontal, ChevronLeft, ChevronDown, Check, X, ChevronRight } from 'lucide-react'
 import { categoryData } from '../data/navigationData'
@@ -67,7 +67,11 @@ const FilterSection = ({ title, children, defaultOpen = true }) => {
 }
 
 export function CollectionPage() {
-  const { category, subcategory } = useParams()
+  const { category: categoryParam, subcategory } = useParams()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const categoryQuery = queryParams.get('category')
+  const category = categoryParam || categoryQuery
   const [innerSearch, setInnerSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [products, setProducts] = useState([])
@@ -152,10 +156,15 @@ export function CollectionPage() {
           limit: itemsPerPage,
           sort: sortBy,
           search: innerSearch.trim(),
-          brand: filters.brand[0],
-          gender: filters.gender[0],
-          ageGroup: filters.age[0],
-          material: filters.material[0],
+          brand: filters.brand.join(','),
+          gender: filters.gender.join(','),
+          ageGroup: filters.age.join(','),
+          material: filters.material.join(','),
+          color: filters.color.join(','),
+          size: filters.size.join(','),
+          availability: filters.availability[0],
+          minPrice: filters.price[0],
+          maxPrice: filters.price[1],
         })
 
         if (!isMounted) return
@@ -176,7 +185,7 @@ export function CollectionPage() {
       isMounted = false
       clearTimeout(timer)
     }
-  }, [category, subcategory, currentPage, sortBy, innerSearch, filters.age, filters.brand, filters.gender, filters.material])
+  }, [category, subcategory, currentPage, sortBy, innerSearch, filters])
 
   useEffect(() => {
     if (isFilterOpen) {
@@ -210,7 +219,7 @@ export function CollectionPage() {
     if (!isFilterOpen) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-  }, [category, subcategory, innerSearch, sortBy, filters, isFilterOpen])
+  }, [category, subcategory, innerSearch, sortBy, filters, isFilterOpen, location.search])
 
   const toggleFilter = (key, value) => {
     setFilters(prev => ({
@@ -237,12 +246,12 @@ export function CollectionPage() {
     <div className="space-y-1">
       {[
         { id: 'availability', title: 'availability', items: ['in stock', 'out of stock'] },
-        { id: 'brand', title: 'brands', items: ['Babyhug', 'Toykio', 'Carter\'s', 'Lego', 'Pampers'] },
+        { id: 'brand', title: 'brands', items: ['Toyovo', 'Babyhug', 'Sanjary', 'Play Nation', 'Intellibaby', 'Bonfino'] },
         { id: 'gender', title: 'gender', items: ['Boy', 'Girl', 'Unisex'] },
-        { id: 'age', title: 'age', items: ['0-2 Years', '2-4 Years', '4-6 Years', '6-8 Years', '8+ Years'] },
+        { id: 'age', title: 'age', items: ['0-10 Years', '0-24 Months', '2 Years+', '3 Years+', '5 Years+'] },
         { id: 'size', title: 'size', items: ['Small', 'Medium', 'Large', 'XL'] },
-        { id: 'color', title: 'colors', items: ['Red', 'Blue', 'Pink', 'Yellow', 'White', 'Black'] },
-        { id: 'material', title: 'material', items: ['Cotton', 'Wool', 'Plastic', 'Wood', 'Silicone'] },
+        { id: 'color', title: 'colors', items: ['Red', 'Blue', 'Pink', 'Yellow', 'Multicolor', 'Green', 'Orange'] },
+        { id: 'material', title: 'material', items: ['Child-Safe Premium', 'Wood', 'Plastic', 'Soft Fabric'] },
         { id: 'discount', title: 'discounts', items: ['10% OFF', '20% OFF', '30% OFF', '50% OFF'] }
       ].map(f => (
         <FilterSection key={f.id} title={f.title} defaultOpen={false}>

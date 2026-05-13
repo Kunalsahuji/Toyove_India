@@ -40,14 +40,31 @@ const buildProductFilter = async (query, publicOnly = true) => {
       { tags: new RegExp(query.search, 'i') },
     ];
   }
+
   if (query.brand) filter.brand = query.brand;
   if (query.ageGroup) filter.ageGroup = query.ageGroup;
   if (query.gender) filter.gender = query.gender;
   if (query.material) filter.material = query.material;
+  
+  if (query.color) {
+    const colors = query.color.split(',');
+    filter.color = { $in: colors };
+  }
+  
+  if (query.size) {
+    const sizes = query.size.split(',');
+    filter.size = { $in: sizes };
+  }
+
+  if (query.availability) {
+    if (query.availability === 'in stock') filter.stock = { $gt: 0 };
+    if (query.availability === 'out of stock') filter.stock = { $lte: 0 };
+  }
+
   if (query.minPrice !== undefined || query.maxPrice !== undefined) {
     filter.price = {};
-    if (query.minPrice !== undefined) filter.price.$gte = query.minPrice;
-    if (query.maxPrice !== undefined) filter.price.$lte = query.maxPrice;
+    if (query.minPrice !== undefined) filter.price.$gte = Number(query.minPrice);
+    if (query.maxPrice !== undefined) filter.price.$lte = Number(query.maxPrice);
   }
 
   return filter;
